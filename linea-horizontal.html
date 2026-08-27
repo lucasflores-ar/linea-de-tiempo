@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Línea de tiempo bíblica · Horizontal</title>
+<style>
+:root{
+  --bg:#070b12; --panel:rgba(22,30,42,.94); --panel2:rgba(15,21,31,.92); --line:#2d3644;
+  --txt:#e6edf3; --mut:#8b98a5; --acc:#6db8ff;
+  --hdr:rgba(18,24,34,.92); --card:rgba(16,24,38,.88); --field:#101826; --field-2:#1a2430;
+  --hover:rgba(255,255,255,.04); --glow:rgba(255,255,255,.18); --shadow:rgba(0,0,0,.4);
+  --track:rgba(100,116,139,.12); --thumb:rgba(156,163,175,.5); --thumb-h:rgba(156,163,175,.8);
+  --bg-glow:#12203a;
+  --c-pre:#b489ff; --c-dil:#4f7dff; --c-pat:#2fd0b6; --c-egi:#f0a35e;
+  --c-con:#5cd07b; --c-jue:#ff9d4d; --c-mon:#ffd166; --c-div:#ff6b6b;
+  --c-exi:#9aa7b4; --c-res:#56ccf2; --c-ec:#6db8ff;
+}
+html[data-theme="light"]{
+  --bg:#f4f6fa; --panel:rgba(255,255,255,.97); --panel2:#ffffff; --line:#d5dce6;
+  --txt:#1b2431; --mut:#5a6675; --acc:#1a5fd0;
+  --hdr:rgba(255,255,255,.95); --card:#ffffff; --field:#f0f3f8; --field-2:#e5ebf3;
+  --hover:rgba(20,40,80,.06); --glow:rgba(20,40,80,.18); --shadow:rgba(16,24,40,.14);
+  --track:rgba(80,100,140,.12); --thumb:rgba(100,116,139,.45); --thumb-h:rgba(100,116,139,.7);
+  --bg-glow:#dfe7f2;
+  --c-pre:#7a48c9; --c-dil:#315fce; --c-pat:#0e9d85; --c-egi:#d97c1f;
+  --c-con:#22824a; --c-jue:#d9791a; --c-mon:#c99a06; --c-div:#d23f3f;
+  --c-exi:#64748b; --c-res:#2388c2; --c-ec:#1a5fd0;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background:radial-gradient(1200px 600px at 80% -10%, var(--bg-glow) 0%, var(--bg) 55%), var(--bg);
+  color:var(--txt); font:14px/1.5 "Segoe UI",system-ui,Arial,sans-serif;
+  display:flex; flex-direction:column; overflow:hidden; user-select:none; -webkit-user-select:none;
+}
+
+/* ---------- header ---------- */
+header{
+  display:flex; align-items:center; gap:18px; flex-wrap:wrap;
+  background:var(--hdr); border-bottom:1px solid var(--line); padding:10px 18px; z-index:30;
+}
+.logo{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,#f0a35e,#ff6b6b);
+  display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 4px 16px rgba(240,163,94,.25)}
+.brand h1{font-size:16px;letter-spacing:.5px}
+.brand h1 .acc{color:var(--acc)}
+.brand p{font-size:11px;color:var(--mut)}
+.modebar{display:flex;align-items:center;gap:4px;background:var(--field);border:1px solid var(--line);border-radius:10px;padding:4px;font-size:12px}
+.modebar .ml{font-size:10px;font-weight:600;color:var(--mut);padding:0 6px;text-transform:uppercase;letter-spacing:1px}
+.mode-btn{display:flex;align-items:center;gap:6px;border:0;background:transparent;color:var(--mut);
+  border-radius:8px;padding:6px 10px;cursor:pointer;font-size:12px;transition:all .15s;font-family:inherit}
+.mode-btn:hover{color:var(--txt)}
+.mode-btn.on{background:var(--field-2);color:var(--txt);box-shadow:0 1px 4px var(--shadow)}
+.controls{display:flex;align-items:center;gap:10px;margin-left:auto}
+input[type=search],select{
+  background:var(--field);border:1px solid var(--line);color:var(--txt);border-radius:8px;
+  padding:7px 11px;font-size:12px;font-family:inherit;outline:none}
+input[type=search]:focus,select:focus{border-color:var(--acc)}
+select{max-width:150px}
+.iconbtn{width:32px;height:32px;border-radius:8px;background:var(--field);border:1px solid var(--line);
+  color:var(--mut);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;font-size:14px}
+.iconbtn:hover{color:var(--txt);border-color:var(--acc)}
+
+/* ---------- barra de épocas ---------- */
+nav{
+  display:flex;align-items:center;gap:10px;background:var(--hdr);
+  border-bottom:1px solid var(--line);padding:8px 18px;z-index:20;flex-shrink:0;
+}
+#era-nav{display:flex;gap:6px;overflow-x:auto;flex:1;scrollbar-width:none}
+#era-nav::-webkit-scrollbar{display:none}
+.jump-btn{display:flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--field);
+  color:var(--mut);border-radius:999px;padding:5px 12px;cursor:pointer;font-size:11px;font-weight:600;
+  white-space:nowrap;transition:all .15s;font-family:inherit}
+.jump-btn:hover{color:var(--txt);border-color:var(--acc)}
+.jump-btn .dot{width:8px;height:8px;border-radius:50%}
+.jump-btn.on{background:var(--field-2);color:var(--txt);border-color:var(--acc)}
+.nav-arrows{display:flex;gap:6px}
+
+/* ---------- área de scroll horizontal ---------- */
+main{
+  flex:1;overflow-x:auto;overflow-y:hidden;display:flex;align-items:stretch;gap:20px;
+  padding:22px 22px 28px;position:relative;
+}
+main::-webkit-scrollbar{height:8px}
+main::-webkit-scrollbar-track{background:var(--track)}
+main::-webkit-scrollbar-thumb{background:var(--thumb);border-radius:999px}
+main::-webkit-scrollbar-thumb:hover{background:var(--thumb-h)}
+#axis-line{position:absolute;left:0;right:0;top:26px;height:3px;pointer-events:none;z-index:0;
+  background:linear-gradient(90deg,#f0a35e,#b489ff,#ff6b6b,#4da3ff);opacity:.35}
+#track{display:flex;align-items:flex-start;gap:20px;position:relative;z-index:1}
+
+/* ---------- columna de época ---------- */
+.era-col{
+  flex-shrink:0;display:flex;flex-direction:column;border-radius:16px;width:340px;
+  background:var(--panel);border:1px solid var(--line);backdrop-filter:blur(6px);
+  overflow:hidden;height:calc(100vh - 210px);min-height:340px;max-height:680px;
+}
+.era-hdr{display:flex;align-items:center;justify-content:space-between;gap:8px;
+  padding:12px 14px;border-bottom:1px solid var(--line);flex-shrink:0}
+.era-hdr .l{display:flex;align-items:center;gap:9px;min-width:0}
+.era-dot{width:14px;height:14px;border-radius:50%;flex-shrink:0;box-shadow:0 0 8px var(--glow)}
+.era-hdr h2{font-size:13px;letter-spacing:.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.era-range{font-size:10px;color:var(--mut)}
+.era-count{font-size:10px;font-weight:700;background:var(--field);border:1px solid var(--line);
+  border-radius:8px;padding:3px 8px;color:var(--mut);flex-shrink:0}
+.era-body{flex:1;min-height:0;padding:14px;overflow-y:auto;display:flex;flex-direction:column;gap:10px}
+.era-body::-webkit-scrollbar{width:6px}
+.era-body::-webkit-scrollbar-thumb{background:var(--thumb);border-radius:4px}
+.empty{height:180px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:var(--mut);font-size:12px}
+
+/* ---------- modo columnas ---------- */
+.cols-row{display:flex;gap:12px;align-items:flex-start;width:max-content;min-width:100%}
+
+/* ---------- tarjeta ---------- */
+.card{
+  background:var(--card);border:1px solid var(--line);border-radius:12px;
+  padding:12px;cursor:pointer;transition:all .15s;position:relative;
+}
+.card:hover{border-color:var(--acc);transform:translateY(-1px);box-shadow:0 6px 20px var(--shadow)}
+.card .top{display:flex;align-items:center;justify-content:space-between;gap:6px;font-size:10px;font-weight:700;color:var(--mut);margin-bottom:7px}
+.card .date{color:var(--txt)}
+.card .tipo{opacity:.9}
+.card h3{font-size:12px;font-weight:700;line-height:1.35;margin-bottom:5px}
+.card .sum{font-size:11px;color:var(--mut);line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.card .foot{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-top:9px;padding-top:8px;border-top:1px solid var(--line);font-size:10px;color:var(--mut)}
+.card .nq{color:var(--acc);font-weight:700}
+.card .per{overflow:hidden;white-space:nowrap;text-overflow:ellipsis;max-width:60%}
+
+/* ---------- modo acordeón ---------- */
+.acc-item{border:1px solid var(--line);border-radius:10px;background:var(--card);overflow:hidden;width:100%;min-width:0;flex-shrink:0;min-height:44px}
+.acc-hdr{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:12px 14px;cursor:pointer;background:var(--card);color:var(--txt);
+  line-height:1.4;letter-spacing:.2px;text-align:left;user-select:none;min-height:44px;box-sizing:border-box}
+.acc-hdr:hover{background:var(--hover)}
+.acc-hdr .l{display:flex;align-items:center;gap:8px;overflow:hidden;flex:1;min-width:0}
+.acc-hdr .l .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.acc-hdr .l b{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--txt);display:block;min-width:0;line-height:1.3}
+.acc-hdr .r{display:flex;align-items:center;gap:8px;flex-shrink:0;font-size:10px;color:var(--mut);white-space:nowrap}
+.acc-body{padding:12px 14px 14px;font-size:12px;color:var(--txt);border-top:1px solid var(--line);background:rgba(255,255,255,.03);display:block}
+html[data-theme="light"] .acc-body{background:rgba(0,0,0,.03)}
+.acc-body p{margin:0 0 10px;line-height:1.6;overflow-wrap:anywhere;white-space:normal;color:var(--txt);display:block}
+.acc-open{margin-top:10px;display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:11px;white-space:nowrap;border-top:1px dashed var(--line);padding-top:10px}
+.acc-open > span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;color:var(--mut)}
+.event-trigger{color:var(--acc);font-weight:700;text-decoration:none;flex-shrink:0}
+.event-trigger:hover{text-decoration:underline}
+
+/* ---------- modo cascada ---------- */
+.cascade{position:relative;height:300px}
+.cascade .s-card{position:absolute;width:100%;transition:all .25s cubic-bezier(.4,0,.2,1)}
+.cascade .s-card:nth-child(1){top:0;z-index:10}
+.cascade .s-card:nth-child(2){top:46px;z-index:9}
+.cascade .s-card:nth-child(3){top:92px;z-index:8}
+.cascade .s-card:nth-child(4){top:138px;z-index:7}
+.cascade .s-card:nth-child(n+5){top:184px;z-index:6}
+.cascade:hover .s-card:nth-child(2){transform:translateY(6px)}
+.cascade:hover .s-card:nth-child(3){transform:translateY(12px)}
+.cascade:hover .s-card:nth-child(4){transform:translateY(18px)}
+.cascade .s-card:hover{top:0!important;z-index:30!important}
+.cascade-hint{text-align:center;font-size:10px;color:var(--mut);margin-top:6px}
+
+/* ---------- drawer ---------- */
+#overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:40;opacity:0;pointer-events:none;transition:opacity .3s}
+#overlay.on{opacity:1;pointer-events:auto}
+#drawer{
+  position:fixed;inset-y:0;right:0;width:100%;max-width:440px;z-index:50;
+  background:var(--panel2);border-left:1px solid var(--line);box-shadow:-12px 0 40px var(--shadow);
+  transform:translateX(100%);transition:transform .3s;display:flex;flex-direction:column;
+}
+#drawer.on{transform:translateX(0)}
+.d-hdr{padding:20px;border-bottom:1px solid var(--line);position:relative}
+#d-close{position:absolute;right:14px;top:14px;background:var(--field);border:1px solid var(--line);
+  color:var(--mut);width:30px;height:30px;border-radius:8px;cursor:pointer}
+#d-close:hover{color:var(--txt)}
+#d-badge{display:inline-block;padding:3px 10px;font-size:10px;font-weight:700;text-transform:uppercase;
+  letter-spacing:1px;border-radius:999px;color:#fff;margin-bottom:8px}
+#d-title{font-size:18px;font-weight:700;line-height:1.3;padding-right:30px}
+#d-date{font-size:12px;color:var(--mut);margin-top:4px}
+.d-body{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:16px;font-size:13px}
+.d-body::-webkit-scrollbar{width:5px}
+.d-body::-webkit-scrollbar-thumb{background:var(--thumb);border-radius:4px}
+.d-sec h3{font-size:10px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:6px}
+.refbox{background:rgba(240,163,94,.07);border:1px solid rgba(240,163,94,.3);border-radius:12px;padding:12px}
+.refbox h3{color:var(--c-egi)}
+.refbox p{font-style:italic;color:var(--txt);font-size:12px;line-height:1.5}
+.desc{color:var(--mut);line-height:1.6}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{background:var(--field);border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-size:11px;color:var(--txt)}
+.chip.t{color:var(--c-egi)}
+.parbox{background:var(--field);border:1px solid var(--line);border-radius:12px;padding:12px;font-size:12px}
+.parbox h3{color:var(--acc)}
+.parbox .pw{color:var(--txt);font-weight:600}
+.dmeta{display:grid;grid-template-columns:auto 1fr;gap:5px 12px;font-size:12px}
+.dmeta .k{color:var(--mut)}
+.qa{border-top:1px solid var(--line);padding-top:12px}
+.qa .q{font-size:12px;margin:6px 0;padding:9px 10px;background:var(--field);border-radius:8px}
+.qa .q small{display:block;color:var(--acc);margin-top:3px;font-size:11px}
+.qa .more{color:var(--acc);cursor:pointer;font-size:12px}
+.qa .more:hover{text-decoration:underline}
+.ph{color:var(--mut);font-size:12px}
+.link-back{margin-top:4px;display:inline-block;font-size:11px;color:var(--acc);text-decoration:none}
+.link-back:hover{text-decoration:underline}
+
+/* scrollbar nav / ocultar */
+.no-scrollbar{scrollbar-width:none}
+.no-scrollbar::-webkit-scrollbar{display:none}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">⏳</div>
+  <div class="brand">
+    <h1>Línea de tiempo <span class="acc">bíblica</span></h1>
+    <p id="brand-sub">Carriles por épocas · datos JW</p>
+  </div>
+
+  <div class="modebar">
+    <span class="ml">Apilado:</span>
+    <button id="m-columns" class="mode-btn" title="Tarjetas expandidas en subcarriles">▦ Columnas</button>
+    <button id="m-accordion" class="mode-btn" title="Lista compacta expandible">≡ Acordeón</button>
+    <button id="m-cascade" class="mode-btn on" title="Pila de tarjetas superpuestas">▤ Cascada</button>
+  </div>
+
+  <div class="controls">
+    <select id="f-tema" title="Filtro por tema"><option value="">Tema: Todos</option></select>
+    <select id="f-era" title="Filtro por época"><option value="">Época: Todas</option></select>
+    <select id="f-tipo" title="Filtro por tipo"><option value="">Tipo: Todos</option></select>
+    <select id="f-pot" title="Filtro por potencia mundial"><option value="">Potencia: Todas</option></select>
+    <input type="search" id="search" placeholder="Buscar suceso, cita, personaje…" />
+    <button class="iconbtn" id="reset" title="Limpiar filtros">✕</button>
+    <button class="iconbtn" id="theme-btn" title="Alternar tema claro/oscuro">☀️</button>
+    <a class="iconbtn" id="link-fichas" href="fichas.html" title="Fichas de personajes" style="text-decoration:none">👤</a>
+  </div>
+</header>
+
+<nav>
+  <div id="era-nav" class="no-scrollbar"></div>
+  <div class="nav-arrows">
+    <button class="iconbtn" id="sc-l" title="Desplazar a la izquierda">◀</button>
+    <button class="iconbtn" id="sc-r" title="Desplazar a la derecha">▶</button>
+  </div>
+</nav>
+
+<main id="scroll-area">
+  <div id="axis-line"></div>
+  <div id="track"></div>
+</main>
+
+<div id="overlay"></div>
+<aside id="drawer">
+  <div class="d-hdr">
+    <button id="d-close">✕</button>
+    <span id="d-badge" style="background:#4da3ff">Época</span>
+    <h2 id="d-title">Título</h2>
+    <p id="d-date"></p>
+  </div>
+  <div class="d-body">
+    <div class="refbox">
+      <h3>📖 Referencia bíblica</h3>
+      <p id="d-ref"></p>
+    </div>
+    <div class="d-sec">
+      <h3>Contexto del suceso</h3>
+      <p class="desc" id="d-desc"></p>
+    </div>
+    <div class="d-sec">
+      <h3>Personajes relevantes</h3>
+      <div class="chips" id="d-char"></div>
+    </div>
+    <div class="d-sec">
+      <h3>Datos</h3>
+      <div class="dmeta" id="d-meta"></div>
+    </div>
+    <div class="d-sec">
+      <h3>Temas</h3>
+      <div class="chips" id="d-temas"></div>
+    </div>
+    <div class="parbox">
+      <h3>🌍 Mundo contemporáneo</h3>
+      <p id="d-par"></p>
+    </div>
+    <div class="qa">
+      <b id="d-qcount" style="font-size:12px;color:var(--mut)"></b>
+      <div id="d-qlist"></div>
+      <div class="more" id="d-more" style="display:none">Mostrar todas</div>
+    </div>
+    <a class="link-back" id="link-app" href="index.html">Abrir en la app principal →</a>
+  </div>
+</aside>
+
+<script src="linea-tiempo-datos.js"></script>
+<script>
+const D = window.LT_DATA;
+const MINY = -4026, MAXY = 100;
+const YEAR_MS = 365.25*24*3600*1000;
+function fmtAnio(y){ return (y==null) ? '—' : (y<0 ? -y+' a. E. C.' : y+' E. C.'); }
+function fmtFecha(fa){ return fmtAnio(fa); }
+
+const ERA_COLOR = {
+  'PREHISTORIA / GÉNESIS':'var(--c-pre)','DILUVIO':'var(--c-dil)','POSTDILUVIANO':'var(--c-pat)',
+  'PATRIARCAS':'var(--c-pat)','EGIPTO':'var(--c-egi)','EXODO':'var(--c-egi)',
+  'CONQUISTA':'var(--c-con)','JUECES':'var(--c-jue)','MONARQUÍA':'var(--c-mon)',
+  'REINO DIVIDIDO':'var(--c-div)','EXILIO':'var(--c-exi)','RESTAURACIÓN':'var(--c-res)','E.C.':'var(--c-ec)'
+};
+function eraKey(e){
+  if(!e) return 'E.C.';
+  if(e.indexOf('PREHISTORIA')>=0) return 'PREHISTORIA / GÉNESIS';
+  if(e.indexOf('POSTDILUVIANO')>=0) return 'PATRIARCAS';
+  if(e.indexOf('PATRIARCA')>=0) return 'PATRIARCAS';
+  if(e.indexOf('DILUVIO')>=0) return 'DILUVIO';
+  if(e.indexOf('GENEALOG')>=0) return 'PREHISTORIA / GÉNESIS';
+  if(e.indexOf('EGIPTO')>=0 || e.indexOf('EXODO')>=0 || e.indexOf('DESIERTO')>=0 || e.indexOf('LEY')>=0) return 'EGIPTO';
+  if(e.indexOf('CONQUISTA')>=0) return 'CONQUISTA';
+  if(e.indexOf('JUECES')>=0) return 'JUECES';
+  if(e.indexOf('MONARQUÍA')>=0 || e.indexOf('JUEZ/MONARQUÍA')>=0) return 'MONARQUÍA';
+  if(e.indexOf('REINO DIVIDIDO')>=0) return 'REINO DIVIDIDO';
+  if(e.indexOf('EXILIO')>=0) return 'EXILIO';
+  if(e.indexOf('RESTAURACIÓN')>=0) return 'RESTAURACIÓN';
+  return 'E.C.';
+}
+
+const THEMES = [
+  ['GENESIS','Génesis'],['EXODO','Éxodo'],['CONQUISTA','Conquista'],['JUECES','Jueces'],
+  ['REYES','Reyes'],['PROFETAS','Profetas'],['EXILIO','Exilio'],['RESTAURACION','Restauración'],
+  ['SIGLO-PRIMERO','Siglo primero'],['HECHOS','Hechos de los apóstoles']
+];
+
+function tipoBucket(t){
+  const s=(t||'').toLowerCase();
+  if(s.indexOf('batall')>=0) return 'batalla';
+  if(s.indexOf('milagr')>=0) return 'milagro';
+  if(s.indexOf('resurrecc')>=0) return 'resurrección';
+  if(s.indexOf('profec')>=0 || s.indexOf('visi')>=0) return 'profecía';
+  if(s.indexOf('predic')>=0 || s.indexOf('discurs')>=0 || s.indexOf('enseñ')>=0) return 'enseñanza';
+  if(s.indexOf('juic')>=0) return 'juicio';
+  if(s.indexOf('bautis')>=0) return 'bautismo';
+  if(s.indexOf('naci')>=0) return 'nacimiento';
+  if(s.indexOf('muert')>=0 || s.indexOf('marti')>=0 || s.indexOf('arrest')>=0) return 'muerte';
+  if(s.indexOf('lib')>=0 || s.indexOf('salv')>=0) return 'liberación';
+  if(s.indexOf('ador')>=0 || s.indexOf('reuni')>=0 || s.indexOf('entrada')>=0 || s.indexOf('institu')>=0) return 'reunión';
+  return 'otro';
+}
+const TIPO_ICON = {
+  batalla:'⚔️', milagro:'✨', 'resurrección':'🌟', 'profecía':'🔮', 'enseñanza':'📖',
+  juicio:'⚖️', bautismo:'💧', nacimiento:'👶', muerte:'⚰️', liberación:'🕊️', reunión:'🏛️', otro:'📜'
+};
+const TIPO_LIST = ['batalla','milagro','resurrección','profecía','enseñanza','juicio','bautismo','nacimiento','muerte','liberación','reunión','otro'];
+
+const POTENCIAS = [
+  ['EGIPTO','Egipto','🏛️',-1600,-874],['ASIRIA','Asiria','🐂',-874,-625],['BABILONIA','Babilonia','🦁',-625,-539],
+  ['MEDOPERSIA','Medopersia','🐻',-539,-332],['GRECIA','Grecia','🐆',-332,-63],['ROMA','Roma','🦅',-63,100]
+];
+function potenciaOf(fa){
+  if(fa==null) return null;
+  const p=POTENCIAS.find(x=> fa>=x[3] && fa<=x[4]);
+  return p ? p : null;
+}
+
+// ---------- columnas (épocas) ----------
+const ERAS = [
+  {id:'pre', name:'Prehistoria y Génesis', color:'var(--c-pre)', keys:['PREHISTORIA / GÉNESIS','DILUVIO']},
+  {id:'pat', name:'Patriarcas', color:'var(--c-pat)', keys:['POSTDILUVIANO','PATRIARCAS']},
+  {id:'egi', name:'Egipto y Éxodo', color:'var(--c-egi)', keys:['EGIPTO']},
+  {id:'jue', name:'Conquista y Jueces', color:'var(--c-jue)', keys:['CONQUISTA','JUECES']},
+  {id:'mon', name:'Monarquía', color:'var(--c-mon)', keys:['MONARQUÍA']},
+  {id:'div', name:'Reino dividido', color:'var(--c-div)', keys:['REINO DIVIDIDO']},
+  {id:'exi', name:'Exilio', color:'var(--c-exi)', keys:['EXILIO']},
+  {id:'res', name:'Restauración', color:'var(--c-res)', keys:['RESTAURACIÓN']},
+  {id:'ec', name:'Siglo primero', color:'var(--c-ec)', keys:['E.C.']}
+];
+const eraCol = {};
+ERAS.forEach(c=>c.keys.forEach(k=>eraCol[k]=c));
+function colOf(ev){ return eraCol[eraKey(ev.era)]; }
+
+// ---------- filtros ----------
+let selTema='', selEra='', selTipo='', selPot='', searchQ='';
+function passes(ev){
+  if(selTema && !ev.t.includes(selTema)) return false;
+  if(selEra && !ERAS.find(c=>c.id===selEra).keys.includes(eraKey(ev.era))) return false;
+  if(selTipo && tipoBucket(ev.tipo)!==selTipo) return false;
+  if(selPot){
+    const p=potenciaOf(ev.fa);
+    if(!p || p[0]!==selPot) return false;
+  }
+  if(searchQ){
+    const hay=(ev.n+' '+ev.d+' '+ev.ref+' '+(ev.per||'')).toLowerCase();
+    if(hay.indexOf(searchQ)<0) return false;
+  }
+  return true;
+}
+function filtered(){ return D.eventos.filter(passes); }
+
+// ---------- estado de vista ----------
+let mode='cascade';
+let expanded={};
+let openId=null;
+
+// ---------- render ----------
+const trackEl=document.getElementById('track');
+const scrollArea=document.getElementById('scroll-area');
+const navEl=document.getElementById('era-nav');
+
+function eraRange(col){
+  const evs=D.eventos.filter(e=>col.keys.includes(eraKey(e.era))&&e.fa!=null);
+  if(!evs.length) return '';
+  const ys=evs.map(e=>e.fa);
+  return Math.min(...ys)+' a '+Math.max(...ys);
+}
+
+function cardHtml(ev, col, w){
+  const tipo=tipoBucket(ev.tipo);
+  const per=(ev.per||'');
+  return `<div class="card" data-id="${ev.id}" style="border-top:3px solid ${col.color};width:${w}">
+    <div class="top"><span class="date">${ev.ft||'—'}</span><span class="tipo">${TIPO_ICON[tipo]||'📜'} ${tipo}</span></div>
+    <h3>${ev.n}</h3>
+    <p class="sum">${ev.d||''}</p>
+    <div class="foot"><span class="per">${per}</span>${ev.nq>0?'<span class="nq">'+ev.nq+' preg.</span>':''}</div>
+  </div>`;
+}
+function miniCardHtml(ev, col){
+  const tipo=tipoBucket(ev.tipo);
+  return `<div class="card s-card" data-id="${ev.id}" style="border-left:4px solid ${col.color}">
+    <div class="top"><span class="date">${ev.ft||'—'}</span><span>${ev.ref||''}</span></div>
+    <h3>${ev.n}</h3>
+    <p class="sum">${ev.d||''}</p>
+  </div>`;
+}
+
+function bodyHtml(events, col){
+  if(!events.length){
+    return `<div class="empty"><span>○</span><span>Sin sucesos coincidentes</span></div>`;
+  }
+  if(mode==='columns'){
+    return `<div class="cols-row">${events.map(ev=>cardHtml(ev,col,'248px')).join('')}</div>`;
+  }
+  if(mode==='accordion'){
+    return events.map((ev,i)=>{
+      const on = expanded[ev.id] ?? (i===0);
+      const tipo=tipoBucket(ev.tipo);
+      return `<div class="acc-item" style="border-left:3px solid ${col.color}">
+        <div class="acc-hdr" data-acc="${ev.id}" title="${esc(ev.n)}" role="button" tabindex="0">
+          <span class="l"><span class="dot" style="background:${col.color}"></span><b>${esc(ev.n)}</b></span>
+          <span class="r"><span>${esc(ev.ft||'—')}</span><span>${on?'▲':'▼'}</span></span>
+        </div>
+        ${on?`<div class="acc-body">
+          <p>${TIPO_ICON[tipo]||''} ${esc(ev.d||'')}</p>
+          <div class="acc-open"><span>${esc(ev.ref||'')}${ev.nq>0?' · '+ev.nq+' preg.':''}</span><a class="event-trigger" data-id="${ev.id}" href="javascript:void(0)">Abrir detalle →</a></div>
+        </div>`:''}
+      </div>`;
+    }).join('');
+  }
+  // cascade
+  return `<div>
+    <div class="cascade">${events.map(ev=>miniCardHtml(ev,col)).join('')}</div>
+    <p class="cascade-hint">🖱 Pasa el ratón o toca para desapilar · clic en la tarjeta para el detalle</p>
+  </div>`;
+}
+
+let savedScroll={};
+function captureScroll(){ document.querySelectorAll('.era-body').forEach(b=>{ savedScroll[b.parentElement.id]=b.scrollTop; }); }
+function restoreScroll(){ document.querySelectorAll('.era-body').forEach(b=>{ const id=b.parentElement.id; if(id in savedScroll) b.scrollTop=savedScroll[id]; }); }
+
+function render(){
+  captureScroll();
+  document.getElementById('brand-sub').textContent =
+    D.eventos.length+' sucesos · '+D.preguntas.length+' preguntas · '+D.personajes.length+' personajes'+
+    (filtered().length!==D.eventos.length? ' · '+filtered().length+' mostrados':'');
+  trackEl.innerHTML = ERAS.map(col=>{
+    const events=filtered().filter(ev=>col.keys.includes(eraKey(ev.era))).sort((a,b)=>(b.fa||0)-(a.fa||0));
+    return `<section class="era-col" id="era-${col.id}" style="${mode==='columns'&&events.length? 'width:'+Math.max(300,events.length*265)+'px':'width:340px'}">
+      <div class="era-hdr">
+        <div class="l"><span class="era-dot" style="background:${col.color}"></span>
+          <div><h2>${col.name}</h2><span class="era-range">${eraRange(col)}</span></div>
+        </div>
+        <span class="era-count">${events.length} sucesos</span>
+      </div>
+      <div class="era-body">${bodyHtml(events, col)}</div>
+    </section>`;
+  }).join('');
+  renderNav();
+  attachCard();
+  restoreScroll();
+}
+
+function renderNav(){
+  navEl.innerHTML = ERAS.map(col=>{
+    const n=filtered().filter(ev=>col.keys.includes(eraKey(ev.era))).length;
+    return `<button class="jump-btn${selEra===col.id?' on':''}" data-target="${col.id}" title="${selEra===col.id?'Quitar filtro de época':'Filtrar por esta época'}">
+      <span class="dot" style="background:${col.color}"></span>${col.name} <span style="opacity:.6">(${n})</span></button>`;
+  }).join('');
+}
+function jumpTo(id){
+  const el=document.getElementById('era-'+id);
+  if(!el) return;
+  el.scrollIntoView({behavior:'smooth',inline:'start',block:'nearest'});
+}
+
+// ---------- drawer ----------
+const drawer=document.getElementById('drawer'), overlay=document.getElementById('overlay');
+function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function openDrawer(ev){
+  const col=colOf(ev);
+  document.getElementById('d-badge').textContent=eraKey(ev.era);
+  document.getElementById('d-badge').style.background=col.color;
+  document.getElementById('d-title').textContent=ev.n;
+  document.getElementById('d-date').textContent=(ev.ft||fmtFecha(ev.fa))+(ev.lug?' · '+ev.lug:'');
+  document.getElementById('d-ref').textContent = ev.ref ? ('“'+ev.ref+'”') : 'Sin referencia registrada.';
+  document.getElementById('d-desc').textContent = ev.d || 'Sin descripción.';
+  document.getElementById('d-char').innerHTML = (ev.per||'—').split(/[,/]/).filter(Boolean)
+    .map(c=>'<span class="chip">'+esc(c.trim())+'</span>').join('');
+  document.getElementById('d-meta').innerHTML =
+    '<span class="k">Año</span><span>'+fmtFecha(ev.fa)+'</span>'+
+    '<span class="k">Lugar</span><span>'+esc(ev.lug||'—')+(ev.lat!=null?' <small style="color:var(--mut)">('+ev.lat+', '+ev.lon+')</small>':'')+'</span>'+
+    '<span class="k">Tipo</span><span>'+(TIPO_ICON[tipoBucket(ev.tipo)]||'')+' '+esc(ev.tipo||'—')+'</span>'+
+    '<span class="k">Era</span><span>'+esc(eraKey(ev.era))+'</span>';
+  document.getElementById('d-temas').innerHTML = ev.t.map(t=>{
+    const tm=THEMES.find(x=>x[0]===t);
+    return '<span class="chip t">'+esc(tm?tm[1]:t)+'</span>';
+  }).join('') || '<span class="ph">—</span>';
+  const pot=potenciaOf(ev.fa);
+  document.getElementById('d-par').innerHTML = pot
+    ? '<span class="pw">Potencia mundial: '+pot[2]+' '+pot[1]+'</span> <span style="color:var(--mut)">('+fmtFecha(pot[3])+' a '+fmtFecha(pot[4])+')</span>'
+    : '<span style="color:var(--mut)">Antes de las potencias mundiales de la cronología JW (Egipto desde 1600 a. E. C.).</span>';
+  const qs=D.preguntas.filter(p=>p.hid===ev.id);
+  const listEl=document.getElementById('d-qlist');
+  const moreEl=document.getElementById('d-more');
+  document.getElementById('d-qcount').textContent = 'Preguntas vinculadas: '+qs.length;
+  listEl.innerHTML = qs.slice(0,8).map(q=>'<div class="q">'+esc(q.q)+'<small>'+esc(q.cat||'')+' · resp. '+esc(q.a||'')+'</small></div>').join('') ||
+    '<span class="ph">Este suceso aún no tiene preguntas vinculadas.</span>';
+  moreEl.style.display = qs.length>8 ? 'block':'none';
+  moreEl.onclick = ()=>{ listEl.innerHTML = qs.map(q=>'<div class="q">'+esc(q.q)+'<small>'+esc(q.cat||'')+' · resp. '+esc(q.a||'')+'</small></div>').join(''); moreEl.style.display='none'; };
+  drawer.classList.add('on'); overlay.classList.add('on');
+  openId=ev.id;
+}
+function closeDrawer(){ drawer.classList.remove('on'); overlay.classList.remove('on'); openId=null; }
+
+function attachCard(){
+  document.querySelectorAll('.card').forEach(el=>{
+    el.onclick=e=>{ e.stopPropagation(); const ev=D.eventos.find(x=>x.id==el.dataset.id); if(ev) openDrawer(ev); };
+  });
+  document.querySelectorAll('.event-trigger').forEach(el=>{
+    el.onclick=e=>{ e.stopPropagation(); const ev=D.eventos.find(x=>x.id==el.dataset.id); if(ev) openDrawer(ev); };
+  });
+  document.querySelectorAll('[data-acc]').forEach(btn=>{
+    btn.onclick=()=>{ expanded[btn.dataset.acc]=!expanded[btn.dataset.acc]; render(); };
+  });
+}
+
+// ---------- interacción ----------
+const modes={columns:document.getElementById('m-columns'),accordion:document.getElementById('m-accordion'),cascade:document.getElementById('m-cascade')};
+Object.entries(modes).forEach(([m,btn])=>{
+  btn.onclick=()=>{
+    mode=m;
+    Object.values(modes).forEach(b=>b.classList.toggle('on',b===btn));
+    render();
+  };
+});
+navEl.onclick=e=>{
+  const b=e.target.closest('.jump-btn');
+  if(!b) return;
+  const id=b.dataset.target;
+  selEra = (selEra===id) ? '' : id;
+  document.getElementById('f-era').value = selEra;
+  render();
+  if(selEra) jumpTo(id);
+};
+document.getElementById('sc-l').onclick=()=>scrollArea.scrollBy({left:-420,behavior:'smooth'});
+document.getElementById('sc-r').onclick=()=>scrollArea.scrollBy({left:420,behavior:'smooth'});
+scrollArea.addEventListener('wheel',ev=>{
+  if(Math.abs(ev.deltaY)>Math.abs(ev.deltaX)){
+    scrollArea.scrollLeft+=ev.deltaY;
+    ev.preventDefault();
+  }
+},{passive:false});
+document.getElementById('search').addEventListener('input',e=>{ searchQ=e.target.value.trim().toLowerCase(); render(); });
+document.getElementById('reset').onclick=()=>{
+  selTema=selEra=selTipo=selPot=''; searchQ='';
+  document.getElementById('search').value='';
+  ['f-tema','f-era','f-tipo','f-pot'].forEach(id=>document.getElementById(id).value='');
+  render();
+};
+['f-tema','f-era','f-tipo','f-pot'].forEach(id=>{
+  document.getElementById(id).addEventListener('change',e=>{
+    const v=e.target.value;
+    if(id==='f-tema') selTema=v;
+    else if(id==='f-era') selEra=v;
+    else if(id==='f-tipo') selTipo=v;
+    else selPot=v;
+    render();
+  });
+});
+document.getElementById('d-close').onclick=closeDrawer;
+overlay.onclick=closeDrawer;
+
+// ---------- tema claro/oscuro ----------
+const themeBtn=document.getElementById('theme-btn');
+function applyTheme(t){
+  document.documentElement.setAttribute('data-theme',t);
+  try{ localStorage.setItem('lt-theme',t); }catch(e){}
+  themeBtn.textContent = (t==='dark') ? '☀️' : '🌙';
+  themeBtn.title = (t==='dark') ? 'Cambiar a tema claro' : 'Cambiar a tema oscuro';
+}
+themeBtn.onclick=()=>{
+  const cur=document.documentElement.getAttribute('data-theme')||'dark';
+  applyTheme(cur==='dark'?'light':'dark');
+};
+(function(){
+  let saved='dark';
+  try{ saved=localStorage.getItem('lt-theme')||'dark'; }catch(e){}
+  applyTheme(saved);
+})();
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeDrawer(); });
+window.addEventListener('resize',()=>{ /* noop */ });
+
+// ---------- init ----------
+(function initSelects(){
+  const ft=document.getElementById('f-tema');
+  THEMES.forEach(t=>ft.insertAdjacentHTML('beforeend','<option value="'+t[0]+'">'+t[1]+'</option>'));
+  const fe=document.getElementById('f-era');
+  ERAS.forEach(c=>fe.insertAdjacentHTML('beforeend','<option value="'+c.id+'">'+c.name+'</option>'));
+  const fti=document.getElementById('f-tipo');
+  TIPO_LIST.forEach(t=>fti.insertAdjacentHTML('beforeend','<option value="'+t+'">'+TIPO_ICON[t]+' '+t+'</option>'));
+  const fp=document.getElementById('f-pot');
+  POTENCIAS.forEach(p=>fp.insertAdjacentHTML('beforeend','<option value="'+p[0]+'">'+p[2]+' '+p[1]+'</option>'));
+})();
+(function readQuery(){
+  try{
+    const p=new URLSearchParams(location.search);
+    if(p.get('q')){ searchQ=p.get('q').toLowerCase(); document.getElementById('search').value=p.get('q'); }
+  }catch(e){}
+})();
+render();
+</script>
+</body>
+</html>
