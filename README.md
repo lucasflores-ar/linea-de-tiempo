@@ -522,3 +522,74 @@ Registro de lo implementado en este proyecto (línea de tiempo bíblica JW).
   ROMA→47/0 fuera, tema REYES→48, búsqueda David→16, era E.C.→47, nav toggle
   159↔159), drawer (Asiria, David 8/15 hitos), 3 modos (159 items), tema (dark↔light),
   fichas (151, Rey→25, con preguntas→123, búsqueda David→14).
+
+## 13. Plan — Fase 7: líneas de tiempo anidadas (herramienta de estudio)
+
+> Documentado para retomarlo con cualquier modelo de IA. Estado: Paso 1 (modelo de
+> datos jerárquico) COMPLETADO; Pasos 2-4 pendientes.
+
+### Objetivo
+
+Dejar de ser un "probador de datos" y convertirse en **herramienta de estudio** que
+permita ver visualmente cómo hechos sueltos se **superponen, se conjugan o permanecen
+aislados** en el tiempo. Para ello se quiere poder abrir un hecho "contenedor" (p. ej.
+las campañas de Pablo, la conquista de Canaán, los periodos de José o de los jueces) y
+desplegar dentro una **línea de tiempo anidada** con sus sub-sucesos.
+
+### Decisiones de diseño (consensuadas)
+
+- **Máximo 2 niveles** (maestro → detalle). No anidar N niveles arbitrarios: con ~159
+  sucesos sobra, y anidar profundo confunde más de lo que ayuda.
+- **No autogenerar el agrupamiento por densidad** sin curaduría: el pipeline
+  infra/sobre-agruparía y perdería el sentido narrativo/teológico. El agrupamiento es
+  **curado manualmente** (un archivo editable por el usuario), como `curacion/` para
+  fichas.
+- **Dos mecanismos complementarios**, no excluyentes:
+  1. **Eje dual de paralelo** (comparar 2 eras/periodos lado a lado con el *mismo*
+     eje temporal) para el caso "se conjugan o no".
+  2. **Suceso maestro expandible** (drill-down) que abre una sub-línea con breadcrumb.
+
+### Pasos
+
+1. **Modelo de datos jerárquico** (fundamento) — `hechos_biblicos.csv` gana columnas
+   `parent_id` y `grupo`; se genera una sección `grupos` en `linea-tiempo-datos.js`
+   (`window.LT_DATA.grupos`) con la relación padre→hijos y metadatos de cada grupo
+   (nombre, rango de fechas, descripción). `gen_timeline.py` la emite; los eventos
+   ganan `p` (padre) y `g` (grupo). **Sin esto nada de lo siguiente funciona.**
+   ✅ *COMPLETADO. Implementación final: la jerarquía se cura en
+   `curacion/grupos.json` (no se editan nuevas columnas del CSV original); cada grupo
+   lista `evento_ids`; `gen_timeline.py` emite `window.LT_DATA.grupos` con
+   `{id,n,d,eventos,fa_min,fa_max,n_ev,nq}` y cada evento gana `g` = id de grupo
+   (null si raíz). 8 grupos curados iniciales, 52 de 159 hechos agrupados.*
+
+2. **Suceso maestro expandible en `linea-horizontal.html`** — un hecho con hijos se
+   renderiza como "maestro" (chip con contador de sub-sucesos); al hacer clic/Enter se
+   reemplaza el contenido de la columna por su sub-línea (mismo render de cascada/
+   acordeón sobre un rango acotado) y aparece un **breadcrumb** ("Reino dividido ›
+   Judá") para volver al nivel superior. Estado en URL: `?g=<grupo>`.
+
+3. **Eje dual de paralelo** — selector "Comparar" que coloca dos grupos/eras en filas
+   paralelas compartiendo el eje X, para visualizar superposición/contraste. Caso
+   clave: Israel vs Judá en el Reino dividido.
+
+4. **(Opcional) Relaciones explícitas entre hechos** — tabla curada `relaciones` con
+   aristas causa→efecto / contraste / paralelo dibujadas sobre el eje. Depende de
+   decidir el vocabulario de tipos de relación.
+
+### Fuente / criterios de agrupamiento (propuesta inicial)
+
+- `periodo` = contenedores temporales grandes curados: "Conquista de Canaán",
+  "Reino dividido (Israel vs Judá)", "Cautiverio babilónico", "Periodo de los jueces",
+  "Ministerio de Jesús", "Campañas misioneras de Pablo".
+- `parent_id` apunta al `id` de un hecho contenedor (que también existe como suceso)
+  o a `null` si es un hecho "raíz".
+
+### Archivos afectados (previsto / estado)
+
+- ~~`hechos_biblicos.csv`~~ → NO se modificó (jerarquía quedó en `curacion/grupos.json`).
+- `curacion/grupos.json` ✅ *nuevo* — curación manual de grupos.
+- `scripts/gen_timeline.py` ✅ *modificado* — lee `grupos.json` y emite `grupos` + `g`.
+- `scripts/run_pipeline.py` (sin cambios necesarios).
+- `linea-horizontal.html` (pendiente, Paso 2-3).
+- `linea-tiempo-datos.js` ✅ *regenerado*.
+- Documentación: esta sección + `FUENTE_PREGUNTAS_UNIFICADA.md` (apartado de jerarquía).

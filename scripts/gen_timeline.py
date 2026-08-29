@@ -15,6 +15,35 @@ hechos = list(csv.DictReader(open(db('hechos_biblicos.csv'), encoding='utf-8-sig
 rows   = list(csv.DictReader(open(db('preguntas_unificadas_enriquecidas.csv'), encoding='utf-8-sig')))
 personajes = list(csv.DictReader(open(db('personajes_biblicos.csv'), encoding='utf-8-sig')))
 
+# ---------------- jerarquia de grupos (curada) ----------------
+# curacion/grupos.json: lista de grupos con los ids de hechos que contienen.
+# Un hecho puede pertenecer a un solo grupo (2 niveles maximo: raiz -> grupo).
+GRUPOS_PATH = repo('curacion', 'grupos.json')
+grupos_curados = []
+if os.path.exists(GRUPOS_PATH):
+    import json as _json
+    try:
+        with open(GRUPOS_PATH, encoding='utf-8') as f:
+            grupos_curados = _json.load(f).get('grupos', [])
+    except Exception as e:
+        print('[warn] no se pudo leer grupos.json:', e)
+
+# evento_id -> dict del grupo al que pertenece
+grupo_por_evento = {}
+grupos_out = []
+for g in grupos_curados:
+    gid = g.get('id')
+    nombre = g.get('nombre') or gid
+    ids = [int(x) for x in g.get('evento_ids', [])]
+    grupos_out.append({
+        'id': gid,
+        'n': nombre,
+        'd': g.get('descripcion') or '',
+        'eventos': ids,
+    })
+    for eid in ids:
+        grupo_por_evento[eid] = gid
+
 # ---------------- temas por evento ----------------
 def temas_de(h):
     er  = (h['era'] or '').upper()
@@ -94,6 +123,7 @@ for h in hechos:
         'ref': h['referencia'],
         't': temas_de(h),
         'nq': len(q_por_hecho[h['id']]),
+        'g': grupo_por_evento.get(int(h['id'])),   # id de grupo anidado (null si raiz)
     })
 
 # preguntas con fecha (para busqueda global y para validar cobertura)
@@ -127,7 +157,15 @@ for pe in personajes:
         'nota': pe['nota'],
     })
 
-data = {'eventos': evts, 'preguntas': qdata, 'personajes': pers}
+data = {'eventos': evts, 'preguntas': qdata, 'personajes': pers, 'grupos': grupos_out}
+
+# enriquecer grupos con rango de fechas de sus eventos
+for g in grupos_out:
+    fes = [e['fa'] for e in evts if e['id'] in g['eventos'] and e['fa'] is not None]
+    g['fa_min'] = min(fes) if fes else None
+    g['fa_max'] = max(fes) if fes else None
+    g['n_ev'] = len(g['eventos'])
+    g['nq'] = sum(e['nq'] for e in evts if e['id'] in g['eventos'])
 
 js = '/* GENERADO AUTOMATICAMENTE */\nwindow.LT_DATA = ' + json.dumps(data, ensure_ascii=False) + ';\n'
 open(OUT, 'w', encoding='utf-8').write(js)
@@ -143,3 +181,6 @@ for t, c in temas.most_common():
     print('  %s: %d eventos' % (t, c))
 nq = sum(1 for r in qdata if r['fa'] is not None)
 print('preguntas con fecha:', nq)
+print('grupos:', len(grupos_out))
+for g in grupos_out:
+    print('  %s: %d eventos (%s..%s)' % (g['id'], g['n_ev'], g['fa_min'], g['fa_max']))

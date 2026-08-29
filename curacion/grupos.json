@@ -1,0 +1,53 @@
+{
+  "version": 1,
+  "grupos": [
+    {
+      "id": "jose-egipto",
+      "nombre": "José en Egipto",
+      "descripcion": "De esclavo vendido por sus hermanos a segundo gobernante de Egipto: los sueños de Faraón y la reunión con su familia.",
+      "evento_ids": [15, 16, 17]
+    },
+    {
+      "id": "conquista-canaan",
+      "nombre": "Conquista de Canaán",
+      "descripcion": "Entrada en la Tierra Prometida: espías, cruce del Jordán, caída de Jericó y reparto del territorio.",
+      "evento_ids": [33, 34, 35, 36, 37, 38]
+    },
+    {
+      "id": "elias-eliseo",
+      "nombre": "Elías y Eliseo",
+      "descripcion": "Ministerio profético en el reino del norte: milagros, el Carmelo y la sucesión de Elías por Eliseo.",
+      "evento_ids": [66, 67, 68, 69, 70, 71, 72, 73]
+    },
+    {
+      "id": "cautiverio-babilonico",
+      "nombre": "Cautiverio babilónico",
+      "descripcion": "Destierro en Babilonia: Daniel y sus compañeros, las visiones y el fin del reino de Judá.",
+      "evento_ids": [77, 97, 98, 99, 100, 101, 102, 103, 106]
+    },
+    {
+      "id": "ester",
+      "nombre": "Ester salva a su pueblo",
+      "descripcion": "De reina a salvadora: la conspiración de Hamán y el triunfo de los judíos en Persia.",
+      "evento_ids": [90, 91, 92]
+    },
+    {
+      "id": "restauracion-jerusalen",
+      "nombre": "Restauración de Jerusalén",
+      "descripcion": "Retorno del destierro: reconstrucción del templo y los muros, y la llegada de Esdras.",
+      "evento_ids": [85, 86, 87, 88, 89]
+    },
+    {
+      "id": "pasion-resurreccion",
+      "nombre": "Pasión y resurrección de Jesús",
+      "descripcion": "La semana final: entrada triunfal, última cena, crucifixión, resurrección y ascensión.",
+      "evento_ids": [126, 127, 128, 129, 130, 131, 132, 133]
+    },
+    {
+      "id": "pablo-misionero",
+      "nombre": "Campañas misioneras de Pablo",
+      "descripcion": "Los tres viajes misioneros y el camino a Roma: predicación, revueltas y el naufragio.",
+      "evento_ids": [142, 143, 144, 145, 146, 147, 148, 149, 150, 151]
+    }
+  ]
+}
