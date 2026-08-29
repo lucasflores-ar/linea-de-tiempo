@@ -32,7 +32,7 @@ const docEl={_t:'dark', setAttribute(k,v){this._t=v;}, getAttribute(k){return th
 const ctx={ document:{ getElementById(id){ return byId[id]||makeEl('div'); },
   documentElement:docEl, querySelector(){ return makeEl('div'); },
   querySelectorAll(){ return []; }, createElement(){ return makeEl('div'); }, addEventListener(){},
-}, innerWidth:1920, innerHeight:1080, console, addEventListener(){}, localStorage:{getItem(){return null;},setItem(){}}, location:{search:''} };
+}, innerWidth:1920, innerHeight:1080, console, addEventListener(){}, setTimeout(fn){ fn(); }, clearTimeout(){}, localStorage:{getItem(){return null;},setItem(){}}, location:{search:''} };
 ctx.window=ctx;
 vm.createContext(ctx);
 try{

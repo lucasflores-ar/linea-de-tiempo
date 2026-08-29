@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="description" content="151 fichas de personajes bíblicos con datos, lugares, sucesos, preguntas vinculadas y curación por era, sección y profesión." />
+<meta name="color-scheme" content="dark light" />
 <title>Fichas de personajes bíblicos</title>
 <style>
 :root{
@@ -26,6 +28,8 @@ html[data-theme="light"]{
   --c-exi:#64748b; --c-res:#2388c2; --c-ec:#1a5fd0;
 }
 *{box-sizing:border-box;margin:0;padding:0}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px;border-radius:6px}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
 body{
   min-height:100%;background:radial-gradient(1200px 600px at 80% -10%, var(--bg-glow) 0%, var(--bg) 55%), var(--bg);
   color:var(--txt);font:14px/1.5 "Segoe UI",system-ui,Arial,sans-serif;
@@ -266,7 +270,7 @@ function cardHtml(f){
   const vida = (f.nac&&f.fal) ? fmtAnio(f.nac)+' – '+fmtAnio(f.fal)+(f.edad?(' ('+f.edad+' años)'):'') : 'Cronología no registrada';
   const incom = vacio(f.profesion)||vacio(f.cualidades)||vacio(f.opinion_jehova);
   const lugares=(f.lugares||[]).length;
-  return `<div class="ficha" data-id="${f.id}">
+  return `<div class="ficha" data-id="${f.id}" role="button" tabindex="0" aria-label="Abrir ficha de ${esc(f.nombre)}">
     ${incom?'<span class="todo">⚠ por completar</span>':''}
     <div class="top"><span class="dot" style="background:${era.c}"></span><h3 title="${esc(f.nombre)}">${esc(f.nombre)}</h3></div>
     ${f.alt?'<div class="alt">'+esc(f.alt)+'</div>':''}
@@ -296,7 +300,9 @@ function render(){
 }
 function attachCards(){
   document.querySelectorAll('.ficha').forEach(el=>{
-    el.onclick=()=>{ const f=F.find(x=>x.id==parseInt(el.dataset.id)); if(f) openDrawer(f); };
+    const open=()=>{ const f=F.find(x=>x.id==parseInt(el.dataset.id)); if(f) openDrawer(f); };
+    el.onclick=open;
+    el.onkeydown=e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); open(); } };
   });
 }
 
@@ -358,17 +364,22 @@ function openDrawer(f){
 function closeDrawer(){ drawer.classList.remove('on'); overlay.classList.remove('on'); openId=null; }
 
 // ---------- interacción ----------
-document.getElementById('search').addEventListener('input',e=>{ q=e.target.value.trim().toLowerCase(); render(); });
-document.getElementById('f-era').addEventListener('change',e=>{ fEra=e.target.value; render(); });
-document.getElementById('f-sec').addEventListener('change',e=>{ fSec=e.target.value; render(); });
-document.getElementById('f-prof').addEventListener('change',e=>{ fProf=e.target.value; render(); });
-document.getElementById('sort').addEventListener('change',e=>{ sortMode=e.target.value; render(); });
+let searchTimer=null;
+document.getElementById('search').addEventListener('input',e=>{
+  clearTimeout(searchTimer);
+  searchTimer=setTimeout(()=>{ q=e.target.value.trim().toLowerCase(); render(); syncUrl(); },180);
+});
+document.getElementById('f-era').addEventListener('change',e=>{ fEra=e.target.value; render(); syncUrl(); });
+document.getElementById('f-sec').addEventListener('change',e=>{ fSec=e.target.value; render(); syncUrl(); });
+document.getElementById('f-prof').addEventListener('change',e=>{ fProf=e.target.value; render(); syncUrl(); });
+document.getElementById('sort').addEventListener('change',e=>{ sortMode=e.target.value; render(); syncUrl(); });
 ['t-vida','t-hitos','t-preg'].forEach(id=>{
   document.getElementById(id).addEventListener('change',e=>{
     if(id==='t-vida') tVida=e.target.checked;
     else if(id==='t-hitos') tHitos=e.target.checked;
     else tPreg=e.target.checked;
     render();
+    syncUrl();
   });
 });
 document.getElementById('reset').onclick=()=>{
@@ -377,6 +388,7 @@ document.getElementById('reset').onclick=()=>{
   ['f-era','f-sec','f-prof','sort'].forEach(id=>document.getElementById(id).value= id==='sort'?'crono':'');
   ['t-vida','t-hitos','t-preg'].forEach(id=>document.getElementById(id).checked=false);
   render();
+  syncUrl();
 };
 document.getElementById('d-close').onclick=closeDrawer;
 overlay.onclick=closeDrawer;
@@ -411,8 +423,31 @@ themeBtn.onclick=()=>{
   try{
     const params=new URLSearchParams(location.search);
     if(params.get('q')){ document.getElementById('search').value=params.get('q'); q=params.get('q').toLowerCase(); }
+    if(params.get('era') && ERA_INFO[params.get('era')]){ fEra=params.get('era'); fe.value=fEra; }
+    if(params.get('sec') && ['S1','S2','S3'].includes(params.get('sec'))){ fSec=params.get('sec'); fs.value=fSec; }
+    if(params.get('prof') && profs.includes(params.get('prof'))){ fProf=params.get('prof'); fp.value=fProf; }
+    if(params.get('sort') && ['crono','alpha','nq'].includes(params.get('sort'))){ sortMode=params.get('sort'); document.getElementById('sort').value=sortMode; }
+    if(params.get('vida')==='1'){ tVida=true; document.getElementById('t-vida').checked=true; }
+    if(params.get('hitos')==='1'){ tHitos=true; document.getElementById('t-hitos').checked=true; }
+    if(params.get('preg')==='1'){ tPreg=true; document.getElementById('t-preg').checked=true; }
   }catch(e){}
 })();
+function syncUrl(){
+  try{
+    const p=new URLSearchParams();
+    const sv=document.getElementById('search').value;
+    if(sv.trim()) p.set('q', sv.trim());
+    if(fEra) p.set('era', fEra);
+    if(fSec) p.set('sec', fSec);
+    if(fProf) p.set('prof', fProf);
+    if(sortMode!=='crono') p.set('sort', sortMode);
+    if(tVida) p.set('vida','1');
+    if(tHitos) p.set('hitos','1');
+    if(tPreg) p.set('preg','1');
+    const str=p.toString();
+    history.replaceState(null,'',location.pathname+(str?'?'+str:''));
+  }catch(e){}
+}
 render();
 </script>
 </body>

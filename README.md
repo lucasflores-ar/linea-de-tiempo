@@ -478,11 +478,47 @@ Registro de lo implementado en este proyecto (línea de tiempo bíblica JW).
   "✍️ Curación manual (pendiente)"; mismo toggle de tema; enlace cruzado con la
   línea horizontal (`?q=...`).
 
+### Fase 5 — Accesibilidad, estado en URL y tema en todas las páginas
+- **`eraKey()` corregida en las 3 páginas**: faltaba el mapeo de `POSTDILUVIANO`
+  (Torre de Babel, fa=-2269) y `GENEALOGÍA` (id 78), que fugaban a la era E. C. y
+  coloreaban/agrupaban mal. Ahora `POSTDILUVIANO→PATRIARCAS` y
+  `GENEALOGÍA→PREHISTORIA / GÉNESIS` (paridad con el fix ya aplicado en
+  `linea-horizontal.html`). En `index.html` también se sincronizó `ERA_COLOR`.
+- **Accesibilidad común**: `:focus-visible`, `prefers-reduced-motion` y
+  `aria-*` (labels/expanded/controls) añadidos a las tres páginas.
+  - Acordeón y tarjetas de ficha navegables por teclado (Enter/Espacio),
+    `tabindex="0"` + `role="button"`.
+  - `linea-horizontal.html`: contador de sucesos visibles (`aria-live`).
+- **Estado en URL (back/forward y enlaces compartidos)**:
+  - `linea-horizontal.html` y `fichas.html` leen al cargar (`q`, `era`, `tema`,
+    `tipo`, `pot`, `modo`, `sec`, `prof`, `sort`, toggles) y escriben con
+    `history.replaceState` al cambiar cualquier filtro.
+- **Búsqueda con debounce** en `fichas.html` (180 ms).
+- **`index.html` gana toggle de tema claro/oscuro** (`#theme-btn`, variables
+  `[data-theme="light"]`, persistencia `localStorage('lt-theme')`, recarga para que
+  vis-timeline tome los nuevos colores) — antes solo tenía tema oscuro.
+- **Responsive**: controles/filtros envuelven en móvil.
+
+### Fase 6 — Tema claro completo en `index.html` (mapa + superficies)
+- **Variables semánticas de superficie** en `index.html` (`--surface`, `--surface2`,
+  `--surface3`, `--axisbg`, `--on-acc`, `--glass-border`) que sustituyen los hex
+  oscuros hardcodeados (`#0b1220`, `#1a2430`, `#151d29`, `rgba(10,14,22…)`, etc.)
+  en filtros, tooltips, relbox, preguntas, buscador, `.axis`, bordes y vis-timeline.
+  El tema claro ahora se ve correctamente en toda la interfaz (antes quedaban
+  cajas/tooltips oscuras sobre fondo claro).
+- **Mapa (`<canvas>`) theme-aware**: `drawMap()` elige paleta de tierra/arena/mar/
+  ríos/regiones según `isLight()` (leído de `data-theme`), y `resolveColor()` usa
+  una tabla `ERA_HEX {dark,light}` para que los marcadores y chips de era coincidan
+  con los colores del eje en ambos temas (antes el canvas usaba solo colores oscuros).
+- Estrellas de fondo atenuadas en modo claro (`[data-theme="light"] #stars`).
+- **Paridad de metadatos**: `color-scheme: dark light` (scrollbars/controles nativos
+  correctos por tema) y `<meta name="description">` en las 3 páginas.
+
 ### Validación
 - `node --check` del JS inline de cada página (extraído con
   `[System.IO.File]::ReadAllText` UTF-8) + mocks DOM (`scripts/tests/test_vis.js`,
   `test_hor.js`, `test_fichas.js`).
 - Verificaciones cubiertas: 9 columnas/botones, selects poblados, filtros (potencia
-  ROMA→47/0 fuera, tema REYES→48, búsqueda David→16, era E.C.→49), drawer (Asiria,
-  David 8/15 hitos), nav toggle (49↔159), 3 modos (159 items), tema (dark↔light),
-  fichas (151, Rey→29, con preguntas→123).
+  ROMA→47/0 fuera, tema REYES→48, búsqueda David→16, era E.C.→47, nav toggle
+  159↔159), drawer (Asiria, David 8/15 hitos), 3 modos (159 items), tema (dark↔light),
+  fichas (151, Rey→25, con preguntas→123, búsqueda David→14).

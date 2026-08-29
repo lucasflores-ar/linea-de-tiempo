@@ -46,8 +46,9 @@ const vis = { Timeline: function(container, items, groups, opts){
 const ctx = { document: { getElementById(id){ return byId[id]||makeEl('div'); },
   querySelector(){ return makeEl('div'); },
   createElement(){ return makeEl('div'); },
+  documentElement:{_t:'dark',setAttribute(k,v){this._t=v;},getAttribute(k){return this._t;}},
   addEventListener(){},
-}, vis, performance:{now:()=>0}, requestAnimationFrame(f){}, innerWidth:1920, innerHeight:1080, console, addEventListener(){}, setTimeout(f){}, clearTimeout(){}, };
+}, vis, performance:{now:()=>0}, requestAnimationFrame(f){}, innerWidth:1920, innerHeight:1080, console, addEventListener(){}, setTimeout(f){}, clearTimeout(){}, localStorage:{getItem(){return null;},setItem(){}}, location:{search:'',reload(){}} };
 ctx.window = ctx;
 
 vm.createContext(ctx);

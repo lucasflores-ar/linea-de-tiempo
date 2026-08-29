@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="description" content="Línea de tiempo bíblica en vistas por columnas, acordeón o cascada: 159 sucesos organizados por épocas con filtros, buscador y detalle." />
+<meta name="color-scheme" content="dark light" />
 <title>Línea de tiempo bíblica · Horizontal</title>
 <style>
 :root{
@@ -35,6 +37,10 @@ body{
   display:flex; flex-direction:column; overflow:hidden; user-select:none; -webkit-user-select:none;
 }
 
+/* ---------- accesibilidad / movimiento ---------- */
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px;border-radius:6px}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+
 /* ---------- header ---------- */
 header{
   display:flex; align-items:center; gap:18px; flex-wrap:wrap;
@@ -51,7 +57,11 @@ header{
   border-radius:8px;padding:6px 10px;cursor:pointer;font-size:12px;transition:all .15s;font-family:inherit}
 .mode-btn:hover{color:var(--txt)}
 .mode-btn.on{background:var(--field-2);color:var(--txt);box-shadow:0 1px 4px var(--shadow)}
-.controls{display:flex;align-items:center;gap:10px;margin-left:auto}
+.controls{display:flex;align-items:center;gap:10px;margin-left:auto;flex-wrap:wrap}
+@media(max-width:760px){
+  .controls{margin-left:0;width:100%}
+  .controls input[type=search]{flex:1;min-width:140px}
+}
 input[type=search],select{
   background:var(--field);border:1px solid var(--line);color:var(--txt);border-radius:8px;
   padding:7px 11px;font-size:12px;font-family:inherit;outline:none}
@@ -60,6 +70,8 @@ select{max-width:150px}
 .iconbtn{width:32px;height:32px;border-radius:8px;background:var(--field);border:1px solid var(--line);
   color:var(--mut);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;font-size:14px}
 .iconbtn:hover{color:var(--txt);border-color:var(--acc)}
+/* indicador de nº de resultados (accesible) */
+.result-count{font-size:11px;color:var(--mut);white-space:nowrap}
 
 /* ---------- barra de épocas ---------- */
 nav{
@@ -236,8 +248,9 @@ html[data-theme="light"] .acc-body{background:rgba(0,0,0,.03)}
 <nav>
   <div id="era-nav" class="no-scrollbar"></div>
   <div class="nav-arrows">
-    <button class="iconbtn" id="sc-l" title="Desplazar a la izquierda">◀</button>
-    <button class="iconbtn" id="sc-r" title="Desplazar a la derecha">▶</button>
+    <span class="result-count" id="result-count" aria-live="polite"></span>
+    <button class="iconbtn" id="sc-l" title="Desplazar a la izquierda" aria-label="Desplazar columnas a la izquierda">◀</button>
+    <button class="iconbtn" id="sc-r" title="Desplazar a la derecha" aria-label="Desplazar columnas a la derecha">▶</button>
   </div>
 </nav>
 
@@ -438,11 +451,11 @@ function bodyHtml(events, col){
       const on = expanded[ev.id] ?? (i===0);
       const tipo=tipoBucket(ev.tipo);
       return `<div class="acc-item" style="border-left:3px solid ${col.color}">
-        <div class="acc-hdr" data-acc="${ev.id}" title="${esc(ev.n)}" role="button" tabindex="0">
+        <div class="acc-hdr" data-acc="${ev.id}" title="${esc(ev.n)}" role="button" tabindex="0" aria-expanded="${on}" aria-controls="acc-b-${ev.id}">
           <span class="l"><span class="dot" style="background:${col.color}"></span><b>${esc(ev.n)}</b></span>
-          <span class="r"><span>${esc(ev.ft||'—')}</span><span>${on?'▲':'▼'}</span></span>
+          <span class="r"><span>${esc(ev.ft||'—')}</span><span aria-hidden="true">${on?'▲':'▼'}</span></span>
         </div>
-        ${on?`<div class="acc-body">
+        ${on?`<div class="acc-body" id="acc-b-${ev.id}">
           <p>${TIPO_ICON[tipo]||''} ${esc(ev.d||'')}</p>
           <div class="acc-open"><span>${esc(ev.ref||'')}${ev.nq>0?' · '+ev.nq+' preg.':''}</span><a class="event-trigger" data-id="${ev.id}" href="javascript:void(0)">Abrir detalle →</a></div>
         </div>`:''}
@@ -462,11 +475,13 @@ function restoreScroll(){ document.querySelectorAll('.era-body').forEach(b=>{ co
 
 function render(){
   captureScroll();
+  const visible = filtered();
   document.getElementById('brand-sub').textContent =
     D.eventos.length+' sucesos · '+D.preguntas.length+' preguntas · '+D.personajes.length+' personajes'+
-    (filtered().length!==D.eventos.length? ' · '+filtered().length+' mostrados':'');
+    (visible.length!==D.eventos.length? ' · '+visible.length+' mostrados':'');
+  document.getElementById('result-count').textContent = visible.length+' sucesos';
   trackEl.innerHTML = ERAS.map(col=>{
-    const events=filtered().filter(ev=>col.keys.includes(eraKey(ev.era))).sort((a,b)=>(b.fa||0)-(a.fa||0));
+    const events=visible.filter(ev=>col.keys.includes(eraKey(ev.era))).sort((a,b)=>(b.fa||0)-(a.fa||0));
     return `<section class="era-col" id="era-${col.id}" style="${mode==='columns'&&events.length? 'width:'+Math.max(300,events.length*265)+'px':'width:340px'}">
       <div class="era-hdr">
         <div class="l"><span class="era-dot" style="background:${col.color}"></span>
@@ -542,7 +557,11 @@ function attachCard(){
     el.onclick=e=>{ e.stopPropagation(); const ev=D.eventos.find(x=>x.id==el.dataset.id); if(ev) openDrawer(ev); };
   });
   document.querySelectorAll('[data-acc]').forEach(btn=>{
-    btn.onclick=()=>{ expanded[btn.dataset.acc]=!expanded[btn.dataset.acc]; render(); };
+    const toggle=()=>{ expanded[btn.dataset.acc]=!expanded[btn.dataset.acc]; render(); };
+    btn.onclick=toggle;
+    btn.onkeydown=e=>{
+      if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggle(); }
+    };
   });
 }
 
@@ -553,6 +572,7 @@ Object.entries(modes).forEach(([m,btn])=>{
     mode=m;
     Object.values(modes).forEach(b=>b.classList.toggle('on',b===btn));
     render();
+    syncUrl();
   };
 });
 navEl.onclick=e=>{
@@ -562,6 +582,7 @@ navEl.onclick=e=>{
   selEra = (selEra===id) ? '' : id;
   document.getElementById('f-era').value = selEra;
   render();
+  syncUrl();
   if(selEra) jumpTo(id);
 };
 document.getElementById('sc-l').onclick=()=>scrollArea.scrollBy({left:-420,behavior:'smooth'});
@@ -572,12 +593,13 @@ scrollArea.addEventListener('wheel',ev=>{
     ev.preventDefault();
   }
 },{passive:false});
-document.getElementById('search').addEventListener('input',e=>{ searchQ=e.target.value.trim().toLowerCase(); render(); });
+document.getElementById('search').addEventListener('input',e=>{ searchQ=e.target.value.trim().toLowerCase(); render(); syncUrl(); });
 document.getElementById('reset').onclick=()=>{
   selTema=selEra=selTipo=selPot=''; searchQ='';
   document.getElementById('search').value='';
   ['f-tema','f-era','f-tipo','f-pot'].forEach(id=>document.getElementById(id).value='');
   render();
+  syncUrl();
 };
 ['f-tema','f-era','f-tipo','f-pot'].forEach(id=>{
   document.getElementById(id).addEventListener('change',e=>{
@@ -587,6 +609,7 @@ document.getElementById('reset').onclick=()=>{
     else if(id==='f-tipo') selTipo=v;
     else selPot=v;
     render();
+    syncUrl();
   });
 });
 document.getElementById('d-close').onclick=closeDrawer;
@@ -627,8 +650,30 @@ window.addEventListener('resize',()=>{ /* noop */ });
   try{
     const p=new URLSearchParams(location.search);
     if(p.get('q')){ searchQ=p.get('q').toLowerCase(); document.getElementById('search').value=p.get('q'); }
+    if(p.get('tema')){ selTema=p.get('tema'); document.getElementById('f-tema').value=selTema; }
+    if(p.get('era')){ selEra=p.get('era'); document.getElementById('f-era').value=selEra; }
+    if(p.get('tipo')){ selTipo=p.get('tipo'); document.getElementById('f-tipo').value=selTipo; }
+    if(p.get('pot')){ selPot=p.get('pot'); document.getElementById('f-pot').value=selPot; }
+    if(p.get('modo')=== 'columns'||p.get('modo')==='accordion'||p.get('modo')==='cascade'){
+      mode=p.get('modo');
+      Object.values(modes).forEach(b=>b.classList.toggle('on', b===modes[mode]));
+    }
   }catch(e){}
 })();
+function syncUrl(){
+  try{
+    const p=new URLSearchParams();
+    if(searchQ) p.set('q', document.getElementById('search').value);
+    if(selTema) p.set('tema', selTema);
+    if(selEra) p.set('era', selEra);
+    if(selTipo) p.set('tipo', selTipo);
+    if(selPot) p.set('pot', selPot);
+    p.set('modo', mode);
+    const s=p.toString();
+    const url=location.pathname+(s?'?'+s:'');
+    history.replaceState(null,'',url);
+  }catch(e){}
+}
 render();
 </script>
 </body>
