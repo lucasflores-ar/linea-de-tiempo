@@ -44,6 +44,24 @@ for g in grupos_curados:
     for eid in ids:
         grupo_por_evento[eid] = gid
 
+# ---------------- relaciones entre hechos (curadas) ----------------
+# curacion/relaciones.json: aristas a->b con tipo (causa|paralelo|contraste) y nota.
+REL_PATH = repo('curacion', 'relaciones.json')
+relaciones_out = []
+if os.path.exists(REL_PATH):
+    import json as _json
+    try:
+        with open(REL_PATH, encoding='utf-8') as f:
+            for r in _json.load(f).get('relaciones', []):
+                relaciones_out.append({
+                    'a': int(r.get('a')),
+                    'b': int(r.get('b')),
+                    'tipo': r.get('tipo'),
+                    'nota': r.get('nota') or '',
+                })
+    except Exception as e:
+        print('[warn] no se pudo leer relaciones.json:', e)
+
 # ---------------- temas por evento ----------------
 def temas_de(h):
     er  = (h['era'] or '').upper()
@@ -157,7 +175,7 @@ for pe in personajes:
         'nota': pe['nota'],
     })
 
-data = {'eventos': evts, 'preguntas': qdata, 'personajes': pers, 'grupos': grupos_out}
+data = {'eventos': evts, 'preguntas': qdata, 'personajes': pers, 'grupos': grupos_out, 'relaciones': relaciones_out}
 
 # enriquecer grupos con rango de fechas de sus eventos
 for g in grupos_out:
@@ -184,3 +202,4 @@ print('preguntas con fecha:', nq)
 print('grupos:', len(grupos_out))
 for g in grupos_out:
     print('  %s: %d eventos (%s..%s)' % (g['id'], g['n_ev'], g['fa_min'], g['fa_max']))
+print('relaciones:', len(relaciones_out))

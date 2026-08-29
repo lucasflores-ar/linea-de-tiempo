@@ -525,8 +525,9 @@ Registro de lo implementado en este proyecto (línea de tiempo bíblica JW).
 
 ## 13. Plan — Fase 7: líneas de tiempo anidadas (herramienta de estudio)
 
-> Documentado para retomarlo con cualquier modelo de IA. Estado: Paso 1 (modelo de
-> datos jerárquico) COMPLETADO; Pasos 2-4 pendientes.
+> Documentado para retomarlo con cualquier modelo de IA. Estado: Pasos 1-4
+> COMPLETADOS (modelo jerárquico, suceso maestro expandible, eje dual de comparación y
+> relaciones explícitas entre hechos).
 
 ### Objetivo
 
@@ -567,14 +568,25 @@ desplegar dentro una **línea de tiempo anidada** con sus sub-sucesos.
    reemplaza el contenido de la columna por su sub-línea (mismo render de cascada/
    acordeón sobre un rango acotado) y aparece un **breadcrumb** ("Reino dividido ›
    Judá") para volver al nivel superior. Estado en URL: `?g=<grupo>`.
+   ✅ *COMPLETADO. Barra de grupos en el `nav`; los eventos agrupados muestran un
+   badge "▸ grupo" en tarjetas/acordeón; al abrir un grupo se ocultan las columnas de
+   época y se dibuja una **línea temporal acotada** (puntos posicionados por año con
+   ticks) + la lista de sus sucesos en el modo activo; breadcrumb "◀ Todas las épocas".*
 
 3. **Eje dual de paralelo** — selector "Comparar" que coloca dos grupos/eras en filas
    paralelas compartiendo el eje X, para visualizar superposición/contraste. Caso
    clave: Israel vs Judá en el Reino dividido.
+   ✅ *COMPLETADO. Botón "⇄ Comparar con…" en el breadcrumb: alterna entre grupos y
+   dibuja dos carriles con el **mismo rango temporal compartido** para ver solape/
+   contraste; estado en URL `cmp=<grupo>`.*
 
 4. **(Opcional) Relaciones explícitas entre hechos** — tabla curada `relaciones` con
    aristas causa→efecto / contraste / paralelo dibujadas sobre el eje. Depende de
    decidir el vocabulario de tipos de relación.
+   ✅ *COMPLETADO. `curacion/relaciones.json` (tipos `causa|paralelo|contraste`) →
+   `window.LT_DATA.relaciones`. En el drawer de cada suceso se listan sus relaciones
+   (entrantes/salientes con flecha) y clic salta al suceso relacionado. 19 relaciones
+   curadas iniciales.*
 
 ### Fuente / criterios de agrupamiento (propuesta inicial)
 
@@ -588,8 +600,10 @@ desplegar dentro una **línea de tiempo anidada** con sus sub-sucesos.
 
 - ~~`hechos_biblicos.csv`~~ → NO se modificó (jerarquía quedó en `curacion/grupos.json`).
 - `curacion/grupos.json` ✅ *nuevo* — curación manual de grupos.
-- `scripts/gen_timeline.py` ✅ *modificado* — lee `grupos.json` y emite `grupos` + `g`.
+- `curacion/relaciones.json` ✅ *nuevo* — aristas causa/paralelo/contraste.
+- `scripts/gen_timeline.py` ✅ *modificado* — lee `grupos.json`/`relaciones.json` y
+  emite `grupos` + `relaciones` + campo `g` en eventos.
 - `scripts/run_pipeline.py` (sin cambios necesarios).
-- `linea-horizontal.html` (pendiente, Paso 2-3).
+- `linea-horizontal.html` ✅ *modificado* — vista anidada + comparación + relaciones.
 - `linea-tiempo-datos.js` ✅ *regenerado*.
 - Documentación: esta sección + `FUENTE_PREGUNTAS_UNIFICADA.md` (apartado de jerarquía).

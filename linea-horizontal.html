@@ -201,6 +201,20 @@ html[data-theme="light"] .acc-body{background:rgba(0,0,0,.03)}
 .parbox{background:var(--field);border:1px solid var(--line);border-radius:12px;padding:12px;font-size:12px}
 .parbox h3{color:var(--acc)}
 .parbox .pw{color:var(--txt);font-weight:600}
+.relbox{background:var(--field);border:1px solid var(--line);border-radius:12px;padding:12px;font-size:12px}
+.relbox h3{color:var(--acc)}
+.relbox .pw{color:var(--txt);font-weight:600}
+/* relaciones entre hechos */
+.rel-edge{display:flex;gap:8px;align-items:flex-start;padding:7px 9px;border:1px solid var(--line);
+  border-radius:9px;background:var(--field);cursor:pointer;margin-bottom:6px;transition:border-color .12s}
+.rel-edge:hover{border-color:var(--acc)}
+.rel-edge .rt{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;
+  border-radius:6px;padding:2px 6px;flex-shrink:0;margin-top:1px}
+.rel-edge.rt-causa .rt{background:rgba(240,163,94,.15);color:var(--c-egi)}
+.rel-edge.rt-paralelo .rt{background:rgba(86,204,162,.15);color:var(--c-pat)}
+.rel-edge.rt-contraste .rt{background:rgba(255,107,107,.15);color:var(--c-div)}
+.rel-edge .rn{font-weight:700;color:var(--txt)}
+.rel-edge .rnota{font-size:11px;color:var(--mut);margin-top:2px;line-height:1.4}
 .dmeta{display:grid;grid-template-columns:auto 1fr;gap:5px 12px;font-size:12px}
 .dmeta .k{color:var(--mut)}
 .qa{border-top:1px solid var(--line);padding-top:12px}
@@ -215,6 +229,62 @@ html[data-theme="light"] .acc-body{background:rgba(0,0,0,.03)}
 /* scrollbar nav / ocultar */
 .no-scrollbar{scrollbar-width:none}
 .no-scrollbar::-webkit-scrollbar{display:none}
+
+/* ---------- vistas anidadas (grupos) ---------- */
+#group-nav{display:flex;gap:6px;overflow-x:auto;flex:1;scrollbar-width:none;align-items:center}
+#group-nav::-webkit-scrollbar{display:none}
+.gnav-label{font-size:9px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:1px;white-space:nowrap;margin-right:2px}
+.group-btn{display:flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--field);
+  color:var(--mut);border-radius:999px;padding:4px 10px;cursor:pointer;font-size:11px;font-weight:600;
+  white-space:nowrap;transition:all .15s;font-family:inherit}
+.group-btn:hover{color:var(--txt);border-color:var(--acc)}
+.group-btn.on{background:var(--field-2);color:var(--txt);border-color:var(--acc)}
+.group-btn .n{opacity:.6}
+
+.breadcrumb{display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+  font-size:12px;color:var(--mut);margin-bottom:14px;flex-shrink:0}
+.breadcrumb .crumbs{display:flex;align-items:center;gap:6px}
+.breadcrumb .crumb{color:var(--mut);cursor:pointer;border:0;background:transparent;
+  font-size:12px;font-family:inherit;padding:2px 4px;border-radius:6px}
+.breadcrumb .crumb:hover{color:var(--acc)}
+.breadcrumb .crumb.here{color:var(--txt);font-weight:700}
+.breadcrumb .sep{color:var(--mut);opacity:.6}
+.breadcrumb .back{display:inline-flex;align-items:center;gap:6px;color:var(--acc);cursor:pointer;
+  background:var(--field);border:1px solid var(--line);border-radius:8px;padding:5px 10px;font-size:12px;font-family:inherit}
+.breadcrumb .back:hover{border-color:var(--acc)}
+
+/* línea temporal anidada */
+.group-wrap{flex:1;display:flex;flex-direction:column;gap:14px;min-width:0}
+.gp{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);
+  border-radius:14px;overflow:hidden;min-width:0}
+.gp-hdr{display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:10px 14px;border-bottom:1px solid var(--line);flex-shrink:0}
+.gp-hdr .l{display:flex;align-items:center;gap:9px;min-width:0}
+.gp-hdr h3{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gp-hdr .r{font-size:10px;color:var(--mut);white-space:nowrap;flex-shrink:0}
+.gp-axis{position:relative;height:240px;overflow-x:auto;overflow-y:hidden;background:var(--panel2);
+  -webkit-user-select:none;user-select:none}
+.gp-axis::-webkit-scrollbar{height:8px}
+.gp-axis::-webkit-scrollbar-thumb{background:var(--thumb);border-radius:999px}
+.gp-track{position:relative;height:100%}
+.gp-line{position:absolute;left:0;right:0;top:50%;height:2px;background:var(--line);transform:translateY(-50%)}
+.gp-pt{position:absolute;top:50%;transform:translate(-50%,-50%);cursor:pointer;border-radius:50%;
+  border:2px solid var(--panel2);z-index:2;transition:transform .12s}
+.gp-pt:hover{transform:translate(-50%,-50%) scale(1.5);z-index:5}
+.gp-pt .gl{position:absolute;top:100%;left:50%;transform:translateX(-50%);font-size:9px;color:var(--mut);
+  white-space:nowrap;margin-top:3px;max-width:120px;overflow:hidden;text-overflow:ellipsis;pointer-events:none}
+.gp-pt:hover .gl{color:var(--txt)}
+.gp-ticks{position:absolute;left:0;right:0;bottom:4px;height:16px}
+.gp-tick{position:absolute;top:0;font-size:9px;color:var(--mut);transform:translateX(-50%);white-space:nowrap}
+.gp-tick::before{content:"";position:absolute;top:-8px;left:50%;width:1px;height:8px;background:var(--line)}
+.gp-body{padding:12px 14px}
+.gp-body .acc-item{margin-bottom:8px}
+
+/* badge de grupo en tarjetas */
+.g-badge{display:inline-flex;align-items:center;gap:4px;font-size:9px;font-weight:700;
+  border:1px solid var(--acc);color:var(--acc);border-radius:999px;padding:1px 7px;cursor:pointer;
+  margin-left:6px;vertical-align:middle;background:transparent;font-family:inherit}
+.g-badge:hover{background:var(--acc);color:var(--on-acc,#0b1220)}
 </style>
 </head>
 <body>
@@ -247,6 +317,7 @@ html[data-theme="light"] .acc-body{background:rgba(0,0,0,.03)}
 
 <nav>
   <div id="era-nav" class="no-scrollbar"></div>
+  <div id="group-nav" class="no-scrollbar" style="flex-shrink:0;max-width:420px;border-left:1px solid var(--line);padding-left:12px"></div>
   <div class="nav-arrows">
     <span class="result-count" id="result-count" aria-live="polite"></span>
     <button class="iconbtn" id="sc-l" title="Desplazar a la izquierda" aria-label="Desplazar columnas a la izquierda">◀</button>
@@ -257,6 +328,7 @@ html[data-theme="light"] .acc-body{background:rgba(0,0,0,.03)}
 <main id="scroll-area">
   <div id="axis-line"></div>
   <div id="track"></div>
+  <div id="group-view" style="display:none;flex:1;flex-direction:column;min-width:0"></div>
 </main>
 
 <div id="overlay"></div>
@@ -287,6 +359,10 @@ html[data-theme="light"] .acc-body{background:rgba(0,0,0,.03)}
     <div class="d-sec">
       <h3>Temas</h3>
       <div class="chips" id="d-temas"></div>
+    </div>
+    <div class="d-sec" id="d-rel-sec" style="display:none">
+      <h3>Relaciones con otros sucesos</h3>
+      <div id="d-rel"></div>
     </div>
     <div class="parbox">
       <h3>🌍 Mundo contemporáneo</h3>
@@ -407,6 +483,25 @@ function filtered(){ return D.eventos.filter(passes); }
 let mode='cascade';
 let expanded={};
 let openId=null;
+let openGroup=null;      // id de grupo anidado abierto (null = vista normal)
+let compareGroup=null;   // segundo grupo para comparación (eje dual)
+
+// ---------- grupos (jerarquía anidada) ----------
+const GRUPOS = D.grupos || [];
+function groupById(id){ return GRUPOS.find(g=>g.id===id); }
+function groupOf(ev){ return ev.g ? groupById(ev.g) : null; }
+
+// ---------- relaciones entre hechos ----------
+const RELS = D.relaciones || [];
+const REL_LABEL = {causa:'Causa', paralelo:'Paralelo', contraste:'Contraste'};
+function relacionesDe(id){
+  return RELS.filter(r=>r.a===id || r.b===id).map(r=>{
+    const otro = r.a===id ? r.b : r.a;
+    const dir = r.a===id ? '→' : '←';
+    return { otro, dir, tipo:r.tipo, nota:r.nota };
+  });
+}
+function relNombre(id){ const e=D.eventos.find(x=>x.id===id); return e?e.n:('#'+id); }
 
 // ---------- render ----------
 const trackEl=document.getElementById('track');
@@ -420,12 +515,18 @@ function eraRange(col){
   return Math.min(...ys)+' a '+Math.max(...ys);
 }
 
+function gBadge(ev){
+  const g=groupOf(ev);
+  if(!g) return '';
+  return `<button class="g-badge" data-group="${g.id}" title="Abrir grupo: ${esc(g.n)}">▸ ${esc(g.n)}</button>`;
+}
+
 function cardHtml(ev, col, w){
   const tipo=tipoBucket(ev.tipo);
   const per=(ev.per||'');
   return `<div class="card" data-id="${ev.id}" style="border-top:3px solid ${col.color};width:${w}">
     <div class="top"><span class="date">${ev.ft||'—'}</span><span class="tipo">${TIPO_ICON[tipo]||'📜'} ${tipo}</span></div>
-    <h3>${ev.n}</h3>
+    <h3>${ev.n} ${gBadge(ev)}</h3>
     <p class="sum">${ev.d||''}</p>
     <div class="foot"><span class="per">${per}</span>${ev.nq>0?'<span class="nq">'+ev.nq+' preg.</span>':''}</div>
   </div>`;
@@ -434,7 +535,7 @@ function miniCardHtml(ev, col){
   const tipo=tipoBucket(ev.tipo);
   return `<div class="card s-card" data-id="${ev.id}" style="border-left:4px solid ${col.color}">
     <div class="top"><span class="date">${ev.ft||'—'}</span><span>${ev.ref||''}</span></div>
-    <h3>${ev.n}</h3>
+    <h3>${ev.n} ${gBadge(ev)}</h3>
     <p class="sum">${ev.d||''}</p>
   </div>`;
 }
@@ -452,7 +553,7 @@ function bodyHtml(events, col){
       const tipo=tipoBucket(ev.tipo);
       return `<div class="acc-item" style="border-left:3px solid ${col.color}">
         <div class="acc-hdr" data-acc="${ev.id}" title="${esc(ev.n)}" role="button" tabindex="0" aria-expanded="${on}" aria-controls="acc-b-${ev.id}">
-          <span class="l"><span class="dot" style="background:${col.color}"></span><b>${esc(ev.n)}</b></span>
+          <span class="l"><span class="dot" style="background:${col.color}"></span><b>${esc(ev.n)}</b>${gBadge(ev)}</span>
           <span class="r"><span>${esc(ev.ft||'—')}</span><span aria-hidden="true">${on?'▲':'▼'}</span></span>
         </div>
         ${on?`<div class="acc-body" id="acc-b-${ev.id}">
@@ -493,6 +594,7 @@ function render(){
     </section>`;
   }).join('');
   renderNav();
+  renderGroupNav();
   attachCard();
   restoreScroll();
 }
@@ -508,6 +610,158 @@ function jumpTo(id){
   const el=document.getElementById('era-'+id);
   if(!el) return;
   el.scrollIntoView({behavior:'smooth',inline:'start',block:'nearest'});
+}
+
+// ---------- vista anidada (grupos) ----------
+const groupNavEl=document.getElementById('group-nav');
+
+function renderGroupNav(){
+  if(!GRUPOS.length){ groupNavEl.style.display='none'; return; }
+  groupNavEl.style.display='flex';
+  groupNavEl.innerHTML = '<span class="gnav-label">Grupos:</span>' +
+    GRUPOS.map(g=>{
+      const on = openGroup===g.id || compareGroup===g.id;
+      return `<button class="group-btn${on?' on':''}" data-group="${g.id}" title="${esc(g.d||'')}">${esc(g.n)} <span class="n">${g.n_ev}</span></button>`;
+    }).join('');
+  groupNavEl.querySelectorAll('.group-btn').forEach(b=>{
+    b.onclick=e=>{ e.stopPropagation(); openGroupView(b.dataset.group); };
+  });
+}
+
+// rango de años a dibujar para uno o varios conjuntos de eventos
+function evsRange(evs){
+  const ys=evs.map(e=>e.fa).filter(y=>y!=null);
+  if(!ys.length) return [MINY, MAXY];
+  let a=Math.min(...ys), b=Math.max(...ys);
+  if(a===b){ a-=1; b+=1; }
+  const pad=(b-a)*0.08;
+  return [a-pad, b+pad];
+}
+
+// dibuja un "carril" horizontal de puntos (grupo o comparación)
+function groupTrackHtml(evs, color, groupLabel, range){
+  const TRI_MS = range[1]-range[0];
+  const W = Math.max(900, evs.length*140);
+  const sorted = evs.filter(e=>e.fa!=null).sort((a,b)=>a.fa-b.fa);
+  const pts = sorted.map(ev=>{
+    const x = ((ev.fa-range[0])/TRI_MS)*W;
+    return {ev, x};
+  });
+  // ticks cada ~100 años (o fracción)
+  const span = Math.ceil((range[1]-range[0])/8);
+  const step = Math.max(1, Math.round(span/10)*10 || 1);
+  let ticks='';
+  const t0 = Math.ceil(range[0]/step)*step;
+  for(let y=t0; y<=range[1]; y+=step){
+    const x=((y-range[0])/TRI_MS)*W;
+    ticks += `<span class="gp-tick" style="left:${x}px">${fmtAnio(y)}</span>`;
+  }
+  return `<div class="gp">
+    <div class="gp-hdr">
+      <div class="l"><span class="era-dot" style="background:${color}"></span><h3>${esc(groupLabel)}</h3></div>
+      <div class="r">${evs.length} sucesos · ${fmtAnio(Math.round(range[0]))} a ${fmtAnio(Math.round(range[1]))}</div>
+    </div>
+    <div class="gp-axis"><div class="gp-track" style="width:${W}px">
+      <div class="gp-line"></div>
+      <div class="gp-ticks">${ticks}</div>
+      ${pts.map(p=>`<span class="gp-pt" data-id="${p.ev.id}" style="left:${p.x}px;background:${color}" title="${esc(p.ev.n)} · ${esc(p.ev.ft||'—')}">
+        <span class="gl">${esc(p.ev.n)}</span></span>`).join('')}
+    </div></div>
+    <div class="gp-body">${bodyHtml(sorted, {id:'__g',name:groupLabel,color})}</div>
+  </div>`;
+}
+
+function renderGroupView(){
+  const g = groupById(openGroup);
+  const gv = document.getElementById('group-view');
+  if(!g){ gv.style.display='none'; return; }
+  gv.style.display='flex';
+
+  const evs = D.eventos.filter(ev=>ev.g===g.id);
+  const color = colOf(evs[0]) ? colOf(evs[0]).color : 'var(--acc)';
+  const range = [g.fa_min ?? MINY, g.fa_max ?? MAXY];
+  if(range[0]===range[1]){ range[0]-=1; range[1]+=1; }
+
+  let compareHtml='';
+  let label = g.n;
+  if(compareGroup && groupById(compareGroup)){
+    const cg = groupById(compareGroup);
+    const cevs = D.eventos.filter(ev=>ev.g===cg.id);
+    // rango compartido de ambos grupos
+    const ys = evs.concat(cevs).map(e=>e.fa).filter(y=>y!=null);
+    const all=[Math.min(...ys),Math.max(...ys)];
+    const shared = g.id===compareGroup ? range : all;
+    const ccolor = colOf(cevs[0]) ? colOf(cevs[0]).color : 'var(--c-exi)';
+    label = g.n + ' ⇄ ' + cg.n;
+    gv.innerHTML =
+      '<div class="breadcrumb">'+
+        breadcrumbHtml(g.id)+
+        '<span class="result-count" style="margin-left:auto">'+evs.length+' vs '+cevs.length+' sucesos</span>'+
+      '</div>'+
+      '<div class="group-wrap">'+
+        groupTrackHtml(evs, color, g.n, shared)+
+        groupTrackHtml(cevs, ccolor, cg.n, shared)+
+      '</div>';
+  } else {
+    gv.innerHTML =
+      '<div class="breadcrumb">'+
+        breadcrumbHtml(g.id)+
+      '</div>'+
+      '<div class="group-wrap">'+
+        groupTrackHtml(evs, color, g.n, range)+
+      '</div>';
+  }
+  attachGroupPts();
+}
+
+function breadcrumbHtml(gid){
+  return '<button class="back" id="g-back">◀ Todas las épocas</button>'+
+    '<span class="crumbs"><span class="crumb here">'+esc(groupById(gid).n)+'</span></span>'+
+    '<button class="back" id="g-compare">⇄ Comparar con…</button>'+
+    (compareGroup?'<span class="crumbs"><span class="sep">vs</span><span class="crumb here">'+esc(groupById(compareGroup).n)+'</span></span>':'');
+}
+
+function openGroupView(id){
+  openGroup=id;
+  if(compareGroup===id) compareGroup=null;
+  // ocultar ejes de época
+  document.getElementById('track').style.display='none';
+  document.getElementById('axis-line').style.display='none';
+  document.getElementById('era-nav').style.display='none';
+  renderGroupNav();
+  renderGroupView();
+  syncUrl();
+}
+
+function closeGroupView(){
+  openGroup=null; compareGroup=null;
+  document.getElementById('track').style.display='';
+  document.getElementById('axis-line').style.display='';
+  document.getElementById('era-nav').style.display='';
+  renderGroupNav();
+  render();
+  syncUrl();
+}
+
+function attachGroupPts(){
+  const gv=document.getElementById('group-view');
+  gv.querySelectorAll('.gp-pt').forEach(el=>{
+    el.onclick=()=>{ const ev=D.eventos.find(x=>x.id==el.dataset.id); if(ev) openDrawer(ev); };
+  });
+  const back=gv.querySelector('#g-back');
+  if(back) back.onclick=closeGroupView;
+  const cmp=gv.querySelector('#g-compare');
+  if(cmp) cmp.onclick=()=>{
+    // alternar grupo de comparación: elegir el siguiente grupo distinto
+    const others=GRUPOS.filter(x=>x.id!==openGroup);
+    if(!others.length) return;
+    const cur=others.findIndex(o=>o.id===compareGroup);
+    const next=others[(cur+1)%others.length];
+    compareGroup = compareGroup===next.id ? null : next.id;
+    renderGroupNav();
+    renderGroupView();
+    syncUrl();
+  };
 }
 
 // ---------- drawer ----------
@@ -532,6 +786,27 @@ function openDrawer(ev){
     const tm=THEMES.find(x=>x[0]===t);
     return '<span class="chip t">'+esc(tm?tm[1]:t)+'</span>';
   }).join('') || '<span class="ph">—</span>';
+  const rels=relacionesDe(ev.id);
+  const relSec=document.getElementById('d-rel-sec');
+  const relEl=document.getElementById('d-rel');
+  if(rels.length){
+    relSec.style.display='block';
+    relEl.innerHTML = rels.map(r=>`
+      <div class="rel-edge rt-${r.tipo}" data-jump="${r.otro}">
+        <span class="rt">${REL_LABEL[r.tipo]||r.tipo} ${r.dir}</span>
+        <div><span class="rn">${esc(relNombre(r.otro))}</span>${r.nota?'<div class="rnota">'+esc(r.nota)+'</div>':''}</div>
+      </div>`.replace(/\s+/g,' ')).join('');
+    relEl.querySelectorAll('.rel-edge').forEach(el=>{
+      el.onclick=()=>{
+        const t=el.dataset.jump;
+        const ev2=D.eventos.find(x=>x.id===parseInt(t));
+        if(ev2){ openDrawer(ev2); }
+      };
+    });
+  } else {
+    relSec.style.display='none';
+    relEl.innerHTML='';
+  }
   const pot=potenciaOf(ev.fa);
   document.getElementById('d-par').innerHTML = pot
     ? '<span class="pw">Potencia mundial: '+pot[2]+' '+pot[1]+'</span> <span style="color:var(--mut)">('+fmtFecha(pot[3])+' a '+fmtFecha(pot[4])+')</span>'
@@ -551,14 +826,23 @@ function closeDrawer(){ drawer.classList.remove('on'); overlay.classList.remove(
 
 function attachCard(){
   document.querySelectorAll('.card').forEach(el=>{
-    el.onclick=e=>{ e.stopPropagation(); const ev=D.eventos.find(x=>x.id==el.dataset.id); if(ev) openDrawer(ev); };
+    el.onclick=e=>{
+      if(e.target.closest('.g-badge')) return; // el badge maneja su propio clic
+      e.stopPropagation(); const ev=D.eventos.find(x=>x.id==el.dataset.id); if(ev) openDrawer(ev);
+    };
   });
   document.querySelectorAll('.event-trigger').forEach(el=>{
     el.onclick=e=>{ e.stopPropagation(); const ev=D.eventos.find(x=>x.id==el.dataset.id); if(ev) openDrawer(ev); };
   });
+  document.querySelectorAll('.g-badge').forEach(el=>{
+    el.onclick=e=>{ e.stopPropagation(); openGroupView(el.dataset.group); };
+  });
   document.querySelectorAll('[data-acc]').forEach(btn=>{
     const toggle=()=>{ expanded[btn.dataset.acc]=!expanded[btn.dataset.acc]; render(); };
-    btn.onclick=toggle;
+    btn.onclick=e=>{
+      if(e.target.closest('.g-badge')) return;
+      toggle();
+    };
     btn.onkeydown=e=>{
       if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggle(); }
     };
@@ -658,6 +942,8 @@ window.addEventListener('resize',()=>{ /* noop */ });
       mode=p.get('modo');
       Object.values(modes).forEach(b=>b.classList.toggle('on', b===modes[mode]));
     }
+    if(p.get('g') && groupById(p.get('g'))){ openGroup=p.get('g'); }
+    if(p.get('cmp') && groupById(p.get('cmp'))){ compareGroup=p.get('cmp'); }
   }catch(e){}
 })();
 function syncUrl(){
@@ -669,12 +955,22 @@ function syncUrl(){
     if(selTipo) p.set('tipo', selTipo);
     if(selPot) p.set('pot', selPot);
     p.set('modo', mode);
+    if(openGroup) p.set('g', openGroup);
+    if(compareGroup) p.set('cmp', compareGroup);
     const s=p.toString();
     const url=location.pathname+(s?'?'+s:'');
     history.replaceState(null,'',url);
   }catch(e){}
 }
-render();
+if(openGroup){
+  document.getElementById('track').style.display='none';
+  document.getElementById('axis-line').style.display='none';
+  document.getElementById('era-nav').style.display='none';
+  renderGroupNav();
+  renderGroupView();
+}else{
+  render();
+}
 </script>
 </body>
 </html>

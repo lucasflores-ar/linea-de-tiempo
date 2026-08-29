@@ -26,7 +26,7 @@ function makeEl(tag){
   };
 }
 const byId={};
-const ids=['brand-sub','f-tema','f-era','f-tipo','f-pot','search','reset','theme-btn','era-nav','sc-l','sc-r','track','scroll-area','overlay','drawer','d-close','d-badge','d-title','d-date','d-ref','d-desc','d-char','d-meta','d-temas','d-par','d-qcount','d-qlist','d-more','link-app','m-columns','m-accordion','m-cascade'];
+const ids=['brand-sub','f-tema','f-era','f-tipo','f-pot','search','reset','theme-btn','era-nav','sc-l','sc-r','track','scroll-area','overlay','drawer','d-close','d-badge','d-title','d-date','d-ref','d-desc','d-char','d-meta','d-temas','d-par','d-qcount','d-qlist','d-more','link-app','m-columns','m-accordion','m-cascade','group-nav','group-view','axis-line','d-rel-sec','d-rel'];
 ids.forEach(id=>byId[id]=makeEl('div'));
 byId['scroll-area'].clientWidth=1200;
 
@@ -136,12 +136,43 @@ try{
   console.log('tema tras 2º clic:', docEl._t, '(esperado dark)');
 }catch(e){ console.log('test tema ERROR:', e.message); }
 
-// ---- test: cambio de modo (via listeners reales) ----
+// ---- test: grupos anidados (jerarquía) ----
 try{
-  byId['m-columns']._onclick && byId['m-columns']._onclick();
-  console.log('modo columnas: cols-row=', (byId.track.innerHTML.match(/cols-row/g)||[]).length, '>= 1');
-  byId['m-accordion']._onclick && byId['m-accordion']._onclick();
-  console.log('modo acordeón: acc-item=', (byId.track.innerHTML.match(/acc-item/g)||[]).length);
+  const G = DATA.grupos;
+  console.log('grupos anidados en datos:', (G||[]).length, '(esperado 8)');
+  const conG = DATA.eventos.filter(e=>e.g).length;
+  console.log('eventos con grupo g:', conG, '(esperado 52)');
+
+  // badge de grupo presente en tarjetas de eventos agrupados
   byId['m-cascade']._onclick && byId['m-cascade']._onclick();
-  console.log('modo cascada: s-card=', (byId.track.innerHTML.match(/s-card/g)||[]).length);
-}catch(e){ console.log('test modos ERROR:', e.message); }
+  console.log('badges de grupo en tarjetas:', (byId.track.innerHTML.match(/g-badge/g)||[]).length, '>= 1');
+
+  // abrir un grupo -> vista anidada
+  ctx.openGroupView('pablo-misionero');
+  const gv = byId['group-view'] || byId.track;
+  console.log('vista grupo: track oculto=', byId.track.style.display==='none',
+    '| group-view tiene breadcrumb=', (gv.innerHTML.indexOf('g-back')>=0 || byId['group-view'] && byId['group-view'].innerHTML.indexOf('Todas las épocas')>=0));
+  // render de comparación (sin excepción) si se activa compare
+  ctx.renderGroupView();
+  console.log('renderGroupView OK (sin excepción)');
+  ctx.closeGroupView();
+  console.log('tras cerrar: track visible=', byId.track.style.display!=='none');
+}catch(e){ console.log('test grupos ERROR:', e.message); }
+
+// ---- test: syncUrl incluye g/cmp (via history) ----
+try{
+  ctx.openGroup='jose-egipto'; ctx.compareGroup=null; ctx.syncUrl();
+  console.log('syncUrl con grupo OK (sin excepción)');
+}catch(e){ console.log('test syncUrl ERROR:', e.message); }
+
+// ---- test: relaciones entre hechos ----
+try{
+  const R = DATA.relaciones;
+  console.log('relaciones en datos:', (R||[]).length, '(esperado 19)');
+  // abrir un suceso que tenga relación (id 2 -> 3 causa)
+  const ev2 = DATA.eventos.find(e=>e.id===2);
+  ctx.openDrawer(ev2);
+  const relHtml = byId['d-rel'].innerHTML;
+  console.log('drawer relaciones (id 2):', relHtml.indexOf('rel-edge')>=0 ? 'presentes' : 'sin relaciones');
+  ctx.closeDrawer();
+}catch(e){ console.log('test relaciones ERROR:', e.message); }

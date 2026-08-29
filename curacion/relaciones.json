@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "tipos": ["causa", "paralelo", "contraste"],
+  "relaciones": [
+    { "a": 2, "b": 3, "tipo": "causa", "nota": "La desobediencia de la primera pareja introdujo el pecado que derivó en el primer homicidio." },
+    { "a": 5, "b": 6, "tipo": "causa", "nota": "Tras el Diluvio la humanidad se congregó en Babel y fue dispersada." },
+    { "a": 7, "b": 9, "tipo": "causa", "nota": "El pacto con Abrahán adquirió una señal visible en la circuncisión." },
+    { "a": 15, "b": 16, "tipo": "causa", "nota": "Al ser vendido y llevado a Egipto, José llegó ante Faraón e interpretó sus sueños." },
+    { "a": 19, "b": 20, "tipo": "causa", "nota": "La zarza ardiente comisionó a Moisés para pedir la liberación que desembocó en las diez plagas." },
+    { "a": 34, "b": 35, "tipo": "causa", "nota": "El cruce del Jordán abrió el camino a la caída de Jericó." },
+    { "a": 48, "b": 49, "tipo": "causa", "nota": "Al ser rechazado Saúl, Jehová mandó a Samuel a ungir a David como futuro rey." },
+    { "a": 58, "b": 59, "tipo": "causa", "nota": "El pecado de David con Bat-seba acarreó la revuelta de Absalón como disciplina." },
+    { "a": 65, "b": 74, "tipo": "causa", "nota": "La división del reino (Israel al norte) culminó con la caída de Samaria a manos de Asiria." },
+    { "a": 77, "b": 85, "tipo": "causa", "nota": "La caída de Jerusalén llevó al destierro; el retorno de Babilonia lo cerró." },
+    { "a": 111, "b": 112, "tipo": "causa", "nota": "Tras el bautismo, Jesús fue conducido al desierto donde fue tentado." },
+    { "a": 129, "b": 130, "tipo": "causa", "nota": "La traición de Judas condujo a Jesús ante Pilato." },
+    { "a": 131, "b": 132, "tipo": "causa", "nota": "La crucifixión fue seguida por la resurrección." },
+    { "a": 74, "b": 77, "tipo": "paralelo", "nota": "Dos caídas paralelas: Samaria (reino del norte) y Jerusalén (reino del sur)." },
+    { "a": 33, "b": 34, "tipo": "paralelo", "nota": "Rahab y los espías preparan el cruce del Jordán." },
+    { "a": 142, "b": 144, "tipo": "paralelo", "nota": "Primer y segundo viaje misionero de Pablo." },
+    { "a": 144, "b": 146, "tipo": "paralelo", "nota": "Segundo y tercer viaje misionero de Pablo." },
+    { "a": 65, "b": 77, "tipo": "contraste", "nota": "El reino dividido contrasta la fidelidad esporádica de Judá con la apostasía sostenida de Israel." },
+    { "a": 10, "b": 5, "tipo": "contraste", "nota": "Jehová libró a Lot de Sodoma; a los desobedientes del tiempo de Noé no." }
+  ]
+}
