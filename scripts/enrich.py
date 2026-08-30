@@ -151,6 +151,33 @@ def period_for(book, chap):
             return {'fecha_texto': f, 'fecha_anio': a, 'era': era, 'lugar': lugar, 'lat': lat, 'lon': lon}
     return None
 
+# -------- deteccion de libro canonico en texto libre y periodo por libro --------
+# libros con nombre "de una palabra corta" que colisionan con otras palabras (JUAN, JOB, RUT)
+# se buscan como token exacto; el resto como substring.
+_BOOKS = sorted(set(p[0] for p in PERIODS), key=len, reverse=True)
+
+def book_in(text):
+    """Devuelve el libro canonico presente en `text`, o None. Busca por token exacto
+    de inicio de palabra para evitar falsos positivos (p.ej. 'JOB' no dentro de 'JOVEN')."""
+    if not text:
+        return None
+    t = ' ' + norm(text) + ' '
+    for b in _BOOKS:
+        bn = norm(b)
+        if bn and (' ' + bn + ' ' in t or t.startswith(bn + ' ')):
+            return b
+    return None
+
+def period_for_book(book):
+    """Periodo representativo de un libro (sin capitulo): bloque con el anio mediano."""
+    blocks = [p for p in PERIODS if p[0] == book]
+    if not blocks:
+        return None
+    blocks.sort(key=lambda p: (p[4] is None, p[4]))
+    mid = blocks[len(blocks) // 2]
+    (b, ci, cf, f, a, era, lugar, lat, lon) = mid
+    return {'fecha_texto': f, 'fecha_anio': a, 'era': era, 'lugar': lugar, 'lat': lat, 'lon': lon}
+
 # libros de un solo capitulo: el numero tras el libro es versiculo, no capitulo
 SINGLE_CHAP = {'FILEMÓN', '2 JUAN', '3 JUAN', 'JUDAS', 'ABDÍAS', '2 JUAN'}
 def normalize_chap(book, chap):
@@ -280,6 +307,19 @@ for q in rows:
                 q['lon'] = p['lon']
                 q['fuente_dato'] = 'PERIODO'
                 break
+    if not hid and not q['fuente_dato']:
+        # fallback por libro detectado en 'capitulo' (tema de la pregunta)
+        bk = book_in(q['capitulo']) or book_in(q['personaje'])
+        if bk:
+            p = period_for_book(bk)
+            if p:
+                q['fecha_suceso'] = p['fecha_texto']
+                q['fecha_anio'] = p['fecha_anio']
+                q['era_suceso'] = p['era']
+                q['lugar_suceso'] = p['lugar']
+                q['lat'] = p['lat']
+                q['lon'] = p['lon']
+                q['fuente_dato'] = 'PERIODO'
     if not hid and not q['fuente_dato']:
         # fallback por personaje (acotado), luego keyword global
         hid = personaje_fallback(q)

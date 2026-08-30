@@ -77,7 +77,7 @@ if(vtlMock){
   // ---- validar eje de sucesos: ancho del track + scroll + distribución en filas ----
 try{
   const evts = byId.track.children.filter(c=>c.title); // .evt tienen title=nombre
-  console.log('evt dibujados en #track:', evts.length, '(esperado ~158)');
+  console.log('evt dibujados en #track:', evts.length, '(esperado ~192)');
   const rows = new Set(evts.map(e=>e.style.top));
   console.log('filas usadas (top):', [...rows].join(' '), '(esperado 16% 39% 61% 84%)');
   const lefts = evts.map(e=>parseFloat(e.style.left)).filter(n=>!isNaN(n));

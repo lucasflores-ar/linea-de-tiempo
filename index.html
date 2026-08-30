@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<meta name="description" content="Línea de tiempo bíblica interactiva: 159 sucesos, 12,499 preguntas y 54 personajes en cronología JW, con mapa, eras, tipos, potencias mundiales y reproducción animada." />
+<meta name="description" content="Línea de tiempo bíblica interactiva: sucesos, preguntas y personajes en cronología JW, con mapa, eras, tipos, potencias mundiales, reproducción animada y vistas anidadas." />
 <meta name="color-scheme" content="dark light" />
 <title>Línea de tiempo bíblica · Probador de datos</title>
 <style>
@@ -189,7 +189,7 @@ div.vis-tooltip{background:var(--surface3); border:1px solid var(--line); color:
   <div class="app-head">
     <div>
       <h1>Línea de tiempo <span class="acc">bíblica</span></h1>
-      <div class="sub">12,499 preguntas · 159 sucesos · 54 personajes · cronología JW (a. E. C. = negativo) · mapa, eras, tipos, potencias mundiales y reproducción animada</div>
+      <div class="sub" id="sub">cronología JW (a. E. C. = negativo) · mapa, eras, tipos, potencias mundiales y reproducción animada</div>
     </div>
     <button class="theme-btn" id="theme-btn" type="button" title="Cambiar tema claro/oscuro" aria-label="Cambiar tema claro/oscuro"></button>
   </div>
@@ -433,6 +433,10 @@ function renderStats(){
   const pct = Math.round(100*con/tot);
   const conEv = D.eventos.filter(e=>e.nq>0).length;
   const mult = D.eventos.filter(e=>e.t.length>1).length;
+  const subEl = document.getElementById('sub');
+  if(subEl) subEl.textContent = tot.toLocaleString('es')+' preguntas · '+D.eventos.length+' sucesos · '+
+    D.personajes.length+' personajes · '+(D.grupos?D.grupos.length+' grupos · ':'')+
+    'cronología JW (a. E. C. = negativo) · mapa, eras, tipos, potencias mundiales y reproducción animada';
   document.getElementById('stats').innerHTML = [
     [tot,'preguntas totales'],[con+' ('+pct+'%)','con dato'],
     [D.eventos.length+' · '+conEv+' con preg.','sucesos'],

@@ -124,7 +124,7 @@ console.log('nav clic "Siglo primero": selEra=', byId['f-era'].value,
   // segundo clic = quitar filtro
   nav._onclick(evt);
   console.log('nav 2º clic (toggle off): selEra=', JSON.stringify(byId['f-era'].value),
-    '| total=', ctx.filtered().length, '(esperado 159)');
+    '| total=', ctx.filtered().length, '(esperado 193)');
 }catch(e){ console.log('test nav ERROR:', e.message); }
 
 // ---- test: tema claro/oscuro ----

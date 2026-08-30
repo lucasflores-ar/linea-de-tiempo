@@ -8,6 +8,7 @@ SCRIPTS_DIR = os.path.dirname(os.path.abspath(__file__))
 REPO_ROOT = os.path.dirname(SCRIPTS_DIR)
 
 STEPS = [
+    ('gen_hechos_libros.py', 'Generar hechos para libros sin suceso'),
     ('enrich.py', 'Enriquecer preguntas'),
     ('gen_timeline.py', 'Generar linea-tiempo-datos.js'),
     ('gen_fichas.py', 'Generar fichas (CSV + JS)'),

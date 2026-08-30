@@ -607,3 +607,34 @@ desplegar dentro una **línea de tiempo anidada** con sus sub-sucesos.
 - `linea-horizontal.html` ✅ *modificado* — vista anidada + comparación + relaciones.
 - `linea-tiempo-datos.js` ✅ *regenerado*.
 - Documentación: esta sección + `FUENTE_PREGUNTAS_UNIFICADA.md` (apartado de jerarquía).
+
+## 14. Fase 7bis — Aprovechar el banco de 12.499 preguntas
+
+Diagnóstico y corrección de por qué el banco gigante alimentaba solo 159 sucesos.
+Ver `docs/COBERTURA-DIAGNOSTICO.md` para el análisis completo.
+
+### Causas raíz encontradas
+
+1. `referencia_biblica` suele estar vacía o rota (referencias a publicaciones JW, no
+   versículos): 3.151 preguntas sin referencia y sin dato.
+2. El campo `capitulo` (que sí trae el nombre del libro bíblico) **no se usaba** para
+   anclar → se perdían ~2.000 anclajes triviales.
+3. Los 159 sucesos se importaron una vez; el pipeline **nunca generaba hechos nuevos**
+   desde las preguntas. 34 libros bíblicos enteros (cartas del NT, profetas menores,
+   sapienciales) no tenían ningún suceso.
+
+### Cambios
+
+- `enrich.py`: fallback por `capitulo`/`personaje` (detecta libro canónico → periodo
+  de `periods.py` vía `book_in()`/`period_for_book()`).
+- `scripts/gen_hechos_libros.py` (nuevo): genera un suceso por cada libro bíblico sin
+  representación, con nombre/descripción curados (`LIBRO_META`), fecha/era/lugar de
+  `periods.py`. **Idempotente** (regenera ids 160+ sin duplicar) y separa lugar de
+  personaje para no contaminar las fichas.
+- `run_pipeline.py`: añade `gen_hechos_libros.py` como primer paso.
+
+### Resultado
+
+- Preguntas con dato: 7.324 (58,6 %) → **9.537 (76,3 %)**.
+- Sucesos: 159 → **193**. Fichas: 151 → **164**.
+- 709 preguntas más ancladas a suceso concreto (`HECHO`).
