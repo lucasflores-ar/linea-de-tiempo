@@ -1,0 +1,15 @@
+# Normalizar salto de línea en todo el repo (evita el ruido LF/CRLF en Windows)
+* text=auto
+
+# Archivos generados / binarios que conviene dejar como están
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.svg text
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.pdf binary
+*.xlsx binary
+*.xls binary

@@ -1,7 +1,8 @@
 # Diagnóstico — Cobertura del banco de preguntas sobre la línea de tiempo
 
-Fecha del análisis: pide los números exactos del pipeline. Objetivo: entender por qué
-un banco de 12.499 preguntas con mucha metadata alimenta solo 159 sucesos.
+Objetivo: entender por qué un banco de 12.499 preguntas con mucha metadata alimentaba
+solo 159 sucesos, y documentar cómo se resolvió y cómo se aprovecha ahora de forma
+múltiple (timeline, fichas, preguntas vinculadas, grupos y relaciones).
 
 ## Resumen del flujo actual
 
@@ -100,3 +101,62 @@ extrae nuevos sucesos** de las preguntas. 769 personajes y 295 temas del campo
   ("Corinto", "Creta", "Éfeso"…) en `personajes`, contaminando `gen_fichas.py` con
   fichas falsas. Se separó lugar vs. personaje (campo `lugar_antiguo` dedicado) y se
   hizo el script idempotente (regenera ids 160+ sin duplicar).
+
+## Qué mejoramos y cómo (resumen de cambios en código)
+
+| archivo | cambio |
+|---|---|
+| `scripts/enrich.py` | añade `book_in()` (detecta libro canónico en texto libre) y `period_for_book()`; nuevo fallback por `capitulo`/`personaje` tras el de referencia. |
+| `scripts/gen_hechos_libros.py` | **nuevo**: genera un suceso por cada libro bíblico sin representación (ids 160+), con nombre/descripción/tipo curados en `LIBRO_META`. Idempotente. |
+| `scripts/run_pipeline.py` | añade `gen_hechos_libros.py` como primer paso del pipeline. |
+| `linea-tiempo-datos.js` | regenerado: `eventos` (193), `grupos`, `relaciones`. |
+
+## Cómo hacer uso múltiple del banco (guía práctica)
+
+El banco (`preguntas_unificadas.csv`, 12.499 filas) se transforma —vía el pipeline— en
+**una sola fuente de verdad enriquecida** (`preguntas_unificadas_enriquecidas.csv`), de
+la que se derivan **cuatro productos** consumibles por cada página:
+
+### 1. Regenerar todo (comando único)
+
+```
+python scripts/run_pipeline.py
+```
+
+Esto ejecuta en orden: `gen_hechos_libros.py` → `enrich.py` → `gen_timeline.py` →
+`gen_fichas.py`. Al final quedan actualizados los CSV y los JS del repo.
+
+### 2. Los cuatro productos y dónde se consumen
+
+| producto | archivo | lo consume | qué aporta |
+|---|---|---|---|
+| Línea de tiempo | `linea-tiempo-datos.js` (`window.LT_DATA`: `eventos`, `preguntas`, `personajes`, `grupos`, `relaciones`) | `index.html`, `linea-horizontal.html` | los sucesos y sub-sucesos; `g` = grupo anidado; `relaciones` = causa/paralelo/contraste |
+| Fichas de personajes | `fichas-personajes.js` (`window.LT_FICHAS`) | `fichas.html` | biografía, profesión, hitos, preguntas por personaje |
+| Hoja de curación | `fichas_personajes.csv` | tú (manual) | completar cualidades/defectos/opinión de Jehová/lección |
+| Curación de jerarquía/relaciones | `curacion/grupos.json`, `curacion/relaciones.json` | `linea-horizontal.html` (vía datos) | grupos anidados y aristas entre hechos |
+
+### 3. Cómo anclar tus propias preguntas nuevas
+
+Al añadir preguntas a `preguntas_unificadas.csv`, `enrich.py` las ancla en cascada:
+
+1. `referencia_biblica` → hecho exacto (**HECHO**, máxima precisión).
+2. libro/capítulo de la referencia → periodo (**PERIODO**).
+3. libro en `capitulo` o `personaje` → periodo (**PERIODO**).
+4. personaje → hecho (**PERSONAJE**); si no, keyword → **TEXTO**.
+
+**Consejo**: cuida el campo `capitulo` (pon el libro bíblico cuando aplique) y
+`referencia_biblica` (cita real "Libro cap:vers"). Así maximizas la proporción de
+preguntas que terminan enlazadas a un suceso concreto.
+
+### 4. Por qué el banco ahora rinde múltiples veces
+
+- **Una fila → un ancla** a un suceso; cada suceso agrega las preguntas vinculadas
+  (`nq`) que se ven en la timeline, el drawer y las fichas.
+- **Los grupos** (`curacion/grupos.json`) permiten navegar de "época" a "subtrama"
+  (p. ej. Pablo misionero) sin perder el hilo cronológico.
+- **Las relaciones** (`curacion/relaciones.json`) convierten el banco en conocimiento
+  conectado (causa→efecto, paralelo, contraste), útil para estudiar cómo se conjugan o
+  aíslan los hechos.
+
+Con esto, el mismo banco pasa de alimentar 159 sucesos a sostener **193 sucesos agrupados
+en 8 subtramas, 164 fichas y 19 relaciones**, con 76 % de las preguntas ya fechadas.

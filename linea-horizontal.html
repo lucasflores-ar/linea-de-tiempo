@@ -512,7 +512,7 @@ function eraRange(col){
   const evs=D.eventos.filter(e=>col.keys.includes(eraKey(e.era))&&e.fa!=null);
   if(!evs.length) return '';
   const ys=evs.map(e=>e.fa);
-  return Math.min(...ys)+' a '+Math.max(...ys);
+  return fmtAnio(Math.min(...ys))+' a '+fmtAnio(Math.max(...ys));
 }
 
 function gBadge(ev){
@@ -582,7 +582,7 @@ function render(){
     (visible.length!==D.eventos.length? ' · '+visible.length+' mostrados':'');
   document.getElementById('result-count').textContent = visible.length+' sucesos';
   trackEl.innerHTML = ERAS.map(col=>{
-    const events=visible.filter(ev=>col.keys.includes(eraKey(ev.era))).sort((a,b)=>(b.fa||0)-(a.fa||0));
+    const events=visible.filter(ev=>col.keys.includes(eraKey(ev.era))).sort((a,b)=>(a.fa||0)-(b.fa||0));
     return `<section class="era-col" id="era-${col.id}" style="${mode==='columns'&&events.length? 'width:'+Math.max(300,events.length*265)+'px':'width:340px'}">
       <div class="era-hdr">
         <div class="l"><span class="era-dot" style="background:${col.color}"></span>
