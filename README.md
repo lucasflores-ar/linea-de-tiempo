@@ -581,12 +581,13 @@ desplegar dentro una **línea de tiempo anidada** con sus sub-sucesos.
    contraste; estado en URL `cmp=<grupo>`.*
 
 4. **(Opcional) Relaciones explícitas entre hechos** — tabla curada `relaciones` con
-   aristas causa→efecto / contraste / paralelo dibujadas sobre el eje. Depende de
+   aristas causa→efecto / paralelo dibujadas en el drawer. Depende de
    decidir el vocabulario de tipos de relación.
-   ✅ *COMPLETADO. `curacion/relaciones.json` (tipos `causa|paralelo|contraste`) →
+   ✅ *COMPLETADO. `curacion/relaciones.json` (tipos `causa|paralelo`) →
    `window.LT_DATA.relaciones`. En el drawer de cada suceso se listan sus relaciones
-   (entrantes/salientes con flecha) y clic salta al suceso relacionado. 19 relaciones
-   curadas iniciales.*
+   (entrantes/salientes con flecha) y clic salta al suceso relacionado. 17 relaciones
+   curadas iniciales. **(El tipo `contraste` se retiró: era inferencia de IA no
+   extraída de los PDFs fuente.)***
 
 ### Fuente / criterios de agrupamiento (propuesta inicial)
 
@@ -600,7 +601,7 @@ desplegar dentro una **línea de tiempo anidada** con sus sub-sucesos.
 
 - ~~`hechos_biblicos.csv`~~ → NO se modificó (jerarquía quedó en `curacion/grupos.json`).
 - `curacion/grupos.json` ✅ *nuevo* — curación manual de grupos.
-- `curacion/relaciones.json` ✅ *nuevo* — aristas causa/paralelo/contraste.
+- `curacion/relaciones.json` ✅ *nuevo* — aristas causa/paralelo (sin `contraste`).
 - `scripts/gen_timeline.py` ✅ *modificado* — lee `grupos.json`/`relaciones.json` y
   emite `grupos` + `relaciones` + campo `g` en eventos.
 - `scripts/run_pipeline.py` (sin cambios necesarios).

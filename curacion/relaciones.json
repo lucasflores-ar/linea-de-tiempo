@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "tipos": ["causa", "paralelo", "contraste"],
+  "tipos": ["causa", "paralelo"],
   "relaciones": [
     { "a": 2, "b": 3, "tipo": "causa", "nota": "La desobediencia de la primera pareja introdujo el pecado que derivó en el primer homicidio." },
     { "a": 5, "b": 6, "tipo": "causa", "nota": "Tras el Diluvio la humanidad se congregó en Babel y fue dispersada." },
@@ -18,8 +18,6 @@
     { "a": 74, "b": 77, "tipo": "paralelo", "nota": "Dos caídas paralelas: Samaria (reino del norte) y Jerusalén (reino del sur)." },
     { "a": 33, "b": 34, "tipo": "paralelo", "nota": "Rahab y los espías preparan el cruce del Jordán." },
     { "a": 142, "b": 144, "tipo": "paralelo", "nota": "Primer y segundo viaje misionero de Pablo." },
-    { "a": 144, "b": 146, "tipo": "paralelo", "nota": "Segundo y tercer viaje misionero de Pablo." },
-    { "a": 65, "b": 77, "tipo": "contraste", "nota": "El reino dividido contrasta la fidelidad esporádica de Judá con la apostasía sostenida de Israel." },
-    { "a": 10, "b": 5, "tipo": "contraste", "nota": "Jehová libró a Lot de Sodoma; a los desobedientes del tiempo de Noé no." }
+    { "a": 144, "b": 146, "tipo": "paralelo", "nota": "Segundo y tercer viaje misionero de Pablo." }
   ]
 }

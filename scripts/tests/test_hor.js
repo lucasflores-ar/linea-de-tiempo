@@ -168,7 +168,7 @@ try{
 // ---- test: relaciones entre hechos ----
 try{
   const R = DATA.relaciones;
-  console.log('relaciones en datos:', (R||[]).length, '(esperado 19)');
+  console.log('relaciones en datos:', (R||[]).length, '(esperado 17)');
   // abrir un suceso que tenga relación (id 2 -> 3 causa)
   const ev2 = DATA.eventos.find(e=>e.id===2);
   ctx.openDrawer(ev2);

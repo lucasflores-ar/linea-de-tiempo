@@ -58,9 +58,15 @@ header{
 .mode-btn:hover{color:var(--txt)}
 .mode-btn.on{background:var(--field-2);color:var(--txt);box-shadow:0 1px 4px var(--shadow)}
 .controls{display:flex;align-items:center;gap:10px;margin-left:auto;flex-wrap:wrap}
+.site-nav{display:flex;gap:4px;background:var(--field);border:1px solid var(--line);border-radius:10px;padding:4px}
+.site-nav__link{padding:6px 12px;border-radius:8px;font-size:12px;font-weight:600;color:var(--mut);
+  text-decoration:none;transition:all .15s;white-space:nowrap}
+.site-nav__link:hover{color:var(--txt);background:var(--field-2)}
+.site-nav__link--on{background:var(--acc);color:#fff}
 @media(max-width:760px){
   .controls{margin-left:0;width:100%}
   .controls input[type=search]{flex:1;min-width:140px}
+  .site-nav__link{padding:6px 8px;font-size:11px}
 }
 input[type=search],select{
   background:var(--field);border:1px solid var(--line);color:var(--txt);border-radius:8px;
@@ -212,7 +218,6 @@ html[data-theme="light"] .acc-body{background:rgba(0,0,0,.03)}
   border-radius:6px;padding:2px 6px;flex-shrink:0;margin-top:1px}
 .rel-edge.rt-causa .rt{background:rgba(240,163,94,.15);color:var(--c-egi)}
 .rel-edge.rt-paralelo .rt{background:rgba(86,204,162,.15);color:var(--c-pat)}
-.rel-edge.rt-contraste .rt{background:rgba(255,107,107,.15);color:var(--c-div)}
 .rel-edge .rn{font-weight:700;color:var(--txt)}
 .rel-edge .rnota{font-size:11px;color:var(--mut);margin-top:2px;line-height:1.4}
 .dmeta{display:grid;grid-template-columns:auto 1fr;gap:5px 12px;font-size:12px}
@@ -311,7 +316,11 @@ html[data-theme="light"] .acc-body{background:rgba(0,0,0,.03)}
     <input type="search" id="search" placeholder="Buscar suceso, cita, personaje…" />
     <button class="iconbtn" id="reset" title="Limpiar filtros">✕</button>
     <button class="iconbtn" id="theme-btn" title="Alternar tema claro/oscuro">☀️</button>
-    <a class="iconbtn" id="link-fichas" href="fichas.html" title="Fichas de personajes" style="text-decoration:none">👤</a>
+    <nav class="site-nav" aria-label="Navegación principal">
+      <a class="site-nav__link" href="index.html">Cronología</a>
+      <a class="site-nav__link site-nav__link--on" href="linea-horizontal.html" aria-current="page">Por épocas</a>
+      <a class="site-nav__link" href="fichas.html">Personajes</a>
+    </nav>
   </div>
 </header>
 
@@ -493,7 +502,7 @@ function groupOf(ev){ return ev.g ? groupById(ev.g) : null; }
 
 // ---------- relaciones entre hechos ----------
 const RELS = D.relaciones || [];
-const REL_LABEL = {causa:'Causa', paralelo:'Paralelo', contraste:'Contraste'};
+const REL_LABEL = {causa:'Causa', paralelo:'Paralelo'};
 function relacionesDe(id){
   return RELS.filter(r=>r.a===id || r.b===id).map(r=>{
     const otro = r.a===id ? r.b : r.a;
@@ -944,6 +953,13 @@ window.addEventListener('resize',()=>{ /* noop */ });
     }
     if(p.get('g') && groupById(p.get('g'))){ openGroup=p.get('g'); }
     if(p.get('cmp') && groupById(p.get('cmp'))){ compareGroup=p.get('cmp'); }
+    if(!p.get('modo')){
+      const mobile=window.matchMedia('(max-width:760px)').matches||window.matchMedia('(pointer:coarse)').matches;
+      if(mobile){
+        mode='accordion';
+        Object.entries(modes).forEach(([m,btn])=>btn.classList.toggle('on',m==='accordion'));
+      }
+    }
   }catch(e){}
 })();
 function syncUrl(){
