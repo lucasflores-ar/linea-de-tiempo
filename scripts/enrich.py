@@ -24,12 +24,75 @@ periods_mod = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(periods_mod)
 PERIODS = periods_mod.PERIODS
 
+# acentuador (diccionario Hunspell es_ES + lista blanca de nombres propios JW)
+from paths import repo  # noqa: E402  (paths ya estaba arriba)
+import acentuacion  # noqa: E402  (mismo directorio, en sys.path)
+
+# lista blanca: nombres propios con grafia canonica JW (solo personajes, que son los
+# que el acentuador generico acentua mal: Eliseo -> Elíseo, etc.). Los lugares se dejan
+# acentuar por el diccionario (estan casi todos bien en los CSV).
+def _cargar_blanca():
+    blancos = []
+    try:
+        with open(db('personajes_biblicos.csv'), encoding='utf-8-sig') as f:
+            rd = csv.DictReader(f)
+            for r in rd:
+                n = (r.get('nombre') or '').strip()
+                if n:
+                    for parte in re.split(r'[;,()]', n):
+                        parte = parte.strip()
+                        if parte:
+                            blancos.append(parte)
+    except Exception:
+        pass
+    # toponimos/nombres con grafia especifica JW que NO llevan tilde
+    blancos += ['Moria', 'Bet-saida', 'Enon', 'Neapolis', 'Tiberia', 'Rode', 'Apia',
+                'Roman', 'Pua']
+    acentuacion.cargar_lista_blanca(blancos)
+
+_cargar_blanca()
+
 # ---------------------------------------------------------------- helpers
 def fix_mojibake(s):
     try:
         return s.encode('latin-1').decode('utf-8')
     except Exception:
         return s
+
+# Palabras que deben llevar 'ñ' y en el banco aparecen con 'n' simple (mojibake).
+# Reemplazo de PALABRA COMPLETA (con límites de palabra) para no tocar 'n' legítimas.
+_ANIO_FIX = {
+    'anos': 'años',
+    'anio': 'año',
+    'senor': 'señor',
+    'senora': 'señora',
+    'nino': 'niño',
+    'ninos': 'niños',
+    'companero': 'compañero',
+    'companeros': 'compañeros',
+    'compania': 'compañía',
+}
+
+# Secuencias de mojibake inequívocas (nunca aparecen en español bien codificado).
+_MOJI_FIX = {
+    'Ã±': 'ñ',
+    'Â¿': '¿',
+    'Â¡': '¡',
+    'Â´': '´',
+    '\u00ad': '',  # soft hyphen (guión suave invisible)
+    'Ã\u00ad': '',
+}
+
+def clean_text(s):
+    """Corrige mojibake y la pérdida de 'ñ' (en palabras conocidas) en un campo de texto."""
+    if not s:
+        return s
+    for bad, good in _MOJI_FIX.items():
+        s = s.replace(bad, good)
+    # diccionario de palabra completa, respetando mayúscula inicial
+    for bad, good in _ANIO_FIX.items():
+        s = re.sub(r'\b' + bad, lambda m: good, s, flags=re.IGNORECASE)
+    return s
 
 def norm(s):
     if not s:
@@ -281,7 +344,17 @@ NEWCOLS = ['hecho_id', 'hecho_nombre', 'fecha_suceso', 'fecha_anio', 'era_suceso
 
 stats = collections.Counter()
 for q in rows:
-    q['personaje'] = fix_mojibake(q['personaje'])
+    # limpiar mojibake/pérdida de ñ + acentuación en todos los campos de texto
+    for _f in ('pregunta', 'opcion_a', 'opcion_b', 'opcion_c', 'opcion_d',
+               'respuesta_correcta', 'personaje'):
+        if _f in q:
+            v = clean_text(q[_f])
+            v = acentuacion.acentuar_texto(v)
+            if _f == 'pregunta':
+                # solo en el enunciado la primera palabra interrogativa lleva tilde
+                v = acentuacion.acentuar_interrogativos_texto(v)
+            q[_f] = v
+    q['personaje'] = q.get('personaje', '')
     for col in NEWCOLS:
         q[col] = ''
     hid = None
