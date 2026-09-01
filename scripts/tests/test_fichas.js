@@ -26,7 +26,7 @@ function makeEl(tag){
   };
 }
 const byId={};
-const ids=['brand-sub','search','f-era','f-sec','f-prof','sort','t-vida','t-hitos','t-preg','reset','theme-btn','link-linea','link-app','st-total','st-visible','st-vida','st-prof','st-hitos','st-preg','st-incom','grid','empty','overlay','drawer','d-close','d-era','d-title','d-alt','d-profs','d-meta','d-lugares','d-hcount','d-hitos','d-hmore','d-rel','d-cual','d-def','d-op','d-vers','d-lec','d-nq','d-nh','d-fuente','d-open-linea','d-open-app'];
+const ids=['brand-sub','search','f-era','f-sec','f-prof','sort','t-vida','t-hitos','t-preg','reset','theme-btn','pill-incom','st-total','st-visible','st-vida','st-prof','st-hitos','st-preg','st-incom','grid','empty','overlay','drawer','d-close','d-era','d-title','d-alt','d-profs','d-meta','d-lugares','d-hcount','d-hitos','d-hmore','d-rel','d-cual','d-def','d-op','d-vers','d-lec','d-nq','d-nh','d-fuente','d-open-linea','d-open-app'];
 ids.forEach(id=>byId[id]=makeEl('div'));
 const docEl={_t:'dark', setAttribute(k,v){this._t=v;}, getAttribute(k){return this._t;} };
 const ctx={ document:{ getElementById(id){ return byId[id]||makeEl('div'); },

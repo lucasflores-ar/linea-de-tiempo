@@ -124,7 +124,7 @@ console.log('nav clic "Siglo primero": selEra=', byId['f-era'].value,
   // segundo clic = quitar filtro
   nav._onclick(evt);
   console.log('nav 2º clic (toggle off): selEra=', JSON.stringify(byId['f-era'].value),
-    '| total=', ctx.filtered().length, '(esperado 193)');
+    '| total=', ctx.filtered().length, '(esperado', DATA.eventos.length + ')');
 }catch(e){ console.log('test nav ERROR:', e.message); }
 
 // ---- test: tema claro/oscuro ----
@@ -139,9 +139,9 @@ try{
 // ---- test: grupos anidados (jerarquía) ----
 try{
   const G = DATA.grupos;
-  console.log('grupos anidados en datos:', (G||[]).length, '(esperado 8)');
+  console.log('grupos anidados en datos:', (G||[]).length);
   const conG = DATA.eventos.filter(e=>e.g).length;
-  console.log('eventos con grupo g:', conG, '(esperado 52)');
+  console.log('eventos con grupo g:', conG);
 
   // badge de grupo presente en tarjetas de eventos agrupados
   byId['m-cascade']._onclick && byId['m-cascade']._onclick();

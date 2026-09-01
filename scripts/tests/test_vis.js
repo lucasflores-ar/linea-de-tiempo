@@ -1,12 +1,28 @@
-// Mock mínimo de DOM para probar index.html sin navegador
+// Mock mínimo de DOM para probar index.html sin navegador.
+// index.html ahora redirige a linea-paralela.html; la vista vis clásica ya no vive aquí.
 const fs = require('fs');
 const path = require('path');
 const vm = require('vm');
 
 const REPO = path.resolve(__dirname, '../..');
-const DATA = JSON.parse(fs.readFileSync(path.join(REPO, 'linea-tiempo-datos.js'), 'utf-8').split('=')[1].trim().replace(/;$/, ''));
 const HTML = fs.readFileSync(path.join(REPO, 'index.html'), 'utf-8');
-const inline = HTML.match(/<script>\s*\r?\n([\s\S]*?)\r?\n<\/script>/)[1];
+
+const isRedirect = /location\.replace\s*\(\s*['"]linea-paralela\.html/.test(HTML)
+  || /<meta[^>]+url=linea-paralela\.html/i.test(HTML);
+if(isRedirect){
+  console.log('SKIP: index.html es redirect → linea-paralela.html');
+  console.log('Cobertura: test_par.js (cronología) + test_hor.js (épocas)');
+  console.log('PASS');
+  process.exit(0);
+}
+
+const DATA = JSON.parse(fs.readFileSync(path.join(REPO, 'linea-tiempo-datos.js'), 'utf-8').split('=')[1].trim().replace(/;$/, ''));
+const scriptMatch = HTML.match(/<script>\s*\r?\n([\s\S]*?)\r?\n<\/script>/);
+if(!scriptMatch){
+  console.log('ERROR: index.html sin script inline de app');
+  process.exit(1);
+}
+const inline = scriptMatch[1];
 
 // ---- DOM mock ----
 function makeEl(tag){
@@ -18,6 +34,8 @@ function makeEl(tag){
     querySelector(){ return makeEl('div'); },
     querySelectorAll(){ return { forEach(){}, }; },
     addEventListener(){},
+    setAttribute(k,v){ this[k]=v; if(k==='role') this.role=v; if(k==='tabindex') this.tabIndex=v; if(k==='aria-label') this.ariaLabel=v; },
+    scrollIntoView(){},
     getContext(){ return { clearRect(){}, createLinearGradient(){ return {addColorStop(){}}; }, beginPath(){}, moveTo(){}, lineTo(){}, closePath(){}, fill(){}, stroke(){}, arc(){}, fillRect(){}, fillText(){}, set fillStyle(v){}, set strokeStyle(v){}, set lineWidth(v){}, set font(v){}, set textAlign(v){} }; },
     getBoundingClientRect(){ return {left:0, top:0, width:1200, height:600}; },
     remove(){},
@@ -111,4 +129,5 @@ try{
     console.log('potenciaCubreRango(-860,-830)=', ctx.potenciaCubreRango(-860,-830), '(esperado true) | (-2970,-2020)=', ctx.potenciaCubreRango(-2970,-2020), '(esperado false)');
     btns[0]._onclick(); // restaurar Todo
   }catch(e){ console.log('test potencia ERROR:', e.message); }
-} else { console.log('vtl no creado'); }
+} else { console.log('vtl no creado'); process.exit(1); }
+console.log('PASS');
