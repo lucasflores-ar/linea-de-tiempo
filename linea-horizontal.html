@@ -180,12 +180,12 @@ html[data-theme="light"] .acc-body{background:rgba(0,0,0,.03)}
 #overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:40;opacity:0;pointer-events:none;transition:opacity .3s}
 #overlay.on{opacity:1;pointer-events:auto}
 #drawer{
-  position:fixed;inset-y:0;right:0;width:100%;max-width:440px;z-index:50;
+  position:fixed;top:0;right:0;bottom:0;width:100%;max-width:440px;height:100dvh;z-index:50;
   background:var(--panel2);border-left:1px solid var(--line);box-shadow:-12px 0 40px var(--shadow);
-  transform:translateX(100%);transition:transform .3s;display:flex;flex-direction:column;
+  transform:translateX(100%);transition:transform .3s;display:flex;flex-direction:column;min-height:0;
 }
 #drawer.on{transform:translateX(0)}
-.d-hdr{padding:20px;border-bottom:1px solid var(--line);position:relative}
+.d-hdr{padding:20px;border-bottom:1px solid var(--line);position:relative;flex-shrink:0}
 #d-close{position:absolute;right:14px;top:14px;background:var(--field);border:1px solid var(--line);
   color:var(--mut);width:30px;height:30px;border-radius:8px;cursor:pointer}
 #d-close:hover{color:var(--txt)}
@@ -193,7 +193,7 @@ html[data-theme="light"] .acc-body{background:rgba(0,0,0,.03)}
   letter-spacing:1px;border-radius:999px;color:#fff;margin-bottom:8px}
 #d-title{font-size:18px;font-weight:700;line-height:1.3;padding-right:30px}
 #d-date{font-size:12px;color:var(--mut);margin-top:4px}
-.d-body{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:16px;font-size:13px}
+.d-body{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:20px;display:flex;flex-direction:column;gap:16px;font-size:13px;-webkit-overflow-scrolling:touch}
 .d-body::-webkit-scrollbar{width:5px}
 .d-body::-webkit-scrollbar-thumb{background:var(--thumb);border-radius:4px}
 .d-sec h3{font-size:10px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:6px}
@@ -224,7 +224,7 @@ html[data-theme="light"] .acc-body{background:rgba(0,0,0,.03)}
 .dmeta .k{color:var(--mut)}
 .qa{border-top:1px solid var(--line);padding-top:12px}
 .qa .q{font-size:12px;margin:6px 0;padding:9px 10px;background:var(--field);border-radius:8px}
-.qa .q small{display:block;color:var(--acc);margin-top:3px;font-size:11px}
+.qa .q small{display:block;color:var(--acc);margin-top:5px;font-size:12px;line-height:1.45;font-weight:500}
 .qa .more{color:var(--acc);cursor:pointer;font-size:12px}
 .qa .more:hover{text-decoration:underline}
 .ph{color:var(--mut);font-size:12px}
@@ -317,7 +317,7 @@ html[data-theme="light"] .acc-body{background:rgba(0,0,0,.03)}
     <button class="iconbtn" id="reset" title="Limpiar filtros">✕</button>
     <button class="iconbtn" id="theme-btn" title="Alternar tema claro/oscuro">☀️</button>
     <nav class="site-nav" aria-label="Navegación principal">
-      <a class="site-nav__link" href="index.html">Cronología</a>
+      <a class="site-nav__link" href="linea-paralela.html">Cronología</a>
       <a class="site-nav__link site-nav__link--on" href="linea-horizontal.html" aria-current="page">Por épocas</a>
       <a class="site-nav__link" href="fichas.html">Personajes</a>
     </nav>
@@ -382,11 +382,11 @@ html[data-theme="light"] .acc-body{background:rgba(0,0,0,.03)}
       <div id="d-qlist"></div>
       <div class="more" id="d-more" style="display:none">Mostrar todas</div>
     </div>
-    <a class="link-back" id="link-app" href="index.html">Abrir en la app principal →</a>
+    <a class="link-back" id="link-app" href="linea-paralela.html">Abrir cronología principal →</a>
   </div>
 </aside>
 
-<script src="linea-tiempo-datos.js"></script>
+<script src="linea-tiempo-datos.js?v=2"></script>
 <script>
 const D = window.LT_DATA;
 const MINY = -4026, MAXY = 100;
@@ -776,6 +776,18 @@ function attachGroupPts(){
 // ---------- drawer ----------
 const drawer=document.getElementById('drawer'), overlay=document.getElementById('overlay');
 function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function answerText(q){
+  const raw = q.a ?? q.respuesta ?? '';
+  return String(raw).trim();
+}
+function questionAnswerHtml(q){
+  const ans = answerText(q);
+  return ans ? '<small>'+esc(ans)+'</small>' : '<small class="ph">Respuesta no disponible</small>';
+}
+function renderQuestionList(qs, limit){
+  const slice = limit ? qs.slice(0, limit) : qs;
+  return slice.map(q=>'<div class="q">'+esc(q.q)+questionAnswerHtml(q)+'</div>').join('');
+}
 function openDrawer(ev){
   const col=colOf(ev);
   document.getElementById('d-badge').textContent=eraKey(ev.era);
@@ -824,10 +836,10 @@ function openDrawer(ev){
   const listEl=document.getElementById('d-qlist');
   const moreEl=document.getElementById('d-more');
   document.getElementById('d-qcount').textContent = 'Preguntas vinculadas: '+qs.length;
-  listEl.innerHTML = qs.slice(0,8).map(q=>'<div class="q">'+esc(q.q)+'<small>'+esc(q.cat||'')+' · resp. '+esc(q.a||'')+'</small></div>').join('') ||
+  listEl.innerHTML = renderQuestionList(qs, 8) ||
     '<span class="ph">Este suceso aún no tiene preguntas vinculadas.</span>';
   moreEl.style.display = qs.length>8 ? 'block':'none';
-  moreEl.onclick = ()=>{ listEl.innerHTML = qs.map(q=>'<div class="q">'+esc(q.q)+'<small>'+esc(q.cat||'')+' · resp. '+esc(q.a||'')+'</small></div>').join(''); moreEl.style.display='none'; };
+  moreEl.onclick = ()=>{ listEl.innerHTML = renderQuestionList(qs); moreEl.style.display='none'; };
   drawer.classList.add('on'); overlay.classList.add('on');
   openId=ev.id;
 }

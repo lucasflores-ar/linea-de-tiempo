@@ -45,6 +45,12 @@ header{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:16px
 .brand h1 .acc{color:var(--acc)}
 .brand p{font-size:11px;color:var(--mut)}
 .controls{display:flex;align-items:center;gap:10px;margin-left:auto;flex-wrap:wrap}
+.site-nav{display:flex;gap:4px;background:var(--field);border:1px solid var(--line);border-radius:10px;padding:4px}
+.site-nav__link{padding:6px 12px;border-radius:8px;font-size:12px;font-weight:600;color:var(--mut);
+  text-decoration:none;transition:all .15s;white-space:nowrap}
+.site-nav__link:hover{color:var(--txt);background:var(--field-2)}
+.site-nav__link--on{background:var(--acc);color:#fff}
+@media(max-width:700px){.site-nav__link{padding:6px 8px;font-size:11px}}
 input[type=search],select{
   background:var(--field);border:1px solid var(--line);color:var(--txt);border-radius:8px;
   padding:7px 11px;font-size:12px;font-family:inherit;outline:none}
@@ -121,6 +127,7 @@ main{flex:1;padding:20px 18px 40px}
 .manual{border:1px dashed var(--line);border-radius:12px;padding:12px}
 .manual h3{color:var(--c-exi)}
 .manual .row{display:flex;gap:10px;font-size:12px;padding:7px 0;border-bottom:1px solid var(--line)}
+.u-hidden{display:none!important}
 .manual .row:last-child{border-bottom:0}
 .manual .row .lab{width:110px;flex-shrink:0;color:var(--mut);font-weight:600}
 .manual .row .val{color:var(--txt)}
@@ -155,8 +162,11 @@ main{flex:1;padding:20px 18px 40px}
     </span>
     <button class="iconbtn" id="reset" title="Limpiar filtros">✕</button>
     <button class="iconbtn" id="theme-btn" title="Alternar tema">☀️</button>
-    <a class="iconbtn" id="link-linea" href="linea-horizontal.html" title="Línea de tiempo horizontal">⏳</a>
-    <a class="iconbtn" id="link-app" href="index.html" title="App principal">◉</a>
+    <nav class="site-nav" aria-label="Navegación principal">
+      <a class="site-nav__link" href="linea-paralela.html">Cronología</a>
+      <a class="site-nav__link" href="linea-horizontal.html">Por épocas</a>
+      <a class="site-nav__link site-nav__link--on" href="fichas.html" aria-current="page">Personajes</a>
+    </nav>
   </div>
 </header>
 
@@ -167,7 +177,7 @@ main{flex:1;padding:20px 18px 40px}
   <span class="pill">🎓 profesión: <b id="st-prof">0</b></span>
   <span class="pill">📜 con sucesos: <b id="st-hitos">0</b></span>
   <span class="pill">❓ con preguntas: <b id="st-preg">0</b></span>
-  <span class="pill">⚠ por completar: <b id="st-incom">0</b></span>
+  <span class="pill" id="pill-incom" style="display:none">⚠ sin perfil: <b id="st-incom">0</b></span>
 </div>
 
 <main>
@@ -203,9 +213,9 @@ main{flex:1;padding:20px 18px 40px}
       <div class="chips" id="d-rel"></div>
     </div>
     <div class="manual">
-      <h3>✍️ Curación manual (pendiente)</h3>
+      <h3>✍️ Perfil espiritual</h3>
       <div class="row"><span class="lab">Cualidades</span><span class="val" id="d-cual"></span></div>
-      <div class="row"><span class="lab">Defectos</span><span class="val" id="d-def"></span></div>
+      <div class="row u-hidden" id="d-def-row"><span class="lab">Defectos</span><span class="val" id="d-def"></span></div>
       <div class="row"><span class="lab">Opinión de Jehová</span><span class="val" id="d-op"></span></div>
       <div class="row"><span class="lab">Versículo clave</span><span class="val" id="d-vers"></span></div>
       <div class="row"><span class="lab">Lección</span><span class="val" id="d-lec"></span></div>
@@ -268,10 +278,8 @@ const gridEl=document.getElementById('grid');
 function cardHtml(f){
   const era=ERA_INFO[f.era]||{n:f.era,c:'var(--c-exi)'};
   const vida = (f.nac&&f.fal) ? fmtAnio(f.nac)+' – '+fmtAnio(f.fal)+(f.edad?(' ('+f.edad+' años)'):'') : 'Cronología no registrada';
-  const incom = vacio(f.profesion)||vacio(f.cualidades)||vacio(f.opinion_jehova);
   const lugares=(f.lugares||[]).length;
   return `<div class="ficha" data-id="${f.id}" role="button" tabindex="0" aria-label="Abrir ficha de ${esc(f.nombre)}">
-    ${incom?'<span class="todo">⚠ por completar</span>':''}
     <div class="top"><span class="dot" style="background:${era.c}"></span><h3 title="${esc(f.nombre)}">${esc(f.nombre)}</h3></div>
     ${f.alt?'<div class="alt">'+esc(f.alt)+'</div>':''}
     <div class="profs">
@@ -294,7 +302,9 @@ function render(){
   document.getElementById('st-prof').textContent=F.filter(f=>!vacio(f.profesion)).length;
   document.getElementById('st-hitos').textContent=F.filter(f=>f.hitos&&f.hitos.length).length;
   document.getElementById('st-preg').textContent=F.filter(f=>parseInt(f.nq||0)>0).length;
-  document.getElementById('st-incom').textContent=F.filter(f=>vacio(f.profesion)||vacio(f.cualidades)||vacio(f.opinion_jehova)).length;
+  const incomN=F.filter(f=>vacio(f.profesion)||vacio(f.cualidades)||vacio(f.opinion_jehova)).length;
+  document.getElementById('st-incom').textContent=incomN;
+  document.getElementById('pill-incom').style.display=incomN>0?'inline':'none';
   document.getElementById('brand-sub').textContent=F.length+' personajes · '+F.reduce((a,f)=>a+(parseInt(f.nq)||0),0)+' preguntas vinculadas';
   attachCards();
 }
@@ -323,7 +333,7 @@ function openDrawer(f){
   document.getElementById('d-profs').innerHTML =
     (f.profesion?'<span class="pf on">'+esc(f.profesion)+(f.profesion_sub?' <small style="opacity:.6">· '+esc(f.profesion_sub)+'</small>':'')+'</span>':'')+
     (f.profesion_2?'<span class="pf on">'+esc(f.profesion_2)+'</span>':'')+
-    (f.profesion?'':'<span class="pf missing">profesión por completar</span>');
+    (f.profesion?'':'<span class="pf missing">profesión sin registrar</span>');
   document.getElementById('d-meta').innerHTML =
     '<span class="k">Sección</span><span>'+esc(f.seccion||'—')+'</span>'+
     '<span class="k">Vida</span><span>'+(f.nac&&f.fal?fmtAnio(f.nac)+' a '+fmtAnio(f.fal):'—')+(f.edad?(' ('+f.edad+' años)'):'')+'</span>'+
@@ -348,7 +358,7 @@ function openDrawer(f){
   document.getElementById('d-rel').innerHTML = (f.rel&&f.rel.length)
     ? f.rel.map(r=>'<span class="chip">'+esc(r)+'</span>').join('')
     : '<span class="chip">—</span>';
-  const field=(v)=> v? esc(v) : '<span class="empty-v">— por completar</span>';
+  const field=(v)=> v? esc(v) : '<span class="empty-v">—</span>';
   document.getElementById('d-cual').innerHTML=field(f.cualidades);
   document.getElementById('d-def').innerHTML=field(f.defectos);
   document.getElementById('d-op').innerHTML=field(f.opinion_jehova);
@@ -358,7 +368,7 @@ function openDrawer(f){
   document.getElementById('d-nh').textContent=f.nh||0;
   document.getElementById('d-fuente').textContent=f.fuente||'';
   document.getElementById('d-open-linea').href='linea-horizontal.html?q='+encodeURIComponent(f.nombre.split(',')[0].trim());
-  document.getElementById('d-open-app').href='index.html?q='+encodeURIComponent(f.nombre.split(',')[0].trim());
+  document.getElementById('d-open-app').href='linea-paralela.html?q='+encodeURIComponent(f.nombre.split(',')[0].trim());
   drawer.classList.add('on'); overlay.classList.add('on'); openId=f.id;
 }
 function closeDrawer(){ drawer.classList.remove('on'); overlay.classList.remove('on'); openId=null; }
@@ -422,6 +432,11 @@ themeBtn.onclick=()=>{
   profs.forEach(p=>fp.insertAdjacentHTML('beforeend','<option value="'+esc(p)+'">'+esc(p)+'</option>'));
   try{
     const params=new URLSearchParams(location.search);
+    if(params.get('id')){
+      const fid=parseInt(params.get('id'),10);
+      const f0=F.find(x=>x.id===fid);
+      if(f0) setTimeout(()=>openDrawer(f0),0);
+    }
     if(params.get('q')){ document.getElementById('search').value=params.get('q'); q=params.get('q').toLowerCase(); }
     if(params.get('era') && ERA_INFO[params.get('era')]){ fEra=params.get('era'); fe.value=fEra; }
     if(params.get('sec') && ['S1','S2','S3'].includes(params.get('sec'))){ fSec=params.get('sec'); fs.value=fSec; }
