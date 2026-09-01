@@ -87,8 +87,12 @@ def norm(s):
     return ' '.join(s.split())
 
 def person_tokens(per):
-    s = re.sub(r'\([^)]*\)', '', per or '')
+    s = per or ''
     return [t.strip() for t in re.split(r'[,;/]+', s) if t.strip()]
+
+def person_index_key(tok):
+    """Clave de índice; conserva disambiguadores entre paréntesis: Oseas (rey) != Oseas."""
+    return norm(tok)
 
 # tokens que NO son personas (naciones, grupos, títulos genéricos, deidad)
 STOP = {'israel', 'juda', 'judios', 'asiria', 'roma', 'levitas', 'sacerdotes',
@@ -177,6 +181,7 @@ VARIANTE_A_CANONICO = {  # norm(variante) -> norm(canonico)
     'simon pedro': 'pedro', 'simon': 'pedro', 'felipe': 'felipe el evangelizador',
     'sadrac': 'hananias misael y azarias', 'mesac': 'hananias misael y azarias',
     'abednego': 'hananias misael y azarias',
+    'oseas rey': 'hosea',
 }
 
 # ------------------------------------------------------------------ construir targets
@@ -227,7 +232,7 @@ for k, t in targets.items():
 
 # ------------------------------------------------------------------ datos de preguntas
 for q in preguntas:
-    k = index.get(norm(q.get('personaje', '')))
+    k = index.get(person_index_key(q.get('personaje', '')))
     if k: targets[k]['nq'] += 1
 
 # ------------------------------------------------------------------ datos de hechos (hitos)
@@ -238,7 +243,7 @@ for e in hechos:
         fa = None
     keys = set()
     for tok in person_tokens(e['personajes']):
-        k = index.get(norm(tok))
+        k = index.get(person_index_key(tok))
         if k: keys.add(k)
     for k in keys:
         t = targets[k]
@@ -253,9 +258,9 @@ ROLE_LABEL = {'Reyes': 'Rey', 'Profetas': 'Profeta', 'Príncipes': 'Príncipe',
               'Sumo Sacerdotes': 'Sumo sacerdote', 'Levitas': 'Levita', 'Jueces': 'Juez',
               'Soldados': 'Soldado', 'Sacerdotes': 'Sacerdote', 'Funcionarios': 'Funcionario',
               'Escribas': 'Escriba'}
-KW = [('Rey', ['rey', 'reina', 'trono', 'corona', 'monarca']),
+KW = [('Profeta', ['profecía', 'profecia', 'profetiza', 'profeta', 'profetisa']),
+      ('Rey', ['reinado de', ' rey', 'rey ', 'reina', 'trono', 'corona', 'monarca']),
       ('Sumo sacerdote', ['sumo sacerdote']),
-      ('Profeta', ['profeta', 'profetisa']),
       ('Sacerdote', ['sacerdote', 'sacerdotal']),
       ('Levita', ['levita']),
       ('Juez', ['juez', 'jueza']),
@@ -265,10 +270,23 @@ KW = [('Rey', ['rey', 'reina', 'trono', 'corona', 'monarca']),
       ('Apóstol', ['apóstol', 'apostol']),
       ('Misionero', ['misionero', 'misionera']),
       ('Evangelizador', ['evangelizador'])]
-KW_SUB = {p: 'Ficha de Personaje: ' + {'Rey': 'Reyes', 'Sumo sacerdote': 'Sumo Sacerdotes',
+KW_SUB = {p: 'Ficha de Personaje: ' + {'Rey': 'Reyes', 'Profeta': 'Profetas',
+          'Sumo sacerdote': 'Sumo Sacerdotes',
           'Levita': 'Levitas', 'Juez': 'Jueces', 'Soldado': 'Soldados',
           'Sacerdote': 'Sacerdotes', 'Funcionario': 'Funcionarios',
           'Escriba': 'Escribas'}.get(p, p) for p, _ in KW}
+
+GRUPO_PROF = {
+    'Profetas': ('Profeta', 'Ficha de Personaje: Profetas'),
+    'Reyes de Judá': ('Rey', 'Ficha de Personaje: Reyes'),
+    'Reyes de Israel': ('Rey', 'Ficha de Personaje: Reyes'),
+    'Un solo reino': ('Rey', 'Ficha de Personaje: Reyes'),
+    'Época de los jueces': ('Juez', 'Ficha de Personaje: Jueces'),
+}
+
+def role_of_grupo(k):
+    g = (targets[k].get('grupo') or '').strip()
+    return GRUPO_PROF.get(g, (None, None))
 
 def role_of_xlsx(k):
     t = targets[k]
@@ -288,7 +306,7 @@ for e in hechos:
     keys = []
     for tok in person_tokens(e['personajes']):
         if es_persona(tok):
-            k = index.get(norm(tok))
+            k = index.get(person_index_key(tok))
             if k: keys.append(k)
     for a in keys:
         for b in keys:
@@ -317,7 +335,9 @@ for k in order:
     era_counter = Counter(h['era'] for h in t['hitos'])
     era = era_counter.most_common(1)[0][0] if era_counter else era_key(t['grupo'])
     seccion = t['seccion'] or SEC_POR_ERA.get(era, '')
-    prof, prof_sub = role_of_xlsx(k)
+    prof, prof_sub = role_of_grupo(k)
+    if not prof:
+        prof, prof_sub = role_of_xlsx(k)
     if not prof:
         prof = role_of_texto(k)
         prof_sub = KW_SUB.get(prof, '') if prof else ''

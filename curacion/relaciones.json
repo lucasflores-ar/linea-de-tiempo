@@ -18,6 +18,10 @@
     { "a": 74, "b": 77, "tipo": "paralelo", "nota": "Dos caídas paralelas: Samaria (reino del norte) y Jerusalén (reino del sur)." },
     { "a": 33, "b": 34, "tipo": "paralelo", "nota": "Rahab y los espías preparan el cruce del Jordán." },
     { "a": 142, "b": 144, "tipo": "paralelo", "nota": "Primer y segundo viaje misionero de Pablo." },
-    { "a": 144, "b": 146, "tipo": "paralelo", "nota": "Segundo y tercer viaje misionero de Pablo." }
+    { "a": 144, "b": 146, "tipo": "paralelo", "nota": "Segundo y tercer viaje misionero de Pablo." },
+    { "a": 295, "b": 5, "tipo": "causa", "nota": "Sem, hijo de Noé, entró en el arca y sobrevivió al Diluvio universal." },
+    { "a": 5, "b": 296, "tipo": "causa", "nota": "Arpaksad nació 2 años después del Diluvio, cuando Sem tenía 100 años." },
+    { "a": 297, "b": 12, "tipo": "causa", "nota": "Tras la muerte de Sara (1881), Isaac se casó con Rebeca (1878 a.e.c.)." },
+    { "a": 12, "b": 298, "tipo": "causa", "nota": "Sem murió 10 años después del matrimonio de Isaac; Abrahán tenía unos 150 años." }
   ]
 }

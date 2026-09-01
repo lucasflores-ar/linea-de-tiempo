@@ -302,6 +302,18 @@
       "defectos_refs": "Génesis 9:20-21",
       "leccion": "La fe se demuestra obedeciendo instrucciones que otros no comprenden"
     },
+    "Sem": {
+      "genero": "M",
+      "profesion": "Patriarca",
+      "versiculo_clave": "Génesis 9:26",
+      "opinion_jehova": "Antepasado de Abrahán; recibió la bendición de Noé; su descendencia incluye al Mesías",
+      "opinion_ref": "Génesis 9:26-27; Génesis 11:10-26; Lucas 3:36",
+      "cualidades": "Sobrevivió al Diluvio en el arca; continuó la línea genealógica hacia Abrahán",
+      "cualidades_refs": "Génesis 7:13; Génesis 11:10-26",
+      "defectos": "",
+      "defectos_refs": "",
+      "leccion": "Jehová preservó una línea de descendencia fiel desde Noé hasta las promesas a Abrahán"
+    },
     "Saúl": {
       "genero": "M",
       "tribu": "Benjamín",
@@ -848,6 +860,19 @@
       "defectos": "En su vejez confió en médicos en lugar de buscar plenamente a Jehová",
       "defectos_refs": "2 Crónicas 16:12-13",
       "leccion": "La fidelidad juvenil debe sostenerse hasta el final de la vida"
+    },
+    "Hosea": {
+      "genero": "M",
+      "profesion": "Rey",
+      "versiculo_clave": "2 Reyes 17:1",
+      "opinion_jehova": "Último rey del reino de diez tribus; reinó 9 años desde c. 748",
+      "opinion_ref": "2 Reyes 17:1-6",
+      "opinion_cita": "Parece que alrededor del año 748 Hosea es reconocido plenamente como rey o quizás consigue el apoyo del monarca asirio Tiglat-Piléser III.",
+      "cualidades": "",
+      "cualidades_refs": "",
+      "defectos": "",
+      "defectos_refs": "",
+      "leccion": "Bajo su reinado Samaria fue sitiada y cayó, poniendo fin al reino del norte"
     },
     "Herodes": {
       "genero": "M",

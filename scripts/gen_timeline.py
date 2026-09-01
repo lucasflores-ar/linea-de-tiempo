@@ -142,6 +142,14 @@ for h in hechos:
         't': temas_de(h),
         'nq': len(q_por_hecho[h['id']]),
         'g': grupo_por_evento.get(int(h['id'])),   # id de grupo anidado (null si raiz)
+        'jw': (h.get('jw_codigo') or '').strip() or None,
+        'jwl': (h.get('jw_linea') or '').strip() or None,
+        'jwlabel': (h.get('etiqueta_jw') or '').strip() or None,
+        'fa_fin': fnum(h.get('fecha_fin')),
+        'ft_fin': (h.get('fecha_fin_texto') or '').strip() or None,
+        'mfase': (h.get('ministerio_fase') or '').strip() or None,
+        'mcuando': (h.get('ministerio_cuando') or '').strip() or None,
+        'fest': (h.get('fecha_estimada') or '').strip() in ('1', 'true', 'yes'),
     })
 
 # preguntas con fecha (para busqueda global y para validar cobertura)
@@ -152,6 +160,7 @@ for r in rows:
         'id': r['id'],
         'q': r['pregunta'],
         'cat': r['categoria'],
+        'a': r['respuesta_correcta'],
         'fa': fa,
         'ft': r['fecha_suceso'],
         'era': r['era_suceso'],
@@ -173,9 +182,113 @@ for pe in personajes:
         'seccion': pe['seccion'],
         'grupo': pe['grupo'],
         'nota': pe['nota'],
+        'ref': pe.get('referencia') or '',
+        'ie': str(pe.get('ini_est', '0')).strip() in ('1', 'true', 'yes'),
+        'fe': str(pe.get('fin_est', '0')).strip() in ('1', 'true', 'yes'),
     })
 
-data = {'eventos': evts, 'preguntas': qdata, 'personajes': pers, 'grupos': grupos_out, 'relaciones': relaciones_out}
+def build_jw_sections(spec, evts, key='lineas'):
+    id_to_evt = {e['id']: e for e in evts}
+    out = []
+    for linea in spec.get(key, []):
+        ev_ids = []
+        for ev in linea.get('eventos', []):
+            if 'hecho_id' in ev:
+                ev_ids.append(int(ev['hecho_id']))
+            elif 'clave' in ev:
+                match = next(
+                    (e for e in evts
+                     if e.get('jwlabel') == ev.get('etiqueta_jw')
+                     and e.get('jw') == linea.get('codigo')),
+                    None,
+                )
+                if match:
+                    ev_ids.append(match['id'])
+        fes = [id_to_evt[i]['fa'] for i in ev_ids if i in id_to_evt and id_to_evt[i]['fa'] is not None]
+        fes_fin = [id_to_evt[i].get('fa_fin') or id_to_evt[i]['fa']
+                   for i in ev_ids if i in id_to_evt and id_to_evt[i]['fa'] is not None]
+        out.append({
+            'codigo': linea['codigo'],
+            'titulo': linea['titulo'],
+            'seccion': linea.get('seccion'),
+            'eventos': ev_ids,
+            'fa_min': min(fes) if fes else None,
+            'fa_max': max(fes_fin) if fes_fin else (max(fes) if fes else None),
+        })
+    return out
+
+data = {'eventos': evts, 'preguntas': qdata, 'personajes': pers, 'grupos': grupos_out, 'relaciones': relaciones_out, '_version': 2}
+
+# líneas de tiempo ilustradas JW (B2–B10)
+JW_PATH = repo('curacion', 'jw_lineas_tiempo.json')
+if os.path.exists(JW_PATH):
+    try:
+        with open(JW_PATH, encoding='utf-8') as f:
+            data['jw_lineas'] = build_jw_sections(json.load(f), evts, 'lineas')
+    except Exception as e:
+        print('[warn] jw_lineas_tiempo:', e)
+
+# tablas del ministerio de Jesús (J1–J4)
+JW_MIN = repo('curacion', 'jw_ministerio_jesus.json')
+if os.path.exists(JW_MIN):
+    try:
+        with open(JW_MIN, encoding='utf-8') as f:
+            data['ministerio_fases'] = build_jw_sections(json.load(f), evts, 'fases')
+    except Exception as e:
+        print('[warn] jw_ministerio_jesus:', e)
+
+# última semana de Jesús (B12: días de nisán)
+JW_SEM = repo('curacion', 'jw_ultima_semana.json')
+if os.path.exists(JW_SEM):
+    try:
+        with open(JW_SEM, encoding='utf-8') as f:
+            data['ultima_semana_dias'] = build_jw_sections(json.load(f), evts, 'dias')
+    except Exception as e:
+        print('[warn] jw_ultima_semana:', e)
+
+# viajes misioneros de Pablo (P1–P4)
+JW_PAB = repo('curacion', 'jw_viajes_pablo.json')
+if os.path.exists(JW_PAB):
+    try:
+        with open(JW_PAB, encoding='utf-8') as f:
+            data['viajes_pablo'] = build_jw_sections(json.load(f), evts, 'viajes')
+    except Exception as e:
+        print('[warn] jw_viajes_pablo:', e)
+
+# reyes y profetas (A6)
+JW_RP = repo('curacion', 'jw_reyes_profetas.json')
+if os.path.exists(JW_RP):
+    try:
+        with open(JW_RP, encoding='utf-8') as f:
+            rp = json.load(f)
+            partes_out = []
+            for parte in rp.get('partes', []):
+                rey_ids = []
+                for rey in parte.get('judah', []) + parte.get('israel', []):
+                    clave = rey.get('clave', '')
+                    match = next(
+                        (e for e in evts
+                         if e.get('jwlabel') == clave and e.get('jw') == parte['codigo']),
+                        None,
+                    )
+                    if match:
+                        rey_ids.append(match['id'])
+                prof_hechos = []
+                for prof in parte.get('profetas', []):
+                    prof_hechos.extend(prof.get('hecho_ids', []))
+                partes_out.append({
+                    'codigo': parte['codigo'],
+                    'titulo': parte['titulo'],
+                    'rango': parte.get('rango'),
+                    'judah': parte.get('judah', []),
+                    'israel': parte.get('israel', []),
+                    'profetas': parte.get('profetas', []),
+                    'rey_hecho_ids': rey_ids,
+                    'profeta_hecho_ids': sorted(set(prof_hechos)),
+                })
+            data['reyes_profetas'] = partes_out
+    except Exception as e:
+        print('[warn] jw_reyes_profetas:', e)
 
 # enriquecer grupos con rango de fechas de sus eventos
 for g in grupos_out:
@@ -185,12 +298,15 @@ for g in grupos_out:
     g['n_ev'] = len(g['eventos'])
     g['nq'] = sum(e['nq'] for e in evts if e['id'] in g['eventos'])
 
-js = '/* GENERADO AUTOMATICAMENTE */\nwindow.LT_DATA = ' + json.dumps(data, ensure_ascii=False) + ';\n'
+js = '/* GENERADO AUTOMATICAMENTE — incluye respuesta_correcta en preguntas.a */\n'
+js += 'window.LT_DATA = ' + json.dumps(data, ensure_ascii=False) + ';\n'
 open(OUT, 'w', encoding='utf-8').write(js)
 
 # reporte
 print('eventos:', len(evts))
 print('preguntas:', len(qdata))
+na = sum(1 for r in qdata if not (r.get('a') or '').strip())
+print('preguntas con respuesta:', len(qdata) - na, '| sin respuesta:', na)
 temas = collections.Counter()
 for e in evts:
     for t in e['t']:

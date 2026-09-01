@@ -2,16 +2,34 @@
   "version": 1,
   "grupos": [
     {
+      "id": "antediluviano",
+      "nombre": "Período antediluviano",
+      "descripcion": "De la creación de Adán al Diluvio: patriarcas, Nefilim, arca de Noé y juicio divino (4026–2370 a. E. C.).",
+      "evento_ids": [1, 2, 3, 4, 299, 300, 301, 302, 303, 304, 305, 306, 5]
+    },
+    {
+      "id": "post-diluviano",
+      "nombre": "Período post-diluviano",
+      "descripcion": "Del arca a los Jueces: Babel, patriarcas, Egipto, Éxodo, Ley y conquista de Canaán (2369–1380 a. E. C.).",
+      "evento_ids": [5, 307, 296, 6, 7, 10, 308, 11, 297, 309, 15, 293, 22, 24, 310, 32, 34, 35, 311]
+    },
+    {
+      "id": "genealogia-sem",
+      "nombre": "De Noé a Abrahán (Sem)",
+      "descripcion": "Genealogía clave: engendrar hijos, nacimiento de Sem y Arpaksad, muerte de Sara, matrimonio de Isaac y muerte de Sem.",
+      "evento_ids": [294, 295, 5, 296, 297, 12, 298]
+    },
+    {
       "id": "jose-egipto",
       "nombre": "José en Egipto",
       "descripcion": "De esclavo vendido por sus hermanos a segundo gobernante de Egipto: los sueños de Faraón y la reunión con su familia.",
-      "evento_ids": [15, 16, 17]
+      "evento_ids": [15, 16, 17, 194, 293]
     },
     {
       "id": "conquista-canaan",
       "nombre": "Conquista de Canaán",
       "descripcion": "Entrada en la Tierra Prometida: espías, cruce del Jordán, caída de Jericó y reparto del territorio.",
-      "evento_ids": [33, 34, 35, 36, 37, 38]
+      "evento_ids": [33, 34, 35, 36, 37, 38, 196, 197]
     },
     {
       "id": "elias-eliseo",
@@ -38,10 +56,40 @@
       "evento_ids": [85, 86, 87, 88, 89]
     },
     {
+      "id": "reino-david-salomon",
+      "nombre": "Reino de David y Salomón",
+      "descripcion": "Un solo reino en Israel: reinados de David y Salomón y el pacto davídico.",
+      "evento_ids": [198, 199, 57, 60, 61, 62, 63]
+    },
+    {
+      "id": "ministerio-jesus",
+      "nombre": "Ministerio de Jesús",
+      "descripcion": "Del bautismo a la resurrección: las cuatro fases del ministerio según las tablas JW (J1–J4).",
+      "evento_ids": [111, 112, 114, 115, 116, 117, 119, 120, 121, 122, 123, 124, 125, 126, 127, 131, 132, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239]
+    },
+    {
+      "id": "ultima-semana-jesus",
+      "nombre": "Última semana de Jesús",
+      "descripcion": "Del 8 al 16 de nisán (33 e.c.): entrada triunfal, última cena, muerte y resurrección según la lámina B12.",
+      "evento_ids": [126, 127, 128, 129, 130, 131, 132, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253]
+    },
+    {
+      "id": "reyes-profetas-a6",
+      "nombre": "Reyes y profetas (A6)",
+      "descripcion": "Comparación de reinados de Judá e Israel y ministerio profético (láminas A6).",
+      "evento_ids": [65, 74, 77, 82, 104, 105, 106, 107, 172, 179, 182, 186, 187, 188, 191, 171]
+    },
+    {
+      "id": "difusion-cristianismo",
+      "nombre": "Difusión del cristianismo",
+      "descripcion": "Pentecostés y el inicio de la predicación cristiana en Jerusalén.",
+      "evento_ids": [134]
+    },
+    {
       "id": "pasion-resurreccion",
       "nombre": "Pasión y resurrección de Jesús",
-      "descripcion": "La semana final: entrada triunfal, última cena, crucifixión, resurrección y ascensión.",
-      "evento_ids": [126, 127, 128, 129, 130, 131, 132, 133]
+      "descripcion": "Getsemaní, juicio, crucifixión y ascensión.",
+      "evento_ids": [128, 129, 130, 133]
     },
     {
       "id": "pablo-misionero",

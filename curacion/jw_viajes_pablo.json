@@ -1,0 +1,55 @@
+{
+  "version": 1,
+  "nota": "Leyenda JW: Los viajes de Pablo (P1–P4). hecho_id enlaza sucesos existentes.",
+  "viajes": [
+    {
+      "codigo": "P1",
+      "titulo": "Primer viaje misionero",
+      "viaje_cuando": "c. 47-48 e.c.",
+      "seccion": "S3",
+      "fecha_fin": 48,
+      "fecha_fin_texto": "48 E. C.",
+      "eventos": [
+        {"hecho_id": 142, "etiqueta_jw": "Primer viaje misionero"}
+      ]
+    },
+    {
+      "codigo": "P2",
+      "titulo": "Segundo viaje misionero",
+      "viaje_cuando": "c. 49-52 e.c.",
+      "seccion": "S3",
+      "fecha_fin": 52,
+      "fecha_fin_texto": "52 E. C.",
+      "eventos": [
+        {"hecho_id": 144, "etiqueta_jw": "Segundo viaje misionero"},
+        {"hecho_id": 145, "etiqueta_jw": "Pablo predica en el Areópago de Atenas"}
+      ]
+    },
+    {
+      "codigo": "P3",
+      "titulo": "Tercer viaje misionero",
+      "viaje_cuando": "c. 52-56 e.c.",
+      "seccion": "S3",
+      "fecha_fin": 56,
+      "fecha_fin_texto": "56 E. C.",
+      "eventos": [
+        {"hecho_id": 146, "etiqueta_jw": "Tercer viaje misionero"},
+        {"hecho_id": 147, "etiqueta_jw": "Revuelta de los artesanos en Éfeso"},
+        {"hecho_id": 148, "etiqueta_jw": "Pablo es arrestado en Jerusalén"}
+      ]
+    },
+    {
+      "codigo": "P4",
+      "titulo": "Viaje a Roma y cautiverio",
+      "viaje_cuando": "c. 58-61 e.c.",
+      "seccion": "S3",
+      "fecha_fin": 61,
+      "fecha_fin_texto": "61 E. C.",
+      "eventos": [
+        {"hecho_id": 149, "etiqueta_jw": "Pablo ante Félix y Festo en Cesarea"},
+        {"hecho_id": 150, "etiqueta_jw": "Naufragio en camino a Roma"},
+        {"hecho_id": 151, "etiqueta_jw": "Pablo predica bajo arresto domiciliario en Roma"}
+      ]
+    }
+  ]
+}

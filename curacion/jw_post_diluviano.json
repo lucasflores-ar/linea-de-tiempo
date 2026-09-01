@@ -1,0 +1,207 @@
+{
+  "version": 1,
+  "nota": "Período post-diluviano (2369–1380 a. E. C.). hecho_id parchea sucesos existentes; clave crea nuevos. Usar Nemrod y Moria.",
+  "lineas": [
+    {
+      "codigo": "POST",
+      "titulo": "Período post-diluviano",
+      "eventos": [
+        {
+          "hecho_id": 5,
+          "etiqueta_jw": "Fin del Diluvio",
+          "descripcion": "Tras un año y diez días las aguas se retiran; Noé, Sem, Cam, Jafet y sus esposas salen del arca. Comienza la repoblación de la tierra."
+        },
+        {
+          "clave": "salida_arca_pacto",
+          "etiqueta_jw": "Salida del arca y pacto del arcoíris",
+          "nombre": "Salida del arca y pacto del arcoíris",
+          "descripcion": "Noé ofrece un sacrificio de gratitud. Dios establece el pacto del arcoíris, prometiendo no volver a destruir la carne con un diluvio global y prohibiendo el consumo de sangre. Tras la embriaguez de Noé, pronuncia la maldición sobre Canaán y bendice a Sem y Jafet.",
+          "fecha_texto": "2369-2368 a. E. C.",
+          "fecha_anio": -2369,
+          "fecha_fin": -2368,
+          "fecha_fin_texto": "2368 a. E. C.",
+          "era": "POSTDILUVIANO",
+          "lugar_antiguo": "Montes de Ararat",
+          "lat": "39.7",
+          "lon": "44.3",
+          "tipo_suceso": "pacto",
+          "personajes": "Noé, Sem, Cam, Jafet, Canaán",
+          "referencia": "Génesis 8:15-9:27",
+          "libro": "GÉNESIS",
+          "capitulo_inicio": "8",
+          "capitulo_fin": "9"
+        },
+        {
+          "hecho_id": 296,
+          "etiqueta_jw": "Nacimiento de Arpaksad",
+          "personajes": "Sem, Arpaksad, Noé"
+        },
+        {
+          "hecho_id": 6,
+          "etiqueta_jw": "Torre de Babel y dispersión",
+          "nombre": "Torre de Babel y dispersión",
+          "descripcion": "Bajo la tiranía de Nemrod, bisnieto de Noé, la humanidad desobedece el mandato de esparcirse y construye Babel con una torre en Sinar para hacerse un nombre famoso. Dios confunde su idioma y dispersa a las familias humanas, dando origen a las naciones.",
+          "fecha_texto": "2269 a. E. C.",
+          "fecha_anio": -2269,
+          "personajes": "Nemrod, Noé, Sem, Arpaksad, Selah, Éber, Péleg",
+          "referencia": "Génesis 10:8-12; 11:1-9",
+          "tipo_suceso": "dispersión"
+        },
+        {
+          "hecho_id": 7,
+          "etiqueta_jw": "Pacto abrahámico / entrada en Canaán",
+          "nombre": "Pacto abrahámico / entrada en Canaán",
+          "descripcion": "Abrahán abandona Ur de los Caldeos a los 75 años. Tras la muerte de Taré en Harán, viaja a Canaán; Jehová valida el pacto abrahámico, prometiendo la tierra a su descendencia. Marca el inicio de los 430 años hasta la Ley del Sinaí.",
+          "fecha_texto": "1943 a. E. C.",
+          "fecha_anio": -1943,
+          "personajes": "Abrahán, Sara, Lot, Sem, Taré",
+          "referencia": "Génesis 12:1-7; Gálatas 3:17"
+        },
+        {
+          "hecho_id": 10,
+          "etiqueta_jw": "Destrucción de Sodoma y Gomorra",
+          "descripcion": "Por la depravación extrema de las ciudades de la llanura, Dios envía ángeles a rescatar a Lot. Jehová hace llover fuego y azufre sobre Sodoma y Gomorra; la esposa de Lot se convierte en columna de sal al mirar atrás.",
+          "fecha_texto": "1919 a. E. C.",
+          "fecha_anio": -1919,
+          "personajes": "Abrahán, Sara, Lot, sus hijas"
+        },
+        {
+          "clave": "nacimiento_isaac",
+          "etiqueta_jw": "Nacimiento de Isaac",
+          "nombre": "Nacimiento de Isaac",
+          "descripcion": "Nace Isaac de forma milagrosa cuando Abrahán tiene 100 años y Sara 90 años.",
+          "fecha_texto": "1918 a. E. C.",
+          "fecha_anio": -1918,
+          "era": "PATRIARCAS",
+          "lugar_antiguo": "Beer-seba / Canaán",
+          "tipo_suceso": "nacimiento",
+          "personajes": "Isaac, Abrahán, Sara, Sem, Éber",
+          "referencia": "Génesis 21:1-5",
+          "libro": "GÉNESIS",
+          "capitulo_inicio": "21",
+          "capitulo_fin": "5"
+        },
+        {
+          "hecho_id": 11,
+          "etiqueta_jw": "Sacrificio de Isaac en Moria",
+          "nombre": "Sacrificio de Isaac en Moria",
+          "descripcion": "Dios prueba la fe de Abrahán pidiéndole que ofrezca a Isaac en sacrificio en el monte Moria. Un ángel lo detiene y Dios provee un carnero; ratifica el pacto bajo juramento.",
+          "fecha_texto": "c. 1893 a. E. C.",
+          "fecha_anio": -1893,
+          "lugar_antiguo": "Monte Moria",
+          "personajes": "Abrahán, Isaac, Sara, Sem, Éber",
+          "referencia": "Génesis 22:1-18"
+        },
+        {
+          "hecho_id": 297,
+          "etiqueta_jw": "Muerte de Sara",
+          "personajes": "Sara, Abrahán, Isaac, Sem, Éber"
+        },
+        {
+          "clave": "nacimiento_jacob_esau",
+          "etiqueta_jw": "Nacimiento de Jacob y Esaú",
+          "nombre": "Nacimiento de Jacob y Esaú",
+          "descripcion": "Isaac de 60 años y Rebeca tienen gemelos. Más tarde Esaú vende su primogenitura a Jacob por un plato de guisado rojo.",
+          "fecha_texto": "1858 a. E. C.",
+          "fecha_anio": -1858,
+          "era": "PATRIARCAS",
+          "lugar_antiguo": "Canaán",
+          "tipo_suceso": "nacimiento",
+          "personajes": "Jacob, Esaú, Isaac, Rebeca, Éber, Abrahán",
+          "referencia": "Génesis 25:21-34",
+          "libro": "GÉNESIS",
+          "capitulo_inicio": "25",
+          "capitulo_fin": "34"
+        },
+        {
+          "hecho_id": 15,
+          "etiqueta_jw": "José vendido a Egipto",
+          "nombre": "José vendido a Egipto",
+          "descripcion": "Por la envidia de sus hermanos, José es vendido como esclavo y llevado a Egipto, preservando la línea mesiánica.",
+          "fecha_texto": "c. 1750 a. E. C.",
+          "fecha_anio": -1750,
+          "personajes": "José, Jacob, Judá, sus hermanos"
+        },
+        {
+          "hecho_id": 293,
+          "etiqueta_jw": "Entrada de Jacob a Egipto",
+          "nombre": "Entrada de Jacob a Egipto",
+          "descripcion": "Durante el hambre, Jacob traslada a 70 personas de su familia a la región de Gosén, donde José los recibe como vicegobernador.",
+          "fecha_texto": "1728 a. E. C.",
+          "fecha_anio": -1728,
+          "personajes": "Jacob, José, Israel, Faraón"
+        },
+        {
+          "hecho_id": 22,
+          "etiqueta_jw": "Éxodo de Egipto",
+          "nombre": "Éxodo de Egipto",
+          "descripcion": "Tras las diez plagas y la institución de la Pascua, Israel sale de Egipto; Dios abre el Mar Rojo y sepulta al ejército egipcio perseguidor.",
+          "fecha_texto": "1513 a. E. C.",
+          "fecha_anio": -1513,
+          "personajes": "Moisés, Aarón, Josué, Caleb, Faraón, Israel"
+        },
+        {
+          "hecho_id": 24,
+          "etiqueta_jw": "Pacto de la Ley en el Sinaí",
+          "nombre": "Pacto de la Ley en el Sinaí",
+          "descripcion": "En el monte Sinaí Dios entrega los Diez Mandamientos y el código de la Ley mosaica; se construye el tabernáculo.",
+          "fecha_texto": "1513 a. E. C.",
+          "fecha_anio": -1513,
+          "personajes": "Moisés, Aarón, Josué, Caleb, Israel"
+        },
+        {
+          "clave": "travesia_desierto",
+          "etiqueta_jw": "Travesía del desierto (40 años)",
+          "nombre": "Travesía del desierto (40 años)",
+          "descripcion": "Por falta de fe tras el informe de los diez espías rebeldes, la generación adulta es condenada a vagar 40 años en el desierto hasta su muerte.",
+          "fecha_texto": "1513-1473 a. E. C.",
+          "fecha_anio": -1513,
+          "fecha_fin": -1473,
+          "fecha_fin_texto": "1473 a. E. C.",
+          "era": "EXODO / DESIERTO",
+          "lugar_antiguo": "Desierto de Sinaí",
+          "tipo_suceso": "travesía",
+          "personajes": "Moisés, Aarón, Josué, Caleb, Israel",
+          "referencia": "Números 14:26-35; Deuteronomio 34:5",
+          "libro": "NÚMEROS",
+          "capitulo_inicio": "14",
+          "capitulo_fin": "35"
+        },
+        {
+          "hecho_id": 32,
+          "etiqueta_jw": "Muerte de Moisés",
+          "descripcion": "Moisés muere a los 120 años en el monte Nebo (Pisga) sin entrar en Canaán, tras entregar el liderazgo a Josué.",
+          "personajes": "Moisés, Josué, Aarón, Israel"
+        },
+        {
+          "hecho_id": 34,
+          "etiqueta_jw": "Entrada a Canaán / cruce del Jordán",
+          "nombre": "Entrada a Canaán / cruce del Jordán",
+          "descripcion": "Liderados por Josué, los israelitas cruzan milagrosamente el Jordán en seco y comienzan la conquista de la Tierra Prometida.",
+          "personajes": "Josué, Caleb, Eleazar, Israel"
+        },
+        {
+          "hecho_id": 35,
+          "etiqueta_jw": "Caída de Jericó",
+          "personajes": "Josué, Israel, Rahab"
+        },
+        {
+          "clave": "muerte_josue_jueces",
+          "etiqueta_jw": "Muerte de Josué / inicio de los Jueces",
+          "nombre": "Muerte de Josué / inicio de los Jueces",
+          "descripcion": "Josué muere a los 110 años tras repartir la tierra entre las tribus. Con la muerte de los ancianos de su generación, Israel cae en ciclos de apostasía e inicia el período de los Jueces con Otoniel.",
+          "fecha_texto": "c. 1380 a. E. C.",
+          "fecha_anio": -1380,
+          "era": "JUECES",
+          "lugar_antiguo": "Timnat-serah (Efraín)",
+          "tipo_suceso": "transición",
+          "personajes": "Josué, Caleb, Eleazar, Otoniel",
+          "referencia": "Josué 24:29-31; Jueces 2:7-16",
+          "libro": "JOSUÉ",
+          "capitulo_inicio": "24",
+          "capitulo_fin": "31"
+        }
+      ]
+    }
+  ]
+}

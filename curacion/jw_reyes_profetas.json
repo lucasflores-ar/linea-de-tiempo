@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "nota": "Láminas A6 (Parte 1) y continuación (Parte 2): reyes de Judá e Israel y profetas. fechas_exactas=true solo cuando hay ancla bíblica o año explícito en la lámina.",
+  "partes": [
+    {
+      "codigo": "A6",
+      "titulo": "Los profetas y los reyes de Judá e Israel (Parte 1)",
+      "seccion": "S2",
+      "rango": [1000, 800],
+      "judah": [
+        {"clave": "rey_rehoboam", "nombre": "Rehoboam", "inicio": -997, "fin": -980, "anos": 17, "fechas_exactas": true, "referencia": "1 Reyes 12:1; 14:21"},
+        {"clave": "rey_abias", "nombre": "Abías (Abiyam)", "inicio": -980, "fin": -977, "anos": 3, "fechas_exactas": true, "referencia": "1 Reyes 15:1-2"},
+        {"clave": "rey_asa", "nombre": "Asá", "inicio": -978, "fin": -937, "anos": 41, "fechas_exactas": true, "referencia": "1 Reyes 15:9-10"},
+        {"clave": "rey_jehosafat", "nombre": "Jehosafat", "inicio": -937, "fin": -912, "anos": 25, "fechas_exactas": true, "referencia": "1 Reyes 22:42"},
+        {"clave": "rey_jehoram_juda", "nombre": "Jehoram (Judá)", "inicio": -913, "fin": -905, "anos": 8, "fechas_exactas": true, "referencia": "2 Reyes 8:17"},
+        {"clave": "rey_ocozias_juda", "nombre": "Ocozías (Judá)", "inicio": -906, "fin": -905, "anos": 1, "fechas_exactas": false, "circa": true, "referencia": "2 Reyes 8:26"},
+        {"clave": "rey_atalia", "nombre": "Atalía", "inicio": -905, "fin": -899, "anos": 6, "fechas_exactas": false, "circa": true, "referencia": "2 Reyes 11:3"},
+        {"clave": "rey_jeoas_juda", "nombre": "Jehoás (Judá)", "inicio": -898, "fin": -858, "anos": 40, "fechas_exactas": true, "referencia": "2 Reyes 12:1"},
+        {"clave": "rey_amasias", "nombre": "Amasías", "inicio": -858, "fin": -829, "anos": 29, "fechas_exactas": true, "referencia": "2 Reyes 14:2"},
+        {"clave": "rey_uzias", "nombre": "Uzías (Azarías)", "inicio": -829, "fin": -777, "anos": 52, "fechas_exactas": true, "referencia": "2 Reyes 15:2"}
+      ],
+      "israel": [
+        {"clave": "rey_jeroboan1", "nombre": "Jeroboán I", "inicio": -997, "fin": -975, "anos": 22, "fechas_exactas": true, "referencia": "1 Reyes 14:20"},
+        {"clave": "rey_nadab", "nombre": "Nadab", "inicio": -976, "fin": -975, "anos": 2, "fechas_exactas": false, "circa": true, "referencia": "1 Reyes 15:25"},
+        {"clave": "rey_basa", "nombre": "Baasá", "inicio": -975, "fin": -951, "anos": 24, "fechas_exactas": false, "circa": true, "referencia": "1 Reyes 15:33"},
+        {"clave": "rey_ela", "nombre": "Elá", "inicio": -952, "fin": -951, "anos": 2, "fechas_exactas": false, "circa": true, "referencia": "1 Reyes 16:8"},
+        {"clave": "rey_zimri", "nombre": "Zimrí", "inicio": -951, "fin": -951, "anos": 0, "duracion_texto": "7 días", "fechas_exactas": false, "circa": true, "referencia": "1 Reyes 16:15"},
+        {"clave": "rey_omri_tibni", "nombre": "Omrí y Tibní", "inicio": -947, "fin": -943, "anos": 4, "fechas_exactas": false, "circa": true, "referencia": "1 Reyes 16:21-22"},
+        {"clave": "rey_omri", "nombre": "Omrí (solo)", "inicio": -940, "fin": -932, "anos": 8, "fechas_exactas": false, "circa": true, "referencia": "1 Reyes 16:23"},
+        {"clave": "rey_acab", "nombre": "Acab", "inicio": -920, "fin": -898, "anos": 22, "fechas_exactas": false, "circa": true, "referencia": "1 Reyes 16:29"},
+        {"clave": "rey_ocozias_israel", "nombre": "Ocozías (Israel)", "inicio": -917, "fin": -915, "anos": 2, "fechas_exactas": false, "circa": true, "referencia": "1 Reyes 22:51"},
+        {"clave": "rey_jehoram_israel", "nombre": "Jehoram (Israel)", "inicio": -917, "fin": -905, "anos": 12, "fechas_exactas": false, "circa": true, "referencia": "2 Reyes 3:1"},
+        {"clave": "rey_jehu", "nombre": "Jehú", "inicio": -905, "fin": -877, "anos": 28, "fechas_exactas": false, "circa": true, "referencia": "2 Reyes 10:36"},
+        {"clave": "rey_jehoacaz", "nombre": "Jehoacaz", "inicio": -876, "fin": -862, "anos": 14, "fechas_exactas": true, "referencia": "2 Reyes 13:1"},
+        {"clave": "rey_jehoacaz_jeoas", "nombre": "Jehoacaz y Jehoás", "inicio": -862, "fin": -859, "anos": 3, "fechas_exactas": false, "circa": true, "nota": "Coregencia según lámina JW"},
+        {"clave": "rey_jeoas_israel", "nombre": "Jehoás (Israel)", "inicio": -859, "fin": -843, "anos": 16, "fechas_exactas": false, "circa": true, "referencia": "2 Reyes 13:10"},
+        {"clave": "rey_jeroboan2", "nombre": "Jeroboán II", "inicio": -844, "fin": -803, "anos": 41, "fechas_exactas": false, "circa": true, "fin_circa": true, "referencia": "2 Reyes 14:23"}
+      ],
+      "profetas": [
+        {"nombre": "Elías", "inicio": -940, "fin": -917, "fechas_exactas": false, "nota": "Estimado por superposición con Omrí/Acab/Ocozías; sin fechas explícitas en la lámina", "hecho_ids": [66, 67, 68, 69, 70, 71]},
+        {"nombre": "Eliseo", "inicio": -917, "fin": -850, "fechas_exactas": false, "nota": "Estimado por superposición con Jehoram/Jehú/Jehoás; sin fechas explícitas en la lámina", "hecho_ids": [72, 73]},
+        {"nombre": "Jonás", "inicio": -844, "fin": -844, "fechas_exactas": false, "nota": "Ancla parcial: profetizó en días de Jeroboán II (2 Reyes 14:25); año del viaje a Nínive no fechado", "hecho_ids": [107]},
+        {"nombre": "Joel", "inicio": -830, "fin": -820, "fechas_exactas": false, "nota": "Sin fechas en el libro; estimado en lámina (~Uzías/Jeroboán II)", "hecho_ids": [182]},
+        {"nombre": "Amós", "inicio": -820, "fin": -810, "fechas_exactas": false, "nota": "Amós 1:1 ubica en Uzías y Jeroboán II, pero sin año; lámina estima ~820-810", "hecho_ids": [172]}
+      ]
+    },
+    {
+      "codigo": "A6b",
+      "titulo": "Los profetas y los reyes de Judá e Israel (Parte 2)",
+      "seccion": "S2",
+      "rango": [800, 600],
+      "judah": [
+        {"clave": "rey_jotan", "nombre": "Jotán", "inicio": -777, "fin": -762, "anos": 16, "fechas_exactas": true, "referencia": "2 Reyes 15:33"},
+        {"clave": "rey_acaz", "nombre": "Acaz", "inicio": -762, "fin": -746, "anos": 16, "fechas_exactas": true, "referencia": "2 Reyes 16:2"},
+        {"clave": "rey_ezequias", "nombre": "Ezequías", "inicio": -746, "fin": -716, "anos": 29, "fechas_exactas": true, "referencia": "2 Reyes 18:2"},
+        {"clave": "rey_manasas", "nombre": "Manasés", "inicio": -716, "fin": -661, "anos": 55, "fechas_exactas": true, "referencia": "2 Reyes 21:1"},
+        {"clave": "rey_amon", "nombre": "Amón", "inicio": -661, "fin": -659, "anos": 2, "fechas_exactas": true, "referencia": "2 Reyes 21:19"},
+        {"clave": "rey_josias", "nombre": "Josías", "inicio": -659, "fin": -628, "anos": 31, "fechas_exactas": true, "referencia": "2 Reyes 22:1"},
+        {"clave": "rey_jehoacaz", "nombre": "Jehoacaz", "inicio": -628, "fin": -628, "anos": 0, "duracion_texto": "3 meses", "fechas_exactas": true, "referencia": "2 Reyes 23:31"},
+        {"clave": "rey_jehoiaquim", "nombre": "Jehoiaquim", "inicio": -628, "fin": -618, "anos": 11, "fechas_exactas": true, "referencia": "2 Reyes 23:36"},
+        {"clave": "rey_joaquin", "nombre": "Joaquín", "inicio": -618, "fin": -617, "anos": 0, "duracion_texto": "3 meses y 10 días", "fechas_exactas": true, "referencia": "2 Reyes 24:8"},
+        {"clave": "rey_sedequias", "nombre": "Sedequías", "inicio": -617, "fin": -607, "anos": 11, "fechas_exactas": true, "referencia": "2 Reyes 24:18"}
+      ],
+      "israel": [
+        {"clave": "rey_zacarias", "nombre": "Zacarías", "inicio": -792, "fin": -791, "anos": 0, "duracion_texto": "6 meses", "fechas_exactas": false, "circa": true, "nota": "Lámina: empieza c.803; reinado confirmado c.792", "referencia": "2 Reyes 15:8"},
+        {"clave": "rey_salum", "nombre": "Salum", "inicio": -791, "fin": -791, "anos": 0, "duracion_texto": "1 mes", "fechas_exactas": false, "circa": true, "referencia": "2 Reyes 15:13"},
+        {"clave": "rey_menahem", "nombre": "Menahem", "inicio": -780, "fin": -770, "anos": 10, "fechas_exactas": false, "circa": true, "referencia": "2 Reyes 15:17"},
+        {"clave": "rey_pecahias", "nombre": "Pecahías", "inicio": -778, "fin": -776, "anos": 2, "fechas_exactas": false, "circa": true, "referencia": "2 Reyes 15:23"},
+        {"clave": "rey_pecah", "nombre": "Pécah", "inicio": -778, "fin": -758, "anos": 20, "fechas_exactas": false, "circa": true, "referencia": "2 Reyes 15:27"},
+        {"clave": "rey_osea_israel", "nombre": "Hosea", "inicio": -748, "fin": -740, "anos": 9, "fechas_exactas": false, "circa": true, "nota": "Reconocido plenamente c.748; posible apoyo de Tiglat-Piléser III", "referencia": "2 Reyes 17:1-6"}
+      ],
+      "eventos_finales": [
+        {"hecho_id": 74, "etiqueta_jw": "Asiria conquista Samaria; fin del reino del norte", "anio": -740},
+        {"hecho_id": 77, "etiqueta_jw": "Babilonia destruye Jerusalén; fin del trono de David", "anio": -607}
+      ],
+      "profetas": [
+        {"nombre": "Oseas", "inicio": -810, "fin": -745, "fechas_exactas": false, "nota": "Lámina A6b: c.810–745 (profeta; no confundir con el rey Hosea)", "hecho_ids": [188]},
+        {"nombre": "Miqueas", "inicio": -775, "fin": -717, "fechas_exactas": false, "nota": "Lámina A6b: c.775–717 (barras difusas; alineado con Jotán–Ezequías)", "hecho_ids": [186]},
+        {"nombre": "Isaías", "inicio": -778, "fin": -732, "fechas_exactas": false, "nota": "Lámina A6b: c.778–732 (barras difusas; inicio al nivel de c.778 Israel)", "hecho_ids": [104]},
+        {"nombre": "Nahúm", "inicio": -659, "fin": -640, "fechas_exactas": false, "nota": "Lámina A6b: c.659–640 (inicio en reinado de Amón/Josías)", "hecho_ids": [187]},
+        {"nombre": "Sofonías", "inicio": -648, "fin": -635, "fechas_exactas": false, "nota": "Lámina A6b: c.648–635 (barras difusas; época de Josías)", "hecho_ids": [191]},
+        {"nombre": "Jeremías", "inicio": -647, "fin": -600, "fechas_exactas": false, "nota": "Lámina A6b: c.647–600+ (inicio año 13 de Josías; barra prolongada más allá de 600)", "hecho_ids": [105, 184]},
+        {"nombre": "Habacuc", "inicio": -628, "fin": -618, "fechas_exactas": false, "nota": "Lámina A6b: c.628–618 (alineado con fin de Josías / Jehoiaquim)", "hecho_ids": [179]},
+        {"nombre": "Daniel", "inicio": -616, "fin": -536, "fin_vida_estimado": -532, "fechas_exactas": false, "nota": "Ministerio c.616–536 (última visión datada: 3.º de Ciro). Muerte estimada c.532 (poco después; casi centenario en 536).", "hecho_ids": [97, 98, 99, 100, 101, 102, 103]},
+        {"nombre": "Ezequiel", "inicio": -617, "fin": -600, "fechas_exactas": false, "nota": "Lámina A6b: c.617–600+ (inicio en línea de 617; barra prolongada más allá de 600)", "hecho_ids": [106]},
+        {"nombre": "Abdías", "inicio": -618, "fin": -610, "fechas_exactas": false, "nota": "Lámina A6b: c.618/617–610 (barras difusas; época de Jehoiaquim/Joaquín)", "hecho_ids": [171]}
+      ]
+    }
+  ]
+}

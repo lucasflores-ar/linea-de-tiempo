@@ -1,0 +1,114 @@
+{
+  "version": 1,
+  "nota": "Líneas de tiempo ilustradas JW.org (códigos B2–B10). hecho_id enlaza sucesos existentes; nuevos se crean por clave unica.",
+  "columnas_csv": ["jw_codigo", "jw_linea", "fecha_fin", "fecha_fin_texto", "etiqueta_jw"],
+  "lineas": [
+    {
+      "codigo": "B1",
+      "titulo": "Genealogía: de Noé a Abrahán",
+      "seccion": "S1",
+      "eventos": [
+        {"clave": "noe_engendra", "etiqueta_jw": "Noé comienza a engendrar hijos", "nombre": "Noé comienza a engendrar hijos", "descripcion": "A los 500 años, Noé engendra a Jafet, Sem y Cam (orden probable de edad).", "fecha_texto": "2470 a. E. C.", "fecha_anio": -2470, "era": "PREHISTORIA / GÉNESIS", "lugar_antiguo": "Antediluviano", "lat": "", "lon": "", "tipo_suceso": "nacimiento", "personajes": "Noé, Sem, Cam, Jafet", "referencia": "Génesis 5:32", "libro": "GÉNESIS", "capitulo_inicio": "5", "capitulo_fin": "32"},
+        {"clave": "nacimiento_sem", "etiqueta_jw": "Nacimiento de Sem", "nombre": "Nacimiento de Sem", "descripcion": "Sem nace cuando Noé tiene 502 años; antepasado directo de Abrahán.", "fecha_texto": "c. 2468 a. E. C.", "fecha_anio": -2468, "era": "PREHISTORIA / GÉNESIS", "lugar_antiguo": "Antediluviano", "lat": "", "lon": "", "tipo_suceso": "nacimiento", "personajes": "Sem, Noé", "referencia": "Génesis 11:10", "libro": "GÉNESIS", "capitulo_inicio": "11", "capitulo_fin": "10"},
+        {"clave": "nacimiento_arpaksad", "etiqueta_jw": "Nacimiento de Arpaksad", "nombre": "Nacimiento de Arpaksad", "descripcion": "Primer hijo de Sem, nacido 2 años después del Diluvio, cuando Sem tenía 100 años.", "fecha_texto": "2368 a. E. C.", "fecha_anio": -2368, "era": "POSTDILUVIANO", "lugar_antiguo": "Mesopotamia", "lat": "", "lon": "", "tipo_suceso": "nacimiento", "personajes": "Sem, Arpaksad", "referencia": "Génesis 11:10", "libro": "GÉNESIS", "capitulo_inicio": "11", "capitulo_fin": "10"},
+        {"clave": "muerte_sara", "etiqueta_jw": "Muerte de Sara", "nombre": "Muerte de Sara", "descripcion": "Sara muere en Hebrón a los 127 años; Abrahán la llora y la entierra en la cueva de Macpela.", "fecha_texto": "1881 a. E. C.", "fecha_anio": -1881, "era": "PATRIARCAS", "lugar_antiguo": "Hebrón", "lat": "31.53", "lon": "35.10", "tipo_suceso": "muerte", "personajes": "Sara, Abrahán", "referencia": "Génesis 23:1-2", "libro": "GÉNESIS", "capitulo_inicio": "23", "capitulo_fin": "2"},
+        {"hecho_id": 12, "etiqueta_jw": "Matrimonio de Isaac y Rebeca"},
+        {"clave": "muerte_sem", "etiqueta_jw": "Muerte de Sem", "nombre": "Muerte de Sem", "descripcion": "Sem muere a los 600 años; Abrahán tiene unos 150 años.", "fecha_texto": "c. 1868 a. E. C.", "fecha_anio": -1868, "era": "PATRIARCAS", "lugar_antiguo": "Mesopotamia", "lat": "", "lon": "", "tipo_suceso": "muerte", "personajes": "Sem, Abrahán", "referencia": "Génesis 11:11", "libro": "GÉNESIS", "capitulo_inicio": "11", "capitulo_fin": "11"}
+      ]
+    },
+    {
+      "codigo": "B2",
+      "titulo": "Génesis y los viajes de los patriarcas",
+      "seccion": "S1",
+      "eventos": [
+        {"hecho_id": 1, "etiqueta_jw": "Creación de Adán"},
+        {"hecho_id": 5, "etiqueta_jw": "Diluvio"},
+        {"hecho_id": 7, "etiqueta_jw": "El pacto con Abrahán entra en vigor"},
+        {"clave": "jacob_egipto", "etiqueta_jw": "La familia de Jacob llega a Egipto", "nombre": "La familia de Jacob llega a Egipto", "descripcion": "Jacob y su familia se establecen en la tierra de Gosén, en Egipto.", "fecha_texto": "1728 a. E. C.", "fecha_anio": -1728, "era": "EGIPTO", "lugar_antiguo": "Gosén, Egipto", "lat": "30.8", "lon": "31.5", "tipo_suceso": "migración", "personajes": "Jacob, José, Israel", "referencia": "Génesis 46:1-47:12", "libro": "GÉNESIS", "capitulo_inicio": "46", "capitulo_fin": "47"},
+        {"hecho_id": 15, "etiqueta_jw": "José vendido por sus hermanos"},
+        {"clave": "muerte_jose", "etiqueta_jw": "Muere José", "nombre": "Muerte de José", "descripcion": "José muere en Egipto a los 110 años; Israel permanece en Gosén.", "fecha_texto": "1657 a. E. C.", "fecha_anio": -1657, "era": "EGIPTO", "lugar_antiguo": "Egipto", "lat": "30.0", "lon": "31.2", "tipo_suceso": "muerte", "personajes": "José, Israel", "referencia": "Génesis 50:22-26", "libro": "GÉNESIS", "capitulo_inicio": "50", "capitulo_fin": "50"}
+      ]
+    },
+    {
+      "codigo": "B3",
+      "titulo": "El éxodo de Egipto",
+      "seccion": "S1",
+      "eventos": [
+        {"hecho_id": 22, "etiqueta_jw": "Los israelitas salen de Egipto"},
+        {"hecho_id": 24, "etiqueta_jw": "Pacto de la Ley mosaica"},
+        {"clave": "josue_sucesor", "etiqueta_jw": "Josué es nombrado sucesor de Moisés", "nombre": "Josué nombrado sucesor de Moisés", "descripcion": "Moisés transfiere el liderazgo a Josué antes de morir en el Pisga.", "fecha_texto": "1473 a. E. C.", "fecha_anio": -1473, "era": "DESIERTO", "lugar_antiguo": "Llanuras de Moab", "lat": "31.5", "lon": "35.7", "tipo_suceso": "designación", "personajes": "Moisés, Josué, Israel", "referencia": "Deuteronomio 31:1-8", "libro": "DEUTERONOMIO", "capitulo_inicio": "31", "capitulo_fin": "31"}
+      ]
+    },
+    {
+      "codigo": "B4",
+      "titulo": "La conquista de la Tierra Prometida",
+      "seccion": "S1",
+      "eventos": [
+        {"hecho_id": 34, "etiqueta_jw": "Israel entra en Canaán"},
+        {"clave": "conquista_mayor_parte", "etiqueta_jw": "Se ha conquistado la mayor parte de la Tierra Prometida", "nombre": "Conquista mayor parte de Canaán", "descripcion": "Josué somete a los reyes de Canaán; la mayor parte del territorio queda bajo control israelita.", "fecha_texto": "1467 a. E. C.", "fecha_anio": -1467, "era": "CONQUISTA", "lugar_antiguo": "Canaán", "lat": "31.9", "lon": "35.2", "tipo_suceso": "conquista", "personajes": "Josué, Israel", "referencia": "Josué 11:23; 21:43-45", "libro": "JOSUÉ", "capitulo_inicio": "11", "capitulo_fin": "21"}
+      ]
+    },
+    {
+      "codigo": "B6",
+      "titulo": "La ocupación de la Tierra Prometida",
+      "seccion": "S1",
+      "eventos": [
+        {"clave": "tribus_tierras", "etiqueta_jw": "Tras la conquista, las tribus reciben sus tierras", "nombre": "Reparto de la Tierra entre las tribus", "descripcion": "Josué reparte Canaán por sorteo entre las doce tribus de Israel.", "fecha_texto": "1467 a. E. C.", "fecha_anio": -1467, "era": "CONQUISTA", "lugar_antiguo": "Silo", "lat": "32.06", "lon": "35.29", "tipo_suceso": "reparto", "personajes": "Josué, Eleazar, las tribus", "referencia": "Josué 13:1-21:45", "libro": "JOSUÉ", "capitulo_inicio": "13", "capitulo_fin": "21"},
+        {"hecho_id": 47, "etiqueta_jw": "Saúl es ungido como rey"}
+      ]
+    },
+    {
+      "codigo": "B7",
+      "titulo": "El reino de David y el de Salomón",
+      "seccion": "S2",
+      "eventos": [
+        {"clave": "reinado_david", "etiqueta_jw": "Reinado de David", "nombre": "Reinado de David", "descripcion": "David reina sobre Judá y luego sobre todo Israel.", "fecha_texto": "1077-1038 a. E. C.", "fecha_anio": -1077, "fecha_fin_texto": "1038 a. E. C.", "fecha_fin": -1038, "era": "MONARQUÍA", "lugar_antiguo": "Jerusalén", "lat": "31.78", "lon": "35.21", "tipo_suceso": "contexto", "personajes": "David", "referencia": "2 Samuel 5:4-5; 1 Reyes 2:11", "libro": "2 SAMUEL", "capitulo_inicio": "5", "capitulo_fin": "5"},
+        {"clave": "reinado_salomon", "etiqueta_jw": "Reinado de Salomón", "nombre": "Reinado de Salomón", "descripcion": "Salomón reina en Jerusalén; edifica el templo.", "fecha_texto": "1037-998 a. E. C.", "fecha_anio": -1037, "fecha_fin_texto": "998 a. E. C.", "fecha_fin": -998, "era": "MONARQUÍA", "lugar_antiguo": "Jerusalén", "lat": "31.78", "lon": "35.21", "tipo_suceso": "contexto", "personajes": "Salomón", "referencia": "1 Reyes 11:42", "libro": "1 REYES", "capitulo_inicio": "1", "capitulo_fin": "11"},
+        {"hecho_id": 57, "etiqueta_jw": "Pacto con David"}
+      ]
+    },
+    {
+      "codigo": "A6",
+      "titulo": "Los profetas y los reyes de Judá e Israel (Parte 1)",
+      "seccion": "S2",
+      "eventos": []
+    },
+    {
+      "codigo": "A6b",
+      "titulo": "Los profetas y los reyes de Judá e Israel (Parte 2)",
+      "seccion": "S2",
+      "eventos": []
+    },
+    {
+      "codigo": "B9",
+      "titulo": "Las potencias mundiales predichas por Daniel",
+      "seccion": "S2",
+      "eventos": [
+        {"hecho_id": 77, "etiqueta_jw": "Babilonia destruye Jerusalén"}
+      ]
+    },
+    {
+      "codigo": "B10",
+      "titulo": "Israel en tiempos de Jesús",
+      "seccion": "S3",
+      "eventos": [
+        {"hecho_id": 108, "etiqueta_jw": "Nacimiento de Jesús"},
+        {"hecho_id": 131, "etiqueta_jw": "Muerte de Jesús"}
+      ]
+    },
+    {
+      "codigo": "B12",
+      "titulo": "La última semana de Jesús en la tierra",
+      "seccion": "S3",
+      "eventos": []
+    },
+    {
+      "codigo": "B13",
+      "titulo": "La difusión del cristianismo",
+      "seccion": "S3",
+      "eventos": [
+        {"hecho_id": 134, "etiqueta_jw": "Se unge a los discípulos con espíritu santo (Pentecostés del año 33 e.c.)"}
+      ]
+    }
+  ]
+}
