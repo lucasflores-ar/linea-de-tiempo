@@ -392,24 +392,30 @@ function renderRowEventMarkers(pe, yMin, yMax, chartW, q){
 }
 
 const LEGACY_DEFAULT_LANES = ['jud','isr','pro'];
-const DEFAULT_LANES = ['pre','jud','isr','pro','jes'];
+const PREV_DEFAULT_LANES = ['pre','jud','isr','pro','jes'];
+const DEFAULT_LANES = ['pre'];
 let didInitialScroll = false;
+let scrollFocusLaneId = null;
 const storedLanes = JSON.parse(localStorage.getItem('lt-par-lanes') || 'null');
 const lanesInit = storedLanes ?? DEFAULT_LANES;
-const lanesMigrated = storedLanes
+const lanesMigratedLegacy = storedLanes
   && storedLanes.length === LEGACY_DEFAULT_LANES.length
   && LEGACY_DEFAULT_LANES.every(id => storedLanes.includes(id));
+const lanesMigratedPrev = storedLanes
+  && storedLanes.length === PREV_DEFAULT_LANES.length
+  && PREV_DEFAULT_LANES.every(id => storedLanes.includes(id));
 let selLanes = new Set(
-  (lanesMigrated ? DEFAULT_LANES : lanesInit)
+  (lanesMigratedLegacy || lanesMigratedPrev ? DEFAULT_LANES : lanesInit)
     .filter(id=>LANE_ORDER.includes(id)),
 );
+if(!selLanes.size) selLanes.add('pre');
 if(selLanes.has('ntesc')){
   selLanes.delete('ntesc');
   selLanes.add('nt-ev');
   selLanes.add('nt-hec');
   selLanes.add('nt-car');
 }
-if(lanesMigrated){
+if(lanesMigratedLegacy || lanesMigratedPrev){
   try{ localStorage.setItem('lt-par-lanes', JSON.stringify([...selLanes])); }catch(e){}
 }
 
@@ -1453,6 +1459,7 @@ function pruneSelLanes(){
   for(const id of [...selLanes]){
     if(!avail.has(id)) selLanes.delete(id);
   }
+  if(!selLanes.size) selLanes.add('pre');
   try{ localStorage.setItem('lt-par-lanes', JSON.stringify([...selLanes])); }catch(e){}
 }
 
@@ -1482,7 +1489,9 @@ function buildAllLaneData(opts = {}){
 }
 
 function yearToX(y, yMin, yMax, width){
-  return ((y - yMin) / (yMax - yMin)) * width;
+  const span = yMax - yMin;
+  if(!Number.isFinite(span) || span <= 0) return width / 2;
+  return ((y - yMin) / span) * width;
 }
 
 function tickStep(span2, yMin, yMax){
@@ -1670,6 +1679,46 @@ function normalizeExclusiveLanes(){
   if(selLanes.has(EXCLUSIVE_LANE_ID) && selLanes.size > 1){
     selLanes = new Set([EXCLUSIVE_LANE_ID]);
   }
+  if(!selLanes.size) selLanes.add('pre');
+}
+
+function representativeYearForLane(id){
+  const f = LANE_FILTERS.find(x=>x.id===id);
+  if(!f) return null;
+  if(f.mode === 'personaje'){
+    const people = D.personajes.filter(p=>p.grupo === f.grupo && p.inicio != null);
+    if(people.length){
+      return people.reduce((sum, p)=> sum + p.inicio, 0) / people.length;
+    }
+  }
+  if(f.mode === 'ministerio') return 30;
+  if(f.mode === 'ultima_semana') return 33.5;
+  if(f.mode === 'tema'){
+    const temas = [f.tema, ...(f.extraTemas || [])];
+    const years = D.eventos
+      .filter(e=> temas.some(t=>(e.t || []).includes(t)) && chartYear(e) != null)
+      .map(chartYear);
+    if(years.length) return years.reduce((a, b)=> a + b, 0) / years.length;
+  }
+  return f.cron;
+}
+
+function scrollFocusYear(yMin, yMax, focusRange){
+  const laneId = scrollFocusLaneId || LANE_ORDER.find(id=> selLanes.has(id)) || 'pre';
+  const rep = representativeYearForLane(laneId);
+  if(rep != null) return Math.min(yMax, Math.max(yMin, rep));
+  return (focusRange[0] + focusRange[1]) / 2;
+}
+
+function syncLaneFilterUi(){
+  laneFiltersEl.querySelectorAll('.lane-check').forEach(label=>{
+    const id = label.dataset.laneId;
+    if(!id) return;
+    const on = selLanes.has(id);
+    label.classList.toggle('on', on);
+    const input = label.querySelector('input');
+    if(input) input.checked = on;
+  });
 }
 
 function applyLaneChipChange(id, checked){
@@ -1681,14 +1730,34 @@ function applyLaneChipChange(id, checked){
       selLanes.delete(EXCLUSIVE_LANE_ID);
       selLanes.add(id);
     }
+    scrollFocusLaneId = id;
+  } else if(selLanes.size <= 1 && selLanes.has(id)){
+    syncLaneFilterUi();
+    return;
   } else {
     selLanes.delete(id);
+    scrollFocusLaneId = LANE_ORDER.find(lid=> selLanes.has(lid)) || 'pre';
   }
+  normalizeExclusiveLanes();
   try{ localStorage.setItem('lt-par-lanes', JSON.stringify([...selLanes])); }catch(e){}
   syncHash();
   render._scrolled = false;
-  buildLaneFilters();
-  render();
+  syncLaneFilterUi();
+  safeRender();
+}
+
+let laneFiltersBound = false;
+function bindLaneFilterEvents(){
+  if(laneFiltersBound || !laneFiltersEl) return;
+  laneFiltersBound = true;
+  laneFiltersEl.addEventListener('click', e=>{
+    const label = e.target.closest('.lane-check');
+    if(!label || !laneFiltersEl.contains(label)) return;
+    e.preventDefault();
+    const id = label.dataset.laneId;
+    if(!id) return;
+    applyLaneChipChange(id, !selLanes.has(id));
+  });
 }
 
 function buildLaneFilters(){
@@ -1699,17 +1768,26 @@ function buildLaneFilters(){
   const sl = scrollHost.scrollLeft;
   laneFiltersEl.innerHTML = availableLaneFilters().map(f=>{
     const on = selLanes.has(f.id);
-    return `<label class="lane-check${on?' on':''}">`+
-      `<input type="checkbox" data-id="${f.id}"${on?' checked':''} />`+
+    return `<label class="lane-check${on?' on':''}" data-lane-id="${f.id}">`+
+      `<input type="checkbox" data-id="${f.id}" tabindex="-1" aria-hidden="true"${on?' checked':''} />`+
       `<span class="filter-dot" style="background:${f.color}"></span>`+
       `<span>${f.label}</span></label>`;
   }).join('');
   scrollHost.scrollLeft = sl;
-  laneFiltersEl.querySelectorAll('input[type=checkbox]').forEach(box=>{
-    box.addEventListener('change', ()=>{
-      applyLaneChipChange(box.dataset.id, box.checked);
-    });
-  });
+  bindLaneFilterEvents();
+}
+
+function safeRender(){
+  try{
+    render();
+  }catch(err){
+    console.error('[linea-paralela] render', err);
+    labelsCol.innerHTML = '';
+    chartCanvas.innerHTML =
+      '<div class="empty-msg" style="padding:24px;color:var(--mut)">'+
+      'No se pudo dibujar la cronología. Probá recargar la página.</div>';
+    axisArea.innerHTML = '';
+  }
 }
 
 function buildPotChips(){
@@ -2726,15 +2804,16 @@ function render(){
   bindDrawerTargets(labelsCol);
 
   if(!didInitialScroll){
-    const focusYear = Math.min(yMax, Math.max(yMin, DEFAULT_FOCUS_YEAR));
-    scrollToYear(focusYear, yMin, yMax, chartW);
+    scrollToYear(scrollFocusYear(yMin, yMax, focusRange), yMin, yMax, chartW);
     didInitialScroll = true;
+    scrollFocusLaneId = null;
   } else if(!autoFit && !render._scrolled){
-    const cx = yearToX((focusRange[0]+focusRange[1])/2, yMin, yMax, chartW);
-    chartScroll.scrollLeft = Math.max(0, cx - chartScroll.clientWidth/2);
+    scrollToYear(scrollFocusYear(yMin, yMax, focusRange), yMin, yMax, chartW);
+    scrollFocusLaneId = null;
     render._scrolled = true;
   } else if(autoFit && !render._scrolled){
     chartScroll.scrollLeft = 0;
+    scrollFocusLaneId = null;
   }
   const scheduleCaptionOverflow = typeof requestAnimationFrame === 'function'
     ? requestAnimationFrame
@@ -3056,7 +3135,7 @@ if(!(D._detailDeferred || (D.preguntas || []).some(p => answerText(p)))){
     }
   });
 }
-render();
+safeRender();
 if(deepEvId){
   const deepEv = D.eventos.find(e=>String(e.id)===deepEvId);
   if(deepEv) openDrawer(deepEv);

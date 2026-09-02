@@ -68,7 +68,13 @@ const ctx={
   },
   innerWidth:1200, innerHeight:800, location:{hash:'',search:''},
   history:{ replaceState(){} },
-  localStorage:{getItem(){return null;},setItem(){}},
+  localStorage:{
+    getItem(k){
+      if(k === 'lt-par-lanes') return JSON.stringify(['jud','isr','pro','jes']);
+      return null;
+    },
+    setItem(){},
+  },
   URLSearchParams: global.URLSearchParams,
   Image: class{ set src(v){ if(this.onload) setTimeout(()=>this.onload(),0); } },
   URL: global.URL,
@@ -242,4 +248,63 @@ if(ntRows < 2){
   console.log('FAIL nt stacking');
   process.exit(1);
 }
+
+// Default sin localStorage: solo chip "Antes del Diluvio"
+const byIdPre = {};
+['labels-col','chart-scroll','chart-canvas','axis-area','lane-filters','search','result-count',
+ 'zoom','zoom-val','opt-markers','opt-connections','opt-potencias','pot-chips','export-btn','fit-btn',
+ 'focus-reset-btn','focus-rect-btn','focus-val','focus-marquee','font-scale',
+ 'viz-style','row-layout','hidden-dock'].forEach(id=>{
+  const el = makeEl('div');
+  if(id.startsWith('opt-')){ el.checked = true; el.type = 'checkbox'; }
+  if(id==='zoom'){ el.value = '2.4'; el.type = 'range'; }
+  if(id==='viz-style'){ el.value = 'editorial'; el.tagName = 'select'; }
+  if(id==='row-layout'){ el.value = 'expanded'; el.tagName = 'select'; }
+  if(id==='fit-btn' || id==='focus-rect-btn'){ el.classList = { _s:new Set(), toggle(){}, add(){}, remove(){}, contains(){return false;} }; el.setAttribute = ()=>{}; }
+  if(id==='focus-reset-btn'){ el.disabled = true; }
+  byIdPre[id]=el;
+});
+byIdPre['chart-scroll'].clientWidth=900;
+byIdPre['chart-scroll'].classList = { toggle(){}, add(){}, remove(){} };
+byIdPre['lane-filters'].parentElement = { classList: { contains(c){ return c === 'quick-scroll'; } } };
+const ctxPre={
+  document:{
+    getElementById(id){ return byIdPre[id]||makeEl('div'); },
+    documentElement:{ style:{ setProperty(){} }, setAttribute(){}, getAttribute(){ return null; } },
+    querySelector(){ return makeEl('div'); },
+    querySelectorAll(){ return []; },
+    createElement(tag){
+      const el = makeEl(tag);
+      if(tag==='canvas') el.getContext = ()=>({
+        scale(){}, fillRect(){}, drawImage(){},
+        measureText(t){ return { width: String(t || '').length * 7 }; },
+        font: '',
+      });
+      return el;
+    },
+    addEventListener(){},
+  },
+  innerWidth:360, innerHeight:640, location:{hash:'',search:''},
+  history:{ replaceState(){} },
+  localStorage:{ getItem(){ return null; }, setItem(){} },
+  matchMedia(q){ return { matches: q.includes('760'), addEventListener(){} }; },
+  URLSearchParams: global.URLSearchParams,
+  Image: class{ set src(v){ if(this.onload) setTimeout(()=>this.onload(),0); } },
+  URL: global.URL, Blob: global.Blob, console, addEventListener(){},
+};
+ctxPre.window=ctxPre;
+vm.createContext(ctxPre);
+vm.runInContext('window.LT_DATA='+JSON.stringify(DATA)+';', ctxPre);
+vm.runInContext(fs.readFileSync(path.join(REPO, 'fichas-personajes.js'), 'utf-8'), ctxPre);
+vm.runInContext(JS, ctxPre, {timeout:8000});
+const preBars = (byIdPre['chart-canvas'].innerHTML.match(/class="bar /g)||[]).length;
+const preOnlyOn = byIdPre['lane-filters'].innerHTML.includes('data-lane-id="pre" checked') ||
+  /data-lane-id="pre"[^>]*>[\s\S]*?checked/.test(byIdPre['lane-filters'].innerHTML);
+const preEmpty = byIdPre['chart-canvas'].innerHTML.includes('empty-msg');
+console.log('default pre barras:', preBars, '| vacío:', preEmpty);
+if(preBars < 3 || preEmpty){
+  console.log('FAIL default pre');
+  process.exit(1);
+}
+
 console.log('PASS');
