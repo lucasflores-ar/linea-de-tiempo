@@ -726,6 +726,172 @@ html[data-viz="waterfall"] #d-title{font-family:var(--font-sans)}
   .pot-strip__label{display:none}
 }
 
+/* ---------- Viewport real del móvil (barras del navegador) ---------- */
+html, body { height: 100dvh; }
+@supports not (height: 100dvh) { html, body { height: 100svh; } }
+
+/* Safe areas: notch de iPhone / barra de gestos Android */
+header {
+  padding-left: max(20px, env(safe-area-inset-left));
+  padding-right: max(20px, env(safe-area-inset-right));
+}
+.axis-area { padding-bottom: env(safe-area-inset-bottom); }
+
+/* ---------- Targets táctiles (solo en pantallas táctiles) ---------- */
+@media (pointer: coarse) {
+  .iconbtn { width: 40px; height: 40px; }
+  .export-btn, .site-nav__link, .pot-chip { padding: 9px 12px; }
+  .onboard-pop__btn { padding: 10px 14px; }
+
+  .evt-marker::before,
+  .evt-marker--in-row::before {
+    content: '';
+    position: absolute;
+    inset: -18px;
+    border-radius: 50%;
+  }
+
+  button, .site-nav__link, .lane-check, .opt-toggle, .hidden-pe-chip {
+    touch-action: manipulation;
+  }
+}
+
+/* ---------- Drawer como bottom sheet (≤520 px) ---------- */
+@media (max-width: 520px) {
+  #drawer {
+    top: auto; left: 0; right: 0; bottom: 0;
+    width: 100%; max-width: none;
+    height: 88dvh;
+    border-left: none;
+    border-top: 1px solid var(--line);
+    border-radius: 16px 16px 0 0;
+    transform: translateY(105%);
+  }
+  #drawer.on { transform: translateY(0); }
+  .d-body { padding-bottom: calc(20px + env(safe-area-inset-bottom)); }
+}
+
+/* ---------- Hovers "pegados" en táctil ---------- */
+@media (hover: none) {
+  .lane-check:hover, .iconbtn:hover, .site-nav__link:hover,
+  .export-btn:hover, .hidden-pe-chip:hover, .char-card:hover,
+  .rel-edge:hover { background: revert-layer; }
+}
+
+/* Botón ⚙: oculto en desktop */
+.filtros-btn { display: none; }
+
+/* El sheet envuelve solo Opciones; en desktop es transparente */
+.filtros-sheet { display: contents; }
+.filtros-sheet-hdr { display: none; }
+
+.filtros-backdrop {
+  display: none;
+  position: fixed; inset: 0; z-index: 129;
+  background: rgba(0, 0, 0, .45);
+  opacity: 0; pointer-events: none;
+  transition: opacity .25s ease;
+}
+.filtros-backdrop.on { opacity: 1; pointer-events: auto; }
+
+@media (max-width: 760px) {
+
+  .filtros-backdrop { display: block; }
+
+  /* ---------- QUICK BAR: "Filas" pasa a ser una fila de chips ---------- */
+  .toolbar--quick {
+    flex-wrap: nowrap;
+    gap: 8px;
+    padding: 8px max(10px, env(safe-area-inset-right))
+             8px max(10px, env(safe-area-inset-left));
+  }
+  .toolbar--quick .toolbar__label,
+  .toolbar--quick .legend { display: none; }
+
+  .toolbar--quick .preset {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 6px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+    -webkit-mask-image: linear-gradient(90deg, #000 0, #000 calc(100% - 16px), transparent 100%);
+    mask-image: linear-gradient(90deg, #000 0, #000 calc(100% - 16px), transparent 100%);
+  }
+  .toolbar--quick .preset::-webkit-scrollbar { display: none; }
+
+  .toolbar--quick .lane-check {
+    position: relative;
+    flex: 0 0 auto;
+    min-height: 40px;
+    padding: 8px 12px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--field);
+    font-size: 12px;
+    white-space: nowrap;
+    touch-action: manipulation;
+  }
+  .toolbar--quick .lane-check.on {
+    background: var(--field-2);
+    border-color: var(--acc);
+  }
+
+  .toolbar--quick .lane-check input {
+    position: absolute;
+    width: 1px; height: 1px;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .toolbar--quick .lane-check:has(input:focus-visible) {
+    outline: 2px solid var(--acc);
+    outline-offset: 2px;
+  }
+
+  .filtros-btn {
+    display: flex;
+    flex: 0 0 40px;
+    width: 40px; height: 40px;
+  }
+
+  /* ---------- SHEET: solo Opciones ---------- */
+  .filtros-sheet {
+    display: block;
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 130;
+    max-height: 80dvh; overflow-y: auto;
+    overscroll-behavior: contain;
+    background: var(--panel);
+    border-top: 1px solid var(--line);
+    border-radius: 16px 16px 0 0;
+    box-shadow: 0 -12px 40px var(--shadow);
+    padding-bottom: calc(10px + env(safe-area-inset-bottom));
+    transform: translateY(105%);
+    transition: transform .28s ease;
+  }
+  .filtros-sheet.on { transform: translateY(0); }
+  .filtros-sheet .toolbar { background: transparent; border-bottom: none; }
+
+  .filtros-sheet-hdr {
+    position: sticky; top: 0; z-index: 1;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 16px 10px;
+    background: var(--panel);
+    border-bottom: 1px solid var(--line);
+  }
+  .filtros-sheet-hdr span {
+    font: 700 10px/1 var(--font-sans);
+    letter-spacing: .12em; text-transform: uppercase;
+    color: var(--mut);
+  }
+
+  .zoom-ctrl { width: 100%; }
+  .zoom-ctrl input[type=range] { flex: 1; width: auto; }
+  .style-ctrl { flex: 1 1 160px; }
+  .style-ctrl select { min-width: 0; width: 100%; }
+}
+
 /* ── Onboarding tour ── */
 .onboard-root{
   position:fixed;inset:0;z-index:200;pointer-events:none;
@@ -798,7 +964,7 @@ html[data-viz="waterfall"] #d-title{font-family:var(--font-sans)}
   </div>
 </header>
 
-<div class="toolbar">
+<div class="toolbar toolbar--quick">
   <span class="toolbar__label">Filas</span>
   <div class="preset" id="lane-filters" role="group" aria-label="Filtrar filas visibles"></div>
   <div class="legend" aria-hidden="true">
@@ -809,9 +975,17 @@ html[data-viz="waterfall"] #d-title{font-family:var(--font-sans)}
     <span class="legend__item"><span class="legend__swatch" style="background:var(--lane-sem)"></span>Última semana</span>
     <span class="legend__item"><span class="legend__swatch legend__swatch--est"></span>Fecha estimada (fade lateral)</span>
   </div>
+  <button type="button" class="iconbtn filtros-btn" id="filtros-btn"
+          title="Más opciones" aria-label="Abrir opciones">⚙</button>
 </div>
 
-<div class="toolbar toolbar--opts">
+<div class="filtros-backdrop" id="filtros-backdrop"></div>
+<div class="filtros-sheet" id="filtros-sheet">
+  <div class="filtros-sheet-hdr">
+    <span>Opciones</span>
+    <button type="button" class="export-btn" id="filtros-close">Listo</button>
+  </div>
+  <div class="toolbar toolbar--opts">
   <span class="toolbar__label">Opciones</span>
   <div class="opts">
     <label class="opt-toggle"><input type="checkbox" id="opt-markers" checked /> Sucesos</label>
@@ -856,6 +1030,7 @@ html[data-viz="waterfall"] #d-title{font-family:var(--font-sans)}
     <button type="button" class="export-btn" id="export-btn">Exportar PNG</button>
   </div>
   <div class="pot-chips" id="pot-chips" aria-label="Filtrar imperios"></div>
+  </div>
 </div>
 
 <main>
@@ -935,6 +1110,6 @@ html[data-viz="waterfall"] #d-title{font-family:var(--font-sans)}
 
 <script src="linea-tiempo-datos.js?v=2"></script>
 <script src="fichas-personajes.js"></script>
-<script src="linea-paralela.js?v=20260902b"></script>
+<script src="linea-paralela.js?v=20260902d"></script>
 </body>
 </html>

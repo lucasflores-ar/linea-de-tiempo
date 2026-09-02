@@ -2,7 +2,8 @@
 'use strict';
 const D = window.LT_DATA;
 let pxPerYear = parseFloat(localStorage.getItem('lt-par-zoom')) || 2.4;
-let autoFit = true;
+const _savedAutofit = localStorage.getItem('lt-par-autofit');
+let autoFit = _savedAutofit === null ? true : _savedAutofit === '1';
 const MIN_FOCUS_SPAN = 5;
 const FONT_SCALE_OPTIONS = [1, 1.2, 1.4];
 let viewWindow = loadViewWindow();
@@ -233,10 +234,9 @@ function renderRowEventMarkers(pe, yMin, yMax, chartW, q){
 const DEFAULT_LANES = ['jud','isr','pro'];
 let didInitialScroll = false;
 let selLanes = new Set(
-  (JSON.parse(localStorage.getItem('lt-par-lanes') || 'null') || DEFAULT_LANES)
+  (JSON.parse(localStorage.getItem('lt-par-lanes') || 'null') ?? DEFAULT_LANES)
     .filter(id=>LANE_ORDER.includes(id))
 );
-if(!selLanes.size) selLanes = new Set(DEFAULT_LANES);
 
 let hiddenPeople = new Set();
 try{
@@ -890,14 +890,6 @@ function pruneSelLanes(){
   for(const id of [...selLanes]){
     if(!avail.has(id)) selLanes.delete(id);
   }
-  if(!selLanes.size){
-    for(const id of DEFAULT_LANES){
-      if(avail.has(id)) selLanes.add(id);
-    }
-    if(!selLanes.size){
-      availableLaneFilters().slice(0, 4).forEach(f=>selLanes.add(f.id));
-    }
-  }
   try{ localStorage.setItem('lt-par-lanes', JSON.stringify([...selLanes])); }catch(e){}
 }
 
@@ -1025,6 +1017,7 @@ function laneFiltersSorted(){
 
 function buildLaneFilters(){
   pruneSelLanes();
+  const sl = laneFiltersEl.scrollLeft;
   laneFiltersEl.innerHTML = availableLaneFilters().map(f=>{
     const on = selLanes.has(f.id);
     return `<label class="lane-check${on?' on':''}">`+
@@ -1032,6 +1025,7 @@ function buildLaneFilters(){
       `<span class="filter-dot" style="background:${f.color}"></span>`+
       `<span>${f.label}</span></label>`;
   }).join('');
+  laneFiltersEl.scrollLeft = sl;
   laneFiltersEl.querySelectorAll('input[type=checkbox]').forEach(box=>{
     box.addEventListener('change', ()=>{
       const id = box.dataset.id;
@@ -1674,7 +1668,10 @@ function render(){
 
   if(!rawLaneData.some(b=>b.people.length) && !hiddenList.length){
     labelsCol.innerHTML = '';
-    chartCanvas.innerHTML = '<div class="empty-msg" style="padding:24px;color:var(--mut)">Marca al menos una fila para ver la comparación.</div>';
+    const emptyMsg = !selLanes.size
+      ? 'Ninguna fila activa. Marcá una o más filas arriba para ver la cronología.'
+      : 'Marca al menos una fila para ver la comparación.';
+    chartCanvas.innerHTML = '<div class="empty-msg" style="padding:24px;color:var(--mut)">'+emptyMsg+'</div>';
     axisArea.innerHTML = '';
     renderHiddenDock([]);
     resultCount.textContent = '0 personajes';
@@ -1712,7 +1709,10 @@ function render(){
   const laneData = enrichLaneData(rawLaneData, query, chartLayout);
   if(!laneData.some(b=>b.tracks.length) && !hiddenList.length){
     labelsCol.innerHTML = '';
-    chartCanvas.innerHTML = '<div class="empty-msg" style="padding:24px;color:var(--mut)">Marca al menos una fila para ver la comparación.</div>';
+    const emptyMsg = !selLanes.size
+      ? 'Ninguna fila activa. Marcá una o más filas arriba para ver la cronología.'
+      : 'Marca al menos una fila para ver la comparación.';
+    chartCanvas.innerHTML = '<div class="empty-msg" style="padding:24px;color:var(--mut)">'+emptyMsg+'</div>';
     axisArea.innerHTML = '';
     renderHiddenDock([]);
     resultCount.textContent = '0 personajes';
@@ -2224,6 +2224,25 @@ const deepEvId = qs.get('ev');
 buildLaneFilters();
 buildPotChips();
 syncHash();
+
+const esMovil = typeof matchMedia === 'function' && matchMedia('(max-width: 760px)').matches;
+if (esMovil) {
+  if (!localStorage.getItem('lt-par-row-layout')) {
+    rowLayout = 'compact';
+    rowLayoutEl.value = 'compact';
+    applyRowLayout();
+  }
+  if (!localStorage.getItem('lt-par-autofit')) {
+    autoFit = false;
+    pxPerYear = Math.max(pxPerYear, 0.8);
+    zoomEl.value = pxPerYear;
+    fitBtn.classList.remove('on');
+    fitBtn.setAttribute('aria-pressed', 'false');
+    localStorage.setItem('lt-par-autofit', '0');
+    localStorage.setItem('lt-par-zoom', String(pxPerYear));
+  }
+}
+
 if(!(D.preguntas || []).some(p => answerText(p))){
   console.warn('[linea-paralela] Datos sin respuestas en preguntas.a — recarga con Ctrl+F5 (linea-tiempo-datos.js?v=2)');
 }
@@ -2406,5 +2425,39 @@ window.addEventListener('resize', ()=>{ if(autoFit) render._scrolled = false; re
     setTimeout(()=> openTour(false), 600);
   }
 })();
+
+/* ---------- Sheet de filtros (móvil) ---------- */
+const sheet = document.getElementById('filtros-sheet');
+const sheetBackdrop = document.getElementById('filtros-backdrop');
+const sheetBtn = document.getElementById('filtros-btn');
+const sheetClose = document.getElementById('filtros-close');
+let sheetOpener = null;
+
+function setSheet(on) {
+  sheet?.classList.toggle('on', on);
+  sheetBackdrop?.classList.toggle('on', on);
+  sheetBtn?.setAttribute('aria-expanded', String(on));
+  if (on) {
+    sheetOpener = document.activeElement;
+    sheetClose?.focus();
+  } else {
+    sheetOpener?.focus?.();
+  }
+}
+
+sheetBtn?.setAttribute('aria-expanded', 'false');
+sheetBtn?.addEventListener('click', () => setSheet(!sheet.classList.contains('on')));
+sheetBackdrop?.addEventListener('click', () => setSheet(false));
+sheetClose?.addEventListener('click', () => setSheet(false));
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && sheet?.classList.contains('on')) setSheet(false);
+});
+
+/* ---------- Breakpoint móvil ↔ desktop (rotación / resize) ---------- */
+const mqMobile = typeof matchMedia === 'function' ? matchMedia('(max-width: 760px)') : null;
+mqMobile?.addEventListener('change', e => {
+  if (!e.matches) setSheet(false);
+});
 
 })();
