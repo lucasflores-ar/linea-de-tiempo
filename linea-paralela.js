@@ -42,7 +42,7 @@ const VIZ_STYLES = ['editorial', 'waterfall'];
 let vizStyle = VIZ_STYLES.includes(localStorage.getItem('lt-par-viz')) ? localStorage.getItem('lt-par-viz') : 'editorial';
 const ROW_LAYOUTS = ['expanded', 'compact'];
 let rowLayout = ROW_LAYOUTS.includes(localStorage.getItem('lt-par-row-layout'))
-  ? localStorage.getItem('lt-par-row-layout') : 'expanded';
+  ? localStorage.getItem('lt-par-row-layout') : 'compact';
 
 function layoutMetrics(){
   const wf = vizStyle === 'waterfall';
@@ -230,7 +230,7 @@ function renderRowEventMarkers(pe, yMin, yMax, chartW, q){
   return html;
 }
 
-const DEFAULT_LANES = ['jud','isr','pro','jes','sem'];
+const DEFAULT_LANES = ['jud','isr','pro'];
 let didInitialScroll = false;
 let selLanes = new Set(
   (JSON.parse(localStorage.getItem('lt-par-lanes') || 'null') || DEFAULT_LANES)
@@ -2233,4 +2233,178 @@ if(deepEvId){
   if(deepEv) openDrawer(deepEv);
 }
 window.addEventListener('resize', ()=>{ if(autoFit) render._scrolled = false; render(); });
+
+// ---------- onboarding tour (MVP) ----------
+(function initOnboarding(){
+  const STORAGE_KEY = 'lt-onboarding-v1';
+  const root = document.getElementById('onboard-root');
+  const backdrop = document.getElementById('onboard-backdrop');
+  const hole = document.getElementById('onboard-hole');
+  const pop = document.getElementById('onboard-pop');
+  const stepLabel = document.getElementById('onboard-step-label');
+  const titleEl = document.getElementById('onboard-title');
+  const bodyEl = document.getElementById('onboard-body');
+  const btnPrev = document.getElementById('onboard-prev');
+  const btnNext = document.getElementById('onboard-next');
+  const btnSkip = document.getElementById('onboard-skip');
+  const dontEl = document.getElementById('onboard-dont');
+  const helpBtn = document.getElementById('onboard-help-btn');
+  if(!root || !pop) return;
+
+  const STEPS = [
+    {
+      target: '.chart-wrap',
+      center: true,
+      title: 'Cronología en filas paralelas',
+      body: 'Cada fila agrupa un periodo o tema (reyes, profetas, ministerio de Jesús…). Las barras muestran vidas o reinados; los puntos, sucesos puntuales. Arrastrá el gráfico para desplazarte.',
+    },
+    {
+      target: '#lane-filters',
+      title: 'Filtrar filas',
+      body: 'Activá solo las épocas que te interesan: Génesis, Reyes, Hechos, Escritura del NT, etc. Los colores de la leyenda indican Judá, Israel, profetas y más.',
+    },
+    {
+      target: '#search',
+      title: 'Buscar personajes',
+      body: 'Escribí un nombre para resaltar coincidencias. Podés ocultar personajes con el checkbox junto a cada fila; los ocultos aparecen abajo para restaurarlos.',
+    },
+    {
+      target: '#opt-markers',
+      title: 'Capas del gráfico',
+      body: 'Sucesos muestra marcadores en el eje; Conexiones une profetas y reyes contemporáneos; Imperios pinta bandas de potencias mundiales. Debajo podés filtrar Egipto, Babilonia, Roma…',
+    },
+    {
+      target: '#viz-style',
+      title: 'Estilo y zoom',
+      body: 'Cambiá entre vista editorial y waterfall, tema claro/oscuro (◐), disposición compacta o expandida, y el ancho del eje. Usá ▭ o Shift+arrastrar para enfocar un tramo.',
+    },
+    {
+      target: '#export-btn',
+      title: 'Detalle y más',
+      body: 'Hacé clic en una barra o suceso para abrir el panel con referencias y preguntas. Exportá PNG para compartir. En Personajes encontrás fichas ampliadas.',
+    },
+  ];
+
+  let stepIdx = 0;
+  let active = false;
+
+  function isDone(){
+    try{ return localStorage.getItem(STORAGE_KEY) === 'done'; }catch(e){ return false; }
+  }
+  function markDone(){
+    if(dontEl && dontEl.checked){
+      try{ localStorage.setItem(STORAGE_KEY, 'done'); }catch(e){}
+    }
+  }
+  function padRect(r, px){
+    return {
+      top: Math.max(8, r.top - px),
+      left: Math.max(8, r.left - px),
+      width: r.width + px * 2,
+      height: r.height + px * 2,
+    };
+  }
+  function placePopover(rect, center){
+    const margin = 12;
+    const popW = pop.offsetWidth || 320;
+    const popH = pop.offsetHeight || 180;
+    let top, left;
+    if(center || !rect){
+      top = Math.max(margin, (window.innerHeight - popH) / 2);
+      left = Math.max(margin, (window.innerWidth - popW) / 2);
+    } else {
+      const spaceBelow = window.innerHeight - rect.bottom;
+      const spaceAbove = rect.top;
+      if(spaceBelow >= popH + margin * 2 || spaceBelow >= spaceAbove){
+        top = rect.bottom + margin;
+      } else {
+        top = rect.top - popH - margin;
+      }
+      left = rect.left + rect.width / 2 - popW / 2;
+      left = Math.max(margin, Math.min(left, window.innerWidth - popW - margin));
+      top = Math.max(margin, Math.min(top, window.innerHeight - popH - margin));
+    }
+    pop.style.top = top + 'px';
+    pop.style.left = left + 'px';
+  }
+  function showStep(idx){
+    stepIdx = idx;
+    const step = STEPS[idx];
+    stepLabel.textContent = 'Paso ' + (idx + 1) + ' de ' + STEPS.length;
+    titleEl.textContent = step.title;
+    bodyEl.textContent = step.body;
+    btnPrev.hidden = idx === 0;
+    btnNext.textContent = idx === STEPS.length - 1 ? 'Listo' : 'Siguiente';
+
+    const el = step.target ? document.querySelector(step.target) : null;
+    if(el && !step.center){
+      if(backdrop) backdrop.style.opacity = '0';
+      el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      requestAnimationFrame(()=>{
+        requestAnimationFrame(()=>{
+          const r = padRect(el.getBoundingClientRect(), 8);
+          hole.hidden = false;
+          hole.style.top = r.top + 'px';
+          hole.style.left = r.left + 'px';
+          hole.style.width = r.width + 'px';
+          hole.style.height = r.height + 'px';
+          placePopover(r, false);
+        });
+      });
+    } else {
+      hole.hidden = true;
+      if(backdrop) backdrop.style.opacity = '';
+      placePopover(null, true);
+    }
+  }
+  function openTour(fromUser){
+    if(active) return;
+    active = true;
+    root.hidden = false;
+    root.classList.add('is-active');
+    root.setAttribute('aria-hidden', 'false');
+    pop.hidden = false;
+    if(dontEl) dontEl.checked = !fromUser;
+    showStep(0);
+    btnNext.focus();
+  }
+  function closeTour(){
+    if(!active) return;
+    markDone();
+    active = false;
+    root.classList.remove('is-active');
+    root.hidden = true;
+    root.setAttribute('aria-hidden', 'true');
+    pop.hidden = true;
+    hole.hidden = true;
+  }
+  function nextStep(){
+    if(stepIdx >= STEPS.length - 1){ closeTour(); return; }
+    showStep(stepIdx + 1);
+  }
+  function prevStep(){
+    if(stepIdx > 0) showStep(stepIdx - 1);
+  }
+
+  btnNext.addEventListener('click', nextStep);
+  btnPrev.addEventListener('click', prevStep);
+  btnSkip.addEventListener('click', closeTour);
+  if(helpBtn) helpBtn.addEventListener('click', ()=> openTour(true));
+  root.addEventListener('click', e=>{
+    if(e.target === document.getElementById('onboard-backdrop')) closeTour();
+  });
+  document.addEventListener('keydown', e=>{
+    if(!active) return;
+    if(e.key === 'Escape'){ e.preventDefault(); closeTour(); }
+    else if(e.key === 'ArrowRight'){ e.preventDefault(); nextStep(); }
+    else if(e.key === 'ArrowLeft' && stepIdx > 0){ e.preventDefault(); prevStep(); }
+  });
+  window.addEventListener('resize', ()=>{ if(active) showStep(stepIdx); });
+
+  const skipAuto = deepEvId || qs.get('q') || qs.get('onboard') === '0';
+  if(!isDone() && !skipAuto){
+    setTimeout(()=> openTour(false), 600);
+  }
+})();
+
 })();

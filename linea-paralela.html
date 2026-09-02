@@ -563,7 +563,10 @@ html[data-viz="waterfall"] .lane-hdr{
 }
 html[data-viz="waterfall"] .row-rail,
 html[data-viz="waterfall"] .orb-stem,
-html[data-viz="waterfall"] .span-line{display:none}
+html[data-viz="waterfall"] .span-line:not(.bar-compact-narrow__line){display:none}
+html[data-viz="waterfall"] .bar-compact-narrow__line{
+  display:block;height:6px;border-radius:3px;margin-top:auto;
+}
 html[data-viz="waterfall"] .row{border-bottom:1px solid var(--rail)}
 html[data-viz="waterfall"] .grid-line{background:#e8e8e8;opacity:.55}
 html[data-viz="waterfall"] .grid-line.major{opacity:.75}
@@ -722,6 +725,58 @@ html[data-viz="waterfall"] #d-title{font-family:var(--font-sans)}
   .brand p{display:none}
   .pot-strip__label{display:none}
 }
+
+/* ── Onboarding tour ── */
+.onboard-root{
+  position:fixed;inset:0;z-index:200;pointer-events:none;
+}
+.onboard-root.is-active{pointer-events:auto}
+.onboard-backdrop{
+  position:fixed;inset:0;background:rgba(26,24,20,.52);
+  opacity:0;transition:opacity .2s ease;
+}
+.onboard-root.is-active .onboard-backdrop{opacity:1}
+.onboard-hole{
+  position:fixed;border-radius:10px;pointer-events:none;
+  box-shadow:0 0 0 9999px rgba(26,24,20,.52);
+  transition:top .25s ease,left .25s ease,width .25s ease,height .25s ease;
+  z-index:201;
+}
+.onboard-pop{
+  position:fixed;z-index:202;max-width:min(340px,calc(100vw - 32px));
+  background:var(--panel);border:1px solid var(--line);border-radius:14px;
+  box-shadow:0 12px 40px var(--shadow);padding:16px 16px 14px;
+  opacity:0;transform:translateY(6px);transition:opacity .2s ease,transform .2s ease;
+}
+.onboard-root.is-active .onboard-pop{opacity:1;transform:translateY(0)}
+.onboard-pop__step{font:600 10px/1 var(--font-sans);letter-spacing:.08em;text-transform:uppercase;color:var(--acc);margin-bottom:6px}
+.onboard-pop__title{font:700 15px/1.25 var(--font-serif);color:var(--txt);margin-bottom:8px}
+.onboard-pop__body{font:400 13px/1.55 var(--font-sans);color:var(--mut);margin-bottom:14px}
+.onboard-pop__actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.onboard-pop__skip{
+  margin-right:auto;border:none;background:none;color:var(--mut);font-size:12px;
+  cursor:pointer;padding:6px 0;font-family:inherit;
+}
+.onboard-pop__skip:hover{color:var(--txt);text-decoration:underline}
+.onboard-pop__btn{
+  border:1px solid var(--line);background:var(--field);color:var(--txt);
+  border-radius:8px;padding:7px 14px;font-size:12px;font-weight:600;
+  cursor:pointer;font-family:inherit;
+}
+.onboard-pop__btn:hover{border-color:var(--acc)}
+.onboard-pop__btn--primary{background:var(--txt);border-color:var(--txt);color:var(--bg)}
+.onboard-pop__btn--primary:hover{opacity:.92}
+.onboard-pop__dont{
+  width:100%;margin-top:10px;display:flex;align-items:center;gap:7px;
+  font-size:11px;color:var(--mut);cursor:pointer;user-select:none;
+}
+.onboard-pop__dont input{accent-color:var(--acc);margin:0}
+@media(prefers-reduced-motion:reduce){
+  .onboard-backdrop,.onboard-hole,.onboard-pop{transition:none!important}
+}
+@media(max-width:760px){
+  .onboard-pop{max-width:calc(100vw - 24px)}
+}
 </style>
 </head>
 <body>
@@ -738,6 +793,7 @@ html[data-viz="waterfall"] #d-title{font-family:var(--font-sans)}
       <a class="site-nav__link site-nav__link--on" href="linea-paralela.html" aria-current="page">Cronología</a>
       <a class="site-nav__link" href="fichas.html">Personajes</a>
     </nav>
+    <button class="iconbtn" id="onboard-help-btn" type="button" title="Tour de la cronología" aria-label="Ver tour de ayuda">?</button>
     <button class="iconbtn" id="theme-btn" type="button" title="Cambiar tema" aria-label="Cambiar tema">◐</button>
   </div>
 </header>
@@ -818,6 +874,21 @@ html[data-viz="waterfall"] #d-title{font-family:var(--font-sans)}
 <div id="tooltip" role="tooltip"></div>
 
 <div id="overlay"></div>
+<div id="onboard-root" class="onboard-root" hidden aria-hidden="true">
+  <div class="onboard-backdrop" id="onboard-backdrop"></div>
+  <div class="onboard-hole" id="onboard-hole" hidden></div>
+  <div class="onboard-pop" id="onboard-pop" role="dialog" aria-modal="true" aria-labelledby="onboard-title" hidden>
+    <div class="onboard-pop__step" id="onboard-step-label"></div>
+    <h2 class="onboard-pop__title" id="onboard-title"></h2>
+    <p class="onboard-pop__body" id="onboard-body"></p>
+    <div class="onboard-pop__actions">
+      <button type="button" class="onboard-pop__skip" id="onboard-skip">Saltar tour</button>
+      <button type="button" class="onboard-pop__btn" id="onboard-prev">Anterior</button>
+      <button type="button" class="onboard-pop__btn onboard-pop__btn--primary" id="onboard-next">Siguiente</button>
+    </div>
+    <label class="onboard-pop__dont"><input type="checkbox" id="onboard-dont" /> No volver a mostrar</label>
+  </div>
+</div>
 <aside id="drawer" aria-label="Detalle">
   <div class="d-hdr">
     <button id="d-close" type="button" aria-label="Cerrar panel">✕</button>
@@ -864,6 +935,6 @@ html[data-viz="waterfall"] #d-title{font-family:var(--font-sans)}
 
 <script src="linea-tiempo-datos.js?v=2"></script>
 <script src="fichas-personajes.js"></script>
-<script src="linea-paralela.js?v=20260901l"></script>
+<script src="linea-paralela.js?v=20260902b"></script>
 </body>
 </html>
