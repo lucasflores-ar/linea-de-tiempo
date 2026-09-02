@@ -201,24 +201,6 @@
       "match_etiqueta": "libros_reyes_completados"
     },
     {
-      "clave": "2_reyes",
-      "libro": "2 REYES",
-      "nombre": "2 Reyes completado",
-      "escritor": "Jeremías",
-      "lugar": "Judá / Egipto",
-      "lugar_incerto": false,
-      "prefijo": "",
-      "anio": -580,
-      "prefijo_fin": "",
-      "anio_fin": -1040,
-      "tiempo_abarca": "c. 1040–580 a.E.C.",
-      "era": "EXILIO",
-      "referencia": "2 Reyes 25:27",
-      "tipo_suceso": "redacción",
-      "match_id": "",
-      "match_etiqueta": "libro_2_reyes_completado"
-    },
-    {
       "clave": "cronicas",
       "libro": "1 CRÓNICAS",
       "nombre": "1 y 2 Crónicas completados",
@@ -235,24 +217,6 @@
       "tipo_suceso": "redacción",
       "match_id": "370",
       "match_etiqueta": "esdras_cronicas_completadas"
-    },
-    {
-      "clave": "2_cronicas",
-      "libro": "2 CRÓNICAS",
-      "nombre": "2 Crónicas completado",
-      "escritor": "Esdras",
-      "lugar": "Jerusalén",
-      "lugar_incerto": true,
-      "prefijo": "c",
-      "anio": -460,
-      "prefijo_fin": "",
-      "anio_fin": -1077,
-      "tiempo_abarca": "1077–537 a.E.C.",
-      "era": "RESTAURACIÓN",
-      "referencia": "2 Crónicas 36:23",
-      "tipo_suceso": "redacción",
-      "match_id": "",
-      "match_etiqueta": "esdras_completa_2_cronicas"
     },
     {
       "clave": "esdras",
@@ -720,7 +684,7 @@
       "era": "E.C.",
       "referencia": "Mat. 28:20",
       "tipo_suceso": "redacción/evangelio",
-      "match_id": "194",
+      "match_id": "403",
       "match_etiqueta": "mateo_escribe_evangelio"
     },
     {

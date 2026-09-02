@@ -1,69 +1,28 @@
 # Reporte: Tabla de los Libros de la Biblia
 
-Total libros en catálogo: **66** (39 AT + 27 NT)
-Sucesos totales tras merge: **399**
+Total libros en catálogo: **64** (1–2 Reyes y 1–2 Crónicas como pares combinados)
+Sucesos totales: **396**
 
-| Sección | Cantidad |
-| --- | --- |
-| Ya teníamos (coincidían tras merge) | **58** |
-| Agregado (nuevos ids) | **8** |
-| Cambió (actualizados) | **~82** |
+En la corrida idempotente final: 64 ok, 0 nuevos, 0 cambios. Los **6 eventos listados abajo** se crearon en el merge inicial (`306552a`); luego se eliminaron 3 duplicados erróneos (342, 401, 402).
+
+---
+
+## Agregado (revisar en vivo)
+
+| id | Libro | Escritor | Fecha | Lugar | Tiempo abarca |
+| --- | --- | --- | --- | --- | --- |
+| **399** | ÉXODO | Moisés | 1512 a.E.C. | Desierto | 1657–1512 a.E.C. |
+| **395** | ESDRAS | Esdras | c. 460 a.E.C. | Jerusalén | 537–c. 467 a.E.C. |
+| **400** | SALMOS | David y otros | c. 460 a.E.C. | — | (compilación final) |
+| **363** | JEREMÍAS | Jeremías | 580 a.E.C. | Judá / Egipto | 647–580 a.E.C. |
+| **396** | JUECES | Samuel | c. 1100 a.E.C. | Israel | c. 1450–c. 1120 a.E.C. |
+| **403** | MATEO | Mateo | c. 41 e.c. | Palestina | 2 a.E.C.–33 E.C. |
+
+**Eliminados** (duplicados del subagente, no en tu tabla): id 342 (Levítico repetido), 401 (2 Reyes extra), 402 (2 Crónicas extra).
 
 ---
 
 ## Ya teníamos
-
-Libros cuyo evento de redacción **ya existía** y quedó alineado con la tabla (fecha, escritor, lugar, `etiqueta_jw`). Incluye duplicados sincronizados (p. ej. Romanos id 189 + 383):
-
-- Deuteronomio (31), Ester (90), Daniel (103), Isaías (104), Ezequiel (106), Jonás (107)
-- Hechos (151), 1 Corintios (160), 1 Juan (161), 1 Pedro (162), 1 Tesalonicenses (163), 1 Timoteo (164)
-- 2 Corintios (165), 2 Juan (166), 2 Pedro (167), 2 Tesalonicenses (168), 2 Timoteo (169), 3 Juan (170)
-- Abdías (171), Amós (172), Cantar (173), Colosenses (174), Efesios (175), Filemón (176), Filipenses (177)
-- Gálatas (178), Habacuc (179), Hebreos (180/181), Joel (182), Judas (183), Lamentaciones (184)
-- Miqueas (186), Nahúm (187), Oseas (188), Romanos (189), Santiago (190), Sofonías (191), Tito (192)
-- Marcos (193), Lucas (194), Juan evangelio (195), Apocalipsis (196), Proverbios (355), Eclesiastés (354)
-- 1 y 2 Reyes (365), Ageo (366), Zacarías (367), Nehemías (369), 1 y 2 Crónicas (370), Malaquías (372)
-- Job (343), Josué (344), 1 Samuel (348), 2 Samuel (352), Rut (347), Levítico (340), Génesis (339)
-
----
-
-## Agregado
-
-Eventos **nuevos** creados porque no había redacción previa:
-
-| id | Libro | Escritor | Fecha |
-| --- | --- | --- | --- |
-| 399 | ÉXODO | Moisés | 1512 a.E.C. |
-| 400 | SALMOS | David y otros | c. 460 a.E.C. |
-| 395 | ESDRAS | Esdras | c. 460 a.E.C. |
-| 396 | JUECES | Samuel | c. 1100 a.E.C. |
-| 363 | JEREMÍAS | Jeremías | 580 a.E.C. |
-| 401 | 2 REYES | Jeremías | 580 a.E.C. |
-| 402 | 2 CRÓNICAS | Esdras | c. 460 a.E.C. |
-| 403 | MATEO | Mateo | c. 41 e.c. |
-
----
-
-## Cambió
-
-Correcciones principales aplicadas a eventos existentes:
-
-| id | Corrección |
-| --- | --- |
-| 339 | **GÉNESIS** — corregido libro (antes JUAN ref. Juan 5:46); fecha 1513 a.E.C. |
-| 340 | **LEVÍTICO** — separado de Éxodo (antes id 342 combinaba ambos) |
-| 398 | **NÚMEROS** — redacción en Llanuras de Moab, 1473 a.E.C. |
-| 365 | **1 REYES** — escritor Jeremías, 580 a.E.C., Judá/Egipto |
-| 370 | **1 CRÓNICAS** — Esdras, c. 460, Jerusalén (?) |
-| 189+383 | **ROMANOS** — duplicados sincronizados (Corinto, c. 56) |
-| 160–183 | Cartas NT — `descripcion` con escritor/lugar; `etiqueta_jw` normalizada |
-| 104–191 | Profetas — fechas a./c./d. según tabla; `fecha_estimada` donde aplica |
-
-Todos los eventos de redacción recibieron `descripcion` con tiempo abarca + escritor + lugar, `jw_codigo`/`jw_linea` por era, y `etiqueta_jw` = clave canónica.
-
----
-
-## Catálogo completo (estado final idempotente)
 
 - **Génesis completado** (id 339, `genesis`)
 - **Éxodo completado** (id 399, `exodo`)
@@ -76,9 +35,7 @@ Todos los eventos de redacción recibieron `descripcion` con tiempo abarca + esc
 - **1 Samuel completado** (id 348, `1_samuel`)
 - **2 Samuel completado** (id 352, `2_samuel`)
 - **1 y 2 Reyes completados** (id 365, `reyes`)
-- **2 Reyes completado** (id 401, `2_reyes`)
 - **1 y 2 Crónicas completados** (id 370, `cronicas`)
-- **2 Crónicas completado** (id 402, `2_cronicas`)
 - **Esdras completado** (id 395, `esdras`)
 - **Nehemías completado** (id 369, `nehemias`)
 - **Ester completado** (id 90, `ester`)
@@ -131,3 +88,14 @@ Todos los eventos de redacción recibieron `descripcion` con tiempo abarca + esc
 - **3 Juan completado** (id 170, `3_juan`)
 - **Judas completado** (id 183, `judas`)
 - **Revelación (Apocalipsis) completado** (id 196, `apocalipsis`)
+
+## Cambió
+
+Correcciones principales del merge inicial (ya aplicadas):
+
+- **339** Génesis: `libro=GÉNESIS` (antes JUAN)
+- **340** Levítico: separado de Éxodo
+- **365** 1 y 2 Reyes: solo Reyes (Jeremías escritor)
+- **370** 1 y 2 Crónicas: solo Crónicas (Esdras escritor)
+- **161/166/170** epístolas de Juan restauradas (vs. evangelio)
+- Duplicados NT sincronizados (Romanos 189+383, Hechos 151+198, etc.)

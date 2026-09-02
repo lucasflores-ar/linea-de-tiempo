@@ -48,11 +48,11 @@ DUPLICATE_IDS = {
     'judas': ['394'],
     'hechos': ['151'],
     'cantar': ['173'],
-    'juan_evangelio': ['395'],
+    'juan_evangelio': ['393'],
 }
 
 # filas duplicadas/erróneas de ejecuciones previas
-ORPHAN_IDS = {'341', '349', '197'}
+ORPHAN_IDS = {'341', '349', '197', '342', '401', '402'}
 
 
 def export_json():
