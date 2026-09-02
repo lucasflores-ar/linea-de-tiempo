@@ -112,7 +112,8 @@ function textWidth(text, font){
 const CAPTION_MAX_CHARS = 44;
 const CAPTION_MAX_PX = 200;
 const CAPTION_MIN_PX = 72;
-const SHORT_PERIOD_MAX_YEARS = 4;
+const SHORT_PERIOD_POINT_YEARS = 3;
+const SHORT_PERIOD_MAX_YEARS = 12;
 const NARROW_BAR_PX = 56;
 
 /** Recorta título largo para la barra; conserva el texto completo en title/aria-label. */
@@ -143,9 +144,11 @@ function captionForPe(pe){
   return truncateCaption(pe.n);
 }
 
-function minBarWidthForPe(pe){
+function minBarWidthForPe(pe, opts = {}){
   const { name, date } = captionFonts();
-  const cap = captionForPe(pe);
+  const cap = opts.fullName
+    ? { text: (pe.n || '').trim() }
+    : captionForPe(pe);
   const nameW = textWidth(cap.text, name);
   const datesW = textWidth(fmtRange(pe.inicio, pe.fin), date);
   let w = Math.ceil(Math.max(nameW, datesW) + 20);
@@ -166,12 +169,14 @@ function periodSpanYears(pe){
   if(pe.inicio == null || pe.fin == null) return Infinity;
   return Math.abs(pe.fin - pe.inicio);
 }
+function isShortPeriodPe(pe){
+  return !pe.isEvent && periodSpanYears(pe) <= SHORT_PERIOD_MAX_YEARS;
+}
 function shouldRenderAsPoint(pe, w){
   if(pe.hasLibroRange || eventHasRange(pe)) return false;
   if(pe.isEvent && !eventHasRange(pe)) return true;
-  const narrow = w < NARROW_BAR_PX || w < minBarWidthForPe(pe);
-  if(!narrow) return false;
-  return periodSpanYears(pe) <= SHORT_PERIOD_MAX_YEARS;
+  if(!isShortPeriodPe(pe)) return false;
+  return periodSpanYears(pe) <= SHORT_PERIOD_POINT_YEARS || w < NARROW_BAR_PX;
 }
 function barLabelFitsInside(pe, w){
   return w >= minBarWidthForPe(pe);
@@ -1803,7 +1808,7 @@ function buildPhaseAxis(chartW, yMin, yMax, laneData, effectivePx){
 function renderPointEventBar(block, pe, x, w, dataAttr, ini, fin, layoutOpts){
   const cls = ['bar','bar--'+block.meta.key,'bar-compact-narrow','bar-point-event', ...estBarClasses(pe)];
   const cx = x + Math.max(4, w) / 2;
-  const boxW = Math.min(Math.max(minBarWidthForPe(pe), 28), CAPTION_MAX_PX);
+  const boxW = Math.min(Math.max(minBarWidthForPe(pe, { fullName: true }), 28), CAPTION_MAX_PX);
   const left = cx - boxW / 2;
   const laneColor = BAR_COLORS[block.meta.key] || block.meta.color || 'var(--acc)';
   const mkColor = pe.ev ? markerColorFor(pe.ev) : laneColor;
@@ -1821,7 +1826,9 @@ function renderPointEventBar(block, pe, x, w, dataAttr, ini, fin, layoutOpts){
 }
 
 function renderCompactNarrowBar(block, pe, x, w, dataAttr, ini, fin, laneColor, layoutOpts){
+  const shortPeriod = isShortPeriodPe(pe);
   const cls = ['bar','bar--'+block.meta.key,'bar-compact-narrow', ...estBarClasses(pe)];
+  if(shortPeriod) cls.push('bar-short-period');
   const peAttr = ` data-pe="${esc(peKey(pe))}"`;
   const lineW = Math.max(4, w);
   const barBg = estBarBg(laneColor, pe);
@@ -1831,7 +1838,7 @@ function renderCompactNarrowBar(block, pe, x, w, dataAttr, ini, fin, laneColor, 
     if(inset) nameStyle = `margin-left:${inset}px`;
   }
   return `<div class="${cls.join(' ')}" style="left:${x}px;width:${lineW}px" tabindex="0" role="button" aria-label="${esc(pe.n)}, ${fmtRange(ini,fin)}" ${dataAttr}${peAttr}>`+
-    captionNameHtml(pe, nameStyle)+
+    captionNameHtml(pe, nameStyle, { fullName: shortPeriod })+
     `<div class="span-line span-line--${block.meta.key} bar-compact-narrow__line ${estBarClasses(pe).join(' ')}" style="width:100%;background:${barBg}"></div>`+
     `<span class="bar-caption__dates">${esc(fmtRange(ini, fin))}</span>`+
     `</div>`;
