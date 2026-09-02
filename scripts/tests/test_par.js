@@ -70,6 +70,7 @@ const ctx={
   history:{ replaceState(){} },
   localStorage:{
     getItem(k){
+      if(k === 'lt-par-init-v') return '2';
       if(k === 'lt-par-lanes') return JSON.stringify(['jud','isr','pro','jes']);
       return null;
     },
@@ -159,7 +160,11 @@ const ctxNt={
   innerWidth:1200, innerHeight:800, location:{hash:'',search:''},
   history:{ replaceState(){} },
   localStorage:{
-    getItem(k){ if(k==='lt-par-lanes') return JSON.stringify(['nt-ev','nt-hec','nt-car']); return null; },
+    getItem(k){
+      if(k==='lt-par-init-v') return '2';
+      if(k==='lt-par-lanes') return JSON.stringify(['nt-ev','nt-hec','nt-car']);
+      return null;
+    },
     setItem(){},
   },
   URLSearchParams: global.URLSearchParams,
@@ -225,6 +230,7 @@ const ctxNtCompact={
   history:{ replaceState(){} },
   localStorage:{
     getItem(k){
+      if(k==='lt-par-init-v') return '2';
       if(k==='lt-par-lanes') return JSON.stringify(['nt-car']);
       if(k==='lt-par-row-layout') return 'compact';
       return null;
@@ -286,7 +292,7 @@ const ctxPre={
   },
   innerWidth:360, innerHeight:640, location:{hash:'',search:''},
   history:{ replaceState(){} },
-  localStorage:{ getItem(){ return null; }, setItem(){} },
+  localStorage:{ _store:{}, getItem(){ return null; }, setItem(k,v){ this._store[k]=v; } },
   matchMedia(q){ return { matches: q.includes('760'), addEventListener(){} }; },
   URLSearchParams: global.URLSearchParams,
   Image: class{ set src(v){ if(this.onload) setTimeout(()=>this.onload(),0); } },
@@ -298,11 +304,10 @@ vm.runInContext('window.LT_DATA='+JSON.stringify(DATA)+';', ctxPre);
 vm.runInContext(fs.readFileSync(path.join(REPO, 'fichas-personajes.js'), 'utf-8'), ctxPre);
 vm.runInContext(JS, ctxPre, {timeout:8000});
 const preBars = (byIdPre['chart-canvas'].innerHTML.match(/class="bar /g)||[]).length;
-const preOnlyOn = byIdPre['lane-filters'].innerHTML.includes('data-lane-id="pre" checked') ||
-  /data-lane-id="pre"[^>]*>[\s\S]*?checked/.test(byIdPre['lane-filters'].innerHTML);
 const preEmpty = byIdPre['chart-canvas'].innerHTML.includes('empty-msg');
-console.log('default pre barras:', preBars, '| vacío:', preEmpty);
-if(preBars < 3 || preEmpty){
+const preLaneStore = ctxPre.localStorage._store?.['lt-par-lanes'];
+console.log('default pre barras:', preBars, '| vacío:', preEmpty, '| lanes guardadas:', preLaneStore);
+if(preBars < 3 || preEmpty || preLaneStore !== JSON.stringify(['pre'])){
   console.log('FAIL default pre');
   process.exit(1);
 }

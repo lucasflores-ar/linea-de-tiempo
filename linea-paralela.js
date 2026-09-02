@@ -30,8 +30,12 @@ function ensureDetailLoaded(){
   return detailPromise;
 }
 let pxPerYear = parseFloat(localStorage.getItem('lt-par-zoom')) || 2.4;
-const _savedAutofit = localStorage.getItem('lt-par-autofit');
-let autoFit = _savedAutofit === null ? true : _savedAutofit === '1';
+const PREFS_INIT_KEY = 'lt-par-init-v';
+const PREFS_INIT_VERSION = '2';
+const isFirstVisit = localStorage.getItem(PREFS_INIT_KEY) !== PREFS_INIT_VERSION;
+let autoFit = isFirstVisit
+  ? true
+  : (localStorage.getItem('lt-par-autofit') === null ? true : localStorage.getItem('lt-par-autofit') === '1');
 const MIN_FOCUS_SPAN = 5;
 const FONT_SCALE_OPTIONS = [1, 1.2, 1.4];
 let viewWindow = loadViewWindow();
@@ -396,27 +400,32 @@ const PREV_DEFAULT_LANES = ['pre','jud','isr','pro','jes'];
 const DEFAULT_LANES = ['pre'];
 let didInitialScroll = false;
 let scrollFocusLaneId = null;
-const storedLanes = JSON.parse(localStorage.getItem('lt-par-lanes') || 'null');
-const lanesInit = storedLanes ?? DEFAULT_LANES;
-const lanesMigratedLegacy = storedLanes
-  && storedLanes.length === LEGACY_DEFAULT_LANES.length
-  && LEGACY_DEFAULT_LANES.every(id => storedLanes.includes(id));
-const lanesMigratedPrev = storedLanes
-  && storedLanes.length === PREV_DEFAULT_LANES.length
-  && PREV_DEFAULT_LANES.every(id => storedLanes.includes(id));
-let selLanes = new Set(
-  (lanesMigratedLegacy || lanesMigratedPrev ? DEFAULT_LANES : lanesInit)
-    .filter(id=>LANE_ORDER.includes(id)),
-);
+let selLanes;
+if(isFirstVisit){
+  selLanes = new Set(DEFAULT_LANES);
+}else{
+  const storedLanes = JSON.parse(localStorage.getItem('lt-par-lanes') || 'null');
+  const lanesInit = storedLanes ?? DEFAULT_LANES;
+  const lanesMigratedLegacy = storedLanes
+    && storedLanes.length === LEGACY_DEFAULT_LANES.length
+    && LEGACY_DEFAULT_LANES.every(id => storedLanes.includes(id));
+  const lanesMigratedPrev = storedLanes
+    && storedLanes.length === PREV_DEFAULT_LANES.length
+    && PREV_DEFAULT_LANES.every(id => storedLanes.includes(id));
+  selLanes = new Set(
+    (lanesMigratedLegacy || lanesMigratedPrev ? DEFAULT_LANES : lanesInit)
+      .filter(id=>LANE_ORDER.includes(id)),
+  );
+  if(lanesMigratedLegacy || lanesMigratedPrev){
+    try{ localStorage.setItem('lt-par-lanes', JSON.stringify([...selLanes])); }catch(e){}
+  }
+}
 if(!selLanes.size) selLanes.add('pre');
 if(selLanes.has('ntesc')){
   selLanes.delete('ntesc');
   selLanes.add('nt-ev');
   selLanes.add('nt-hec');
   selLanes.add('nt-car');
-}
-if(lanesMigratedLegacy || lanesMigratedPrev){
-  try{ localStorage.setItem('lt-par-lanes', JSON.stringify([...selLanes])); }catch(e){}
 }
 
 let hiddenPeople = new Set();
@@ -3095,8 +3104,22 @@ themeBtn.addEventListener('click', ()=>{
 });
 
 const fromHash = parseHash(location.hash.replace('#',''));
-if(fromHash) selLanes = fromHash;
+if(fromHash){
+  selLanes = fromHash;
+}else if(isFirstVisit){
+  selLanes = new Set(DEFAULT_LANES);
+}
 normalizeExclusiveLanes();
+if(isFirstVisit){
+  autoFit = true;
+  try{
+    localStorage.setItem(PREFS_INIT_KEY, PREFS_INIT_VERSION);
+    localStorage.setItem('lt-par-lanes', JSON.stringify([...selLanes]));
+    localStorage.setItem('lt-par-autofit', '1');
+  }catch(e){}
+  fitBtn.classList.add('on');
+  fitBtn.setAttribute('aria-pressed', 'true');
+}
 const qs = new URLSearchParams(location.search);
 if(qs.get('q')){ query = qs.get('q'); searchEl.value = query; }
 const deepEvId = qs.get('ev');
@@ -3111,15 +3134,6 @@ if (mqMobile?.matches) {
     rowLayout = 'compact';
     rowLayoutEl.value = 'compact';
     applyRowLayout();
-  }
-  if (!localStorage.getItem('lt-par-autofit')) {
-    autoFit = false;
-    pxPerYear = Math.max(pxPerYear, 0.8);
-    zoomEl.value = pxPerYear;
-    fitBtn.classList.remove('on');
-    fitBtn.setAttribute('aria-pressed', 'false');
-    localStorage.setItem('lt-par-autofit', '0');
-    localStorage.setItem('lt-par-zoom', String(pxPerYear));
   }
 }
 if (isTouchLayout() && !localStorage.getItem('lt-par-font-scale')) {
