@@ -460,6 +460,10 @@ html[data-viz="editorial"] .row.is-hovered .span-line{
   transform:scale(1.15);
   box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--lane-color,var(--acc));
 }
+.bar-libro-pin{
+  position:absolute;top:50%;transform:translateY(-50%);
+  z-index:3;pointer-events:none;
+}
 html[data-viz="waterfall"] .bar-compact-narrow .bar-caption__name{
   font:600 calc(11px * var(--tl-font-scale))/1.15 var(--font-sans);
 }
@@ -1113,7 +1117,7 @@ header {
   </div>
 </aside>
 
-<script src="linea-tiempo-datos.js?v=5"></script>
+<script src="linea-tiempo-datos.js?v=7"></script>
 <script src="fichas-personajes.js"></script>
 <script src="linea-paralela.js?v=20260902g"></script>
 </body>

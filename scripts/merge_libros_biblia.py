@@ -29,30 +29,11 @@ TRACK_FIELDS = [
     'etiqueta_jw', 'fecha_estimada', 'jw_codigo', 'jw_linea',
 ]
 
-# ids adicionales de redacción duplicada por libro (gen_hechos / fechas históricas)
-DUPLICATE_IDS = {
-    'marcos': ['388'],
-    'lucas_evangelio': ['384'],
-    'romanos': ['383'],
-    '2_corintios': ['382'],
-    'galatas': ['381'],
-    '2_tesalonicenses': ['380'],
-    '1_timoteo': ['389'],
-    '2_timoteo': ['393'],
-    'tito': ['390'],
-    'filemon': ['385'],
-    'hebreos': ['386'],
-    'santiago': ['387'],
-    '1_pedro': ['391'],
-    '2_pedro': ['392'],
-    'judas': ['394'],
-    'hechos': ['151'],
-    'cantar': ['173'],
-    'juan_evangelio': ['393'],
-}
-
 # filas duplicadas/erróneas de ejecuciones previas
-ORPHAN_IDS = {'341', '349', '197', '342', '401', '402'}
+ORPHAN_IDS = {'341', '349', '197', '342', '401', '402', '195'} | {str(i) for i in range(424, 437)}
+
+LIBRO_CLAVES = {b['clave'] for b in LIBROS}
+LIBRO_BY_CLAVE = {b['clave']: b for b in LIBROS}
 
 
 def export_json():
@@ -126,6 +107,12 @@ def find_primary(rows, book, by_id, claimed):
     clave = book['clave']
     etiqueta = (book.get('match_etiqueta') or '').strip()
 
+    mid = (book.get('match_id') or '').strip()
+    if mid:
+        hid = int(mid)
+        if hid in by_id and hid not in claimed:
+            return by_id[hid], 'match_id'
+
     for r in rows:
         rid = int(r['id'])
         if rid in claimed:
@@ -141,19 +128,42 @@ def find_primary(rows, book, by_id, claimed):
             if r.get('etiqueta_jw') == etiqueta:
                 return r, 'match_etiqueta'
 
-    mid = (book.get('match_id') or '').strip()
-    if mid:
-        hid = int(mid)
-        if hid in by_id and hid not in claimed:
-            r = by_id[hid]
-            ej = (r.get('etiqueta_jw') or '').strip()
-            if not ej or ej in (clave, etiqueta):
-                return r, 'match_id'
-
     return None, None
 
 
-def write_report(ya_teniamos, agregados, cambios):
+def pick_canonical_id(group, clave):
+    book = LIBRO_BY_CLAVE.get(clave)
+    if book and book.get('match_id'):
+        mid = int(book['match_id'])
+        if any(int(r['id']) == mid for r in group):
+            return mid
+    for r in group:
+        if (r.get('etiqueta_jw') or '').strip() == clave:
+            return int(r['id'])
+    return min(int(r['id']) for r in group)
+
+
+def dedupe_redaccion_rows(rows):
+    from collections import defaultdict
+    by_clave = defaultdict(list)
+    for r in rows:
+        ej = (r.get('etiqueta_jw') or '').strip()
+        if ej in LIBRO_CLAVES and (r.get('tipo_suceso') or '').startswith('redac'):
+            by_clave[ej].append(r)
+    remove = set()
+    for clave, group in by_clave.items():
+        if len(group) <= 1:
+            continue
+        keep = pick_canonical_id(group, clave)
+        for r in group:
+            if int(r['id']) != keep:
+                remove.add(int(r['id']))
+    if remove:
+        print(f'[info] eliminados {len(remove)} duplicados de redacción: {sorted(remove)}')
+    return [r for r in rows if int(r['id']) not in remove], remove
+
+
+def write_report(ya_teniamos, agregados, cambios, eliminados=None):
     os.makedirs(os.path.dirname(REPORT), exist_ok=True)
     lines = [
         '# Reporte: Tabla de los Libros de la Biblia',
@@ -162,6 +172,10 @@ def write_report(ya_teniamos, agregados, cambios):
         f'- Ya teníamos (sin cambios): **{len(ya_teniamos)}**',
         f'- Agregado (nuevos ids): **{len(agregados)}**',
         f'- Cambió (field diffs): **{len(cambios)}**',
+    ]
+    if eliminados:
+        lines.append(f'- Eliminados (duplicados): **{len(eliminados)}**')
+    lines += [
         '',
         '---',
         '',
@@ -199,6 +213,11 @@ def write_report(ya_teniamos, agregados, cambios):
     else:
         lines.append('_Ninguno._')
 
+    if eliminados:
+        lines += ['', '## Eliminados (duplicados)', '']
+        for rid in sorted(eliminados):
+            lines.append(f'- id **{rid}**')
+
     with open(REPORT, 'w', encoding='utf-8') as f:
         f.write('\n'.join(lines) + '\n')
 
@@ -225,17 +244,8 @@ def main():
 
     for book in LIBROS:
         clave = book['clave']
-        targets = []
-
         primary, how = find_primary(rows, book, by_id, claimed)
-        if primary:
-            targets.append((primary, how))
-
-        for dup in DUPLICATE_IDS.get(clave, []):
-            if dup in by_id and int(dup) not in claimed:
-                targets.append((by_id[int(dup)], 'duplicate_id'))
-
-        if not targets:
+        if not primary:
             hid = next_id(rows)
             row = {c: '' for c in fieldnames}
             row['id'] = str(hid)
@@ -247,25 +257,25 @@ def main():
             print(f'  nuevo {hid} -> {clave}')
             continue
 
-        for row, how in targets:
-            rid = int(row['id'])
-            before = snapshot_row(row)
-            apply_book(row, book)
-            after = snapshot_row(row)
-            diffs = diff_rows(before, after)
-            claimed.add(rid)
-            if diffs:
-                cambios.append({
-                    'id': rid, 'nombre': book['nombre'], 'clave': clave, 'how': how, 'diffs': diffs,
-                })
-                print(f'  patch {rid} ({how}) -> {clave}')
-            else:
-                ya_teniamos.append({'id': rid, 'nombre': book['nombre'], 'clave': clave})
-                print(f'  ok    {rid} ({how}) -> {clave}')
+        rid = int(primary['id'])
+        before = snapshot_row(primary)
+        apply_book(primary, book)
+        after = snapshot_row(primary)
+        diffs = diff_rows(before, after)
+        claimed.add(rid)
+        if diffs:
+            cambios.append({
+                'id': rid, 'nombre': book['nombre'], 'clave': clave, 'how': how, 'diffs': diffs,
+            })
+            print(f'  patch {rid} ({how}) -> {clave}')
+        else:
+            ya_teniamos.append({'id': rid, 'nombre': book['nombre'], 'clave': clave})
+            print(f'  ok    {rid} ({how}) -> {clave}')
 
+    rows, eliminados = dedupe_redaccion_rows(rows)
     save_rows(rows, fieldnames)
-    write_report(ya_teniamos, agregados, cambios)
-    print(f'OK — {len(rows)} sucesos (+{len(agregados)} nuevos, {len(cambios)} cambios, {len(ya_teniamos)} ok)')
+    write_report(ya_teniamos, agregados, cambios, eliminados)
+    print(f'OK — {len(rows)} sucesos (+{len(agregados)} nuevos, {len(cambios)} cambios, {len(ya_teniamos)} ok, -{len(eliminados)} dup)')
     print(f'Reporte -> {REPORT}')
 
 

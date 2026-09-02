@@ -678,18 +678,28 @@ function chartYearEnd(ev){
   const y = chartYear(ev);
   if(y == null) return null;
   if(ev.fa_fin == null || ev.fa_fin === ev.fa) return y;
-  return ev.fa_fin;
+  return chartYear({...ev, fa: ev.fa_fin});
 }
 function eventHasRange(pe){
   return !!(pe.isEvent && pe.inicio != null && pe.fin != null && pe.inicio !== pe.fin);
 }
+function eventHasLibroRange(ev){
+  return !!(ev && ev.fa_fin != null && ev.fa_fin !== ev.fa);
+}
 function evToRow(ev, barKey){
-  const y = chartYear(ev);
-  const yFin = chartYearEnd(ev);
+  const completion = chartYear(ev);
+  const periodStart = eventHasLibroRange(ev) ? chartYearEnd(ev) : null;
+  let inicio = completion, fin = completion;
+  if(periodStart != null && completion != null){
+    inicio = Math.min(completion, periodStart);
+    fin = Math.max(completion, periodStart);
+  }
   const estIni = ev.ini_est != null ? !!ev.ini_est : !!ev.fest;
   const estFin = ev.fin_est != null ? !!ev.fin_est : !!ev.fest;
   return {
-    id:'ev'+ev.id, n:ev.n, inicio:y, fin:yFin ?? y,
+    id:'ev'+ev.id, n:ev.n, inicio, fin,
+    completion,
+    hasLibroRange: periodStart != null && completion != null && inicio !== fin,
     nota: ev.mcuando || ev.d || ev.ref,
     ie: estIni, fe: estFin,
     isEvent: true, ev, barKey,
@@ -1695,7 +1705,14 @@ function renderCompactNarrowBar(block, pe, x, w, dataAttr, ini, fin, laneColor, 
 
 function renderPeriodBar(block, pe, x, w, dataAttr, ini, fin, layoutOpts){
   const laneColor = BAR_COLORS[block.meta.key] || block.meta.color || 'var(--acc)';
-  return renderCompactNarrowBar(block, pe, x, w, dataAttr, ini, fin, laneColor, layoutOpts);
+  let html = renderCompactNarrowBar(block, pe, x, w, dataAttr, ini, fin, laneColor, layoutOpts);
+  if(pe.hasLibroRange && pe.completion != null && layoutOpts?.yMin != null){
+    const cx = yearToX(pe.completion, layoutOpts.yMin, layoutOpts.yMax, layoutOpts.chartW);
+    const mkColor = pe.ev ? markerColorFor(pe.ev) : laneColor;
+    html += `<div class="bar-libro-pin" style="left:${cx - 6}px" aria-hidden="true">`+
+      `<div class="bar-point-event__pin" style="--mk-color:${mkColor};--lane-color:${laneColor}"></div></div>`;
+  }
+  return html;
 }
 
 function renderPersonBar(block, pe, draw, x, w, dataAttr, ini, fin, layoutOpts){
@@ -1710,7 +1727,7 @@ function renderPersonBar(block, pe, draw, x, w, dataAttr, ini, fin, layoutOpts){
     return renderPointEventBar(block, pe, x, w, dataAttr, ini, fin, layoutOpts);
   }
 
-  if(eventHasRange(pe) || (!pe.isEvent && (compact || vizStyle === 'waterfall'))){
+  if(pe.hasLibroRange || eventHasRange(pe) || (!pe.isEvent && (compact || vizStyle === 'waterfall'))){
     return renderPeriodBar(block, pe, x, w, dataAttr, ini, fin, layoutOpts);
   }
 

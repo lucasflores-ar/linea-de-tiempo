@@ -7,6 +7,7 @@ import csv, json, io, re, collections, unicodedata, os, sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from paths import db, repo
+from libros_biblia_data import LIBROS
 
 BASE = db()
 OUT  = repo('linea-tiempo-datos.js')
@@ -168,6 +169,34 @@ for h in hechos:
         'mcuando': (h.get('ministerio_cuando') or '').strip() or None,
         'fest': (h.get('fecha_estimada') or '').strip() in ('1', 'true', 'yes'),
     })
+
+LIBRO_CLAVES = {b['clave'] for b in LIBROS}
+CANON_ID = {b['clave']: int(b['match_id']) for b in LIBROS if b.get('match_id')}
+
+
+def dedupe_libro_eventos(evts):
+    """Un solo evento por etiqueta_jw de libro (evita duplicados en NT-ESCRITURA)."""
+    by_label = collections.defaultdict(list)
+    for e in evts:
+        jl = e.get('jwlabel')
+        if jl and jl in LIBRO_CLAVES:
+            by_label[jl].append(e)
+    drop = set()
+    for jl, group in by_label.items():
+        if len(group) <= 1:
+            continue
+        keep = CANON_ID.get(jl)
+        if keep is None or not any(e['id'] == keep for e in group):
+            keep = min(e['id'] for e in group)
+        for e in group:
+            if e['id'] != keep:
+                drop.add(e['id'])
+    if drop:
+        print(f'[info] timeline: omitidos {len(drop)} duplicados de libros')
+    return [e for e in evts if e['id'] not in drop]
+
+
+evts = dedupe_libro_eventos(evts)
 
 # preguntas con fecha (para busqueda global y para validar cobertura)
 qdata = []

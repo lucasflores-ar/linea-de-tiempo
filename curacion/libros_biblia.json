@@ -702,8 +702,8 @@
       "era": "E.C.",
       "referencia": "Mar. 16:20",
       "tipo_suceso": "redacción/evangelio",
-      "match_id": "195",
-      "match_etiqueta": "marcos_escribe_evangelio"
+      "match_id": "386",
+      "match_etiqueta": "marcos_evangelio"
     },
     {
       "clave": "lucas_evangelio",
@@ -738,7 +738,7 @@
       "era": "E.C.",
       "referencia": "Juan 21:25",
       "tipo_suceso": "redacción/evangelio",
-      "match_id": "197",
+      "match_id": "437",
       "match_etiqueta": "juan_escribe_evangelio",
       "exclude_libros": [
         "1 JUAN",
@@ -1013,8 +1013,8 @@
       "era": "E.C.",
       "referencia": "Heb. 13:25",
       "tipo_suceso": "redacción/epístola",
-      "match_id": "181",
-      "match_etiqueta": ""
+      "match_id": "180",
+      "match_etiqueta": "pablo_hebreos"
     },
     {
       "clave": "santiago",

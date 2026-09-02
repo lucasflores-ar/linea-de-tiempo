@@ -14,8 +14,10 @@ import csv, os, sys, importlib.util, collections, unicodedata
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from paths import db, SCRIPTS_DIR
+from libros_biblia_data import LIBROS
 
 HECH = db('hechos_biblicos.csv')
+LIBROS_CUBIERTOS = {b['libro'] for b in LIBROS}
 
 spec = importlib.util.spec_from_file_location('periods', os.path.join(SCRIPTS_DIR, 'periods.py'))
 periods_mod = importlib.util.module_from_spec(spec)
@@ -104,11 +106,6 @@ LIBRO_META = {
 
 def main():
     hechos = list(csv.DictReader(open(HECH, encoding='utf-8-sig')))
-    # idempotencia: quitar hechos previamente generados (id >= 160) antes de regenerar
-    try:
-        hechos = [h for h in hechos if int(h['id']) < 160]
-    except (KeyError, ValueError):
-        pass
 
     libros_hechos = set()
     for h in hechos:
@@ -116,9 +113,9 @@ def main():
         if lb:
             libros_hechos.add(lb)
 
-    # libros de periods.py sin hecho
+    # libros de periods.py sin hecho (excluye catálogo canónico de 66 libros)
     libros_todos = sorted(set(p[0] for p in PERIODS))
-    faltan = [b for b in libros_todos if b not in libros_hechos]
+    faltan = [b for b in libros_todos if b not in libros_hechos and b not in LIBROS_CUBIERTOS]
 
     # ids nuevos a partir del max actual
     max_id = max(int(h['id']) for h in hechos)
