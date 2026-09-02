@@ -542,6 +542,7 @@ html[data-row-layout="compact"] .bar-event-pin:focus-visible{
 }
 html[data-row-layout="compact"] .bar-compact-narrow .bar-caption-stack{
   position:relative;z-index:2;
+  margin-left:var(--caption-shift,0);
 }
 html[data-row-layout="compact"] .bar-compact-narrow .bar-caption-stack--dates{
   z-index:1;
@@ -758,6 +759,11 @@ html[data-viz="waterfall"] #d-title{font-family:var(--font-sans)}
 .link-back:hover{text-decoration:underline}
 .evt-marker{cursor:pointer}
 
+@media (pointer: coarse) {
+  .lane-hdr { position: relative; left: auto; }
+  .pot-strip__label { position: relative; left: auto; top: auto; transform: none; margin-left: 8px; }
+}
+
 @media(max-width:760px){
   :root{--label-w:132px;--row-h:46px}
   .row-label__name{font-size:calc(12px * var(--tl-font-scale))}
@@ -768,6 +774,9 @@ html[data-viz="waterfall"] #d-title{font-family:var(--font-sans)}
   .style-ctrl select{min-width:140px}
   html[data-viz="waterfall"] .bar-tag{display:none}
   .band-label{font-size:8px}
+  /* Encabezados y leyendas del eje se desplazan con el gráfico, no pegados al borde */
+  .lane-hdr{position:relative;left:auto}
+  .pot-strip__label{position:relative;left:auto;top:auto;transform:none;margin-left:8px}
 }
 @media(max-width:520px){
   :root{--label-w:108px}
@@ -1223,6 +1232,6 @@ header {
 
 <script src="linea-tiempo-datos.js?v=11"></script>
 <script src="fichas-personajes.js"></script>
-<script src="linea-paralela.js?v=20260902t"></script>
+<script src="linea-paralela.js?v=20260902u"></script>
 </body>
 </html>

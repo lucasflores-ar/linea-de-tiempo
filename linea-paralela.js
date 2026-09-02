@@ -2409,6 +2409,7 @@ function renderCompactNarrowBar(block, pe, x, w, dataAttr, ini, fin, laneColor, 
 }
 
 function adjustCaptionOverflow(){
+  if(rowLayout === 'compact' || isTouchLayout()) return;
   if(!chartScroll || !chartCanvas || typeof chartScroll.getBoundingClientRect !== 'function') return;
   const pad = 8;
   const minLeft = chartScroll.getBoundingClientRect().left + pad;
