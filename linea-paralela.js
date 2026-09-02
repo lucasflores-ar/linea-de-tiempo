@@ -261,6 +261,7 @@ let lastLayout = null;
 const labelsCol = document.getElementById('labels-col');
 const hiddenDock = document.getElementById('hidden-dock');
 const chartScroll = document.getElementById('chart-scroll');
+const chartWrap = document.querySelector('.chart-wrap');
 const chartCanvas = document.getElementById('chart-canvas');
 const axisArea = document.getElementById('axis-area');
 const laneFiltersEl = document.getElementById('lane-filters');
@@ -359,12 +360,30 @@ function touchDistance(touches){
 function touchCenterClientX(touches){
   return (touches[0].clientX + touches[1].clientX) / 2;
 }
-function prefersScalePinch(){
+function isTouchLayout(){
   return typeof matchMedia === 'function' &&
-    (matchMedia('(pointer: coarse)').matches || matchMedia('(max-width: 760px)').matches);
+    (matchMedia('(max-width: 1024px)').matches || matchMedia('(pointer: coarse)').matches);
 }
+function prefersScalePinch(){
+  return isTouchLayout();
+}
+function chartHit(clientX, clientY){
+  if(!chartScroll) return false;
+  const r = chartScroll.getBoundingClientRect();
+  return clientX >= r.left && clientX <= r.right && clientY >= r.top && clientY <= r.bottom;
+}
+function bothTouchesInChart(touches){
+  return touches.length >= 2 &&
+    chartHit(touches[0].clientX, touches[0].clientY) &&
+    chartHit(touches[1].clientX, touches[1].clientY);
+}
+function touchPair(touch0, touch1){
+  return { 0: touch0, 1: touch1, length: 2 };
+}
+let pinchRaf = 0;
+let pinchPendingTouches = null;
 function beginPinch(touches){
-  if(!lastLayout) return;
+  if(!lastLayout || !bothTouchesInChart(touches)) return;
   chartScroll.classList.add('is-pinching');
   drag = false;
   chartScroll.classList.remove('dragging');
@@ -375,6 +394,7 @@ function beginPinch(touches){
     localStorage.setItem('lt-par-autofit', '0');
     fitBtn.classList.remove('on');
     fitBtn.setAttribute('aria-pressed', 'false');
+    chartScroll.classList.remove('fit-width');
     pinchState = {
       mode: 'scale',
       dist0: touchDistance(touches),
@@ -395,7 +415,9 @@ function beginPinch(touches){
 }
 function endPinch(){
   pinchState = null;
-  chartScroll.classList.remove('is-pinching');
+  pinchPendingTouches = null;
+  if(pinchRaf){ cancelAnimationFrame(pinchRaf); pinchRaf = 0; }
+  chartScroll?.classList.remove('is-pinching');
 }
 function movePinch(touches){
   if(!pinchState || !lastLayout) return;
@@ -423,6 +445,7 @@ function movePinch(touches){
   const { dataMin, dataMax } = lastLayout;
   if(newMin < dataMin){ newMin = dataMin; newMax = dataMin + newSpan; }
   if(newMax > dataMax){ newMax = dataMax; newMin = dataMax - newSpan; }
+  const savedCenter = pinchState.centerYear;
   if(isFullFocusRange(newMin, newMax, dataMin, dataMax)){
     if(viewWindow){ viewWindow = null; saveViewWindow(); render._scrolled = true; render(); }
   } else {
@@ -435,10 +458,75 @@ function movePinch(touches){
       dist0: touchDistance(touches),
       vMin: newMin,
       vMax: newMax,
-      centerYear: pinchState.centerYear,
+      centerYear: savedCenter,
     };
   }
 }
+function schedulePinchMove(touches){
+  pinchPendingTouches = touches;
+  if(pinchRaf) return;
+  pinchRaf = requestAnimationFrame(()=>{
+    pinchRaf = 0;
+    if(pinchPendingTouches && pinchState) movePinch(pinchPendingTouches);
+    pinchPendingTouches = null;
+  });
+}
+function installPinchGestures(){
+  if(!chartScroll) return;
+  const ptrMap = new Map();
+  function ptrTouchPair(){
+    const pts = [...ptrMap.values()];
+    return pts.length >= 2 ? touchPair(pts[0], pts[1]) : null;
+  }
+  function onTouchStart(e){
+    if(e.touches.length === 2 && lastLayout && bothTouchesInChart(e.touches)){
+      e.preventDefault();
+      beginPinch(e.touches);
+    }
+  }
+  function onTouchMove(e){
+    if(pinchState && e.touches.length === 2){
+      e.preventDefault();
+      schedulePinchMove(e.touches);
+    }
+  }
+  function onTouchEnd(e){
+    if(pinchState && e.touches.length < 2) endPinch();
+  }
+  document.addEventListener('touchstart', onTouchStart, { passive: false, capture: true });
+  document.addEventListener('touchmove', onTouchMove, { passive: false, capture: true });
+  document.addEventListener('touchend', onTouchEnd, { capture: true });
+  document.addEventListener('touchcancel', onTouchEnd, { capture: true });
+  if(!chartWrap) return;
+  chartWrap.addEventListener('pointerdown', e=>{
+    if(e.pointerType !== 'touch') return;
+    ptrMap.set(e.pointerId, { clientX: e.clientX, clientY: e.clientY });
+    if(ptrMap.size === 2 && lastLayout){
+      const pair = ptrTouchPair();
+      if(pair && bothTouchesInChart(pair)){
+        e.preventDefault();
+        try{ chartWrap.setPointerCapture(e.pointerId); }catch(_e){}
+        beginPinch(pair);
+      }
+    }
+  }, { capture: true, passive: false });
+  chartWrap.addEventListener('pointermove', e=>{
+    if(e.pointerType !== 'touch' || !ptrMap.has(e.pointerId)) return;
+    ptrMap.set(e.pointerId, { clientX: e.clientX, clientY: e.clientY });
+    if(pinchState && ptrMap.size >= 2){
+      e.preventDefault();
+      const pair = ptrTouchPair();
+      if(pair) schedulePinchMove(pair);
+    }
+  }, { capture: true, passive: false });
+  function clearPtr(e){
+    ptrMap.delete(e.pointerId);
+    if(ptrMap.size < 2 && pinchState) endPinch();
+  }
+  chartWrap.addEventListener('pointerup', clearPtr, { capture: true });
+  chartWrap.addEventListener('pointercancel', clearPtr, { capture: true });
+}
+installPinchGestures();
 function applyFocusZoom(newMin, newMax, dataMin, dataMax){
   let min = Math.max(dataMin, newMin);
   let max = Math.min(dataMax, newMax);
@@ -2150,22 +2238,6 @@ chartScroll.addEventListener('wheel', e=>{
   const factor = e.deltaY < 0 ? 1.12 : 1 / 1.12;
   zoomFocusAt(year, factor, lastLayout.dataMin, lastLayout.dataMax);
 }, { passive: false });
-chartScroll.addEventListener('touchstart', e=>{
-  if(e.touches.length === 2 && lastLayout){
-    e.preventDefault();
-    beginPinch(e.touches);
-  }
-}, { passive: false });
-chartScroll.addEventListener('touchmove', e=>{
-  if(e.touches.length === 2 && pinchState && lastLayout){
-    e.preventDefault();
-    movePinch(e.touches);
-  }
-}, { passive: false });
-chartScroll.addEventListener('touchend', e=>{
-  if(!e.touches.length || e.touches.length < 2) endPinch();
-});
-chartScroll.addEventListener('touchcancel', endPinch);
 
 chartScroll.addEventListener('scroll', ()=>{ labelsCol.scrollTop = chartScroll.scrollTop; });
 labelsCol.addEventListener('scroll', ()=>{ chartScroll.scrollTop = labelsCol.scrollTop; });
@@ -2293,6 +2365,11 @@ if (esMovil) {
     localStorage.setItem('lt-par-zoom', String(pxPerYear));
   }
 }
+if (isTouchLayout() && !localStorage.getItem('lt-par-font-scale')) {
+  fontScale = 1.2;
+  applyFontScale();
+  saveFontScale();
+}
 
 if(!(D.preguntas || []).some(p => answerText(p))){
   console.warn('[linea-paralela] Datos sin respuestas en preguntas.a — recarga con Ctrl+F5 (linea-tiempo-datos.js?v=2)');
@@ -2326,7 +2403,7 @@ window.addEventListener('resize', ()=>{ if(autoFit) render._scrolled = false; re
       target: '.chart-wrap',
       center: true,
       title: 'Cronología en filas paralelas',
-      body: 'Cada fila agrupa un periodo o tema (reyes, profetas, ministerio de Jesús…). Las barras muestran vidas o reinados; los puntos, sucesos puntuales. Arrastrá el gráfico para desplazarte.',
+      body: 'Cada fila agrupa un periodo o tema (reyes, profetas, ministerio de Jesús…). Las barras muestran vidas o reinados; los puntos, sucesos puntuales. Arrastrá con un dedo; pellizcá con dos sobre el gráfico para ampliar.',
     },
     {
       target: '#lane-filters',
