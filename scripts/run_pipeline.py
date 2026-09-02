@@ -15,6 +15,7 @@ STEPS = [
     ('merge_post_diluviano.py', 'Fusionar sucesos post-diluvianos'),
     ('merge_reyes_profetas.py', 'Fusionar reyes y profetas (A6)'),
     ('merge_fechas_historicas.py', 'Fusionar fechas históricas sobresalientes'),
+    ('merge_libros_biblia.py', 'Fusionar redacción de libros bíblicos (66 libros)'),
     ('gen_personajes.py', 'Generar personajes_biblicos.csv'),
     ('add_fechas_historicas_preguntas.py', 'Agregar preguntas de cronología (fechas históricas)'),
     ('add_antediluviano_preguntas.py', 'Agregar preguntas antediluvianas'),
