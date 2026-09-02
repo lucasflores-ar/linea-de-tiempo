@@ -44,6 +44,9 @@ let vizStyle = VIZ_STYLES.includes(localStorage.getItem('lt-par-viz')) ? localSt
 const ROW_LAYOUTS = ['expanded', 'compact'];
 let rowLayout = ROW_LAYOUTS.includes(localStorage.getItem('lt-par-row-layout'))
   ? localStorage.getItem('lt-par-row-layout') : 'compact';
+const EVENT_LAYOUTS = ['timeline', 'periods'];
+let eventLayout = EVENT_LAYOUTS.includes(localStorage.getItem('lt-par-event-layout'))
+  ? localStorage.getItem('lt-par-event-layout') : 'timeline';
 
 function layoutMetrics(){
   const wf = vizStyle === 'waterfall';
@@ -77,18 +80,55 @@ function textWidth(text, font){
   ctx.font = font;
   return ctx.measureText(text || '').width;
 }
-function minBarWidthForPe(pe){
+
+const CAPTION_MAX_CHARS = 44;
+const CAPTION_MAX_PX = 200;
+const CAPTION_MIN_PX = 72;
+
+/** Recorta título largo para la barra; conserva el texto completo en title/aria-label. */
+function truncateCaption(text, maxChars = CAPTION_MAX_CHARS){
+  const s = (text || '').trim();
+  if(s.length <= maxChars) return { text: s, truncated: false };
+  let cut = maxChars;
+  const slice = s.slice(0, maxChars);
+  const lastSpace = slice.lastIndexOf(' ');
+  if(lastSpace > maxChars * 0.55) cut = lastSpace;
+  return { text: s.slice(0, cut).trimEnd() + '…', truncated: true };
+}
+
+function captionFonts(){
   const wf = vizStyle === 'waterfall';
   const fs = fontScale;
-  const nameFont = wf
-    ? `600 ${11 * fs}px Inter, "Segoe UI", sans-serif`
-    : `600 ${11 * fs}px "Libre Baskerville", Georgia, serif`;
-  const dateFont = wf
-    ? `400 ${9 * fs}px Inter, "Segoe UI", sans-serif`
-    : `400 ${9 * fs}px Karla, "Segoe UI", sans-serif`;
-  const nameW = textWidth(pe.n, nameFont);
-  const datesW = textWidth(fmtRange(pe.inicio, pe.fin), dateFont);
-  return Math.ceil(Math.max(nameW, datesW) + 20);
+  return {
+    name: wf
+      ? `600 ${11 * fs}px Inter, "Segoe UI", sans-serif`
+      : `600 ${11 * fs}px "Libre Baskerville", Georgia, serif`,
+    date: wf
+      ? `400 ${9 * fs}px Inter, "Segoe UI", sans-serif`
+      : `400 ${9 * fs}px Karla, "Segoe UI", sans-serif`,
+  };
+}
+
+function captionForPe(pe){
+  return truncateCaption(pe.n);
+}
+
+function minBarWidthForPe(pe){
+  const { name, date } = captionFonts();
+  const cap = captionForPe(pe);
+  const nameW = textWidth(cap.text, name);
+  const datesW = textWidth(fmtRange(pe.inicio, pe.fin), date);
+  let w = Math.ceil(Math.max(nameW, datesW) + 20);
+  if(pe.isEvent) w = Math.min(w, CAPTION_MAX_PX);
+  return Math.max(w, CAPTION_MIN_PX);
+}
+
+function captionNameHtml(pe, nameStyle = ''){
+  const cap = captionForPe(pe);
+  const title = cap.truncated ? ` title="${esc(pe.n)}"` : '';
+  const cls = cap.truncated ? ' bar-caption__name--trunc' : '';
+  const style = nameStyle ? ` style="${nameStyle.replace(/^ style="|"$/g, '')}"` : '';
+  return `<span class="bar-caption__name${cls}"${title}${style}>${esc(cap.text)}</span>`;
 }
 function barLabelFitsInside(pe, w){
   return w >= minBarWidthForPe(pe);
@@ -284,6 +324,7 @@ const focusMarqueeEl = document.getElementById('focus-marquee');
 const fontScaleEl = document.getElementById('font-scale');
 const vizStyleEl = document.getElementById('viz-style');
 const rowLayoutEl = document.getElementById('row-layout');
+const eventLayoutEl = document.getElementById('event-layout');
 applyFontScale();
 
 function applyVizStyle(){
@@ -729,23 +770,29 @@ function parseHash(h){
 }
 function overlaps(a1,a2,b1,b2){ return a1 <= b2 && b1 <= a2; }
 
+function visualBarWidth(pe, yMin, yMax, chartW){
+  if(pe.inicio == null) return minBarWidthForPe(pe);
+  const lx = yearToX(pe.inicio, yMin, yMax, chartW);
+  const fin = pe.fin != null ? pe.fin : pe.inicio;
+  const barW = Math.max(4, yearToX(fin, yMin, yMax, chartW) - lx);
+  const labelW = minBarWidthForPe(pe);
+  if(pe.isEvent && pe.inicio === fin) return Math.max(barW, labelW, 28);
+  return Math.max(barW, labelW);
+}
+
 /** ¿Dos barras se pisarían en pantalla al zoom/ancho actuales? (solo píxeles, no años abstractos) */
 function periodVisualClash(a, b, chartLayout){
   const { yMin, yMax, chartW } = chartLayout || {};
-  if(!chartW || a.inicio == null || b.inicio == null || a.fin == null || b.fin == null) return false;
-  const left = a.inicio <= b.inicio ? a : b;
+  if(!chartW || a.inicio == null || b.inicio == null) return false;
+  const left = (a.inicio ?? 9999) <= (b.inicio ?? 9999) ? a : b;
   const right = left === a ? b : a;
+  if(right.inicio == null) return false;
   const lx = yearToX(left.inicio, yMin, yMax, chartW);
   const rx = yearToX(right.inicio, yMin, yMax, chartW);
-  const lBarW = Math.max(4, yearToX(left.fin, yMin, yMax, chartW) - lx);
-  const rBarW = Math.max(4, yearToX(right.fin, yMin, yMax, chartW) - rx);
-  const labelW = minBarWidthForPe(left);
-  const visualEnd = lx + Math.max(lBarW, labelW);
+  const lVisualW = visualBarWidth(left, yMin, yMax, chartW);
+  const rVisualW = visualBarWidth(right, yMin, yMax, chartW);
   const gap = 6;
-  if(visualEnd + gap > rx) return true;
-  const lBarEnd = lx + lBarW;
-  const rBarEnd = rx + rBarW;
-  return lBarEnd + gap > rx && rBarEnd + gap > lx;
+  return lx + lVisualW + gap > rx && rx + rVisualW + gap > lx;
 }
 
 function layoutBlockTracks(people, compact, chartLayout){
@@ -999,13 +1046,37 @@ function rowsForLanes(laneNames){
   return out;
 }
 
+function collectOrderedEvents(idLists){
+  const seen = new Set();
+  const events = [];
+  for(const ids of idLists){
+    for(const id of ids){
+      if(seen.has(id)) continue;
+      const e = D.eventos.find(x=>x.id === id);
+      if(!e || chartYear(e) == null) continue;
+      seen.add(id);
+      events.push(e);
+    }
+  }
+  return events.sort((a, b)=>
+    (chartYear(a) - chartYear(b)) || a.n.localeCompare(b.n, 'es'),
+  );
+}
+
 function buildMinisterioBlocks(){
+  const fases = D.ministerio_fases || [];
+  if(eventLayout === 'timeline'){
+    const events = collectOrderedEvents(fases.map(f=>f.eventos));
+    if(!events.length) return [];
+    return [{
+      lane: 'ministerio-jesus',
+      meta: { key:'jes', color:'var(--lane-jes)', label: 'Ministerio de Jesús' },
+      people: events.map(ev=>evToRow(ev, 'jes')),
+    }];
+  }
   const blocks = [];
-  for(const fase of (D.ministerio_fases || [])){
-    const events = fase.eventos
-      .map(id=>D.eventos.find(e=>e.id===id))
-      .filter(e=>e && chartYear(e)!=null)
-      .sort((a,b)=>(chartYear(a)-chartYear(b))||a.n.localeCompare(b.n,'es'));
+  for(const fase of fases){
+    const events = collectOrderedEvents([fase.eventos]);
     if(!events.length) continue;
     blocks.push({
       lane: fase.codigo,
@@ -1017,11 +1088,19 @@ function buildMinisterioBlocks(){
 }
 
 function buildUltimaSemanaBlocks(){
+  const dias = D.ultima_semana_dias || [];
+  if(eventLayout === 'timeline'){
+    const events = collectOrderedEvents(dias.map(d=>d.eventos));
+    if(!events.length) return [];
+    return [{
+      lane: 'ultima-semana',
+      meta: { key:'sem', color:'var(--lane-sem)', label: 'Última semana de Jesús (8–16 nisán)' },
+      people: events.map(ev=>evToRow(ev, 'sem')),
+    }];
+  }
   const blocks = [];
-  for(const dia of (D.ultima_semana_dias || [])){
-    const events = dia.eventos
-      .map(id=>D.eventos.find(e=>e.id===id))
-      .filter(e=>e && chartYear(e)!=null);
+  for(const dia of dias){
+    const events = collectOrderedEvents([dia.eventos]);
     if(!events.length) continue;
     blocks.push({
       lane: dia.titulo,
@@ -1670,7 +1749,7 @@ function buildPhaseAxis(chartW, yMin, yMax, laneData, effectivePx){
 function renderPointEventBar(block, pe, x, w, dataAttr, ini, fin, layoutOpts){
   const cls = ['bar','bar--'+block.meta.key,'bar-compact-narrow','bar-point-event', ...estBarClasses(pe)];
   const cx = x + Math.max(4, w) / 2;
-  const boxW = Math.max(minBarWidthForPe(pe), 28);
+  const boxW = Math.min(Math.max(minBarWidthForPe(pe), 28), CAPTION_MAX_PX);
   const left = cx - boxW / 2;
   const laneColor = BAR_COLORS[block.meta.key] || block.meta.color || 'var(--acc)';
   const mkColor = pe.ev ? markerColorFor(pe.ev) : laneColor;
@@ -1678,10 +1757,10 @@ function renderPointEventBar(block, pe, x, w, dataAttr, ini, fin, layoutOpts){
   let nameStyle = '';
   if(layoutOpts?.compactLayout && layoutOpts.yMin != null){
     const inset = markerNameInset(pe, left, layoutOpts.yMin, layoutOpts.yMax, layoutOpts.chartW);
-    if(inset) nameStyle = ` style="margin-left:${inset}px"`;
+    if(inset) nameStyle = `margin-left:${inset}px`;
   }
-  return `<div class="${cls.join(' ')}" style="left:${left}px;width:${boxW}px" tabindex="0" role="button" aria-label="${esc(pe.n)}, ${fmtRange(ini,fin)}" ${dataAttr}${peAttr}>`+
-    `<span class="bar-caption__name"${nameStyle}>${esc(pe.n)}</span>`+
+  return `<div class="${cls.join(' ')}" style="left:${left}px;width:${boxW}px;max-width:${CAPTION_MAX_PX}px" tabindex="0" role="button" aria-label="${esc(pe.n)}, ${fmtRange(ini,fin)}" ${dataAttr}${peAttr}>`+
+    captionNameHtml(pe, nameStyle)+
     `<div class="bar-point-event__pin" style="--mk-color:${mkColor};--lane-color:${laneColor}"></div>`+
     `<span class="bar-caption__dates">${esc(fmtRange(ini, fin))}</span>`+
     `</div>`;
@@ -1695,10 +1774,10 @@ function renderCompactNarrowBar(block, pe, x, w, dataAttr, ini, fin, laneColor, 
   let nameStyle = '';
   if(layoutOpts?.compactLayout && layoutOpts.yMin != null){
     const inset = markerNameInset(pe, x, layoutOpts.yMin, layoutOpts.yMax, layoutOpts.chartW);
-    if(inset) nameStyle = ` style="margin-left:${inset}px"`;
+    if(inset) nameStyle = `margin-left:${inset}px`;
   }
   return `<div class="${cls.join(' ')}" style="left:${x}px;width:${lineW}px" tabindex="0" role="button" aria-label="${esc(pe.n)}, ${fmtRange(ini,fin)}" ${dataAttr}${peAttr}>`+
-    `<span class="bar-caption__name"${nameStyle}>${esc(pe.n)}</span>`+
+    captionNameHtml(pe, nameStyle)+
     `<div class="span-line span-line--${block.meta.key} bar-compact-narrow__line ${estBarClasses(pe).join(' ')}" style="width:100%;background:${barBg}"></div>`+
     `<span class="bar-caption__dates">${esc(fmtRange(ini, fin))}</span>`+
     `</div>`;
@@ -1783,12 +1862,13 @@ function labelEntryHtml(pe, match, rowId, barW, layoutOpts){
   const tagCls = vizStyle === 'waterfall' && match && (barW < 56 || !layoutOpts.showChartTags) ? ' row-label--tag' : '';
   const dataAttr = pe.isEvent ? ` data-ev="${pe.ev.id}"` : '';
   const peAttr = ` data-pe="${esc(peKey(pe))}"`;
+  const cap = captionForPe(pe);
   return `<div class="row-label__entry${match?'':' dim'}${highlight?' match':''}${tagCls} row-label--click" data-row="${rowId}"${peAttr}${dataAttr} title="${esc(pe.n)}">`+
     `<label class="row-label__pick" title="Ocultar de la línea">`+
     `<input type="checkbox" class="pe-pick" data-pe-key="${esc(peKey(pe))}" checked aria-label="Mostrar ${esc(pe.n)}" />`+
     `</label>`+
     `<span class="row-label__body row-label__body--click">`+
-    `<span class="row-label__name">${esc(pe.n)}</span>`+
+    `<span class="row-label__name">${esc(cap.text)}</span>`+
     `<span class="row-label__dates">${fmtRange(pe.inicio, pe.fin)}</span></span></div>`;
 }
 
@@ -2335,6 +2415,15 @@ if(rowLayoutEl){
     applyRowLayout();
     if(peShowAllBtn) peShowAllBtn.hidden = rowLayout === 'compact';
     if(peHideAllBtn) peHideAllBtn.hidden = rowLayout === 'compact';
+    render._scrolled = false;
+    render();
+  });
+}
+if(eventLayoutEl){
+  eventLayoutEl.value = eventLayout;
+  eventLayoutEl.addEventListener('change', ()=>{
+    eventLayout = EVENT_LAYOUTS.includes(eventLayoutEl.value) ? eventLayoutEl.value : 'timeline';
+    localStorage.setItem('lt-par-event-layout', eventLayout);
     render._scrolled = false;
     render();
   });

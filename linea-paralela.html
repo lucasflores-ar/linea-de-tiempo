@@ -432,15 +432,16 @@ html[data-viz="editorial"] .row.is-hovered .span-line{
   transition:filter .12s, opacity .12s;
 }
 .bar-compact-narrow .bar-caption__name{
-  display:block;width:max-content;max-width:none;
+  display:block;width:100%;max-width:100%;min-width:0;
   font:600 calc(11px * var(--tl-font-scale))/1.15 var(--font-serif);color:var(--txt);
-  white-space:nowrap;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
 .bar-compact-narrow .bar-caption__dates{
-  display:block;width:max-content;max-width:none;
+  display:block;width:100%;max-width:100%;min-width:0;
   font:400 calc(10px * var(--tl-font-scale))/1.15 var(--font-sans);color:var(--mut);
-  white-space:nowrap;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
+.bar-compact-narrow .bar-caption__name--trunc{cursor:help}
 /* Puntos (suceso en fecha única): misma columna título · marcador · fechas que las barras */
 .bar-point-event{align-items:flex-start}
 .bar-point-event__pin{
@@ -1005,8 +1006,15 @@ header {
     <div class="style-ctrl">
       <label for="row-layout">Disposición</label>
       <select id="row-layout" aria-label="Disposición de filas de personajes">
+        <option value="compact">Compacto (apilar si solapan)</option>
         <option value="expanded">Expandido (1 por fila)</option>
-        <option value="compact">Compacto (sin solapar)</option>
+      </select>
+    </div>
+    <div class="style-ctrl">
+      <label for="event-layout">Sucesos</label>
+      <select id="event-layout" aria-label="Disposición de sucesos del ministerio">
+        <option value="timeline">Eje temporal (predeterminado)</option>
+        <option value="periods">Por periodos / días</option>
       </select>
     </div>
     <div class="style-ctrl">
@@ -1117,8 +1125,8 @@ header {
   </div>
 </aside>
 
-<script src="linea-tiempo-datos.js?v=8"></script>
+<script src="linea-tiempo-datos.js?v=9"></script>
 <script src="fichas-personajes.js"></script>
-<script src="linea-paralela.js?v=20260902g"></script>
+<script src="linea-paralela.js?v=20260902i"></script>
 </body>
 </html>
