@@ -66,14 +66,31 @@ if os.path.exists(REL_PATH):
         print('[warn] no se pudo leer relaciones.json:', e)
 
 # ---------------- temas por evento ----------------
-# libros del NT que, cuando tienen tipo redacción/*, van al tema NT-ESCRITURA
-LIBROS_NT = {
-    'MATEO', 'MARCOS', 'LUCAS', 'JUAN', 'HECHOS', 'ROMANOS',
-    '1 CORINTIOS', '2 CORINTIOS', 'GÁLATAS', 'EFESIOS', 'FILIPENSES',
-    'COLOSENSES', '1 TESALONICENSES', '2 TESALONICENSES', '1 TIMOTEO',
-    '2 TIMOTEO', 'TITO', 'FILEMÓN', 'HEBREOS', 'SANTIAGO', '1 PEDRO',
-    '2 PEDRO', '1 JUAN', '2 JUAN', '3 JUAN', 'JUDAS', 'APOCALIPSIS',
-}
+from escritura_categorias import LIBROS_NT, categoria_escritura_de_libro
+
+def _norm_libro(s):
+    return (s or '').strip().upper()
+
+def libro_redaccion_canonica(h):
+    """Libro redactado (no el libro-cita de la referencia)."""
+    jl = (h.get('etiqueta_jw') or h.get('jwlabel') or '').lower()
+    nom = (h.get('nombre') or '').lower()
+    if 'genesis' in jl or 'génesis' in nom or 'genesis' in nom:
+        return 'GÉNESIS'
+    if 'exodo' in jl or 'éxodo' in nom or 'exodo' in nom:
+        return 'ÉXODO'
+    if 'levitico' in jl or 'levítico' in nom:
+        return 'LEVÍTICO'
+    if 'numeros' in jl or 'números' in nom:
+        return 'NÚMEROS'
+    if 'deuteronomio' in jl or 'deuteronomio' in nom:
+        return 'DEUTERONOMIO'
+    li = _norm_libro(h.get('libro'))
+    er = (h.get('era') or '').upper()
+    # Referencia en evangelio no implica redacción NT si el suceso es del AT
+    if li in LIBROS_NT and not er.startswith('E.C'):
+        return None
+    return li or None
 
 def temas_de(h):
     er  = (h['era'] or '').upper()
@@ -83,9 +100,14 @@ def temas_de(h):
     tipo = (h.get('tipo_suceso') or '').strip().lower()
     t = set()
 
-    # capa de ESCRITURA del NT: hechos de redacción de libros canónicos
-    if tipo.startswith('redacc') and li in LIBROS_NT:
-        t.add('NT-ESCRITURA')
+    # capa de ESCRITURA: hechos de redacción de libros canónicos (AT y NT por categoría)
+    if tipo.startswith('redacc'):
+        li_red = libro_redaccion_canonica(h) or li
+        cat_esc = categoria_escritura_de_libro(li_red)
+        if cat_esc:
+            t.add(cat_esc)
+            if cat_esc.startswith('NT-'):
+                t.add('NT-ESCRITURA')
     if li in ('GÉNESIS', 'GÉNESIS', 'GENESIS') or er.startswith('PREHISTORIA') or er.startswith('PATRIARCA') or er in ('DILUVIO', 'POSTDILUVIANO'):
         t.add('GENESIS')
     if li in ('ÉXODO', 'EXODO', 'LEVÍTICO', 'NÚMEROS', 'DEUTERONOMIO') or er.startswith('EXODO') or er.startswith('EGIPTO') or er.startswith('LEY') or er.startswith('DESIERTO'):

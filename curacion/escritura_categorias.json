@@ -1,0 +1,94 @@
+{
+  "version": 1,
+  "descripcion": "Taxonomía de libros bíblicos por categoría de escritura (AT y NT). Las filas NT se muestran en la línea paralela; las AT quedan listas para sucesos futuros.",
+  "categorias": [
+    {
+      "id": "AT-PENTATEUCO",
+      "testamento": "AT",
+      "label": "Pentateuco (Torá)",
+      "descripcion": "La Ley o libros de Moisés",
+      "libros": ["GÉNESIS", "ÉXODO", "LEVÍTICO", "NÚMEROS", "DEUTERONOMIO"],
+      "timeline": false
+    },
+    {
+      "id": "AT-HISTORICOS",
+      "testamento": "AT",
+      "label": "Libros históricos",
+      "descripcion": "Historia del pueblo de Israel y la conquista de Canaán",
+      "libros": ["JOSUÉ", "JUECES", "RUT", "1 SAMUEL", "2 SAMUEL", "1 REYES", "2 REYES", "1 CRÓNICAS", "2 CRÓNICAS", "ESDRAS", "NEHEMÍAS", "ESTER"],
+      "timeline": false
+    },
+    {
+      "id": "AT-POETICOS",
+      "testamento": "AT",
+      "label": "Libros poéticos y sapienciales",
+      "descripcion": "Poesía, sabiduría y lírica",
+      "libros": ["JOB", "SALMOS", "PROVERBIOS", "ECLESIASTÉS", "CANTAR DE LOS CANTARES", "CANTAR"],
+      "timeline": false
+    },
+    {
+      "id": "AT-PROF-MAYORES",
+      "testamento": "AT",
+      "label": "Profetas mayores",
+      "descripcion": "Profetas con escritos más extensos",
+      "libros": ["ISAÍAS", "JEREMÍAS", "LAMENTACIONES", "EZEQUIEL", "DANIEL"],
+      "timeline": false
+    },
+    {
+      "id": "AT-PROF-MENORES",
+      "testamento": "AT",
+      "label": "Profetas menores",
+      "descripcion": "Doce profetas con escritos más breves",
+      "libros": ["OSEAS", "JOEL", "AMÓS", "ABDÍAS", "JONÁS", "MIQUEAS", "NAHUM", "HABACUC", "SOFONÍAS", "HAGEO", "ZACARÍAS", "MALAQUÍAS"],
+      "timeline": false
+    },
+    {
+      "id": "NT-EVANGELIOS",
+      "testamento": "NT",
+      "label": "Evangelios",
+      "descripcion": "Vida, ministerio y enseñanzas de Jesús",
+      "libros": ["MATEO", "MARCOS", "LUCAS", "JUAN"],
+      "timeline": true,
+      "lane_key": "nt-ev",
+      "cron": 36,
+      "color": "var(--c-nt-ev)"
+    },
+    {
+      "id": "NT-HECHOS",
+      "testamento": "NT",
+      "label": "Hechos",
+      "descripcion": "Nacimiento y expansión de la iglesia primitiva",
+      "libros": ["HECHOS"],
+      "timeline": true,
+      "lane_key": "nt-hec",
+      "cron": 36.1,
+      "color": "var(--c-nt-hec)"
+    },
+    {
+      "id": "NT-CARTAS",
+      "testamento": "NT",
+      "label": "Cartas",
+      "descripcion": "Epístolas de Pablo y de otros escritores cristianos",
+      "libros": [
+        "ROMANOS", "1 CORINTIOS", "2 CORINTIOS", "GÁLATAS", "EFESIOS", "FILIPENSES", "COLOSENSES",
+        "1 TESALONICENSES", "2 TESALONICENSES", "1 TIMOTEO", "2 TIMOTEO", "TITO", "FILEMÓN",
+        "HEBREOS", "SANTIAGO", "1 PEDRO", "2 PEDRO", "1 JUAN", "2 JUAN", "3 JUAN", "JUDAS"
+      ],
+      "timeline": true,
+      "lane_key": "nt-car",
+      "cron": 36.2,
+      "color": "var(--c-nt-car)"
+    },
+    {
+      "id": "NT-APOCALIPSIS",
+      "testamento": "NT",
+      "label": "Apocalipsis",
+      "descripcion": "Revelación sobre los últimos tiempos",
+      "libros": ["APOCALIPSIS"],
+      "timeline": true,
+      "lane_key": "nt-apo",
+      "cron": 36.3,
+      "color": "var(--c-nt-apo)"
+    }
+  ]
+}

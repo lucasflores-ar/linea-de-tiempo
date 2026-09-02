@@ -102,11 +102,15 @@ if(bars < 20 || markers < 5 || !conn || pots !== 6 || filters < 10 || estFade < 
   process.exit(1);
 }
 
-// Fase 2: fila Escritura NT con barras de período
-const ntEvents = DATA.eventos.filter(e => (e.t || []).includes('NT-ESCRITURA'));
-const ntRanges = ntEvents.filter(e => e.fa_fin != null && e.fa_fin !== e.fa);
-console.log('NT-ESCRITURA:', ntEvents.length, '| con rango:', ntRanges.length);
-if(ntEvents.length !== 27 || ntRanges.length < 10){
+// Fase 2: chips NT por categoría (Evangelios, Hechos, Cartas+Apoc)
+const ntEsc = DATA.eventos.filter(e => (e.t || []).includes('NT-ESCRITURA'));
+const ntEv = DATA.eventos.filter(e => (e.t || []).includes('NT-EVANGELIOS'));
+const ntHec = DATA.eventos.filter(e => (e.t || []).includes('NT-HECHOS'));
+const ntCar = DATA.eventos.filter(e => (e.t || []).includes('NT-CARTAS'));
+const ntApo = DATA.eventos.filter(e => (e.t || []).includes('NT-APOCALIPSIS'));
+const ntRanges = ntEsc.filter(e => e.fa_fin != null && e.fa_fin !== e.fa);
+console.log('NT-ESCRITURA:', ntEsc.length, '| Evangelios:', ntEv.length, '| Hechos:', ntHec.length, '| Cartas:', ntCar.length, '| Apoc:', ntApo.length, '| rango:', ntRanges.length);
+if(ntEsc.length < 27 || ntEv.length < 4 || ntCar.length < 10 || ntHec.length < 1 || ntApo.length < 1){
   console.log('FAIL nt data');
   process.exit(1);
 }
@@ -149,7 +153,7 @@ const ctxNt={
   innerWidth:1200, innerHeight:800, location:{hash:'',search:''},
   history:{ replaceState(){} },
   localStorage:{
-    getItem(k){ if(k==='lt-par-lanes') return JSON.stringify(['ntesc']); return null; },
+    getItem(k){ if(k==='lt-par-lanes') return JSON.stringify(['nt-ev','nt-hec','nt-car']); return null; },
     setItem(){},
   },
   URLSearchParams: global.URLSearchParams,
@@ -165,15 +169,17 @@ vm.runInContext(fs.readFileSync(path.join(REPO, 'fichas-personajes.js'), 'utf-8'
 vm.runInContext(JS, ctxNt, {timeout:8000});
 const ntBars = (byIdNt['chart-canvas'].innerHTML.match(/class="bar /g)||[]).length;
 const ntPeriodBars = (byIdNt['chart-canvas'].innerHTML.match(/bar-compact-narrow/g)||[]).length;
+const ntSections = (byIdNt['lane-filters'].innerHTML.match(/Evangelios|Hechos \(NT\)|Cartas/g)||[]).length;
 const ntFade = (byIdNt['chart-canvas'].innerHTML.match(/linear-gradient\(90deg,transparent/g)||[]).length;
-const ntFilter = byIdNt['lane-filters'].innerHTML.includes('Escritura NT');
-console.log('ntesc barras:', ntBars, '| periodo:', ntPeriodBars, '| fade:', ntFade, '| filtro:', ntFilter);
-if(ntBars < 27 || ntPeriodBars < 10 || ntFade < 10 || !ntFilter){
-  console.log('FAIL ntesc lane');
+const ntFilterEv = byIdNt['lane-filters'].innerHTML.includes('Evangelios');
+const ntFilterCar = byIdNt['lane-filters'].innerHTML.includes('Cartas');
+console.log('nt barras:', ntBars, '| periodo:', ntPeriodBars, '| filtros NT:', ntSections, '| fade:', ntFade, '| ev:', ntFilterEv, '| car:', ntFilterCar);
+if(ntBars < 27 || ntPeriodBars < 10 || ntSections < 3 || ntFade < 10 || !ntFilterEv || !ntFilterCar){
+  console.log('FAIL nt lanes');
   process.exit(1);
 }
 
-// Modo compacto: pistas apiladas cuando las etiquetas se solapan
+// Modo compacto NT Cartas: pistas apiladas cuando las etiquetas se solapan
 const byIdNtCompact = {};
 ['labels-col','chart-scroll','chart-canvas','axis-area','lane-filters','search','result-count','theme-btn',
  'zoom','zoom-val','opt-markers','opt-connections','opt-potencias','pot-chips','export-btn','fit-btn',
@@ -213,7 +219,7 @@ const ctxNtCompact={
   history:{ replaceState(){} },
   localStorage:{
     getItem(k){
-      if(k==='lt-par-lanes') return JSON.stringify(['ntesc']);
+      if(k==='lt-par-lanes') return JSON.stringify(['nt-car']);
       if(k==='lt-par-row-layout') return 'compact';
       return null;
     },
@@ -231,9 +237,9 @@ vm.runInContext('window.LT_DATA='+JSON.stringify(DATA)+';', ctxNtCompact);
 vm.runInContext(fs.readFileSync(path.join(REPO, 'fichas-personajes.js'), 'utf-8'), ctxNtCompact);
 vm.runInContext(JS, ctxNtCompact, {timeout:8000});
 const ntRows = (byIdNtCompact['chart-canvas'].innerHTML.match(/class="row"/g)||[]).length;
-console.log('ntesc compact pistas:', ntRows, '(esperado > 1)');
+console.log('nt-car compact pistas:', ntRows, '(esperado > 1)');
 if(ntRows < 2){
-  console.log('FAIL ntesc stacking');
+  console.log('FAIL nt stacking');
   process.exit(1);
 }
 console.log('PASS');

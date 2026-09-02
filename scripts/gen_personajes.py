@@ -141,7 +141,6 @@ P = [
  dict(nombre='Jeremías',        inicio=-647,  fin=-600,  seccion='S2', grupo='Profetas', ini_est=1, fin_est=1, nota='ministerio c.647-600+ (lámina A6b, estimado)'),
  dict(nombre='Habacuc',         inicio=-628,  fin=-618,  seccion='S2', grupo='Profetas', ini_est=1, fin_est=1, nota='ministerio c.628-618 (lámina A6b, estimado)'),
  dict(nombre='Abdías',          inicio=-618,  fin=-610,  seccion='S2', grupo='Profetas', ini_est=1, fin_est=1, nota='ministerio c.618-610 (lámina A6b, estimado)'),
- dict(nombre='Jehoiadá',        inicio=-900,  fin=-830,  seccion='S2', grupo='Reino dividido', nota='130 años, aprox.'),
  # ---- Seccion 2: Destierro en Babilonia ----
  dict(nombre='Daniel',          inicio=-617,  fin=-532,  seccion='S2', grupo='Destierro en Babilonia',
       ini_est=1, fin_est=1,
@@ -151,7 +150,7 @@ P = [
  # ---- Seccion 2: Despues del destierro ----
  dict(nombre='Ester',           inicio=-484,  fin=-450,  seccion='S2', grupo='Después del destierro', nota='reina ~478-?', ),
  dict(nombre='Esdras',          inicio=-480,  fin=-420,  seccion='S2', grupo='Después del destierro', nota='escriba, aprox.'),
- dict(nombre='Nehemíás',        inicio=-470,  fin=-410,  seccion='S2', grupo='Después del destierro', nota='gobernador 455-443'),
+ dict(nombre='Nehemías',        inicio=-470,  fin=-410,  seccion='S2', grupo='Después del destierro', nota='gobernador 455-443'),
  # ---- Seccion 3: Siglo primero ----
  dict(nombre='Juan el Bautista',inicio=-2,    fin=32,    seccion='S3', grupo='Siglo primero', nota='6 meses mayor que Jesús'),
  dict(nombre='Jesús',           inicio=-2,    fin=33,    seccion='S3', grupo='Siglo primero', nota='2 a.E.C.-33 E.C.'),

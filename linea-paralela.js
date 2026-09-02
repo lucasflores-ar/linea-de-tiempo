@@ -116,15 +116,60 @@ const SHORT_PERIOD_POINT_YEARS = 3;
 const SHORT_PERIOD_MAX_YEARS = 12;
 const NARROW_BAR_PX = 56;
 
+/** Mínimo legible al truncar: 2 palabras + tercera parcial + "…". */
+function truncateCaptionMinWords(words, maxChars){
+  if(!words.length) return '';
+  if(words.length === 1){
+    return words[0].length <= maxChars
+      ? words[0]
+      : words[0].slice(0, Math.max(1, maxChars - 1)).trimEnd() + '…';
+  }
+  const base = words[0] + ' ' + words[1];
+  if(words.length === 2){
+    if(base.length <= maxChars) return base + '…';
+    return base.slice(0, Math.max(1, maxChars - 1)).trimEnd() + '…';
+  }
+  const third = words[2];
+  const partialLen = Math.max(3, Math.ceil(third.length * 0.45));
+  let candidate = base + ' ' + third.slice(0, partialLen) + '…';
+  if(candidate.length > maxChars){
+    const room = maxChars - base.length - 2;
+    candidate = room >= 1
+      ? base + ' ' + third.slice(0, room) + '…'
+      : base.slice(0, Math.max(1, maxChars - 1)).trimEnd() + '…';
+  }
+  return candidate;
+}
+
 /** Recorta título largo para la barra; conserva el texto completo en title/aria-label. */
 function truncateCaption(text, maxChars = CAPTION_MAX_CHARS){
   const s = (text || '').trim();
+  if(!s) return { text: '', truncated: false };
   if(s.length <= maxChars) return { text: s, truncated: false };
+
+  const words = s.split(/\s+/).filter(Boolean);
+  const minCap = truncateCaptionMinWords(words, maxChars);
+
   let cut = maxChars;
   const slice = s.slice(0, maxChars);
   const lastSpace = slice.lastIndexOf(' ');
   if(lastSpace > maxChars * 0.55) cut = lastSpace;
-  return { text: s.slice(0, cut).trimEnd() + '…', truncated: true };
+  const longCap = s.slice(0, cut).trimEnd() + '…';
+  const longWords = longCap.replace(/…$/, '').trim().split(/\s+/).filter(Boolean);
+  const out = (longWords.length >= 2 && longCap.length >= minCap.length) ? longCap : minCap;
+  return { text: out, truncated: true };
+}
+
+function captionStackWidth(pe, opts = {}){
+  const w = minBarWidthForPe(pe, opts);
+  const cap = opts.fullName ? 9999 : CAPTION_MAX_PX;
+  return Math.min(Math.max(w, CAPTION_MIN_PX), cap);
+}
+
+function clampBarLeft(left, width, chartW){
+  const pad = 4;
+  if(!chartW || width <= 0) return left;
+  return Math.max(pad, Math.min(left, chartW - pad - width));
 }
 
 function captionFonts(){
@@ -194,7 +239,6 @@ const LANE_META = {
   'Destierro en Babilonia': { key:'babil', color:'var(--c-exi)', label:'Destierro en Babilonia' },
   'Después del destierro': { key:'rest', color:'var(--c-res)', label:'Después del destierro' },
   'Siglo primero': { key:'sig', color:'var(--c-ec)', label:'Siglo primero' },
-  'Reino dividido': { key:'rdiv', color:'var(--lane-isr)', label:'Reino dividido' },
 };
 
 const THEME_LANE_META = {
@@ -208,8 +252,17 @@ const THEME_LANE_META = {
   RESTAURACION: { key:'tres', color:'var(--c-res)', label:'Sucesos · Restauración' },
   'SIGLO-PRIMERO': { key:'tsig', color:'var(--c-ec)', label:'Sucesos · Siglo primero' },
   HECHOS: { key:'hec', color:'var(--c-pat)', label:'Sucesos · Hechos' },
-  'NT-ESCRITURA': { key:'ntesc', color:'var(--c-ntesc)', label:'Sucesos · Escritura NT' },
 };
+
+/** Subdivisiones de Escritura NT (ver curacion/escritura_categorias.json). */
+const NT_ESCRITURA_CATEGORIES = [
+  { id:'nt-ev',  tema:'NT-EVANGELIOS',   label:'Evangelios',    desc:'Vida, ministerio y enseñanzas de Jesús',           color:'var(--c-nt-ev)',  cron:36   },
+  { id:'nt-hec', tema:'NT-HECHOS',       label:'Hechos',        desc:'Nacimiento y expansión de la iglesia primitiva',    color:'var(--c-nt-hec)', cron:36.1 },
+  { id:'nt-car', tema:'NT-CARTAS',       label:'Cartas',        desc:'Epístolas y Apocalipsis',                           color:'var(--c-nt-car)', cron:36.2, extraTemas:['NT-APOCALIPSIS'] },
+];
+NT_ESCRITURA_CATEGORIES.forEach(c=>{
+  THEME_LANE_META[c.tema] = { key:c.id, color:c.color, label:`Sucesos · ${c.label}` };
+});
 
 const LANE_FILTERS = [
   { id:'pre',   cron:-5000, mode:'personaje', grupo:'Antes del Diluvio', label:'Antes del Diluvio', color:'var(--c-pre)' },
@@ -220,7 +273,6 @@ const LANE_FILTERS = [
   { id:'jue',   cron:-1380, mode:'personaje', grupo:'Época de los jueces', label:'Jueces', color:'var(--lane-jue)' },
   { id:'tjue',  cron:-1370, mode:'tema', tema:'JUECES', label:'Jueces (sucesos)', color:'var(--c-jue)' },
   { id:'uni',   cron:-1050, mode:'personaje', grupo:'Un solo reino', label:'Un solo reino', color:'var(--lane-uni)' },
-  { id:'rdiv',  cron:-997,  mode:'personaje', grupo:'Reino dividido', label:'Reino dividido', color:'var(--lane-isr)' },
   { id:'jud',   cron:-996,  mode:'personaje', grupo:'Reyes de Judá', label:'Reyes de Judá', color:'var(--lane-jud)' },
   { id:'isr',   cron:-995,  mode:'personaje', grupo:'Reyes de Israel', label:'Reyes de Israel', color:'var(--lane-isr)' },
   { id:'tre',   cron:-994,  mode:'tema', tema:'REYES', label:'Reyes (sucesos)', color:'var(--c-mon)' },
@@ -235,9 +287,16 @@ const LANE_FILTERS = [
   { id:'sem',   cron:33,    mode:'ultima_semana', label:'Última semana', color:'var(--lane-sem)' },
   { id:'tsig',  cron:34,    mode:'tema', tema:'SIGLO-PRIMERO', label:'Siglo primero (sucesos)', color:'var(--c-ec)' },
   { id:'hec',   cron:35,    mode:'tema', tema:'HECHOS', label:'Hechos', color:'var(--c-pat)' },
-  { id:'ntesc', cron:36,    mode:'tema', tema:'NT-ESCRITURA', label:'Escritura NT', color:'var(--c-ntesc)' },
+  { id:'nt-ev', cron:36,    mode:'tema', tema:'NT-EVANGELIOS', label:'Evangelios', color:'var(--c-nt-ev)' },
+  { id:'nt-hec', cron:36.1, mode:'tema', tema:'NT-HECHOS', label:'Hechos (NT)', color:'var(--c-nt-hec)' },
+  { id:'nt-car', cron:36.2, mode:'tema', tema:'NT-CARTAS', label:'Cartas', color:'var(--c-nt-car)', extraTemas:['NT-APOCALIPSIS'] },
 ];
 const LANE_ORDER = [...LANE_FILTERS].sort((a, b)=>a.cron - b.cron).map(f=>f.id);
+const NT_LANE_IDS = new Set(['nt-ev', 'nt-hec', 'nt-car']);
+
+function isNtEscrituraLane(f){
+  return f && NT_LANE_IDS.has(f.id);
+}
 const DEFAULT_FOCUS_YEAR = 30;
 const NISAN_DAYS = [
   '8 de nisán (sábado)', '9 de nisán', '10 de nisán', '11 de nisán', '12 de nisán',
@@ -249,6 +308,7 @@ const LEGACY_HASH = {
   'reyes-profetas':['jud','isr','pro'], 'a6-1':['jud','isr','pro'], 'a6-2':['jud','isr','pro'],
   'ministerio-jesus':['jes'], 'ultima-semana':['sem'], 'vida-jesus':['jes','sem'],
   jesus:['jes','sem'],
+  ntesc:['nt-ev','nt-hec','nt-car'],
 };
 
 const BANDS = [
@@ -268,10 +328,11 @@ const POTENCIAS = [
 
 const BAR_COLORS = {
   jud:'#96762c', isr:'#9e4a4a', pro:'#6b5b8a', jue:'#b5561c', uni:'#4a7a55',
-  pre:'#6b5b8a', postd:'#4a7a55', babil:'#7a7468', rest:'#3f7686', sig:'#3d6b7a', rdiv:'#9e4a4a',
+  pre:'#6b5b8a', postd:'#4a7a55', babil:'#7a7468', rest:'#3f7686', sig:'#3d6b7a',
   jes:'#3d6b7a', sem:'#19819a',
   gen:'#6b5b8a', exo:'#7a5c1a', con:'#4a7a55', tjue:'#b5561c', tre:'#96762c', tpro:'#6b5b8a',
-  exi:'#7a7468', tres:'#3f7686', tsig:'#3d6b7a', hec:'#4a7a55', ntesc:'#6b6080',
+  exi:'#7a7468', tres:'#3f7686', tsig:'#3d6b7a', hec:'#4a7a55',
+  'nt-ev':'#5a6a8a', 'nt-hec':'#4a7a62', 'nt-car':'#7a5a72',
 };
 
 function markerTipoKey(tipo){
@@ -331,7 +392,7 @@ function renderRowEventMarkers(pe, yMin, yMax, chartW, q){
 }
 
 const LEGACY_DEFAULT_LANES = ['jud','isr','pro'];
-const DEFAULT_LANES = ['pre','jud','isr','pro','jes','sem'];
+const DEFAULT_LANES = ['pre','jud','isr','pro','jes'];
 let didInitialScroll = false;
 const storedLanes = JSON.parse(localStorage.getItem('lt-par-lanes') || 'null');
 const lanesInit = storedLanes ?? DEFAULT_LANES;
@@ -342,6 +403,12 @@ let selLanes = new Set(
   (lanesMigrated ? DEFAULT_LANES : lanesInit)
     .filter(id=>LANE_ORDER.includes(id)),
 );
+if(selLanes.has('ntesc')){
+  selLanes.delete('ntesc');
+  selLanes.add('nt-ev');
+  selLanes.add('nt-hec');
+  selLanes.add('nt-car');
+}
 if(lanesMigrated){
   try{ localStorage.setItem('lt-par-lanes', JSON.stringify([...selLanes])); }catch(e){}
 }
@@ -855,33 +922,45 @@ function parseHash(h){
 }
 function overlaps(a1,a2,b1,b2){ return a1 <= b2 && b1 <= a2; }
 
-function visualBarWidth(pe, yMin, yMax, chartW){
-  if(pe.inicio == null) return minBarWidthForPe(pe);
-  const lx = yearToX(pe.inicio, yMin, yMax, chartW);
+function pointEventBoxLayout(pe, x, w, chartW){
+  const cx = x + Math.max(4, w) / 2;
+  const boxW = Math.min(captionStackWidth(pe), CAPTION_MAX_PX);
+  let left = cx - boxW / 2;
+  if(chartW) left = clampBarLeft(left, boxW, chartW);
+  return { left, width: boxW };
+}
+
+/** Extensión horizontal real en pantalla (alineada con renderPointEventBar / renderCompactNarrowBar). */
+function visualBarBounds(pe, yMin, yMax, chartW){
+  if(pe.inicio == null || !chartW) return { left: 0, width: captionStackWidth(pe) };
+  const x = yearToX(pe.inicio, yMin, yMax, chartW);
   const fin = pe.fin != null ? pe.fin : pe.inicio;
-  const barW = Math.max(4, yearToX(fin, yMin, yMax, chartW) - lx);
-  const labelW = minBarWidthForPe(pe);
-  if(pe.isEvent && pe.inicio === fin) return Math.max(barW, labelW, 28);
-  return Math.max(barW, labelW);
+  const spanW = Math.max(4, yearToX(fin, yMin, yMax, chartW) - x);
+  const capOpts = (!pe.isEvent && isShortPeriodPe(pe)) ? { fullName: true } : {};
+  const capW = captionStackWidth(pe, capOpts);
+
+  if(pe.isEvent && !eventHasRange(pe)){
+    return pointEventBoxLayout(pe, x, spanW, chartW);
+  }
+  return { left: x, width: Math.max(spanW, capW) };
+}
+
+function visualBarWidth(pe, yMin, yMax, chartW){
+  return visualBarBounds(pe, yMin, yMax, chartW).width;
 }
 
 /** ¿Dos barras se pisarían en pantalla al zoom/ancho actuales? (solo píxeles, no años abstractos) */
 function periodVisualClash(a, b, chartLayout){
   const { yMin, yMax, chartW } = chartLayout || {};
   if(!chartW || a.inicio == null || b.inicio == null) return false;
-  const left = (a.inicio ?? 9999) <= (b.inicio ?? 9999) ? a : b;
-  const right = left === a ? b : a;
-  if(right.inicio == null) return false;
-  const lx = yearToX(left.inicio, yMin, yMax, chartW);
-  const rx = yearToX(right.inicio, yMin, yMax, chartW);
-  const lVisualW = visualBarWidth(left, yMin, yMax, chartW);
-  const rVisualW = visualBarWidth(right, yMin, yMax, chartW);
+  const ba = visualBarBounds(a, yMin, yMax, chartW);
+  const bb = visualBarBounds(b, yMin, yMax, chartW);
   const gap = 6;
-  return lx + lVisualW + gap > rx && rx + rVisualW + gap > lx;
+  return ba.left + ba.width + gap > bb.left && bb.left + bb.width + gap > ba.left;
 }
 
-function layoutBlockTracks(people, compact, chartLayout){
-  if(!compact) return people.map(pe=>({ people: [pe] }));
+function layoutBlockTracks(people, compact, chartLayout, packOnAxis){
+  if(!compact && !packOnAxis) return people.map(pe=>({ people: [pe] }));
   const sorted = [...people].sort((a, b)=>
     (a.inicio ?? 9999) - (b.inicio ?? 9999) ||
     (a.fin ?? 9999) - (b.fin ?? 9999) ||
@@ -920,7 +999,12 @@ function enrichLaneData(laneData, q, chartLayout){
     });
     return {
       ...block,
-      tracks: layoutBlockTracks(active, compact, chartLayout),
+      tracks: layoutBlockTracks(
+        active,
+        compact,
+        chartLayout,
+        block.meta?.key === 'jes' || block.meta?.key === 'sem',
+      ),
     };
   });
 }
@@ -1148,55 +1232,152 @@ function collectOrderedEvents(idLists){
   );
 }
 
+/** Orden de tabla JW (sin reordenar alfabéticamente). */
+function collectEventsByIds(idLists){
+  const seen = new Set();
+  const events = [];
+  for(const ids of idLists){
+    for(const id of ids){
+      if(seen.has(id)) continue;
+      const e = D.eventos.find(x=>x.id === id);
+      if(!e || chartYear(e) == null) continue;
+      seen.add(id);
+      events.push(e);
+    }
+  }
+  return events;
+}
+
+function calendarYearOfEvent(ev){
+  return ev?.fa != null ? ev.fa : null;
+}
+
+/** Reparte filas en el eje X; getPos devuelve la coordenada cronológica (años fraccionarios). */
+function spreadEventsOnAxis(rows, getPos){
+  if(!rows.length) return rows;
+  const posOf = getPos || (pe=> calendarYearOfEvent(pe.ev) ?? Math.floor(pe.inicio));
+  const out = [];
+  let i = 0;
+  while(i < rows.length){
+    const pos = posOf(rows[i]);
+    let j = i + 1;
+    while(j < rows.length && posOf(rows[j]) === pos) j++;
+    const group = rows.slice(i, j);
+    if(group.length === 1){
+      out.push({...group[0], inicio: pos, fin: pos, completion: pos});
+    } else {
+      const span = pos >= 32 && pos <= 34 ? 0.012 : 0.88;
+      group.forEach((pe, k)=>{
+        const slot = pos + ((k + 1) / (group.length + 1) - 0.5) * span;
+        out.push({...pe, inicio: slot, fin: slot, completion: slot});
+      });
+    }
+    i = j;
+  }
+  return out;
+}
+
+/** Reparte sucesos del mismo año en el eje X (orden de tabla conservado). */
+function spreadEventsOnYearAxis(rows){
+  return spreadEventsOnAxis(rows, pe=> calendarYearOfEvent(pe.ev) ?? Math.floor(pe.inicio));
+}
+
+let groupRowSeq = 0;
+function ministerioYearTitle(y){
+  if(y == null) return 'Sin fecha';
+  if(y <= 0) return `${Math.abs(y)} a.E.C.`;
+  return `${y} E.C.`;
+}
+
+function evGroupToRow(title, events, barKey){
+  const years = events.map(e=> chartYear(e)).filter(y=> y != null);
+  const inicio = years.length ? Math.min(...years) : 0;
+  const fin = years.length ? Math.max(...years) : inicio;
+  groupRowSeq += 1;
+  return {
+    id: `grp-${barKey}-${groupRowSeq}`,
+    n: title,
+    inicio, fin,
+    completion: inicio,
+    hasLibroRange: false,
+    nota: `${events.length} sucesos`,
+    ie: false, fe: false,
+    isEvent: true,
+    isEventGroup: true,
+    groupEvents: events,
+    barKey,
+    ev: events[0],
+  };
+}
+
 function buildMinisterioBlocks(){
   const fases = D.ministerio_fases || [];
-  if(eventLayout === 'timeline'){
-    const events = collectOrderedEvents(fases.map(f=>f.eventos));
-    if(!events.length) return [];
-    return [{
-      lane: 'ministerio-jesus',
-      meta: { key:'jes', color:'var(--lane-jes)', label: 'Ministerio de Jesús' },
-      people: events.map(ev=>evToRow(ev, 'jes')),
-    }];
-  }
   const blocks = [];
-  for(const fase of fases){
-    const events = collectOrderedEvents([fase.eventos]);
-    if(!events.length) continue;
+
+  const j0 = fases.find(f=> f.codigo === 'J0');
+  const antesEvents = j0
+    ? collectEventsByIds([j0.eventos]).filter(ev=> isAntesDeBautizarseEvent(ev))
+    : [];
+  if(antesEvents.length){
     blocks.push({
-      lane: fase.codigo,
-      meta: { key:'jes', color:'var(--lane-jes)', label: fase.codigo + ' · ' + fase.titulo },
-      people: events.map(ev=>evToRow(ev, 'jes')),
+      lane: 'ministerio-antes-bautismo',
+      meta: { key:'jes', color:'var(--lane-jes)', label: 'Antes de bautizarse' },
+      people: [evGroupToRow('Antes de bautizarse', antesEvents, 'jes')],
+    });
+  }
+
+  const postIds = [];
+  for(const fase of fases){
+    if(fase.codigo === 'J0') continue;
+    postIds.push(...(fase.eventos || []));
+  }
+  for(const dia of (D.ultima_semana_dias || [])){
+    postIds.push(...(dia.eventos || []));
+  }
+  const postEvents = collectEventsByIds([postIds]).filter(ev=>
+    ev.fa != null && ev.fa >= 29 && ev.fa <= 33,
+  );
+  const byYear = new Map();
+  for(const ev of postEvents){
+    const y = ev.fa;
+    if(!byYear.has(y)) byYear.set(y, []);
+    byYear.get(y).push(ev);
+  }
+  const yearPeople = [29, 30, 31, 32, 33]
+    .filter(y=> byYear.has(y))
+    .map(y=> evGroupToRow(ministerioYearTitle(y), byYear.get(y), 'jes'));
+  if(yearPeople.length){
+    blocks.push({
+      lane: 'ministerio-post-bautismo',
+      meta: { key:'jes', color:'var(--lane-jes)', label: 'Luego de su bautismo' },
+      people: yearPeople,
     });
   }
   return blocks;
+}
+
+function isAntesDeBautizarseEvent(ev){
+  if(ev.fa != null && ev.fa >= 29) return false;
+  const jl = (ev.jwlabel || '').toLowerCase();
+  if(jl.includes('bautismo') || jl.includes('ministerio_juan')) return false;
+  return true;
 }
 
 function buildUltimaSemanaBlocks(){
   const dias = D.ultima_semana_dias || [];
-  if(eventLayout === 'timeline'){
-    const events = collectOrderedEvents(dias.map(d=>d.eventos));
-    if(!events.length) return [];
-    return [{
-      lane: 'ultima-semana',
-      meta: { key:'sem', color:'var(--lane-sem)', label: 'Última semana de Jesús (8–16 nisán)' },
-      people: events.map(ev=>evToRow(ev, 'sem')),
-    }];
-  }
-  const blocks = [];
-  for(const dia of dias){
-    const events = collectOrderedEvents([dia.eventos]);
-    if(!events.length) continue;
-    blocks.push({
-      lane: dia.titulo,
-      meta: { key:'sem', color:'var(--lane-sem)', label: dia.titulo },
-      people: events.map(ev=>evToRow(ev, 'sem')),
-    });
-  }
-  return blocks;
+  const ids = dias.flatMap(d=> d.eventos || []);
+  const events = collectEventsByIds([ids]);
+  if(!events.length) return [];
+  const rows = events.map(ev=> evToRow(ev, 'sem'));
+  const people = spreadEventsOnAxis(rows, pe=> chartYear(pe.ev) ?? pe.inicio);
+  return [{
+    lane: 'ultima-semana',
+    meta: { key:'sem', color:'var(--lane-sem)', label: 'Última semana de Jesús (8–16 nisán)' },
+    people,
+  }];
 }
 
-function buildAntediluvianBlocks(){
+function buildAntediluvianBlocks(query){
   const lineas = D.antediluviano_lineas || [];
   const orderedIds = new Set();
   const events = [];
@@ -1215,19 +1396,24 @@ function buildAntediluvianBlocks(){
     events.push(e);
   }
   events.sort((a, b)=>(chartYear(a) - chartYear(b)) || a.n.localeCompare(b.n, 'es'));
-  if(!events.length) return [];
+  const active = activePersonajesForDedup(query);
+  const visible = events.filter(ev=> !shouldOmitLooseEventRow(ev, active));
+  if(!visible.length) return [];
   return [{
     lane: 'antediluviano-sucesos',
-    meta: { key:'pre', color:'var(--c-pre)', label: 'Sucesos antediluvianos (a. E. C.)' },
-    people: events.map(ev=>evToRow(ev, 'pre')),
+    meta: { key:'pre', color:'var(--c-pre)', label: 'Sucesos antediluvianos (a. E. C.)', hideHeader: true },
+    people: visible.map(ev=>evToRow(ev, 'pre')),
   }];
 }
 
-function buildThemeBlocks(tema, laneId){
+function buildThemeBlocks(tema, laneId, query, extraTemas){
   const meta = THEME_LANE_META[tema];
   if(!meta) return [];
+  const active = activePersonajesForDedup(query);
+  const temas = [tema, ...(extraTemas || [])];
   const events = D.eventos
-    .filter(e=>(e.t||[]).includes(tema) && chartYear(e)!=null && e.tipo !== 'reinado')
+    .filter(e=> temas.some(t=>(e.t||[]).includes(t)) && chartYear(e)!=null && e.tipo !== 'reinado')
+    .filter(e=> !shouldOmitLooseEventRow(e, active))
     .sort((a,b)=>(chartYear(a)-chartYear(b))||a.n.localeCompare(b.n,'es'));
   if(!events.length) return [];
   return [{
@@ -1242,11 +1428,18 @@ function laneFilterHasContent(f){
   if(f.mode === 'personaje'){
     return D.personajes.some(p=>p.grupo === f.grupo && p.inicio != null && p.fin != null);
   }
-  if(f.mode === 'ministerio') return buildMinisterioBlocks().length > 0;
-  if(f.mode === 'ultima_semana') return buildUltimaSemanaBlocks().length > 0;
+  if(f.mode === 'ministerio'){
+    return (D.ministerio_fases || []).some(x=>(x.eventos || []).length);
+  }
+  if(f.mode === 'ultima_semana'){
+    return (D.ultima_semana_dias || []).some(x=>(x.eventos || []).length);
+  }
   if(f.mode === 'tema'){
-    if(showMarkers && f.tema !== 'NT-ESCRITURA') return false;
-    return buildThemeBlocks(f.tema, f.id).length > 0;
+    if(showMarkers && !isNtEscrituraLane(f)) return false;
+    const temas = [f.tema, ...(f.extraTemas || [])];
+    return D.eventos.some(e=>
+      temas.some(t=>(e.t||[]).includes(t)) && chartYear(e)!=null && e.tipo !== 'reinado',
+    );
   }
   return false;
 }
@@ -1263,21 +1456,26 @@ function pruneSelLanes(){
   try{ localStorage.setItem('lt-par-lanes', JSON.stringify([...selLanes])); }catch(e){}
 }
 
-function buildAllLaneData(){
+function buildAllLaneData(opts = {}){
+  groupRowSeq = 0;
+  const query = opts.query ?? '';
   const out = [];
   for(const id of LANE_ORDER){
-    if(!selLanes.has(id)) continue;
     const f = LANE_FILTERS.find(x=>x.id===id);
+    if(!selLanes.has(id)) continue;
     if(f.mode === 'personaje'){
       out.push(...rowsForLanes([f.grupo]));
-      if(id === 'pre') out.push(...buildAntediluvianBlocks());
+      if(id === 'pre') out.push(...buildAntediluvianBlocks(query));
     }
-    else if(f.mode === 'ministerio') out.push(...buildMinisterioBlocks());
-    else if(f.mode === 'ultima_semana') out.push(...buildUltimaSemanaBlocks());
+    else if(f.mode === 'ministerio'){
+      out.push(...buildMinisterioBlocks());
+    }
+    else if(f.mode === 'ultima_semana'){
+      out.push(...buildUltimaSemanaBlocks());
+    }
     else if(f.mode === 'tema'){
-      // Con marcadores activos, los sucesos temáticos van sobre personajes — salvo Escritura NT
-      if(showMarkers && f.tema !== 'NT-ESCRITURA') continue;
-      out.push(...buildThemeBlocks(f.tema, f.id));
+      if(showMarkers && !isNtEscrituraLane(f)) continue;
+      out.push(...buildThemeBlocks(f.tema, f.id, query, f.extraTemas));
     }
   }
   return out;
@@ -1321,6 +1519,84 @@ function eventMatchesPerson(ev, pe){
   if(!markers.length || !pe.n) return false;
   const peParts = peNormParts(pe);
   return peParts.some(pn=> pn && markers.includes(pn));
+}
+
+/** Personajes cuya barra de periodo está visible (misma lógica que draw en render). */
+function activePersonajesForDedup(query){
+  const nq = norm(query || '');
+  const compact = rowLayout === 'compact';
+  const out = [];
+  for(const id of LANE_ORDER){
+    if(!selLanes.has(id)) continue;
+    const f = LANE_FILTERS.find(x=>x.id===id);
+    if(f.mode !== 'personaje') continue;
+    for(const p of D.personajes){
+      if(p.grupo !== f.grupo || p.inicio == null || p.fin == null) continue;
+      if(!compact && !isPeSelected(p)) continue;
+      if(nq && !norm(p.n).includes(nq)) continue;
+      out.push(p);
+    }
+  }
+  return out;
+}
+
+function personSlug(name){
+  return norm(name || '').replace(/\s+/g, '_');
+}
+
+/** ¿El suceso describe nacimiento/inicio o muerte/fin de vida del personaje? */
+function isLifeBoundaryEvent(ev, atStart, atEnd){
+  const tipo = norm(ev.tipo || '');
+  const name = norm(ev.n || '');
+  const jl = norm(ev.jwlabel || '');
+  if(atStart){
+    if(tipo.includes('nacimiento') || tipo.includes('creacion')) return true;
+    if(/^(nace|nacimiento|creacion de)\s/.test(name)) return true;
+    if(jl.startsWith('nacimiento_') || jl.startsWith('creacion_')) return true;
+  }
+  if(atEnd){
+    if(tipo.includes('muerte') || tipo.includes('traslado')) return true;
+    if(/^(muere|muerte)\s/.test(name)) return true;
+    if(jl.startsWith('muerte_') || jl.includes('transferido')) return true;
+  }
+  return false;
+}
+
+/** ¿El personaje es sujeto principal del suceso (no solo mencionado)? */
+function eventSubjectMatchesPerson(ev, pe, atBirth){
+  const peName = norm(pe.n.trim());
+  const evName = norm(ev.n || '');
+  const jl = norm(ev.jwlabel || '');
+  const slug = personSlug(pe.n);
+  if(atBirth){
+    if(evName.includes(peName) && (/^(nace|nacimiento|creacion de)\s/.test(evName) || evName.indexOf(peName) <= 12)) return true;
+    if(jl.includes(slug) && (jl.startsWith('nacimiento_') || jl.startsWith('creacion_'))) return true;
+  } else {
+    if(evName.includes(peName) && /^(muere|muerte)\s/.test(evName)) return true;
+    if(jl.includes('muerte') && jl.includes(slug)) return true;
+    if(evName.includes(peName) && evName.includes('transferido')) return true;
+  }
+  const markers = eventMarkerPeople(ev);
+  if(markers.length === 1 && markers[0] === peName) return true;
+  if(markers.length && markers[0] === peName) return true;
+  return false;
+}
+
+/** Suceso de límite de vida que ya cubre la barra del personaje visible. */
+function eventBelongsOnPersonBar(ev, pe){
+  if(pe.isEvent || !eventMatchesPerson(ev, pe)) return false;
+  const evYear = chartYear(ev);
+  if(evYear == null) return false;
+  const atStart = pe.inicio != null && evYear === pe.inicio;
+  const atEnd = pe.fin != null && evYear === pe.fin;
+  if(!atStart && !atEnd) return false;
+  if(!isLifeBoundaryEvent(ev, atStart, atEnd)) return false;
+  return eventSubjectMatchesPerson(ev, pe, atStart);
+}
+
+/** Omitir fila/punto suelto: el suceso irá en la barra del personaje (marcador o extremo). */
+function shouldOmitLooseEventRow(ev, activePeople){
+  return activePeople.some(pe=> eventBelongsOnPersonBar(ev, pe));
 }
 
 function personajeFieldMatches(pe, qPerRaw){
@@ -1388,8 +1664,36 @@ function laneFiltersSorted(){
   return [...LANE_FILTERS].sort((a, b)=>a.cron - b.cron);
 }
 
+const EXCLUSIVE_LANE_ID = 'sem';
+
+function normalizeExclusiveLanes(){
+  if(selLanes.has(EXCLUSIVE_LANE_ID) && selLanes.size > 1){
+    selLanes = new Set([EXCLUSIVE_LANE_ID]);
+  }
+}
+
+function applyLaneChipChange(id, checked){
+  if(checked){
+    if(id === EXCLUSIVE_LANE_ID){
+      selLanes.clear();
+      selLanes.add(EXCLUSIVE_LANE_ID);
+    } else {
+      selLanes.delete(EXCLUSIVE_LANE_ID);
+      selLanes.add(id);
+    }
+  } else {
+    selLanes.delete(id);
+  }
+  try{ localStorage.setItem('lt-par-lanes', JSON.stringify([...selLanes])); }catch(e){}
+  syncHash();
+  render._scrolled = false;
+  buildLaneFilters();
+  render();
+}
+
 function buildLaneFilters(){
   pruneSelLanes();
+  normalizeExclusiveLanes();
   const scrollHost = laneFiltersEl.parentElement?.classList?.contains('quick-scroll')
     ? laneFiltersEl.parentElement : laneFiltersEl;
   const sl = scrollHost.scrollLeft;
@@ -1403,13 +1707,7 @@ function buildLaneFilters(){
   scrollHost.scrollLeft = sl;
   laneFiltersEl.querySelectorAll('input[type=checkbox]').forEach(box=>{
     box.addEventListener('change', ()=>{
-      const id = box.dataset.id;
-      if(box.checked) selLanes.add(id); else selLanes.delete(id);
-      localStorage.setItem('lt-par-lanes', JSON.stringify([...selLanes]));
-      syncHash();
-      render._scrolled = false;
-      buildLaneFilters();
-      render();
+      applyLaneChipChange(box.dataset.id, box.checked);
     });
   });
 }
@@ -1472,7 +1770,8 @@ const DRAWER_THEMES = [
   ['GENESIS','Génesis'],['EXODO','Éxodo'],['CONQUISTA','Conquista'],['JUECES','Jueces'],
   ['REYES','Reyes'],['PROFETAS','Profetas'],['EXILIO','Exilio'],['RESTAURACION','Restauración'],
   ['SIGLO-PRIMERO','Siglo primero'],['HECHOS','Hechos de los apóstoles'],
-  ['NT-ESCRITURA','Escritura del NT'],
+  ['NT-EVANGELIOS','Evangelios'],['NT-HECHOS','Hechos (escritura)'],['NT-CARTAS','Cartas'],
+  ['NT-APOCALIPSIS','Apocalipsis'],['NT-ESCRITURA','Escritura del NT'],
 ];
 const DRAWER_ERAS = [
   {id:'pre', color:'var(--c-pre)', keys:['PREHISTORIA / GÉNESIS','DILUVIO']},
@@ -1664,6 +1963,69 @@ function openDrawerFill(ev){
   openDrawerId = 'e' + ev.id;
 }
 
+function openEventGroupDrawer(pe){
+  if(!pe?.isEventGroup || !drawer) return;
+  hideTip();
+  ensureDetailLoaded().then(()=> openEventGroupDrawerFill(pe));
+}
+
+function openEventGroupDrawerFill(pe){
+  const events = pe.groupEvents || [];
+  const laneLabel = pe.barKey === 'sem' ? 'Última semana' : 'Ministerio de Jesús';
+  document.getElementById('d-badge').textContent = laneLabel;
+  document.getElementById('d-badge').style.background = BAR_COLORS[pe.barKey] || 'var(--acc)';
+  document.getElementById('d-title').textContent = pe.n;
+  document.getElementById('d-date').textContent = fmtRange(pe.inicio, pe.fin) + ` · ${events.length} sucesos`;
+  document.getElementById('d-ref').textContent = 'Hacé clic en un suceso para ver el detalle completo.';
+  document.getElementById('d-ref').className = '';
+  document.getElementById('d-desc').textContent = pe.nota || `${events.length} sucesos agrupados.`;
+  document.getElementById('d-char').innerHTML = '<span class="ph">—</span>';
+  document.getElementById('d-meta').innerHTML =
+    '<span class="k">Grupo</span><span>'+esc(pe.n)+'</span>'+
+    '<span class="k">Sucesos</span><span>'+events.length+'</span>'+
+    '<span class="k">Periodo</span><span>'+esc(fmtRange(pe.inicio, pe.fin))+'</span>';
+  document.getElementById('d-temas').innerHTML = '<span class="ph">—</span>';
+  const relSec = document.getElementById('d-rel-sec');
+  const relEl = document.getElementById('d-rel');
+  relSec.querySelector('h3').textContent = 'Sucesos en orden';
+  relSec.style.display = 'block';
+  relEl.innerHTML = events.map(ev=>`
+    <div class="rel-edge rt-paralelo" data-jump="${ev.id}">
+      <span class="rt">${fmtYear(chartYear(ev) ?? ev.fa)}</span>
+      <div><span class="rn">${esc(ev.n)}</span>${ev.d?'<div class="rnota">'+esc(ev.d)+'</div>':''}</div>
+    </div>`.replace(/\s+/g,' ')).join('');
+  relEl.querySelectorAll('.rel-edge').forEach(el=>{
+    el.onclick = ()=>{
+      const ev2 = D.eventos.find(x=>x.id === parseInt(el.dataset.jump, 10));
+      if(ev2) openDrawer(ev2);
+    };
+  });
+  const pot = drawerPotenciaOf(pe.inicio);
+  document.getElementById('d-par').innerHTML = pot
+    ? '<span class="pw">Potencia mundial: '+pot[2]+' '+pot[1]+'</span>'
+    : '<span style="color:var(--mut)">Contexto histórico según la cronología bíblica.</span>';
+  const seen = new Set();
+  const qs = [];
+  for(const ev of events){
+    for(const p of (D.preguntas || [])){
+      if(p.hid === ev.id && !seen.has(p.id)){ seen.add(p.id); qs.push(p); }
+    }
+  }
+  const listEl = document.getElementById('d-qlist');
+  const moreEl = document.getElementById('d-more');
+  document.getElementById('d-qcount').textContent = 'Preguntas vinculadas: ' + qs.length;
+  listEl.innerHTML = renderQuestionList(qs, 8) ||
+    '<span class="ph">Sin preguntas vinculadas a estos sucesos.</span>';
+  moreEl.style.display = qs.length > 8 ? 'block' : 'none';
+  moreEl.onclick = ()=>{
+    listEl.innerHTML = renderQuestionList(qs);
+    moreEl.style.display = 'none';
+  };
+  drawer.classList.add('on');
+  overlay.classList.add('on');
+  openDrawerId = 'g' + pe.id;
+}
+
 function openPersonDrawer(pe){
   if(!pe || pe.isEvent || !drawer) return;
   hideTip();
@@ -1744,7 +2106,9 @@ function openDrawerFromClick(ev, e){
 }
 function openPersonFromClick(pe, e){
   if(e) e.stopPropagation();
-  openPersonDrawer(pe);
+  if(pe.isEventGroup) openEventGroupDrawer(pe);
+  else if(pe.isEvent) openDrawer(pe.ev);
+  else openPersonDrawer(pe);
 }
 
 function bindDrawerTargets(root){
@@ -1760,24 +2124,34 @@ function bindDrawerTargets(root){
       });
       return;
     }
-    const pe = D.personajes.find(p=>peKey(p)===bar.dataset.pe);
-    if(!pe) return;
-    if(bar.classList.contains('bar-compact-narrow')){
+    const pe = findPeByKey(bar.dataset.pe);
+    if(!pe){
+      const p = D.personajes.find(x=>peKey(x)===bar.dataset.pe);
+      if(!p) return;
+      bindPersonBar(bar, p);
+      return;
+    }
+    if(pe.isEventGroup){
+      bar.addEventListener('mouseenter', e=> showPeTip(e, pe));
+      bar.addEventListener('mousemove', moveTip);
+      bar.addEventListener('mouseleave', hideTip);
       bar.addEventListener('click', e=> openPersonFromClick(pe, e));
       bar.addEventListener('keydown', e=>{
         if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); openPersonFromClick(pe, e); }
       });
       return;
     }
-    bar.addEventListener('mouseenter', e=> showPeTip(e, pe));
-    bar.addEventListener('mousemove', moveTip);
-    bar.addEventListener('mouseleave', hideTip);
-    bar.addEventListener('focus', e=> showPeTip(e, pe));
-    bar.addEventListener('blur', hideTip);
-    bar.addEventListener('click', e=> openPersonFromClick(pe, e));
-    bar.addEventListener('keydown', e=>{
-      if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); openPersonFromClick(pe, e); }
-    });
+    if(pe.isEvent){
+      bar.addEventListener('mouseenter', e=> showEvTip(e, pe.ev));
+      bar.addEventListener('mousemove', moveTip);
+      bar.addEventListener('mouseleave', hideTip);
+      bar.addEventListener('click', e=> openDrawerFromClick(pe.ev, e));
+      bar.addEventListener('keydown', e=>{
+        if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); openDrawerFromClick(pe.ev, e); }
+      });
+      return;
+    }
+    bindPersonBar(bar, pe);
   });
   root.querySelectorAll('.row-label__entry[data-ev]').forEach(el=>{
     const ev = D.eventos.find(e=>String(e.id)===el.dataset.ev);
@@ -1789,12 +2163,31 @@ function bindDrawerTargets(root){
   });
   root.querySelectorAll('.row-label__entry[data-pe]').forEach(el=>{
     if(el.dataset.ev) return;
-    const pe = D.personajes.find(p=>peKey(p)===el.dataset.pe);
+    const pe = findPeByKey(el.dataset.pe) || D.personajes.find(p=>peKey(p)===el.dataset.pe);
     if(!pe) return;
     el.addEventListener('click', e=>{
       if(e.target.closest('.row-label__pick')) return;
       openPersonFromClick(pe, e);
     });
+  });
+}
+
+function bindPersonBar(bar, pe){
+  if(bar.classList.contains('bar-compact-narrow')){
+    bar.addEventListener('click', e=> openPersonFromClick(pe, e));
+    bar.addEventListener('keydown', e=>{
+      if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); openPersonFromClick(pe, e); }
+    });
+    return;
+  }
+  bar.addEventListener('mouseenter', e=> showPeTip(e, pe));
+  bar.addEventListener('mousemove', moveTip);
+  bar.addEventListener('mouseleave', hideTip);
+  bar.addEventListener('focus', e=> showPeTip(e, pe));
+  bar.addEventListener('blur', hideTip);
+  bar.addEventListener('click', e=> openPersonFromClick(pe, e));
+  bar.addEventListener('keydown', e=>{
+    if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); openPersonFromClick(pe, e); }
   });
 }
 
@@ -1858,7 +2251,8 @@ function buildPhaseAxis(chartW, yMin, yMax, laneData, effectivePx){
   html += `<div class="phase-axis__dot" style="left:${x1}px"></div>`;
   let slot = 0;
   for(const block of laneData){
-    const years = block.people.flatMap(p=>[p.inicio, p.fin].filter(v=>v!=null));
+    if(block.meta?.hideHeader) continue;
+    const years = (block.people || block.tracks?.flatMap(t=> t.people) || []).flatMap(p=>[p.inicio, p.fin].filter(v=>v!=null));
     if(!years.length) continue;
     const bMin = Math.min(...years), bMax = Math.max(...years);
     const cx = yearToX((bMin + bMax) / 2, yMin, yMax, chartW);
@@ -1874,41 +2268,73 @@ function buildPhaseAxis(chartW, yMin, yMax, laneData, effectivePx){
 
 function renderPointEventBar(block, pe, x, w, dataAttr, ini, fin, layoutOpts){
   const cls = ['bar','bar--'+block.meta.key,'bar-compact-narrow','bar-point-event', ...estBarClasses(pe)];
-  const cx = x + Math.max(4, w) / 2;
-  const boxW = Math.min(Math.max(minBarWidthForPe(pe), 28), CAPTION_MAX_PX);
-  const left = cx - boxW / 2;
+  if(pe.isEventGroup) cls.push('bar-point-event--group');
+  const chartW = layoutOpts?.chartW;
+  const { left, width: boxW } = pointEventBoxLayout(pe, x, w, chartW);
   const laneColor = BAR_COLORS[block.meta.key] || block.meta.color || 'var(--acc)';
   const mkColor = pe.ev ? markerColorFor(pe.ev) : laneColor;
   const peAttr = ` data-pe="${esc(peKey(pe))}"`;
-  let nameStyle = '';
+  let barExtra = '';
   if(layoutOpts?.compactLayout && layoutOpts.yMin != null){
     const inset = markerNameInset(pe, left, layoutOpts.yMin, layoutOpts.yMax, layoutOpts.chartW);
-    if(inset) nameStyle = `margin-left:${inset}px`;
+    if(inset) barExtra = `--caption-shift:${inset}px;`;
   }
-  return `<div class="${cls.join(' ')}" style="left:${left}px;width:${boxW}px;max-width:${CAPTION_MAX_PX}px" tabindex="0" role="button" aria-label="${esc(pe.n)}, ${fmtRange(ini,fin)}" ${dataAttr}${peAttr}>`+
-    captionNameHtml(pe, nameStyle)+
+  const capStyle = `width:${boxW}px;max-width:${CAPTION_MAX_PX}px`;
+  const datesLine = pe.isEventGroup ? (pe.nota || '') : fmtRange(ini, fin);
+  const ariaDates = pe.isEventGroup ? (pe.nota || pe.n) : fmtRange(ini, fin);
+  return `<div class="${cls.join(' ')}" style="left:${left}px;width:${boxW}px;max-width:${CAPTION_MAX_PX}px;${barExtra}" tabindex="0" role="button" aria-label="${esc(pe.n)}, ${esc(ariaDates)}" ${dataAttr}${peAttr}>`+
+    `<div class="bar-caption-stack bar-caption-stack--name" style="${capStyle}">`+
+    captionNameHtml(pe)+
+    `</div>`+
     `<div class="bar-point-event__pin" style="--mk-color:${mkColor};--lane-color:${laneColor}"></div>`+
-    `<span class="bar-caption__dates">${esc(fmtRange(ini, fin))}</span>`+
+    `<div class="bar-caption-stack bar-caption-stack--dates" style="${capStyle}">`+
+    `<span class="bar-caption__dates">${esc(datesLine)}</span>`+
+    `</div>`+
     `</div>`;
 }
 
 function renderCompactNarrowBar(block, pe, x, w, dataAttr, ini, fin, laneColor, layoutOpts){
   const shortPeriod = isShortPeriodPe(pe);
+  const capOpts = shortPeriod ? { fullName: true } : {};
   const cls = ['bar','bar--'+block.meta.key,'bar-compact-narrow', ...estBarClasses(pe)];
   if(shortPeriod) cls.push('bar-short-period');
   const peAttr = ` data-pe="${esc(peKey(pe))}"`;
   const lineW = Math.max(4, w);
+  const capW = captionStackWidth(pe, capOpts);
   const barBg = estBarBg(laneColor, pe);
-  let nameStyle = '';
+  let barExtra = '';
   if(layoutOpts?.compactLayout && layoutOpts.yMin != null){
     const inset = markerNameInset(pe, x, layoutOpts.yMin, layoutOpts.yMax, layoutOpts.chartW);
-    if(inset) nameStyle = `margin-left:${inset}px`;
+    if(inset) barExtra = `--caption-shift:${inset}px;`;
   }
-  return `<div class="${cls.join(' ')}" style="left:${x}px;width:${lineW}px" tabindex="0" role="button" aria-label="${esc(pe.n)}, ${fmtRange(ini,fin)}" ${dataAttr}${peAttr}>`+
-    captionNameHtml(pe, nameStyle, { fullName: shortPeriod })+
+  const capStyle = shortPeriod
+    ? `width:${capW}px`
+    : `width:${capW}px;max-width:${CAPTION_MAX_PX}px`;
+  return `<div class="${cls.join(' ')}" style="left:${x}px;width:${lineW}px;${barExtra}" tabindex="0" role="button" aria-label="${esc(pe.n)}, ${fmtRange(ini,fin)}" ${dataAttr}${peAttr}>`+
+    `<div class="bar-caption-stack bar-caption-stack--name" style="${capStyle}">`+
+    captionNameHtml(pe, '', capOpts)+
+    `</div>`+
     `<div class="span-line span-line--${block.meta.key} bar-compact-narrow__line ${estBarClasses(pe).join(' ')}" style="width:100%;background:${barBg}"></div>`+
+    `<div class="bar-caption-stack bar-caption-stack--dates" style="${capStyle}">`+
     `<span class="bar-caption__dates">${esc(fmtRange(ini, fin))}</span>`+
+    `</div>`+
     `</div>`;
+}
+
+function adjustCaptionOverflow(){
+  if(!chartScroll || !chartCanvas || typeof chartScroll.getBoundingClientRect !== 'function') return;
+  const pad = 8;
+  const minLeft = chartScroll.getBoundingClientRect().left + pad;
+  chartCanvas.querySelectorAll('.bar-compact-narrow, .bar-point-event').forEach(bar=>{
+    bar.style.removeProperty('--caption-shift-viewport');
+    const nameStack = bar.querySelector('.bar-caption-stack--name');
+    if(!nameStack || typeof nameStack.getBoundingClientRect !== 'function') return;
+    const rect = nameStack.getBoundingClientRect();
+    if(rect.left >= minLeft) return;
+    const shift = Math.ceil(minLeft - rect.left);
+    const base = parseFloat(getComputedStyle(bar).getPropertyValue('--caption-shift')) || 0;
+    bar.style.setProperty('--caption-shift-viewport', `${base + shift}px`);
+  });
 }
 
 function renderPeriodBar(block, pe, x, w, dataAttr, ini, fin, layoutOpts){
@@ -1962,6 +2388,10 @@ function renderPersonBar(block, pe, draw, x, w, dataAttr, ini, fin, layoutOpts){
   return html;
 }
 
+function blockShowsHeader(block){
+  return !block.meta?.hideHeader;
+}
+
 function renderTrackCanvas(block, track, q, yMin, yMax, chartW, layoutOpts, rowMap, yOff, trackH){
   let html = `<div class="row" style="width:${chartW}px;height:${trackH}px">`;
   if(vizStyle !== 'waterfall') html += `<div class="row-rail"></div>`;
@@ -1974,7 +2404,7 @@ function renderTrackCanvas(block, track, q, yMin, yMax, chartW, layoutOpts, rowM
     const x2 = yearToX(fin, yMin, yMax, chartW);
     let w = Math.max(4, x2 - x);
     if(w < 6 && ini === fin){ x -= 2; w = 6; }
-    const dataAttr = pe.isEvent ? `data-ev="${pe.ev.id}"` : '';
+    const dataAttr = pe.isEvent && !pe.isEventGroup ? `data-ev="${pe.ev.id}"` : '';
 
     if(draw){
       rowMap.set(pe.id, { pe, laneKey: block.meta.key, yCenter: yOff + trackH / 2, isEvent: !!pe.isEvent });
@@ -1991,7 +2421,7 @@ function renderTrackCanvas(block, track, q, yMin, yMax, chartW, layoutOpts, rowM
 function labelEntryHtml(pe, match, rowId, barW, layoutOpts){
   const highlight = match && !!query;
   const tagCls = vizStyle === 'waterfall' && match && (barW < 56 || !layoutOpts.showChartTags) ? ' row-label--tag' : '';
-  const dataAttr = pe.isEvent ? ` data-ev="${pe.ev.id}"` : '';
+  const dataAttr = pe.isEvent && !pe.isEventGroup ? ` data-ev="${pe.ev.id}"` : '';
   const peAttr = ` data-pe="${esc(peKey(pe))}"`;
   return `<div class="row-label__entry${match?'':' dim'}${highlight?' match':''}${tagCls} row-label--click" data-row="${rowId}"${peAttr}${dataAttr} title="${esc(pe.n)}">`+
     `<label class="row-label__pick" title="Ocultar de la línea">`+
@@ -2003,7 +2433,7 @@ function labelEntryHtml(pe, match, rowId, barW, layoutOpts){
 }
 
 function labelCompactPickHtml(pe, match, rowId){
-  const dataAttr = pe.isEvent ? ` data-ev="${pe.ev.id}"` : '';
+  const dataAttr = pe.isEvent && !pe.isEventGroup ? ` data-ev="${pe.ev.id}"` : '';
   const peAttr = ` data-pe="${esc(peKey(pe))}"`;
   return `<label class="compact-pick${match?'':' dim'}" data-row="${rowId}"${peAttr}${dataAttr} title="${esc(pe.n)} · ${esc(fmtRange(pe.inicio, pe.fin))}">`+
     `<input type="checkbox" class="pe-pick" data-pe-key="${esc(peKey(pe))}" checked aria-label="Mostrar ${esc(pe.n)}" />`+
@@ -2056,7 +2486,7 @@ function buildConnections(rowMap, yMin, yMax, chartW, totalH){
 
 function render(){
   const L = layoutMetrics();
-  const rawLaneData = buildAllLaneData();
+  const rawLaneData = buildAllLaneData({ query });
   const hiddenList = collectHiddenInView(rawLaneData, query);
   const q = norm(query);
   const potOffset = showPotencias ? L.potStrip : 0;
@@ -2133,7 +2563,7 @@ function render(){
 
   for(const block of laneData){
     if(!block.tracks.length) continue;
-    if(rowLayout !== 'compact'){
+    if(rowLayout !== 'compact' && blockShowsHeader(block)){
       labelsHtml += `<div class="lane-hdr"><span class="dot" style="background:${block.meta.color}"></span>${block.meta.label}</div>`;
     }
     totalTracks += block.tracks.length;
@@ -2177,7 +2607,8 @@ function render(){
 
   for(const block of laneData){
     if(!block.tracks.length) continue;
-    const blockH = L.laneHdr + block.tracks.reduce((h, t)=> h + trackRowHeight(L, t.people.length), 0);
+    const hdrH = blockShowsHeader(block) ? L.laneHdr : 0;
+    const blockH = hdrH + block.tracks.reduce((h, t)=> h + trackRowHeight(L, t.people.length), 0);
     canvasHtml += `<div class="lane-block" style="min-height:${blockH}px;width:${chartW}px">`;
 
     for(const b of bandEls){
@@ -2192,8 +2623,10 @@ function render(){
       canvasHtml += `<div class="band ${p.cls}" style="left:${x1}px;width:${Math.max(2,x2-x1)}px;top:0;height:${blockH}px;opacity:.55"></div>`;
     }
 
-    canvasHtml += `<div class="lane-hdr" style="width:${chartW}px">${vizStyle === 'waterfall' ? block.meta.label.toUpperCase() : block.meta.label}</div>`;
-    yOff += L.laneHdr;
+    if(blockShowsHeader(block)){
+      canvasHtml += `<div class="lane-hdr" style="width:${chartW}px">${vizStyle === 'waterfall' ? block.meta.label.toUpperCase() : block.meta.label}</div>`;
+      yOff += L.laneHdr;
+    }
 
     for(const track of block.tracks){
       const trackH = trackRowHeight(L, track.people.length);
@@ -2303,6 +2736,10 @@ function render(){
   } else if(autoFit && !render._scrolled){
     chartScroll.scrollLeft = 0;
   }
+  const scheduleCaptionOverflow = typeof requestAnimationFrame === 'function'
+    ? requestAnimationFrame
+    : (fn)=> fn();
+  scheduleCaptionOverflow(adjustCaptionOverflow);
 }
 render._scrolled = false;
 
@@ -2467,7 +2904,10 @@ chartScroll.addEventListener('wheel', e=>{
   zoomFocusAt(year, factor, lastLayout.dataMin, lastLayout.dataMax);
 }, { passive: false });
 
-chartScroll.addEventListener('scroll', ()=>{ labelsCol.scrollTop = chartScroll.scrollTop; });
+chartScroll.addEventListener('scroll', ()=>{
+  labelsCol.scrollTop = chartScroll.scrollTop;
+  adjustCaptionOverflow();
+});
 labelsCol.addEventListener('scroll', ()=>{ chartScroll.scrollTop = labelsCol.scrollTop; });
 
 searchEl.addEventListener('input', ()=>{ query = searchEl.value.trim(); render(); });
@@ -2577,6 +3017,7 @@ themeBtn.addEventListener('click', ()=>{
 
 const fromHash = parseHash(location.hash.replace('#',''));
 if(fromHash) selLanes = fromHash;
+normalizeExclusiveLanes();
 const qs = new URLSearchParams(location.search);
 if(qs.get('q')){ query = qs.get('q'); searchEl.value = query; }
 const deepEvId = qs.get('ev');
@@ -2786,7 +3227,7 @@ window.addEventListener('resize', ()=>{ if(autoFit) render._scrolled = false; re
   window.addEventListener('resize', ()=>{ if(active) showStep(stepIdx); });
 
   const skipAuto = deepEvId || qs.get('q') || qs.get('onboard') === '0';
-  if(!isDone() && !skipAuto){
+  if(!isDone() && !skipAuto && typeof setTimeout === 'function'){
     setTimeout(()=> openTour(false), 600);
   }
 })();

@@ -67,7 +67,7 @@ Actualiza `fichas_personajes.csv` y `fichas-personajes.js`. La columna `fuente` 
 | Lote | Personajes | Estado |
 |------|------------|--------|
 | Piloto 1 | David, Abrahán, Moisés, José, Daniel, Job, Pablo, Pedro, Jesús, Juan el apóstol, Juan el Bautista, María | Hecho |
-| Piloto 2 | Nehemíás, Esteban, Zacarías, Eliás, Santiago, Jeremías, Timoteo, Josué, Ester, Jacob, Noé, Saúl, Salomón, Marcos, Felipe, Samuel, Nabucodonosor, Ezequiel, Jonás, Gedeón | Hecho |
+| Piloto 2 | Nehemías, Esteban, Zacarías, Eliás, Santiago, Jeremías, Timoteo, Josué, Ester, Jacob, Noé, Saúl, Salomón, Marcos, Felipe, Samuel, Nabucodonosor, Ezequiel, Jonás, Gedeón | Hecho |
 | Piloto 3 | Adán, Eva, Enoc, Isaac, Rebeca, Sara, Lot, Caleb, Rahab, Rut, Eliseo, Esdras, Isaías, Bernabé, Sansón, Jefté, Jonatán, Ezequiás, Josiás, Ana, Cornelio, María Magdalena, Abigaíl, Judas | Hecho |
 | Piloto 4 | Pilato, Tito, Jehoiadá, Naamán, Jezabel, Jeroboán, Sedequías, Caifás, Jehosafat, Asá, Herodes, Manasés, Natán, Aarón, Elí, Mardoqueo, Débora, Acab, Caín, Abel, Esaú, Melquisedec, Booz, Noemí, Andrés, Silas, Nicodemo, Lázaro, Faraón, Hamán, Barac, Jael | Hecho |
 | Piloto 5 | 63 fichas restantes (100 % del catálogo) | **Hecho** |

@@ -25,6 +25,7 @@
   --c-pre:#6b5b8a; --c-dil:#3d6b7a; --c-pat:#4a7a55; --c-egi:#7a5c1a;
   --c-con:#4a7a55; --c-jue:#9a5e26; --c-mon:#7a5c1a; --c-div:#9e4a4a;
   --c-exi:#7a7468; --c-res:#3f7686; --c-ec:#3d6b7a; --c-ntesc:#6b6080;
+  --c-nt-ev:#5a6a8a; --c-nt-hec:#4a7a62; --c-nt-car:#7a5a72; --c-nt-apo:#6a5080;
   --mk-batalla:#b34a4a; --mk-milagro:#2f7f9e; --mk-profecia:#6f5aa8;
   --mk-juicio:#9a7a1c; --mk-muerte:#63615a; --mk-reforma:#3d7d4c;
   --mk-destruccion:#a85a20; --mk-otro:#35606f;
@@ -335,7 +336,6 @@ html[data-theme="dark"] .focus-marquee{background:rgba(106,159,173,.18)}
 .span-line--babil{background:var(--c-exi)}
 .span-line--rest{background:var(--c-res)}
 .span-line--sig{background:var(--c-ec)}
-.span-line--rdiv{background:var(--lane-isr)}
 .span-line--gen{background:var(--c-pre)}
 .span-line--exo{background:var(--c-egi)}
 .span-line--con{background:var(--c-con)}
@@ -346,7 +346,10 @@ html[data-theme="dark"] .focus-marquee{background:rgba(106,159,173,.18)}
 .span-line--tres{background:var(--c-res)}
 .span-line--tsig{background:var(--c-ec)}
 .span-line--hec{background:var(--c-pat)}
-.span-line--ntesc{background:var(--c-ntesc)}
+.span-line--nt-ev{background:var(--c-nt-ev)}
+.span-line--nt-hec{background:var(--c-nt-hec)}
+.span-line--nt-car{background:var(--c-nt-car)}
+.span-line--nt-apo{background:var(--c-nt-apo)}
 .orb-stem{
   position:absolute;top:4px;bottom:4px;width:1px;
   background:var(--orb-stem);transform:translateX(-50%);
@@ -444,12 +447,18 @@ html[data-viz="editorial"] .row.is-hovered .span-line{
   box-shadow:0 0 0 1px color-mix(in srgb,var(--bg) 55%,transparent);
   transition:filter .12s, opacity .12s;
 }
-.bar-compact-narrow .bar-caption__name{
+.bar-caption-stack{
+  flex-shrink:0;min-width:0;max-width:var(--caption-max,200px);
+  margin-left:var(--caption-shift-viewport,var(--caption-shift,0));
+}
+.bar-compact-narrow .bar-caption-stack .bar-caption__name,
+.bar-point-event .bar-caption-stack .bar-caption__name{
   display:block;width:100%;max-width:100%;min-width:0;
   font:600 calc(11px * var(--tl-font-scale))/1.15 var(--font-serif);color:var(--txt);
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
-.bar-compact-narrow .bar-caption__dates{
+.bar-compact-narrow .bar-caption-stack .bar-caption__dates,
+.bar-point-event .bar-caption-stack .bar-caption__dates{
   display:block;width:100%;max-width:100%;min-width:0;
   font:400 calc(10px * var(--tl-font-scale))/1.15 var(--font-sans);color:var(--mut);
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
@@ -468,15 +477,13 @@ html[data-viz="editorial"] .row.is-hovered .span-line{
   content:'';position:absolute;inset:3px;border-radius:50%;
   background:var(--mk-color,var(--lane-color,var(--acc)));opacity:.9;
 }
-.bar-compact-narrow.bar-short-period .bar-caption__name,
-.bar-compact-narrow.bar-short-period .bar-caption__dates{
+.bar-compact-narrow.bar-short-period .bar-caption-stack{
+  width:auto;max-width:none;
+}
+.bar-compact-narrow.bar-short-period .bar-caption-stack .bar-caption__name,
+.bar-compact-narrow.bar-short-period .bar-caption-stack .bar-caption__dates{
   width:auto;max-width:none;min-width:0;
   overflow:visible;text-overflow:clip;
-}
-.bar-point-event .bar-caption__name,
-.bar-point-event .bar-caption__dates{
-  display:block;width:100%;max-width:100%;min-width:0;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
 .bar-compact-narrow.bar-short-period{z-index:4}
 .bar-point-event:hover .bar-point-event__pin,
@@ -485,11 +492,19 @@ html[data-viz="editorial"] .row.is-hovered .span-line{
   transform:scale(1.15);
   box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--lane-color,var(--acc));
 }
+.bar-point-event--group .bar-point-event__pin{
+  width:24px;height:24px;border-width:4px;
+}
+.bar-point-event--group:hover .bar-point-event__pin,
+.bar-point-event--group:focus-visible .bar-point-event__pin,
+.bar-point-event--group.is-hovered .bar-point-event__pin{
+  transform:scale(1.08);
+}
 .bar-libro-pin{
   position:absolute;top:50%;transform:translateY(-50%);
   z-index:3;pointer-events:none;
 }
-html[data-viz="waterfall"] .bar-compact-narrow .bar-caption__name{
+html[data-viz="waterfall"] .bar-compact-narrow .bar-caption-stack .bar-caption__name{
   font:600 calc(11px * var(--tl-font-scale))/1.15 var(--font-sans);
 }
 
@@ -525,11 +540,11 @@ html[data-row-layout="compact"] .bar-event-pin:focus-visible{
   box-shadow:0 0 0 2px var(--bg),0 0 0 5px var(--mk-color,var(--acc)),0 6px 18px var(--shadow);
   outline:none;
 }
-html[data-row-layout="compact"] .bar-compact-narrow .bar-caption__name{
+html[data-row-layout="compact"] .bar-compact-narrow .bar-caption-stack{
   position:relative;z-index:2;
 }
-html[data-row-layout="compact"] .bar-compact-narrow .bar-caption__dates{
-  position:relative;z-index:1;
+html[data-row-layout="compact"] .bar-compact-narrow .bar-caption-stack--dates{
+  z-index:1;
 }
 html[data-row-layout="compact"] .evt-marker__tip{
   display:none;position:absolute;left:50%;bottom:calc(100% + 5px);
@@ -1203,8 +1218,8 @@ header {
   </div>
 </aside>
 
-<script src="linea-tiempo-datos.js?v=10"></script>
+<script src="linea-tiempo-datos.js?v=11"></script>
 <script src="fichas-personajes.js"></script>
-<script src="linea-paralela.js?v=20260902p"></script>
+<script src="linea-paralela.js?v=20260902r"></script>
 </body>
 </html>
