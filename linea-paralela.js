@@ -2372,7 +2372,7 @@ if (isTouchLayout() && !localStorage.getItem('lt-par-font-scale')) {
 }
 
 if(!(D.preguntas || []).some(p => answerText(p))){
-  console.warn('[linea-paralela] Datos sin respuestas en preguntas.a — recarga con Ctrl+F5 (linea-tiempo-datos.js?v=2)');
+  console.warn('[linea-paralela] Datos sin respuestas en preguntas.a — recarga con Ctrl+F5 (linea-tiempo-datos.js?v=3)');
 }
 render();
 if(deepEvId){

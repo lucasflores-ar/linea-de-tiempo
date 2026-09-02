@@ -74,6 +74,9 @@ _ANIO_FIX = {
 }
 
 # Secuencias de mojibake inequívocas (nunca aparecen en español bien codificado).
+# NOTA: las dos primeras etapas se cubren llamando dos veces a fix_mojibake (la segunda
+# deshace la capa UTF-8->latin-1 y la primera la repercutida). Estos reemplazos
+# puntuales cubren los casos restantes (¿/¡/soft hyphen).
 _MOJI_FIX = {
     'Ã±': 'ñ',
     'Â¿': '¿',
@@ -87,9 +90,13 @@ def clean_text(s):
     """Corrige mojibake y la pérdida de 'ñ' (en palabras conocidas) en un campo de texto."""
     if not s:
         return s
+    # 1) doble pasada de fix_mojibake para mojibake residual de doble UTF-8
+    s = fix_mojibake(s)
+    s = fix_mojibake(s)
+    # 2) remplazos puntuales de secuencias inequívocas (¿ / ¡ / soft hyphen / ´)
     for bad, good in _MOJI_FIX.items():
         s = s.replace(bad, good)
-    # diccionario de palabra completa, respetando mayúscula inicial
+    # 3) diccionario de palabra completa para ñ (año/señor/niñ...), respetando mayúscula inicial
     for bad, good in _ANIO_FIX.items():
         s = re.sub(r'\b' + bad, lambda m: good, s, flags=re.IGNORECASE)
     return s
