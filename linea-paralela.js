@@ -359,6 +359,86 @@ function touchDistance(touches){
 function touchCenterClientX(touches){
   return (touches[0].clientX + touches[1].clientX) / 2;
 }
+function prefersScalePinch(){
+  return typeof matchMedia === 'function' &&
+    (matchMedia('(pointer: coarse)').matches || matchMedia('(max-width: 760px)').matches);
+}
+function beginPinch(touches){
+  if(!lastLayout) return;
+  chartScroll.classList.add('is-pinching');
+  drag = false;
+  chartScroll.classList.remove('dragging');
+  const cx = chartXFromClient(touchCenterClientX(touches));
+  const centerYear = xToYear(cx, lastLayout.yMin, lastLayout.yMax, lastLayout.chartW);
+  if(prefersScalePinch()){
+    autoFit = false;
+    localStorage.setItem('lt-par-autofit', '0');
+    fitBtn.classList.remove('on');
+    fitBtn.setAttribute('aria-pressed', 'false');
+    pinchState = {
+      mode: 'scale',
+      dist0: touchDistance(touches),
+      px0: pxPerYear,
+      centerYear,
+      viewportX: touchCenterClientX(touches) - chartScroll.getBoundingClientRect().left,
+    };
+  } else {
+    const lr = getLogicalRange(lastLayout.dataMin, lastLayout.dataMax);
+    pinchState = {
+      mode: 'focus',
+      dist0: touchDistance(touches),
+      vMin: lr.min,
+      vMax: lr.max,
+      centerYear,
+    };
+  }
+}
+function endPinch(){
+  pinchState = null;
+  chartScroll.classList.remove('is-pinching');
+}
+function movePinch(touches){
+  if(!pinchState || !lastLayout) return;
+  const factor = touchDistance(touches) / pinchState.dist0;
+  if(!Number.isFinite(factor) || factor <= 0) return;
+  if(pinchState.mode === 'scale'){
+    const newPx = Math.min(8, Math.max(0.8, pinchState.px0 * factor));
+    if(Math.abs(newPx - pxPerYear) < 0.02) return;
+    pxPerYear = newPx;
+    zoomEl.value = pxPerYear;
+    localStorage.setItem('lt-par-zoom', String(pxPerYear));
+    render._scrolled = true;
+    render();
+    const newCx = yearToX(pinchState.centerYear, lastLayout.yMin, lastLayout.yMax, lastLayout.chartW);
+    chartScroll.scrollLeft = Math.max(0, newCx - pinchState.viewportX);
+    pinchState.px0 = pxPerYear;
+    pinchState.dist0 = touchDistance(touches);
+    return;
+  }
+  const span0 = pinchState.vMax - pinchState.vMin;
+  const newSpan = Math.max(MIN_FOCUS_SPAN, span0 / factor);
+  const t = span0 > 0 ? (pinchState.centerYear - pinchState.vMin) / span0 : 0.5;
+  let newMin = pinchState.centerYear - t * newSpan;
+  let newMax = newMin + newSpan;
+  const { dataMin, dataMax } = lastLayout;
+  if(newMin < dataMin){ newMin = dataMin; newMax = dataMin + newSpan; }
+  if(newMax > dataMax){ newMax = dataMax; newMin = dataMax - newSpan; }
+  if(isFullFocusRange(newMin, newMax, dataMin, dataMax)){
+    if(viewWindow){ viewWindow = null; saveViewWindow(); render._scrolled = true; render(); }
+  } else {
+    viewWindow = { min: newMin, max: newMax };
+    saveViewWindow();
+    render._scrolled = true;
+    render();
+    pinchState = {
+      mode: 'focus',
+      dist0: touchDistance(touches),
+      vMin: newMin,
+      vMax: newMax,
+      centerYear: pinchState.centerYear,
+    };
+  }
+}
 function applyFocusZoom(newMin, newMax, dataMin, dataMax){
   let min = Math.max(dataMin, newMin);
   let max = Math.min(dataMax, newMax);
@@ -2072,49 +2152,20 @@ chartScroll.addEventListener('wheel', e=>{
 }, { passive: false });
 chartScroll.addEventListener('touchstart', e=>{
   if(e.touches.length === 2 && lastLayout){
-    const lr = getLogicalRange(lastLayout.dataMin, lastLayout.dataMax);
-    const cx = chartXFromClient(touchCenterClientX(e.touches));
-    pinchState = {
-      dist0: touchDistance(e.touches),
-      vMin: lr.min,
-      vMax: lr.max,
-      centerYear: xToYear(cx, lastLayout.yMin, lastLayout.yMax, lastLayout.chartW),
-    };
-    drag = false;
-    chartScroll.classList.remove('dragging');
+    e.preventDefault();
+    beginPinch(e.touches);
   }
-}, { passive: true });
+}, { passive: false });
 chartScroll.addEventListener('touchmove', e=>{
   if(e.touches.length === 2 && pinchState && lastLayout){
     e.preventDefault();
-    const factor = touchDistance(e.touches) / pinchState.dist0;
-    if(!Number.isFinite(factor) || factor <= 0) return;
-    const span0 = pinchState.vMax - pinchState.vMin;
-    const newSpan = Math.max(MIN_FOCUS_SPAN, span0 / factor);
-    const t = span0 > 0 ? (pinchState.centerYear - pinchState.vMin) / span0 : 0.5;
-    let newMin = pinchState.centerYear - t * newSpan;
-    let newMax = newMin + newSpan;
-    const { dataMin, dataMax } = lastLayout;
-    if(newMin < dataMin){ newMin = dataMin; newMax = dataMin + newSpan; }
-    if(newMax > dataMax){ newMax = dataMax; newMin = dataMax - newSpan; }
-    if(isFullFocusRange(newMin, newMax, dataMin, dataMax)){
-      if(viewWindow){ viewWindow = null; saveViewWindow(); render._scrolled = true; render(); }
-    } else {
-      viewWindow = { min: newMin, max: newMax };
-      saveViewWindow();
-      render._scrolled = true;
-      render();
-      pinchState = {
-        dist0: touchDistance(e.touches),
-        vMin: newMin,
-        vMax: newMax,
-        centerYear: pinchState.centerYear,
-      };
-    }
+    movePinch(e.touches);
   }
 }, { passive: false });
-chartScroll.addEventListener('touchend', ()=>{ pinchState = null; });
-chartScroll.addEventListener('touchcancel', ()=>{ pinchState = null; });
+chartScroll.addEventListener('touchend', e=>{
+  if(!e.touches.length || e.touches.length < 2) endPinch();
+});
+chartScroll.addEventListener('touchcancel', endPinch);
 
 chartScroll.addEventListener('scroll', ()=>{ labelsCol.scrollTop = chartScroll.scrollTop; });
 labelsCol.addEventListener('scroll', ()=>{ chartScroll.scrollTop = labelsCol.scrollTop; });

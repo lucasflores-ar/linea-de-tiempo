@@ -152,6 +152,10 @@ main{flex:1;display:flex;flex-direction:column;min-height:0;position:relative}
   flex:1; overflow:auto; position:relative; cursor:grab;
   touch-action:pan-x pan-y;
 }
+.chart-scroll.is-pinching{
+  touch-action:none;
+  overscroll-behavior:none;
+}
 .chart-scroll.dragging{cursor:grabbing;user-select:none}
 .chart-scroll.focus-rect-mode,
 .chart-scroll.focus-rect-mode.dragging{cursor:crosshair}
@@ -1110,6 +1114,6 @@ header {
 
 <script src="linea-tiempo-datos.js?v=2"></script>
 <script src="fichas-personajes.js"></script>
-<script src="linea-paralela.js?v=20260902d"></script>
+<script src="linea-paralela.js?v=20260902e"></script>
 </body>
 </html>
