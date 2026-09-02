@@ -251,37 +251,46 @@ const LEGACY_HASH = {
 };
 
 const BANDS = [
-  { id:'sam', cls:'band--sam', start:-740, end:-735, label:'Caída de Samaria' },
-  { id:'jer', cls:'band--jer', start:-607, end:-602, label:'Caída de Jerusalén' },
-  { id:'exi', cls:'band--exi', start:-607, end:-537, label:'Exilio babilónico' },
+  { id:'sam', cls:'band--sam', start:-740, end:-735, label:'Caída de Samaria', fill:'#b23a3a' },
+  { id:'jer', cls:'band--jer', start:-607, end:-602, label:'Caída de Jerusalén', fill:'#cc6014' },
+  { id:'exi', cls:'band--exi', start:-607, end:-537, label:'Exilio babilónico', fill:'#8a7f70' },
 ];
 
 const POTENCIAS = [
-  { id:'EGIPTO', label:'Egipto', icon:'🏛️', cls:'band--egy', fill:'#f0a35e', start:-1600, end:-874 },
-  { id:'ASIRIA', label:'Asiria', icon:'🐂', cls:'band--asi', fill:'#ff6b6b', start:-874, end:-625 },
-  { id:'BABILONIA', label:'Babilonia', icon:'🦁', cls:'band--bab', fill:'#b489ff', start:-625, end:-539 },
-  { id:'MEDOPERSIA', label:'Medopersia', icon:'🐻', cls:'band--med', fill:'#56ccf2', start:-539, end:-332 },
-  { id:'GRECIA', label:'Grecia', icon:'🐆', cls:'band--gre', fill:'#5cd07b', start:-332, end:-63 },
-  { id:'ROMA', label:'Roma', icon:'🦅', cls:'band--rom', fill:'#ffd166', start:-63, end:100 },
+  { id:'EGIPTO', label:'Egipto', icon:'🏛️', cls:'band--egy', fill:'#c69812', start:-1600, end:-874 },
+  { id:'ASIRIA', label:'Asiria', icon:'🐂', cls:'band--asi', fill:'#d62880', start:-874, end:-625 },
+  { id:'BABILONIA', label:'Babilonia', icon:'🦁', cls:'band--bab', fill:'#3a68be', start:-625, end:-539 },
+  { id:'MEDOPERSIA', label:'Medopersia', icon:'🐻', cls:'band--med', fill:'#168098', start:-539, end:-332 },
+  { id:'GRECIA', label:'Grecia', icon:'🐆', cls:'band--gre', fill:'#569e30', start:-332, end:-63 },
+  { id:'ROMA', label:'Roma', icon:'🦅', cls:'band--rom', fill:'#7a4fc0', start:-63, end:100 },
 ];
 
 const BAR_COLORS = {
-  jud:'#a8843a', isr:'#9e4a4a', pro:'#6b5b8a', jue:'#a86a32', uni:'#4a7a55',
-  pre:'#6b5b8a', postd:'#4a7a55', babil:'#7a7468', rest:'#4a8494', sig:'#3d6b7a', rdiv:'#9e4a4a',
-  jes:'#3d6b7a', sem:'#4a8494',
-  gen:'#6b5b8a', exo:'#a8843a', con:'#4a7a55', tjue:'#a86a32', tre:'#a8843a', tpro:'#6b5b8a',
-  exi:'#7a7468', tres:'#4a8494', tsig:'#3d6b7a', hec:'#4a7a55', ntesc:'#6b6080',
+  jud:'#96762c', isr:'#9e4a4a', pro:'#6b5b8a', jue:'#b5561c', uni:'#4a7a55',
+  pre:'#6b5b8a', postd:'#4a7a55', babil:'#7a7468', rest:'#3f7686', sig:'#3d6b7a', rdiv:'#9e4a4a',
+  jes:'#3d6b7a', sem:'#19819a',
+  gen:'#6b5b8a', exo:'#7a5c1a', con:'#4a7a55', tjue:'#b5561c', tre:'#96762c', tpro:'#6b5b8a',
+  exi:'#7a7468', tres:'#3f7686', tsig:'#3d6b7a', hec:'#4a7a55', ntesc:'#6b6080',
 };
-const MARKER_COLORS = { batalla:'#9e4a4a', milagro:'#4a8494', 'profecía':'#6b5b8a', juicio:'#a8843a', muerte:'#7a7468', reforma:'#4a7a55', 'destrucción':'#a86a32', otro:'#3d6b7a' };
+
+function markerTipoKey(tipo){
+  const flat = (tipo || 'otro').normalize('NFD').replace(/\p{M}/gu, '').toLowerCase();
+  const keys = ['batalla','milagro','profecia','juicio','muerte','reforma','destruccion','otro'];
+  return keys.includes(flat) ? flat : 'otro';
+}
 
 function markerColorFor(ev){
-  const t = ev.tipo || 'otro';
-  if(MARKER_COLORS[t]) return MARKER_COLORS[t];
-  const flat = t.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase();
-  for(const [k, v] of Object.entries(MARKER_COLORS)){
-    if(k.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase() === flat) return v;
-  }
-  return MARKER_COLORS.otro;
+  return `var(--mk-${markerTipoKey(ev?.tipo)})`;
+}
+
+function markerColorHex(ev){
+  const key = `--mk-${markerTipoKey(ev?.tipo)}`;
+  const v = getComputedStyle(document.documentElement).getPropertyValue(key).trim();
+  return v || '#35606f';
+}
+
+function cssVar(name){
+  return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 }
 
 function markerNameInset(pe, barX, yMin, yMax, chartW){
@@ -2198,7 +2207,7 @@ function render(){
     lastLayout.markers.push({
       x: parseFloat(m.style.left),
       y,
-      color: ev ? markerColorFor(ev) : '#3d6b7a',
+      color: ev ? markerColorHex(ev) : markerColorHex({ tipo: 'otro' }),
       evId: m.dataset.ev,
     });
   });
@@ -2244,12 +2253,12 @@ function exportPng(){
   const L = lastLayout;
   const M = L.metrics || layoutMetrics();
   const wf = L.vizStyle === 'waterfall';
-  const bg = wf ? '#ffffff' : (document.documentElement.getAttribute('data-theme') === 'dark' ? '#1a1814' : '#f5f2e8');
-  const txt = wf ? '#2d2d2d' : (document.documentElement.getAttribute('data-theme') === 'dark' ? '#ece6dc' : '#2c2824');
-  const mut = wf ? '#8a8a8a' : (document.documentElement.getAttribute('data-theme') === 'dark' ? '#9a9288' : '#7a7468');
+  const bg = cssVar('--bg');
+  const txt = cssVar('--txt');
+  const mut = cssVar('--mut');
   const orbCore = document.documentElement.getAttribute('data-theme') === 'dark' ? '#3a3530' : '#ebe4d6';
   const orbEdge = document.documentElement.getAttribute('data-theme') === 'dark' ? '#6a6258' : '#b8a992';
-  const acc = wf ? '#e84545' : mut;
+  const acc = wf ? cssVar('--acc') : mut;
   const headH = 36;
   let svg = `<?xml version="1.0" encoding="UTF-8"?><svg xmlns="http://www.w3.org/2000/svg" width="${L.chartW}" height="${L.totalH + headH + 8}" viewBox="0 0 ${L.chartW} ${L.totalH + headH + 8}">`;
   svg += `<rect width="100%" height="100%" fill="${bg}"/>`;
@@ -2276,7 +2285,7 @@ function exportPng(){
   for(const b of BANDS.filter(x=>x.end >= L.yMin && x.start <= L.yMax)){
     const x1 = yearToX(Math.max(b.start, L.yMin), L.yMin, L.yMax, L.chartW);
     const x2 = yearToX(Math.min(b.end, L.yMax), L.yMin, L.yMax, L.chartW);
-    svg += `<rect x="${x1}" y="0" width="${Math.max(2,x2-x1)}" height="${L.totalH}" fill="${wf?'#e84545':'#ff6b6b'}" opacity="0.05"/>`;
+    svg += `<rect x="${x1}" y="0" width="${Math.max(2,x2-x1)}" height="${L.totalH}" fill="${b.fill}" opacity="0.07"/>`;
   }
   if(showConnections){
     const prophets = [...L.rowMap.values()].filter(r=>r.laneKey==='pro');

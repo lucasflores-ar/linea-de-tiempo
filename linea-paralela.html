@@ -12,48 +12,61 @@
 <style>
 :root{
   --bg:#f5f2e8; --panel:#faf8f3; --line:#d8d2c6;
-  --txt:#2c2824; --mut:#7a7468; --acc:#3d6b7a;
+  --txt:#2c2824; --mut:#635e50; --acc:#35606f;
   --hdr:#f5f2e8; --field:#ece8df; --field-2:#e3ded3;
   --hover:rgba(44,40,36,.04); --shadow:rgba(44,40,36,.12); --rail:#c8c2b6;
-  --lane-jud:#a8843a; --lane-isr:#9e4a4a; --lane-pro:#6b5b8a; --lane-jue:#a86a32; --lane-uni:#4a7a55;
-  --lane-jes:#3d6b7a; --lane-sem:#4a8494;
-  --band-sam:rgba(158,74,74,.09); --band-jer:rgba(168,106,50,.1); --band-exi:rgba(107,91,138,.08);
-  --band-egy:rgba(168,132,58,.08); --band-asi:rgba(158,74,74,.07); --band-bab:rgba(107,91,138,.07);
-  --band-med:rgba(61,107,122,.08); --band-gre:rgba(74,122,85,.07); --band-rom:rgba(168,132,58,.07);
+  --lane-jud:#96762c; --lane-isr:#9e4a4a; --lane-pro:#6b5b8a; --lane-jue:#b5561c; --lane-uni:#4a7a55;
+  --lane-jes:#3d6b7a; --lane-sem:#19819a;
+  --band-sam:rgba(178,58,58,.15); --band-jer:rgba(204,96,20,.15); --band-exi:rgba(138,127,112,.15);
+  --band-egy:rgba(198,152,18,.15); --band-asi:rgba(214,40,128,.15); --band-bab:rgba(58,104,190,.15);
+  --band-med:rgba(22,128,152,.15); --band-gre:rgba(86,158,48,.15); --band-rom:rgba(122,79,192,.15);
   --orb-core:#ebe4d6; --orb-edge:#b8a992; --orb-stem:rgba(44,40,36,.22);
   --panel2:#faf8f3; --thumb:rgba(120,116,108,.45);
-  --c-pre:#6b5b8a; --c-dil:#3d6b7a; --c-pat:#4a7a55; --c-egi:#a8843a;
-  --c-con:#4a7a55; --c-jue:#a86a32; --c-mon:#a8843a; --c-div:#9e4a4a;
-  --c-exi:#7a7468; --c-res:#4a8494; --c-ec:#3d6b7a; --c-ntesc:#6b6080;
+  --c-pre:#6b5b8a; --c-dil:#3d6b7a; --c-pat:#4a7a55; --c-egi:#7a5c1a;
+  --c-con:#4a7a55; --c-jue:#9a5e26; --c-mon:#7a5c1a; --c-div:#9e4a4a;
+  --c-exi:#7a7468; --c-res:#3f7686; --c-ec:#3d6b7a; --c-ntesc:#6b6080;
+  --mk-batalla:#b34a4a; --mk-milagro:#2f7f9e; --mk-profecia:#6f5aa8;
+  --mk-juicio:#9a7a1c; --mk-muerte:#63615a; --mk-reforma:#3d7d4c;
+  --mk-destruccion:#a85a20; --mk-otro:#35606f;
   --font-serif:"Libre Baskerville",Georgia,"Times New Roman",serif;
   --font-sans:"Karla","Segoe UI",system-ui,sans-serif;
   --tl-font-scale:1;
   --label-w:228px; --row-h:48px; --lane-gap:14px; --axis-h:40px; --pot-strip:28px; --phase-h:0px;
 }
 html[data-viz="waterfall"]{
-  --bg:#ffffff; --panel:#ffffff; --line:#ebebeb; --txt:#2d2d2d; --mut:#8a8a8a; --acc:#e84545;
+  --bg:#ffffff; --panel:#ffffff; --line:#ebebeb; --txt:#2d2d2d; --mut:#686868; --acc:#c93333;
   --hdr:#ffffff; --field:#f4f4f4; --field-2:#ececec; --hover:rgba(232,69,69,.05);
   --shadow:rgba(45,45,45,.08); --rail:#ececec;
-  --lane-jud:#e8a0b0; --lane-isr:#e87878; --lane-pro:#c4a0d8; --lane-jue:#e8b878; --lane-uni:#88c4a0;
-  --lane-jes:#78b8c8; --lane-sem:#88c8d8;
-  --band-sam:rgba(232,69,69,.06); --band-jer:rgba(232,120,69,.07); --band-exi:rgba(196,160,216,.06);
-  --band-egy:rgba(232,180,69,.05); --band-asi:rgba(232,69,69,.05); --band-bab:rgba(196,160,216,.05);
-  --band-med:rgba(120,184,200,.05); --band-gre:rgba(136,196,160,.05); --band-rom:rgba(232,180,69,.05);
+  --lane-jud:#ec7fd8; --lane-isr:#f27373; --lane-pro:#b795e0; --lane-jue:#ecb254; --lane-uni:#88c4a0;
+  --lane-jes:#78b8c8; --lane-sem:#4fd6f0;
+  --band-sam:rgba(232,80,80,.10); --band-jer:rgba(242,120,50,.10); --band-exi:rgba(175,165,148,.10);
+  --band-egy:rgba(245,185,50,.10); --band-asi:rgba(250,80,175,.10); --band-bab:rgba(80,140,245,.10);
+  --band-med:rgba(50,180,220,.10); --band-gre:rgba(105,215,90,.10); --band-rom:rgba(155,120,240,.10);
+  --mk-batalla:#d63c3c; --mk-milagro:#1f93c9; --mk-profecia:#9a6ae0;
+  --mk-juicio:#b8860b; --mk-muerte:#5a6472; --mk-reforma:#2fa864;
+  --mk-destruccion:#e07030; --mk-otro:#c93333;
   --label-w:108px; --row-h:44px; --lane-gap:12px; --axis-h:36px; --phase-h:36px;
   --font-sans:"Inter","Segoe UI",system-ui,sans-serif;
 }
 html[data-theme="dark"]{
   --bg:#1a1814; --panel:#242018; --line:#3d3830;
-  --txt:#ece6dc; --mut:#9a9288; --acc:#6a9fad;
+  --txt:#ece6dc; --mut:#a49e94; --acc:#6a9fad;
   --hdr:#1a1814; --field:#252118; --field-2:#2e2a22;
   --hover:rgba(236,230,220,.05); --shadow:rgba(0,0,0,.35); --rail:#4a453c;
-  --lane-jud:#c9a24a; --lane-isr:#c96a6a; --lane-pro:#9a8ab8; --lane-jue:#c98a4a; --lane-uni:#6a9a75;
-  --lane-jes:#6a9fad; --lane-sem:#6aaeb8;
-  --band-sam:rgba(201,106,106,.1); --band-jer:rgba(201,138,74,.11); --band-exi:rgba(154,138,184,.09);
-  --band-egy:rgba(201,162,74,.09); --band-asi:rgba(201,106,106,.08); --band-bab:rgba(154,138,184,.08);
-  --band-med:rgba(106,159,173,.09); --band-gre:rgba(106,154,117,.08); --band-rom:rgba(201,162,74,.08);
+  --lane-jud:#c9a24a; --lane-isr:#c96a6a; --lane-pro:#9a8ab8; --lane-jue:#d4762a; --lane-uni:#6a9a75;
+  --lane-jes:#6a9fad; --lane-sem:#3fc9e6;
+  --band-sam:rgba(226,100,100,.13); --band-jer:rgba(235,130,58,.13); --band-exi:rgba(172,160,144,.13);
+  --band-egy:rgba(230,175,58,.13); --band-asi:rgba(244,90,165,.13); --band-bab:rgba(105,145,240,.13);
+  --band-med:rgba(70,178,210,.13); --band-gre:rgba(125,205,105,.13); --band-rom:rgba(160,130,235,.13);
+  --c-egi:#cf9d46;
+  --mk-batalla:#d96a6a; --mk-milagro:#58b0d8; --mk-profecia:#a48ade;
+  --mk-juicio:#d8ae4a; --mk-muerte:#8f8880; --mk-reforma:#58b878;
+  --mk-destruccion:#e08840; --mk-otro:#6a9fad;
   --orb-core:#3a3530; --orb-edge:#6a6258; --orb-stem:rgba(236,230,220,.18);
   --panel2:#242018; --thumb:rgba(154,146,136,.45);
+}
+html[data-theme="dark"] .d-badge{
+  box-shadow:inset 0 0 0 100vmax rgba(0,0,0,.35);
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
@@ -279,14 +292,14 @@ html[data-theme="dark"] .focus-marquee{background:rgba(106,159,173,.18)}
   box-shadow:0 0 0 2px var(--acc),0 2px 8px var(--shadow);
   outline:none;
 }
-.evt-marker--batalla{background:#ff6b6b}
-.evt-marker--milagro{background:#56ccf2}
-.evt-marker--profecía,.evt-marker--profecia{background:#b489ff}
-.evt-marker--juicio{background:#ffd166}
-.evt-marker--muerte{background:#64748b}
-.evt-marker--reforma{background:#5cd07b}
-.evt-marker--destrucción,.evt-marker--destruccion{background:#ff9d4d}
-.evt-marker--otro{background:var(--acc)}
+.evt-marker--batalla{background:var(--mk-batalla)}
+.evt-marker--milagro{background:var(--mk-milagro)}
+.evt-marker--profecía,.evt-marker--profecia{background:var(--mk-profecia)}
+.evt-marker--juicio{background:var(--mk-juicio)}
+.evt-marker--muerte{background:var(--mk-muerte)}
+.evt-marker--reforma{background:var(--mk-reforma)}
+.evt-marker--destrucción,.evt-marker--destruccion{background:var(--mk-destruccion)}
+.evt-marker--otro{background:var(--mk-otro)}
 .band-label{
   position:absolute;top:8px;left:50%;transform:translateX(-50%);
   font:600 9px/1.15 var(--font-sans);letter-spacing:.08em;text-transform:uppercase;
@@ -597,9 +610,9 @@ html[data-viz="waterfall"] .bar:not(.bar-compact-narrow){
   top:50%;height:28px;min-width:20px;width:auto;
   transform:translateY(-50%);border-radius:999px;cursor:pointer;z-index:3;
   /* Sin fechas estimadas: degradado decorativo; con est-ini/fe el JS pone fade lateral */
-  background:linear-gradient(90deg,transparent 0%,color-mix(in srgb,var(--pill-color,#e8a0b0) 38%,transparent) 16%,
-    color-mix(in srgb,var(--pill-color,#e8a0b0) 72%,#fff) 100%);
-  border:1px solid color-mix(in srgb,var(--pill-color,#e8a0b0) 28%,var(--line));
+  background:linear-gradient(90deg,transparent 0%,color-mix(in srgb,var(--pill-color) 38%,transparent) 16%,
+    color-mix(in srgb,var(--pill-color) 72%,#fff) 100%);
+  border:1px solid color-mix(in srgb,var(--pill-color) 28%,var(--line));
   box-shadow:0 1px 2px var(--shadow);
   display:flex;align-items:center;padding:0 16px 0 22px;
   transition:box-shadow .12s, transform .12s;
@@ -614,7 +627,7 @@ html[data-viz="waterfall"] .bar.est-ini:not(.est-fin):not(.bar-compact-narrow),
 html[data-viz="waterfall"] .bar.est-fin:not(.est-ini):not(.bar-compact-narrow),
 html[data-viz="waterfall"] .bar.est-ini.est-fin:not(.bar-compact-narrow){
   border-style:dashed;
-  border-color:color-mix(in srgb,var(--pill-color,#e8a0b0) 55%,var(--line));
+  border-color:color-mix(in srgb,var(--pill-color) 55%,var(--line));
 }
 html[data-viz="waterfall"] .bar.bar-compact-narrow:hover,
 html[data-viz="waterfall"] .bar.bar-compact-narrow:focus-visible{
@@ -1189,6 +1202,6 @@ header {
 
 <script src="linea-tiempo-datos.js?v=10"></script>
 <script src="fichas-personajes.js"></script>
-<script src="linea-paralela.js?v=20260902l"></script>
+<script src="linea-paralela.js?v=20260902m"></script>
 </body>
 </html>
