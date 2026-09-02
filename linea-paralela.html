@@ -455,6 +455,11 @@ html[data-viz="editorial"] .row.is-hovered .span-line{
   content:'';position:absolute;inset:3px;border-radius:50%;
   background:var(--mk-color,var(--lane-color,var(--acc)));opacity:.9;
 }
+.bar-point-event .bar-caption__name,
+.bar-point-event .bar-caption__dates{
+  width:auto;max-width:none;min-width:0;
+  overflow:visible;text-overflow:clip;
+}
 .bar-point-event:hover .bar-point-event__pin,
 .bar-point-event:focus-visible .bar-point-event__pin,
 .bar-point-event.is-hovered .bar-point-event__pin{
@@ -736,172 +741,6 @@ html[data-viz="waterfall"] #d-title{font-family:var(--font-sans)}
   .pot-strip__label{display:none}
 }
 
-/* ---------- Viewport real del móvil (barras del navegador) ---------- */
-html, body { height: 100dvh; }
-@supports not (height: 100dvh) { html, body { height: 100svh; } }
-
-/* Safe areas: notch de iPhone / barra de gestos Android */
-header {
-  padding-left: max(20px, env(safe-area-inset-left));
-  padding-right: max(20px, env(safe-area-inset-right));
-}
-.axis-area { padding-bottom: env(safe-area-inset-bottom); }
-
-/* ---------- Targets táctiles (solo en pantallas táctiles) ---------- */
-@media (pointer: coarse) {
-  .iconbtn { width: 40px; height: 40px; }
-  .export-btn, .site-nav__link, .pot-chip { padding: 9px 12px; }
-  .onboard-pop__btn { padding: 10px 14px; }
-
-  .evt-marker::before,
-  .evt-marker--in-row::before {
-    content: '';
-    position: absolute;
-    inset: -18px;
-    border-radius: 50%;
-  }
-
-  button, .site-nav__link, .lane-check, .opt-toggle, .hidden-pe-chip {
-    touch-action: manipulation;
-  }
-}
-
-/* ---------- Drawer como bottom sheet (≤520 px) ---------- */
-@media (max-width: 520px) {
-  #drawer {
-    top: auto; left: 0; right: 0; bottom: 0;
-    width: 100%; max-width: none;
-    height: 88dvh;
-    border-left: none;
-    border-top: 1px solid var(--line);
-    border-radius: 16px 16px 0 0;
-    transform: translateY(105%);
-  }
-  #drawer.on { transform: translateY(0); }
-  .d-body { padding-bottom: calc(20px + env(safe-area-inset-bottom)); }
-}
-
-/* ---------- Hovers "pegados" en táctil ---------- */
-@media (hover: none) {
-  .lane-check:hover, .iconbtn:hover, .site-nav__link:hover,
-  .export-btn:hover, .hidden-pe-chip:hover, .char-card:hover,
-  .rel-edge:hover { background: revert-layer; }
-}
-
-/* Botón ⚙: oculto en desktop */
-.filtros-btn { display: none; }
-
-/* El sheet envuelve solo Opciones; en desktop es transparente */
-.filtros-sheet { display: contents; }
-.filtros-sheet-hdr { display: none; }
-
-.filtros-backdrop {
-  display: none;
-  position: fixed; inset: 0; z-index: 129;
-  background: rgba(0, 0, 0, .45);
-  opacity: 0; pointer-events: none;
-  transition: opacity .25s ease;
-}
-.filtros-backdrop.on { opacity: 1; pointer-events: auto; }
-
-@media (max-width: 760px) {
-
-  .filtros-backdrop { display: block; }
-
-  /* ---------- QUICK BAR: "Filas" pasa a ser una fila de chips ---------- */
-  .toolbar--quick {
-    flex-wrap: nowrap;
-    gap: 8px;
-    padding: 8px max(10px, env(safe-area-inset-right))
-             8px max(10px, env(safe-area-inset-left));
-  }
-  .toolbar--quick .toolbar__label,
-  .toolbar--quick .legend { display: none; }
-
-  .toolbar--quick .preset {
-    flex: 1 1 auto;
-    min-width: 0;
-    display: flex;
-    flex-wrap: nowrap;
-    gap: 6px;
-    overflow-x: auto;
-    overscroll-behavior-x: contain;
-    scrollbar-width: none;
-    -webkit-mask-image: linear-gradient(90deg, #000 0, #000 calc(100% - 16px), transparent 100%);
-    mask-image: linear-gradient(90deg, #000 0, #000 calc(100% - 16px), transparent 100%);
-  }
-  .toolbar--quick .preset::-webkit-scrollbar { display: none; }
-
-  .toolbar--quick .lane-check {
-    position: relative;
-    flex: 0 0 auto;
-    min-height: 40px;
-    padding: 8px 12px;
-    border: 1px solid var(--line);
-    border-radius: 999px;
-    background: var(--field);
-    font-size: 12px;
-    white-space: nowrap;
-    touch-action: manipulation;
-  }
-  .toolbar--quick .lane-check.on {
-    background: var(--field-2);
-    border-color: var(--acc);
-  }
-
-  .toolbar--quick .lane-check input {
-    position: absolute;
-    width: 1px; height: 1px;
-    opacity: 0;
-    pointer-events: none;
-  }
-  .toolbar--quick .lane-check:has(input:focus-visible) {
-    outline: 2px solid var(--acc);
-    outline-offset: 2px;
-  }
-
-  .filtros-btn {
-    display: flex;
-    flex: 0 0 40px;
-    width: 40px; height: 40px;
-  }
-
-  /* ---------- SHEET: solo Opciones ---------- */
-  .filtros-sheet {
-    display: block;
-    position: fixed; left: 0; right: 0; bottom: 0; z-index: 130;
-    max-height: 80dvh; overflow-y: auto;
-    overscroll-behavior: contain;
-    background: var(--panel);
-    border-top: 1px solid var(--line);
-    border-radius: 16px 16px 0 0;
-    box-shadow: 0 -12px 40px var(--shadow);
-    padding-bottom: calc(10px + env(safe-area-inset-bottom));
-    transform: translateY(105%);
-    transition: transform .28s ease;
-  }
-  .filtros-sheet.on { transform: translateY(0); }
-  .filtros-sheet .toolbar { background: transparent; border-bottom: none; }
-
-  .filtros-sheet-hdr {
-    position: sticky; top: 0; z-index: 1;
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 12px 16px 10px;
-    background: var(--panel);
-    border-bottom: 1px solid var(--line);
-  }
-  .filtros-sheet-hdr span {
-    font: 700 10px/1 var(--font-sans);
-    letter-spacing: .12em; text-transform: uppercase;
-    color: var(--mut);
-  }
-
-  .zoom-ctrl { width: 100%; }
-  .zoom-ctrl input[type=range] { flex: 1; width: auto; }
-  .style-ctrl { flex: 1 1 160px; }
-  .style-ctrl select { min-width: 0; width: 100%; }
-}
-
 /* ── Onboarding tour ── */
 .onboard-root{
   position:fixed;inset:0;z-index:200;pointer-events:none;
@@ -953,6 +792,225 @@ header {
 @media(max-width:760px){
   .onboard-pop{max-width:calc(100vw - 24px)}
 }
+
+/* ============================================================
+   CHROME MÓVIL + DESKTOP — plan consolidado
+   ============================================================ */
+
+html, body { height: 100dvh; }
+@supports not (height: 100dvh) { html, body { height: 100svh; } }
+
+.axis-area { padding-bottom: env(safe-area-inset-bottom); }
+
+header {
+  gap: 10px;
+  padding: 8px max(16px, env(safe-area-inset-right))
+           8px max(16px, env(safe-area-inset-left));
+}
+.logo { width: 30px; height: 30px; font-size: 13px; }
+.brand p { display: none; }
+@media (min-height: 860px) { .brand p { display: block; } }
+.toolbar { padding: 6px 12px; gap: 6px; }
+.toolbarlabel, .toolbar__label { display: none; }
+.style-ctrl select { min-width: 0; }
+.zoom-ctrl input[type=range] { width: 90px; }
+
+.lane-check {
+  flex: 0 0 auto;
+  min-height: 30px;
+  padding: 5px 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--field);
+  white-space: nowrap;
+}
+.lane-check.on { background: var(--field-2); border-color: var(--acc); }
+.lane-check:not(.on) { opacity: .7; }
+.lane-check input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.lane-check:has(input:focus-visible) { outline: 2px solid var(--acc); outline-offset: 2px; }
+.pot-chip { padding: 5px 10px; border-radius: 999px; font-size: 11px; min-height: 30px; }
+
+.legend .legend-item:not(:has(.legend-swatch--est)),
+.legend .legend__item:not(:has(.legend__swatch--est)) { display: none; }
+
+.quick-scroll { display: contents; }
+.pot-chips { border-left: 1px solid var(--line); padding-left: 10px; margin-left: 4px; }
+
+.filtros-btn { display: none; }
+.filtros-backdrop {
+  display: none;
+  position: fixed; inset: 0; z-index: 129;
+  background: rgba(0, 0, 0, .45);
+  opacity: 0; pointer-events: none;
+  transition: opacity .25s ease;
+}
+.filtros-backdrop.on { opacity: 1; pointer-events: auto; }
+
+.filtros-sheet { display: contents; }
+.filtros-sheet-hdr {
+  position: sticky; top: 0; z-index: 1;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px 10px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--line);
+}
+.filtros-sheet-hdr span {
+  font: 700 10px/1 var(--font-sans);
+  letter-spacing: .12em; text-transform: uppercase;
+  color: var(--mut);
+}
+.filtros-sheet .toolbar {
+  flex-direction: column; align-items: stretch;
+  background: transparent; border-bottom: none;
+}
+.filtros-sheet .opts,
+.filtros-sheet .style-ctrl,
+.filtros-sheet .zoom-ctrl { width: 100%; }
+.filtros-sheet .style-ctrl select { min-width: 0; width: 100%; }
+.filtros-sheet .zoom-ctrl input[type=range] { flex: 1; width: auto; }
+
+@media (pointer: coarse) {
+  .iconbtn { width: 40px; height: 40px; }
+  .export-btn, .site-nav__link, .pot-chip { padding: 9px 12px; }
+  .onboard-pop__btn { padding: 10px 14px; }
+  .evt-marker::before,
+  .evt-marker--in-row::before {
+    content: ''; position: absolute; inset: -18px; border-radius: 50%;
+  }
+  button, .site-nav__link, .lane-check, .opt-toggle, .hidden-pe-chip {
+    touch-action: manipulation;
+  }
+}
+
+@media (max-width: 760px) {
+  .filtros-btn { display: flex; flex: 0 0 40px; width: 40px; height: 40px; }
+  .filtros-backdrop { display: block; }
+
+  .toolbar--quick {
+    flex-wrap: nowrap;
+    gap: 8px;
+    padding: 8px max(10px, env(safe-area-inset-right))
+             8px max(10px, env(safe-area-inset-left));
+  }
+  .toolbar--quick .toolbarlabel,
+  .toolbar--quick .toolbar__label,
+  .toolbar--quick .legend { display: none; }
+
+  .quick-scroll {
+    display: flex; flex: 1 1 auto; min-width: 0;
+    flex-wrap: nowrap; gap: 6px;
+    overflow-x: auto; overscroll-behavior-x: contain;
+    scrollbar-width: none;
+    -webkit-mask-image: linear-gradient(90deg, #000 0, #000 calc(100% - 16px), transparent 100%);
+    mask-image: linear-gradient(90deg, #000 0, #000 calc(100% - 16px), transparent 100%);
+  }
+  .quick-scroll::-webkit-scrollbar { display: none; }
+  .toolbar--quick .preset { flex: none; overflow: visible; display: contents; }
+  .quick-scroll .pot-chips { flex-wrap: nowrap; }
+
+  .toolbar--quick .lane-check {
+    min-height: 40px; padding: 8px 12px; font-size: 12px;
+  }
+
+  .filtros-sheet {
+    display: block;
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 130;
+    max-height: 80dvh; overflow-y: auto;
+    overscroll-behavior: contain;
+    background: var(--panel);
+    border-top: 1px solid var(--line);
+    border-radius: 16px 16px 0 0;
+    box-shadow: 0 -12px 40px var(--shadow);
+    padding-bottom: calc(10px + env(safe-area-inset-bottom));
+    transform: translateY(105%);
+    transition: transform .28s ease;
+  }
+  .filtros-sheet.on { transform: translateY(0); }
+}
+
+@media (min-width: 761px) {
+  .filtros-btn { display: flex; flex: 0 0 40px; width: 40px; height: 40px; }
+  .filtros-backdrop { display: block; background: transparent; }
+
+  .filtros-sheet {
+    display: block;
+    position: fixed;
+    width: 340px;
+    max-height: min(72vh, 640px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    box-shadow: 0 18px 50px var(--shadow);
+    opacity: 0;
+    transform: translateY(-6px) scale(.98);
+    pointer-events: none;
+    transition: opacity .18s ease, transform .18s ease;
+    z-index: 130;
+  }
+  .filtros-sheet.on { opacity: 1; transform: none; pointer-events: auto; }
+}
+
+@media (max-width: 520px) {
+  #drawer {
+    top: auto; left: 0; right: 0; bottom: 0;
+    width: 100%; max-width: none;
+    height: 88dvh;
+    border-left: none;
+    border-top: 1px solid var(--line);
+    border-radius: 16px 16px 0 0;
+    transform: translateY(105%);
+  }
+  #drawer.on { transform: translateY(0); }
+  .d-body { padding-bottom: calc(20px + env(safe-area-inset-bottom)); }
+}
+
+@media (hover: none) {
+  .lane-check:hover, .iconbtn:hover, .site-nav__link:hover,
+  .export-btn:hover, .hidden-pe-chip:hover, .char-card:hover,
+  .rel-edge:hover { background: revert-layer; }
+}
+
+/* ---------- Header móvil compacto (una fila) ---------- */
+@media (max-width: 760px) {
+  header {
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 6px;
+    padding: 6px max(10px, env(safe-area-inset-right))
+             6px max(10px, env(safe-area-inset-left));
+  }
+  .logo { width: 28px; height: 28px; font-size: 12px; flex-shrink: 0; }
+  .brand { flex: 0 1 auto; min-width: 0; }
+  .brand h1 {
+    font-size: 11px;
+    letter-spacing: .08em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 118px;
+  }
+  .brand p { display: none !important; }
+  .controls {
+    flex: 1 1 auto;
+    min-width: 0;
+    margin-left: 0;
+    flex-wrap: nowrap;
+    gap: 5px;
+  }
+  .result-count { display: none; }
+  input[type=search] {
+    flex: 1 1 auto;
+    min-width: 0;
+    max-width: none;
+    padding: 6px 8px;
+    font-size: 11px;
+  }
+  .site-nav { padding: 2px; flex-shrink: 0; }
+  .site-nav__link { padding: 4px 7px; font-size: 10px; }
+  header .iconbtn { width: 28px; height: 28px; font-size: 13px; flex-shrink: 0; }
+}
 </style>
 </head>
 <body>
@@ -975,8 +1033,10 @@ header {
 </header>
 
 <div class="toolbar toolbar--quick">
-  <span class="toolbar__label">Filas</span>
-  <div class="preset" id="lane-filters" role="group" aria-label="Filtrar filas visibles"></div>
+  <span class="toolbar__label toolbarlabel">Filas</span>
+  <div class="quick-scroll">
+    <div class="preset" id="lane-filters" role="group" aria-label="Filtrar filas visibles"></div>
+  </div>
   <div class="legend" aria-hidden="true">
     <span class="legend__item"><span class="legend__swatch" style="background:var(--lane-jud)"></span>Judá</span>
     <span class="legend__item"><span class="legend__swatch" style="background:var(--lane-isr)"></span>Israel</span>
@@ -1046,7 +1106,6 @@ header {
     </div>
     <button type="button" class="export-btn" id="export-btn">Exportar PNG</button>
   </div>
-  <div class="pot-chips" id="pot-chips" aria-label="Filtrar imperios"></div>
   </div>
 </div>
 
@@ -1125,8 +1184,8 @@ header {
   </div>
 </aside>
 
-<script src="linea-tiempo-datos.js?v=9"></script>
+<script src="linea-tiempo-datos.js?v=10"></script>
 <script src="fichas-personajes.js"></script>
-<script src="linea-paralela.js?v=20260902i"></script>
+<script src="linea-paralela.js?v=20260902k"></script>
 </body>
 </html>

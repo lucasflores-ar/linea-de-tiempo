@@ -1,6 +1,34 @@
 (function(){
 'use strict';
 const D = window.LT_DATA;
+D.preguntas = D.preguntas || [];
+let detailLoaded = !D._detailDeferred;
+let detailPromise = null;
+const DETAIL_URL = 'linea-tiempo-detalle.json?v=1';
+
+function ensureDetailLoaded(){
+  if(detailLoaded) return Promise.resolve();
+  if(!detailPromise){
+    detailPromise = fetch(DETAIL_URL)
+      .then(r=>{
+        if(!r.ok) throw new Error('detalle HTTP ' + r.status);
+        return r.json();
+      })
+      .then(det=>{
+        if(det.preguntas?.length) D.preguntas = det.preguntas;
+        for(const ed of det.eventosDetail || []){
+          const ev = D.eventos.find(e=>e.id === ed.id);
+          if(ev) Object.assign(ev, ed);
+        }
+        detailLoaded = true;
+      })
+      .catch(err=>{
+        console.warn('[linea-paralela] No se pudo cargar detalle:', err);
+        detailLoaded = true;
+      });
+  }
+  return detailPromise;
+}
 let pxPerYear = parseFloat(localStorage.getItem('lt-par-zoom')) || 2.4;
 const _savedAutofit = localStorage.getItem('lt-par-autofit');
 let autoFit = _savedAutofit === null ? true : _savedAutofit === '1';
@@ -84,6 +112,8 @@ function textWidth(text, font){
 const CAPTION_MAX_CHARS = 44;
 const CAPTION_MAX_PX = 200;
 const CAPTION_MIN_PX = 72;
+const SHORT_PERIOD_MAX_YEARS = 4;
+const NARROW_BAR_PX = 56;
 
 /** Recorta título largo para la barra; conserva el texto completo en title/aria-label. */
 function truncateCaption(text, maxChars = CAPTION_MAX_CHARS){
@@ -123,12 +153,25 @@ function minBarWidthForPe(pe){
   return Math.max(w, CAPTION_MIN_PX);
 }
 
-function captionNameHtml(pe, nameStyle = ''){
-  const cap = captionForPe(pe);
+function captionNameHtml(pe, nameStyle = '', opts = {}){
+  const cap = opts.fullName
+    ? { text: (pe.n || '').trim(), truncated: false }
+    : captionForPe(pe);
   const title = cap.truncated ? ` title="${esc(pe.n)}"` : '';
   const cls = cap.truncated ? ' bar-caption__name--trunc' : '';
   const style = nameStyle ? ` style="${nameStyle.replace(/^ style="|"$/g, '')}"` : '';
   return `<span class="bar-caption__name${cls}"${title}${style}>${esc(cap.text)}</span>`;
+}
+function periodSpanYears(pe){
+  if(pe.inicio == null || pe.fin == null) return Infinity;
+  return Math.abs(pe.fin - pe.inicio);
+}
+function shouldRenderAsPoint(pe, w){
+  if(pe.hasLibroRange || eventHasRange(pe)) return false;
+  if(pe.isEvent && !eventHasRange(pe)) return true;
+  const narrow = w < NARROW_BAR_PX || w < minBarWidthForPe(pe);
+  if(!narrow) return false;
+  return periodSpanYears(pe) <= SHORT_PERIOD_MAX_YEARS;
 }
 function barLabelFitsInside(pe, w){
   return w >= minBarWidthForPe(pe);
@@ -1275,7 +1318,9 @@ function laneFiltersSorted(){
 
 function buildLaneFilters(){
   pruneSelLanes();
-  const sl = laneFiltersEl.scrollLeft;
+  const scrollHost = laneFiltersEl.parentElement?.classList?.contains('quick-scroll')
+    ? laneFiltersEl.parentElement : laneFiltersEl;
+  const sl = scrollHost.scrollLeft;
   laneFiltersEl.innerHTML = availableLaneFilters().map(f=>{
     const on = selLanes.has(f.id);
     return `<label class="lane-check${on?' on':''}">`+
@@ -1283,7 +1328,7 @@ function buildLaneFilters(){
       `<span class="filter-dot" style="background:${f.color}"></span>`+
       `<span>${f.label}</span></label>`;
   }).join('');
-  laneFiltersEl.scrollLeft = sl;
+  scrollHost.scrollLeft = sl;
   laneFiltersEl.querySelectorAll('input[type=checkbox]').forEach(box=>{
     box.addEventListener('change', ()=>{
       const id = box.dataset.id;
@@ -1298,6 +1343,7 @@ function buildLaneFilters(){
 }
 
 function buildPotChips(){
+  if(!potChipsEl) return;
   potChipsEl.innerHTML = POTENCIAS.map(p=>
     `<button type="button" class="pot-chip${selPots.has(p.id)?' on':' off'}" data-id="${p.id}">${p.icon} ${p.label}</button>`
   ).join('');
@@ -1469,6 +1515,10 @@ function formatPersonRef(ref){
 function openDrawer(ev){
   if(!ev || !drawer) return;
   hideTip();
+  ensureDetailLoaded().then(()=> openDrawerFill(ev));
+}
+
+function openDrawerFill(ev){
   const col = drawerColOf(ev);
   document.getElementById('d-badge').textContent = drawerEraKey(ev.era);
   document.getElementById('d-badge').style.background = col.color;
@@ -1545,6 +1595,10 @@ function openDrawer(ev){
 function openPersonDrawer(pe){
   if(!pe || pe.isEvent || !drawer) return;
   hideTip();
+  ensureDetailLoaded().then(()=> openPersonDrawerFill(pe));
+}
+
+function openPersonDrawerFill(pe){
   const est = (pe.ie||pe.fe) ? ' · fechas estimadas (lámina JW)' : '';
   document.getElementById('d-badge').textContent = pe.grupo || pe.seccion || 'Personaje';
   document.getElementById('d-badge').style.background = 'var(--acc)';
@@ -1760,7 +1814,7 @@ function renderPointEventBar(block, pe, x, w, dataAttr, ini, fin, layoutOpts){
     if(inset) nameStyle = `margin-left:${inset}px`;
   }
   return `<div class="${cls.join(' ')}" style="left:${left}px;width:${boxW}px;max-width:${CAPTION_MAX_PX}px" tabindex="0" role="button" aria-label="${esc(pe.n)}, ${fmtRange(ini,fin)}" ${dataAttr}${peAttr}>`+
-    captionNameHtml(pe, nameStyle)+
+    captionNameHtml(pe, nameStyle, { fullName: true })+
     `<div class="bar-point-event__pin" style="--mk-color:${mkColor};--lane-color:${laneColor}"></div>`+
     `<span class="bar-caption__dates">${esc(fmtRange(ini, fin))}</span>`+
     `</div>`;
@@ -1808,6 +1862,9 @@ function renderPersonBar(block, pe, draw, x, w, dataAttr, ini, fin, layoutOpts){
   }
 
   if(pe.hasLibroRange || eventHasRange(pe) || (!pe.isEvent && (compact || vizStyle === 'waterfall'))){
+    if(shouldRenderAsPoint(pe, w)){
+      return renderPointEventBar(block, pe, x, w, dataAttr, ini, fin, layoutOpts);
+    }
     return renderPeriodBar(block, pe, x, w, dataAttr, ini, fin, layoutOpts);
   }
 
@@ -1862,13 +1919,12 @@ function labelEntryHtml(pe, match, rowId, barW, layoutOpts){
   const tagCls = vizStyle === 'waterfall' && match && (barW < 56 || !layoutOpts.showChartTags) ? ' row-label--tag' : '';
   const dataAttr = pe.isEvent ? ` data-ev="${pe.ev.id}"` : '';
   const peAttr = ` data-pe="${esc(peKey(pe))}"`;
-  const cap = captionForPe(pe);
   return `<div class="row-label__entry${match?'':' dim'}${highlight?' match':''}${tagCls} row-label--click" data-row="${rowId}"${peAttr}${dataAttr} title="${esc(pe.n)}">`+
     `<label class="row-label__pick" title="Ocultar de la línea">`+
     `<input type="checkbox" class="pe-pick" data-pe-key="${esc(peKey(pe))}" checked aria-label="Mostrar ${esc(pe.n)}" />`+
     `</label>`+
     `<span class="row-label__body row-label__body--click">`+
-    `<span class="row-label__name">${esc(cap.text)}</span>`+
+    `<span class="row-label__name">${esc(pe.n)}</span>`+
     `<span class="row-label__dates">${fmtRange(pe.inicio, pe.fin)}</span></span></div>`;
 }
 
@@ -2455,8 +2511,8 @@ buildLaneFilters();
 buildPotChips();
 syncHash();
 
-const esMovil = typeof matchMedia === 'function' && matchMedia('(max-width: 760px)').matches;
-if (esMovil) {
+const mqMobile = typeof matchMedia === 'function' ? matchMedia('(max-width: 760px)') : null;
+if (mqMobile?.matches) {
   if (!localStorage.getItem('lt-par-row-layout')) {
     rowLayout = 'compact';
     rowLayoutEl.value = 'compact';
@@ -2478,8 +2534,12 @@ if (isTouchLayout() && !localStorage.getItem('lt-par-font-scale')) {
   saveFontScale();
 }
 
-if(!(D.preguntas || []).some(p => answerText(p))){
-  console.warn('[linea-paralela] Datos sin respuestas en preguntas.a — recarga con Ctrl+F5 (linea-tiempo-datos.js?v=3)');
+if(!(D._detailDeferred || (D.preguntas || []).some(p => answerText(p)))){
+  ensureDetailLoaded().then(()=>{
+    if(!(D.preguntas || []).some(p => answerText(p))){
+      console.warn('[linea-paralela] Datos sin respuestas en preguntas.a — recarga con Ctrl+F5');
+    }
+  });
 }
 render();
 if(deepEvId){
@@ -2523,19 +2583,15 @@ window.addEventListener('resize', ()=>{ if(autoFit) render._scrolled = false; re
       body: 'Escribí un nombre para resaltar coincidencias. Podés ocultar personajes con el checkbox junto a cada fila; los ocultos aparecen abajo para restaurarlos.',
     },
     {
-      target: '#opt-markers',
-      title: 'Capas del gráfico',
-      body: 'Sucesos muestra marcadores en el eje; Conexiones une profetas y reyes contemporáneos; Imperios pinta bandas de potencias mundiales. Debajo podés filtrar Egipto, Babilonia, Roma…',
+      target: '#filtros-btn',
+      title: 'Capas y opciones',
+      body: 'En ⚙ activá Sucesos, Conexiones e Imperios (bandas en el gráfico). También podés cambiar estilo, zoom, disposición y exportar PNG.',
     },
     {
-      target: '#viz-style',
-      title: 'Estilo y zoom',
-      body: 'Cambiá entre vista editorial y waterfall, tema claro/oscuro (◐), disposición compacta o expandida, y el ancho del eje. Usá ▭ o Shift+arrastrar para enfocar un tramo.',
-    },
-    {
-      target: '#export-btn',
+      target: '.chart-wrap',
+      center: true,
       title: 'Detalle y más',
-      body: 'Hacé clic en una barra o suceso para abrir el panel con referencias y preguntas. Exportá PNG para compartir. En Personajes encontrás fichas ampliadas.',
+      body: 'Hacé clic en una barra o suceso para abrir el panel con referencias y preguntas. En Personajes encontrás fichas ampliadas.',
     },
   ];
 
@@ -2661,12 +2717,24 @@ window.addEventListener('resize', ()=>{ if(autoFit) render._scrolled = false; re
   }
 })();
 
-/* ---------- Sheet de filtros (móvil) ---------- */
+/* ============ Sheet (móvil) / Popover (desktop) de opciones ============ */
 const sheet = document.getElementById('filtros-sheet');
 const sheetBackdrop = document.getElementById('filtros-backdrop');
 const sheetBtn = document.getElementById('filtros-btn');
 const sheetClose = document.getElementById('filtros-close');
 let sheetOpener = null;
+
+function positionSheet() {
+  if (!sheet || !sheetBtn || !mqMobile) return;
+  if (mqMobile.matches) {
+    sheet.style.top = '';
+    sheet.style.right = '';
+    return;
+  }
+  const r = sheetBtn.getBoundingClientRect();
+  sheet.style.top = (r.bottom + 8) + 'px';
+  sheet.style.right = Math.max(8, window.innerWidth - r.right) + 'px';
+}
 
 function setSheet(on) {
   sheet?.classList.toggle('on', on);
@@ -2674,6 +2742,7 @@ function setSheet(on) {
   sheetBtn?.setAttribute('aria-expanded', String(on));
   if (on) {
     sheetOpener = document.activeElement;
+    positionSheet();
     sheetClose?.focus();
   } else {
     sheetOpener?.focus?.();
@@ -2689,10 +2758,6 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && sheet?.classList.contains('on')) setSheet(false);
 });
 
-/* ---------- Breakpoint móvil ↔ desktop (rotación / resize) ---------- */
-const mqMobile = typeof matchMedia === 'function' ? matchMedia('(max-width: 760px)') : null;
-mqMobile?.addEventListener('change', e => {
-  if (!e.matches) setSheet(false);
-});
+mqMobile?.addEventListener('change', () => setSheet(false));
 
 })();

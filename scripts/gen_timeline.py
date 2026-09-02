@@ -11,6 +11,8 @@ from libros_biblia_data import LIBROS
 
 BASE = db()
 OUT  = repo('linea-tiempo-datos.js')
+OUT_DETAIL = repo('linea-tiempo-detalle.json')
+DETAIL_EVT_KEYS = ('d', 'ref', 'lug', 'lat', 'lon')
 
 hechos = list(csv.DictReader(open(db('hechos_biblicos.csv'), encoding='utf-8-sig')))
 rows   = list(csv.DictReader(open(db('preguntas_unificadas_enriquecidas.csv'), encoding='utf-8-sig')))
@@ -348,9 +350,26 @@ for g in grupos_out:
     g['n_ev'] = len(g['eventos'])
     g['nq'] = sum(e['nq'] for e in evts if e['id'] in g['eventos'])
 
-js = '/* GENERADO AUTOMATICAMENTE — incluye respuesta_correcta en preguntas.a */\n'
-js += 'window.LT_DATA = ' + json.dumps(data, ensure_ascii=False) + ';\n'
+js = '/* GENERADO AUTOMATICAMENTE — carga inicial sin preguntas ni textos largos de eventos */\n'
+slim_evts = []
+detail_evts = []
+for e in evts:
+    slim_evts.append({k: v for k, v in e.items() if k not in DETAIL_EVT_KEYS})
+    row = {'id': e['id']}
+    for k in DETAIL_EVT_KEYS:
+        if e.get(k) not in (None, ''):
+            row[k] = e[k]
+    detail_evts.append(row)
+
+data_slim = dict(data)
+data_slim['eventos'] = slim_evts
+data_slim['preguntas'] = []
+data_slim['_detailDeferred'] = True
+js += 'window.LT_DATA = ' + json.dumps(data_slim, ensure_ascii=False) + ';\n'
 open(OUT, 'w', encoding='utf-8').write(js)
+
+detail_payload = {'eventosDetail': detail_evts, 'preguntas': qdata}
+open(OUT_DETAIL, 'w', encoding='utf-8').write(json.dumps(detail_payload, ensure_ascii=False))
 
 # reporte
 print('eventos:', len(evts))

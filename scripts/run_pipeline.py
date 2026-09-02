@@ -26,7 +26,7 @@ STEPS = [
     ('add_antediluviano_preguntas.py --patch-only', 'Parchear hecho_id preguntas antediluvianas'),
     ('add_post_diluviano_preguntas.py --patch-only', 'Parchear hecho_id preguntas post-diluvianas'),
     ('add_fechas_historicas_preguntas.py --patch-only', 'Parchear hecho_id preguntas fechas históricas'),
-    ('gen_timeline.py', 'Generar linea-tiempo-datos.js'),
+    ('gen_timeline.py', 'Generar linea-tiempo-datos.js + linea-tiempo-detalle.json'),
     ('gen_fichas.py', 'Generar fichas (CSV + JS)'),
 ]
 
