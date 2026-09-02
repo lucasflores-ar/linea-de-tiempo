@@ -63,12 +63,26 @@ if os.path.exists(REL_PATH):
         print('[warn] no se pudo leer relaciones.json:', e)
 
 # ---------------- temas por evento ----------------
+# libros del NT que, cuando tienen tipo redacción/*, van al tema NT-ESCRITURA
+LIBROS_NT = {
+    'MATEO', 'MARCOS', 'LUCAS', 'JUAN', 'HECHOS', 'ROMANOS',
+    '1 CORINTIOS', '2 CORINTIOS', 'GÁLATAS', 'EFESIOS', 'FILIPENSES',
+    'COLOSENSES', '1 TESALONICENSES', '2 TESALONICENSES', '1 TIMOTEO',
+    '2 TIMOTEO', 'TITO', 'FILEMÓN', 'HEBREOS', 'SANTIAGO', '1 PEDRO',
+    '2 PEDRO', '1 JUAN', '2 JUAN', '3 JUAN', 'JUDAS', 'APOCALIPSIS',
+}
+
 def temas_de(h):
     er  = (h['era'] or '').upper()
     li  = (h['libro'] or '').upper()
     per = (h['personajes'] or '').upper()
     nom = (h['nombre'] or '').upper()
+    tipo = (h.get('tipo_suceso') or '').strip().lower()
     t = set()
+
+    # capa de ESCRITURA del NT: hechos de redacción de libros canónicos
+    if tipo.startswith('redacc') and li in LIBROS_NT:
+        t.add('NT-ESCRITURA')
     if li in ('GÉNESIS', 'GÉNESIS', 'GENESIS') or er.startswith('PREHISTORIA') or er.startswith('PATRIARCA') or er in ('DILUVIO', 'POSTDILUVIANO'):
         t.add('GENESIS')
     if li in ('ÉXODO', 'EXODO', 'LEVÍTICO', 'NÚMEROS', 'DEUTERONOMIO') or er.startswith('EXODO') or er.startswith('EGIPTO') or er.startswith('LEY') or er.startswith('DESIERTO'):
@@ -89,14 +103,17 @@ def temas_de(h):
     if li in ('DANIEL', 'EZEQUIEL', 'LAMENTACIONES') or er.startswith('EXILIO'):
         t.add('EXILIO')
     if li in ('MATEO', 'MARCOS', 'LUCAS', 'JUAN') and (h['era'] or '').upper().startswith('E.C.'):
-        t.add('SIGLO-PRIMERO')
+        if 'NT-ESCRITURA' not in t:
+            t.add('SIGLO-PRIMERO')
     if li == 'HECHOS':
-        t.add('HECHOS')
+        if 'NT-ESCRITURA' not in t:
+            t.add('HECHOS')
     if li in ('ROMANOS', '1 CORINTIOS', '2 CORINTIOS', 'GÁLATAS', 'EFESIOS', 'FILIPENSES',
               'COLOSENSES', '1 TESALONICENSES', '2 TESALONICENSES', '1 TIMOTEO', '2 TIMOTEO',
               'TITO', 'FILEMÓN', 'HEBREOS', 'SANTIAGO', '1 PEDRO', '2 PEDRO', '1 JUAN', '2 JUAN',
               '3 JUAN', 'JUDAS', 'APOCALIPSIS'):
-        t.add('HECHOS')
+        if 'NT-ESCRITURA' not in t:
+            t.add('HECHOS')
     if 'SALMOS' in li or 'PROVERBIOS' in li or 'ECLESIASTÉS' in li or 'CANTAR' in li or 'JOB' in li:
         t.add('REYES') if er.startswith('MONARQUÍA') else t.add('GENESIS')
     if not t:
@@ -161,6 +178,7 @@ for r in rows:
         'q': r['pregunta'],
         'cat': r['categoria'],
         'a': r['respuesta_correcta'],
+        'per': (r.get('personaje') or '').strip(),
         'fa': fa,
         'ft': r['fecha_suceso'],
         'era': r['era_suceso'],
