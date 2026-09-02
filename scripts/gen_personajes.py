@@ -6,10 +6,10 @@ Secciones de la publicacion "Seamos valientes":
   S3 = Del Mesias a los cristianos del primer siglo
 Columna grupo = fila (row) en la linea de tiempo vis.
 """
-import csv, io, sys, os
+import csv, io, json, sys, os, unicodedata
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from paths import db
+from paths import db, repo
 
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
@@ -20,8 +20,7 @@ P = [
  dict(nombre='Noé',             inicio=-2970, fin=-2020, seccion='S1', grupo='Antes del Diluvio',
       nota='950 años; engendra a los 500 (2470); Diluvio a los 600 (2370); padre de Sem, Cam y Jafet'),
  dict(nombre='Sem',             inicio=-2468, fin=-1868, seccion='S1', grupo='Antes del Diluvio',
-      ini_est=1, fin_est=1,
-      nota='600 años; hijo de Noé (502 años); Arpaksad 2368; antepasado de Abrahán; muere ~1868'),
+      nota='600 años; hijo de Noé (502 años); Arpaksad 2368; antepasado de Abrahán; muere 1868 a.e.c.'),
  # ---- Seccion 1: Despues del Diluvio (lamina JW S1) ----
  dict(nombre='Abrahán',         inicio=-2018, fin=-1843, seccion='S1', grupo='Después del Diluvio', nota='175 años'),
  dict(nombre='Sara',            inicio=-2008, fin=-1881, seccion='S1', grupo='Después del Diluvio', nota='127 años'),
@@ -164,6 +163,71 @@ P = [
  dict(nombre='Timoteo',         inicio=30,    fin=97,    seccion='S3', grupo='Siglo primero', nota='compañero de Pablo, aprox.'),
  dict(nombre='Juan el apóstol', inicio=1,     fin=100,   seccion='S3', grupo='Siglo primero', nota='m. c. 100'),
 ]
+
+
+def norm_name(s):
+    s = unicodedata.normalize('NFD', s or '')
+    s = ''.join(c for c in s if unicodedata.category != 'Mn')
+    return s.lower().strip()
+
+
+def name_keys(nombre):
+    keys = [norm_name(nombre)]
+    if '(' in nombre:
+        short = norm_name(nombre.split('(')[0].strip())
+        if short not in keys:
+            keys.append(short)
+    return keys
+
+
+def est_from_jw(entry):
+    exact = entry.get('fechas_exactas', True)
+    circa = entry.get('circa', False)
+    fin_circa = entry.get('fin_circa', False)
+    if exact and not circa and not fin_circa:
+        return 0, 0
+    ie = 1 if (not exact or circa) else 0
+    fe = 1 if (not exact or fin_circa) else 0
+    return ie, fe
+
+
+def load_jw_est_lookup():
+    path = repo('curacion', 'jw_reyes_profetas.json')
+    if not os.path.exists(path):
+        return {}
+    with open(path, encoding='utf-8') as f:
+        spec = json.load(f)
+    lookup = {}
+    for parte in spec.get('partes', []):
+        for group in ('judah', 'israel', 'profetas'):
+            for entry in parte.get(group, []):
+                ie, fe = est_from_jw(entry)
+                full = norm_name(entry['nombre'])
+                lookup[full] = (ie, fe)
+                if '(' in entry['nombre']:
+                    short = norm_name(entry['nombre'].split('(')[0].strip())
+                    if short not in lookup:
+                        lookup[short] = (ie, fe)
+    return lookup
+
+
+def apply_jw_est_flags(personajes, lookup):
+    patched = 0
+    for r in personajes:
+        for k in name_keys(r['nombre']):
+            if k in lookup:
+                ie, fe = lookup[k]
+                r['ini_est'] = ie
+                r['fin_est'] = fe
+                patched += 1
+                break
+    return patched
+
+
+JW_EST = load_jw_est_lookup()
+n_est = apply_jw_est_flags(P, JW_EST)
+if JW_EST:
+    print('ini_est/fin_est desde jw_reyes_profetas:', n_est, 'personajes')
 
 path = db('personajes_biblicos.csv')
 with open(path, 'w', encoding='utf-8-sig', newline='') as f:

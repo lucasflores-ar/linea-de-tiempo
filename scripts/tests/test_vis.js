@@ -11,7 +11,7 @@ const isRedirect = /location\.replace\s*\(\s*['"]linea-paralela\.html/.test(HTML
   || /<meta[^>]+url=linea-paralela\.html/i.test(HTML);
 if(isRedirect){
   console.log('SKIP: index.html es redirect → linea-paralela.html');
-  console.log('Cobertura: test_par.js (cronología) + test_hor.js (épocas)');
+  console.log('Cobertura: test_par.js (cronología) + test_fichas.js (personajes)');
   console.log('PASS');
   process.exit(0);
 }

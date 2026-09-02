@@ -9,6 +9,7 @@ REPO_ROOT = os.path.dirname(SCRIPTS_DIR)
 
 STEPS = [
     ('gen_hechos_libros.py', 'Generar hechos para libros sin suceso'),
+    ('gen_nt_escritura.py', 'Actualizar redacción NT desde nt_escritura.json'),
     ('merge_jw_slides.py', 'Fusionar líneas de tiempo JW (B2–B13)'),
     ('merge_antediluviano.py', 'Fusionar sucesos antediluvianos'),
     ('merge_post_diluviano.py', 'Fusionar sucesos post-diluvianos'),

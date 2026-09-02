@@ -1,0 +1,439 @@
+# Reporte: preguntas asociadas a personajes colectivos/genéricos (grupo 1)
+
+## La multitud / Multitud  (24 preguntas)
+
+- **[1200]** ¿Quiénes llegan al lugar retirado antes que la barca?
+  - opciones: Muchos que los vieron salir y otros que se enteraron | Los discípulos de Juan | Los fariseos | Los soldados de Herodes
+  - correcta: Muchos que los vieron salir y otros que se enteraron · categoría: SUCESO
+- **[1204]** ¿Cuántos hombres había en el lugar donde Jesús alimentó a la gente?
+  - opciones: 5.000 | 4.000 | 10.000 | 12.000
+  - correcta: 5.000 · categoría: NUMERO
+- **[1205]** Contando a las mujeres y a los niños, ¿cuántas personas puede haber en total?
+  - opciones: Más de 10.000 | Menos de 5.000 | Unas 8.000 | Más de 20.000
+  - correcta: Más de 10.000 · categoría: NUMERO
+- **[1217]** ¿Qué piensa la gente que es Jesús tras alimentarlos milagrosamente?
+  - opciones: El Profeta que tenía que venir al mundo, el Mesías | Un ángel del cielo | Juan el Bautista | Un mago egipcio
+  - correcta: El Profeta que tenía que venir al mundo, el Mesías · categoría: OTRO
+- **[1218]** ¿Qué intentan hacer con Jesús la multitud y sus seguidores?
+  - opciones: Llevárselo a la fuerza y hacerlo rey | Apresarlo y llevarlo ante Pilato | Coronarlo sumo sacerdote | Obligarlo a quedarse en Galilea
+  - correcta: Llevárselo a la fuerza y hacerlo rey · categoría: SUCESO
+- **[1237]** ¿De qué ciudad llegan las pequeñas barcas que usan para ir en busca de Jesús?
+  - opciones: Tiberíades | Betsaida | Capernaúm | Magadán
+  - correcta: Tiberíades · categoría: LUGAR
+- **[1238]** ¿Qué le preguntan a Jesús cuando lo encuentran en Capernaúm?
+  - opciones: «Rabí, ¿cuándo llegaste acá?» | «¿Dónde está el pan?» | «¿Eres el Mesías?» | «¿Dónde está tu barca?»
+  - correcta: «Rabí, ¿cuándo llegaste acá?» · categoría: OTRO
+- **[1241]** ¿Qué pregunta le hacen a Jesús sobre las obras de Dios?
+  - opciones: «¿Qué debemos hacer para realizar las obras de Dios?» | «¿Cómo se obtiene el maná?» | «¿Cuándo llegaste acá?» | «¿Qué señal harás?»
+  - correcta: «¿Qué debemos hacer para realizar las obras de Dios?» · categoría: OTRO
+- **[1295]** ¿Qué clase de enfermos le llevan a Jesús en la montaña?
+  - opciones: Cojos, lisiados, ciegos y mudos | Leprosos, endemoniados y paralíticos | Sordos y ciegos solamente | Enfermos de fiebre
+  - correcta: Cojos, lisiados, ciegos y mudos · categoría: SUCESO
+- **[1303]** ¿Cuántos días llevaban las personas con Jesús sin tener qué comer?
+  - opciones: Tres | Dos | Cinco | Siete
+  - correcta: Tres · categoría: NUMERO
+- **[1306]** ¿Cuántos hombres comieron en la segunda alimentación milagrosa?
+  - opciones: Unos 4.000 | Unos 5.000 | Unos 12.000 | Unos 2.000
+  - correcta: Unos 4.000 · categoría: NUMERO
+- **[1459]** ¿Qué decían algunos durante la fiesta sobre Jesús?
+  - opciones: Que era una buena persona | Que era un rey | Que era un soldado | Que era un sacerdote
+  - correcta: Que era una buena persona · categoría: OTRO
+- **[1460]** ¿Qué decían otros sobre Jesús durante la fiesta?
+  - opciones: Que engañaba a la multitud | Que era el rey de Israel | Que era un ángel | Que era el sumo sacerdote
+  - correcta: Que engañaba a la multitud · categoría: OTRO
+- **[1468]** ¿Qué creían algunos sobre el Cristo y su origen?
+  - opciones: Que nadie sabría de dónde es | Que vendría de Galilea | Que sería de Samaria | Que sería de Egipto
+  - correcta: Que nadie sabría de dónde es · categoría: OTRO
+- **[1469]** ¿Por qué pusieron muchos su fe en Jesús?
+  - opciones: Por todos los milagros que había hecho | Por sus riquezas | Por su ejército | Por su linaje real
+  - correcta: Por todos los milagros que había hecho · categoría: SUCESO
+- **[1481]** ¿A quién creían que se referían al decir 'Este es el Profeta'?
+  - opciones: Al profeta más importante que Moisés | A Elías | A Jeremías | A Juan el Bautista
+  - correcta: Al profeta más importante que Moisés · categoría: NOMBRE
+- **[1482]** ¿De qué aldea decían las Escrituras que vendría el Cristo?
+  - opciones: Belén | Nazaret | Jerusalén | Capernaúm
+  - correcta: Belén · categoría: LUGAR
+- **[1662]** ¿Cuántas personas esperaban a Jesús fuera de la casa donde comía?
+  - opciones: Miles | Cientos | Docenas | Decenas
+  - correcta: Miles · categoría: NUMERO
+- **[1720]** ¿Qué hizo la multitud al ver las cosas tan maravillosas que hacía Jesús?
+  - opciones: Se alegró mucho | Se fue molesta | Guardó silencio | Dudó de él
+  - correcta: Se alegró mucho · categoría: SUCESO
+- **[1741]** ¿Qué decían muchos cuando oían a Jesús hablar del pastor excelente?
+  - opciones: Tiene un demonio y ha perdido la cabeza | Es un gran profeta | Es el rey de Israel | Es un maestro sabio
+  - correcta: Tiene un demonio y ha perdido la cabeza · categoría: OTRO
+- **[1742]** Según algunos, ¿qué no puede hacer un demonio?
+  - opciones: Abrirles los ojos a los ciegos | Curar a los cojos | Resucitar a los muertos | Calmar el mar
+  - correcta: Abrirles los ojos a los ciegos · categoría: SUCESO
+- **[1970]** ¿Qué preguntaron algunos al ver llorar a Jesús?
+  - opciones: Si él, que abrió los ojos al ciego, no podía haber impedido que Lázaro muriera | Si iba a resucitar a Lázaro | Si Lázaro estaba realmente muerto | Si debían quitar la piedra
+  - correcta: Si él, que abrió los ojos al ciego, no podía haber impedido que Lázaro muriera · categoría: OTRO
+- **[2203]** ¿Qué gritaba la multitud al paso de Jesús?
+  - opciones: ¡Salva, rogamos! | ¡Viva el rey! | ¡Hosanna en las alturas! | ¡Bienvenido, maestro!
+  - correcta: ¡Salva, rogamos! · categoría: SUCESO
+- **[2204]** ¿De quién decía la multitud que era el Reino que venía?
+  - opciones: Del reino de nuestro padre David | Del reino de Salomón | Del reino de Israel | Del reino de Judá
+  - correcta: Del reino de nuestro padre David · categoría: OTRO
+
+## La gente  (10 preguntas)
+
+- **[937]** ¿Qué dijo parte de la gente al ver el milagro?
+  - opciones: Un gran profeta ha surgido entre nosotros | Es el Mesías | Es un rey | Ha llegado Elías
+  - correcta: Un gran profeta ha surgido entre nosotros · categoría: OTRO
+- **[938]** ¿Qué afirmaron otros al ver vivo al joven?
+  - opciones: Dios se ha acordado de su pueblo | Este es el hijo del rey | Milagro de los sacerdotes | Ven a adorar al templo
+  - correcta: Dios se ha acordado de su pueblo · categoría: OTRO
+- **[1100]** ¿Qué le pidió la gente a Jesús tras el milagro?
+  - opciones: Que se marchara de la región | Que repitiera el milagro | Que sanara a más personas | Que les hablara
+  - correcta: Que se marchara de la región · categoría: SUCESO
+- **[1121]** ¿Qué hicieron los presentes al oír que la niña estaba dormida?
+  - opciones: Se burlaron de Jesús | Lloraron más fuerte | Se fueron | Le creyeron
+  - correcta: Se burlaron de Jesús · categoría: SUCESO
+- **[1138]** ¿Qué dijo la gente al ver al mudo hablar?
+  - opciones: Nunca se ha visto algo así en Israel | Es magia | Jesús es un profeta | Es imposible
+  - correcta: Nunca se ha visto algo así en Israel · categoría: SUCESO
+- **[1301]** ¿Qué decía la gente asombrada por los milagros de Jesús?
+  - opciones: «Es que todo lo hace bien. ¡Hasta hace oír a los sordos y hablar a los mudos!» | «Nunca hemos visto algo así» | «Es un gran profeta» | «Es el Mesías»
+  - correcta: «Es que todo lo hace bien. ¡Hasta hace oír a los sordos y hablar a los mudos!» · categoría: OTRO
+- **[1312]** Según Mateo 16:2, ¿qué dicen cuando el cielo está rojo intenso al atardecer?
+  - opciones: «Hará buen tiempo» | «Habrá tormenta» | «Hará frío» | «Lloverá»
+  - correcta: «Hará buen tiempo» · categoría: OTRO
+- **[1313]** Según Mateo 16:3, ¿qué dicen cuando el cielo está rojo intenso por la mañana?
+  - opciones: «Hoy tendremos un día frío y lluvioso» | «Hará mucho calor» | «Será un día soleado» | «Habrá viento fuerte»
+  - correcta: «Hoy tendremos un día frío y lluvioso» · categoría: OTRO
+- **[1768]** ¿Qué dijeron las personas de ese lugar sobre Juan?
+  - opciones: Juan no hizo ni un solo milagro, pero todo lo que Juan dijo acerca de este hombre era verdad | Juan fue el profeta más grande de Israel | Juan fue enviado por el rey Herodes | Juan predijo el fin del mundo
+  - correcta: Juan no hizo ni un solo milagro, pero todo lo que Juan dijo acerca de este hombre era verdad · categoría: SUCESO
+- **[4765]** ¿Qué dijo la gente al ver llorar a Jesús por Lázaro?
+  - opciones: La verdad es que Jesús quería mucho a Lázaro | Jesús tiene miedo | Jesús está triste | Jesús está cansado
+  - correcta: La verdad es que Jesús quería mucho a Lázaro · categoría: SUCESO
+
+## Hermanos  (13 preguntas)
+
+- **[7406]** ¿Alrededor de qué año hubo una época de hambre mencionada en el texto?
+  - opciones: El año 46 | El año 36 | El año 41 | El año 54
+  - correcta: El año 46 · categoría: FECHA
+- **[7409]** ¿Qué desastres naturales se mencionan en el texto como atendidos por los Comités de Socorro?
+  - opciones: Huracanes, terremotos, tsunamis y otros desastres naturales | Incendios y sequías | Inundaciones y plagas | Epidemias y guerras
+  - correcta: Huracanes, terremotos, tsunamis y otros desastres naturales · categoría: SUCESO
+- **[7422]** ¿Qué cita menciona que los cristianos se quieren como hermanos?
+  - opciones: Juan 13:34, 35; 1 Juan 3:17 | Rom. 10:11-13 | Hech. 11:29 | Prov. 10:22
+  - correcta: Juan 13:34, 35; 1 Juan 3:17 · categoría: OTRO
+- **[7424]** ¿Qué menciona Rom. 10:11-13 según el texto?
+  - opciones: Que toda raza, nacionalidad y clase social tenga la oportunidad de escuchar las buenas noticias | Que solo los judíos se salven | Que los pobres sean los primeros | Que los gentiles abandonen la fe
+  - correcta: Que toda raza, nacionalidad y clase social tenga la oportunidad de escuchar las buenas noticias · categoría: OTRO
+- **[7469]** ¿Qué creyeron algunos hermanos cuando Rode insistió en que Pedro estaba en la puerta?
+  - opciones: Que quizás era un ángel en lugar de Pedro | Que era un soldado romano | Que era un ladrón | Que estaba soñando
+  - correcta: Que quizás era un ángel en lugar de Pedro · categoría: SUCESO
+- **[7496]** ¿Qué hacían los hermanos en casa de María cuando llegó Pedro?
+  - opciones: Seguían orando con fervor aunque era muy tarde | Ya se habían dormido | Estaban cenando | Cantaban salmos
+  - correcta: Seguían orando con fervor aunque era muy tarde · categoría: SUCESO
+- **[7498]** ¿Qué cita del texto menciona que Jehová valora mucho nuestras oraciones?
+  - opciones: Heb. 13:18, 19; Sant. 5:16 | Sal. 65:2 | Prov. 10:22 | Rom. 2:11
+  - correcta: Heb. 13:18, 19; Sant. 5:16 · categoría: NUMERO
+- **[8755]** ¿Qué querían los cristianos de Tiro al rogar a Pablo que no viajara?
+  - opciones: Protegerlo de lo que se le venía encima | Que predicara en Tiro | Que se quedara a vivir | Que viajara a Roma
+  - correcta: Protegerlo de lo que se le venía encima · categoría: SUCESO
+- **[8794]** ¿Qué dijeron los hermanos al no poder convencer a Pablo?
+  - opciones: Que se haga la voluntad de Jehová | Que Dios te acompañe | Vuelve pronto | No te olvides de nosotros
+  - correcta: Que se haga la voluntad de Jehová · categoría: OTRO
+- **[8795]** ¿Qué hicieron los hermanos al oír la profecía de Ágabo?
+  - opciones: Se pusieron a suplicarle que no subiera a Jerusalén | Lo felicitaron | Organizaron una fiesta | Lo acompañaron al templo
+  - correcta: Se pusieron a suplicarle que no subiera a Jerusalén · categoría: SUCESO
+- **[8806]** ¿Qué bienvenida dieron los hermanos de Jerusalén a Pablo?
+  - opciones: Los recibieron con alegría | Los recibieron con dudas | Los ignoraron | Los escondieron
+  - correcta: Los recibieron con alegría · categoría: OTRO
+- **[8811]** ¿Quiénes acompañaron a Pablo hasta Jerusalén desde Cesarea?
+  - opciones: Algunos cristianos de Cesarea | Los soldados romanos | Los ancianos de Tiro | Los discípulos de Jope
+  - correcta: Algunos cristianos de Cesarea · categoría: SUCESO
+- **[8865]** ¿Qué hizo el grupo entero de Tiro al despedirse?
+  - opciones: Se arrodilló en la playa y oraron juntos | Cantó himnos | Comió junto al mar | Repartió regalos
+  - correcta: Se arrodilló en la playa y oraron juntos · categoría: SUCESO
+
+## Leprosos  (11 preguntas)
+
+- **[1993]** ¿Qué puede causar poco a poco la lepra en algunos casos, según el archivo?
+  - opciones: La pérdida de tejidos como dedos u orejas | La pérdida de la vista | La pérdida de la voz | La pérdida del cabello
+  - correcta: La pérdida de tejidos como dedos u orejas · categoría: OTRO
+- **[1994]** ¿Qué exige la Ley de Dios que griten los leprosos?
+  - opciones: ¡Impuro, impuro! | ¡Aléjense de mí! | ¡Socorro, socorro! | ¡Pecador, pecador!
+  - correcta: ¡Impuro, impuro! · categoría: SUCESO
+- **[1995]** ¿Por qué los 10 leprosos se quedaban a cierta distancia de Jesús?
+  - opciones: Porque la Ley exigía que vivieran aislados | Porque tenían miedo de Jesús | Porque esperaban a los sacerdotes | Porque aún no lo reconocían
+  - correcta: Porque la Ley exigía que vivieran aislados · categoría: SUCESO
+- **[1996]** ¿Qué le gritaron los 10 leprosos a Jesús?
+  - opciones: ¡Jesús, Maestro, ten compasión de nosotros! | ¡Jesús, sánanos ahora! | ¡Jesús, acércate a nosotros! | ¡Jesús, no nos abandones!
+  - correcta: ¡Jesús, Maestro, ten compasión de nosotros! · categoría: SUCESO
+- **[1999]** ¿Qué empezaron a notar los leprosos por el camino hacia los sacerdotes?
+  - opciones: Que la lepra había desaparecido | Que sus llagas empeoraban | Que se sentían más débiles | Que perdían la vista
+  - correcta: Que la lepra había desaparecido · categoría: SUCESO
+- **[4573]** Â¿QuÃ© gritaban los leprosos?
+  - opciones: JesÃºs, ayÃºdanos | LÃ­branos del templo | Danos comida | Sana a nuestros hijos
+  - correcta: JesÃºs, ayÃºdanos · categoría: SUCESO
+- **[4574]** Â¿QuÃ© decÃ­a la Ley de JehovÃ¡ sobre los leprosos que se curaban?
+  - opciones: Que tenÃ­an que ir al templo | Que debÃ­an quedarse en casa | Que tenÃ­an que mudarse | Que debÃ­an dar gracias al rey
+  - correcta: Que tenÃ­an que ir al templo · categoría: SUCESO
+- **[4575]** Â¿CuÃ¡ndo se curaron los leprosos?
+  - opciones: Mientras iban al templo | En el momento que gritaron | Cuando llegaron al pueblo | Al dÃ­a siguiente
+  - correcta: Mientras iban al templo · categoría: SUCESO
+- **[4576]** Â¿CuÃ¡ntos de los 10 leprosos le dieron las gracias a JesÃºs?
+  - opciones: Solo uno | Todos | Cinco | Ninguno
+  - correcta: Solo uno · categoría: NUMERO
+- **[4577]** Â¿QuÃ© hizo el leproso que se curÃ³ y regresÃ³?
+  - opciones: Le dio las gracias a JesÃºs y alabÃ³ a Dios | Le contÃ³ a todo el pueblo | Lo invitÃ³ a su casa | Se quedÃ³ en el templo
+  - correcta: Le dio las gracias a JesÃºs y alabÃ³ a Dios · categoría: SUCESO
+- **[4616]** Â¿QuÃ© estaba prohibido que hicieran los leprosos?
+  - opciones: Acercarse a las personas | Entrar en las ciudades | Hablar en voz alta | Comer carne
+  - correcta: Acercarse a las personas · categoría: SUCESO
+
+## Los tres hebreos  (11 preguntas)
+
+- **[6036]** ¿Qué nombres les pusieron los babilonios a Hananías, Misael y Azarías?
+  - opciones: Sadrac, Mesac y Abednego | Daniel y sus amigos | Pedro y Juan | Sabios y escribas
+  - correcta: Sadrac, Mesac y Abednego · categoría: NOMBRE
+- **[6037]** ¿Cuáles eran los nombres hebreos de Sadrac, Mesac y Abednego?
+  - opciones: Hananías, Misael y Azarías | Daniel, Ester y Mardoqueo | Nehemías y Esdras | José y María
+  - correcta: Hananías, Misael y Azarías · categoría: NOMBRE
+- **[6038]** ¿Dónde vivían los tres hebreos?
+  - opciones: En Babilonia | En Jerusalén | En Susa | En Egipto
+  - correcta: En Babilonia · categoría: LUGAR
+- **[6039]** ¿De quién eran muy amigos los tres hebreos?
+  - opciones: De Daniel | De Nehemías | De Ester | De Esdras
+  - correcta: De Daniel · categoría: SUCESO
+- **[6044]** ¿Qué debían hacer todos cuando empezara la música?
+  - opciones: Caer de rodillas y adorar la estatua | Cantar una canción | Firmar un documento | Levantar la mano
+  - correcta: Caer de rodillas y adorar la estatua · categoría: SUCESO
+- **[6045]** ¿Por qué los tres hebreos no adoraron la estatua?
+  - opciones: Sabían que Jehová prohíbe la idolatría | No les gustaba la música | Estaban dormidos | No veían bien
+  - correcta: Sabían que Jehová prohíbe la idolatría · categoría: DOCTRINA
+- **[6046]** ¿Qué hicieron los tres jóvenes mientras todos se arrodillaban?
+  - opciones: Se quedaron de pie | Se arrodillaron también | Huyeron corriendo | Se escondieron
+  - correcta: Se quedaron de pie · categoría: SUCESO
+- **[6047]** ¿Qué hicieron un grupo de caldeos con los tres jóvenes?
+  - opciones: Los acusaron y calumniaron | Los ayudaron | Los escondieron | Los elogiaron
+  - correcta: Los acusaron y calumniaron · categoría: SUCESO
+- **[6049]** ¿Qué le respondieron los tres hebreos al rey sobre servir a otros dioses?
+  - opciones: Que no servirían a sus dioses ni adorarían la estatua | Que lo decidiría su Dios | Que primero orarían | Que necesitaban tiempo
+  - correcta: Que no servirían a sus dioses ni adorarían la estatua · categoría: DOCTRINA
+- **[6054]** ¿En qué estado salieron los tres hebreos del horno?
+  - opciones: Intactos y sin oler a humo | Quemados pero vivos | Con la ropa destruida | Débiles y asustados
+  - correcta: Intactos y sin oler a humo · categoría: SUCESO
+- **[6059]** ¿Qué cualidades de los tres hebreos se sugieren imitar cuando se nos persigue?
+  - opciones: Humildad, apacibilidad y lealtad | Riqueza y poder | Fuerza y astucia | Miedo y silencio
+  - correcta: Humildad, apacibilidad y lealtad · categoría: LECCION
+
+## Mujer / La mujer / Mujeres  (24 preguntas)
+
+- **[985]** ¿Cómo era conocida la mujer que entró en la casa de Simón?
+  - opciones: Conocida en la ciudad como pecadora | Conocida como profetisa | Conocida como rica | Conocida como sabia
+  - correcta: Conocida en la ciudad como pecadora · categoría: NOMBRE
+- **[986]** Según el texto, ¿qué era probablemente la mujer que entró en la casa de Simón?
+  - opciones: Una prostituta | Una viuda | Una reina | Una sacerdotisa
+  - correcta: Una prostituta · categoría: OTRO
+- **[987]** ¿Con qué seca la mujer las lágrimas que caen sobre los pies de Jesús?
+  - opciones: Con su cabello | Con un paño | Con sus manos | Con su manto
+  - correcta: Con su cabello · categoría: SUCESO
+- **[988]** ¿Qué derrama la mujer sobre los pies de Jesús?
+  - opciones: Un aceite perfumado | Agua fría | Vino | Leche
+  - correcta: Un aceite perfumado · categoría: SUCESO
+- **[994]** ¿Por qué quedan perdonados los muchos pecados de la mujer?
+  - opciones: Porque amó mucho | Porque dio mucho dinero | Porque ayunó | Porque era rica
+  - correcta: Porque amó mucho · categoría: SUCESO
+- **[995]** ¿Qué le dice Jesús a la mujer al despedirla?
+  - opciones: Tus pecados quedan perdonados... Tu fe te ha salvado. Vete en paz | Vuelve a tu casa | No peques más | Sígueme
+  - correcta: Tus pecados quedan perdonados... Tu fe te ha salvado. Vete en paz · categoría: OTRO
+- **[1284]** ¿De qué origen era la mujer que le suplicó a Jesús?
+  - opciones: Griego | Romano | Samaritano | Etiope
+  - correcta: Griego · categoría: OTRO
+- **[1285]** ¿Cómo llama la mujer fenicia a Jesús en su súplica?
+  - opciones: «Hijo de David» | «Hijo de José» | «El Santo de Dios» | «El Mesías»
+  - correcta: «Hijo de David» · categoría: NOMBRE
+- **[1289]** ¿Qué respondió la mujer sobre los perritos?
+  - opciones: «Comen de las migajas que caen de la mesa de sus dueños» | «No merecen nada» | «Deben comer fuera» | «Están sucios»
+  - correcta: «Comen de las migajas que caen de la mesa de sus dueños» · categoría: OTRO
+- **[1291]** ¿Qué encuentra la mujer al regresar a su casa?
+  - opciones: A su hija curada en la cama y al demonio ido | La casa vacía | A su hija llorando | Al demonio esperándola
+  - correcta: A su hija curada en la cama y al demonio ido · categoría: SUCESO
+- **[1843]** ¿Cuántas monedas de dracma tenía la mujer de la parábola de la moneda perdida?
+  - opciones: Cinco | Diez | Doce | Veinte
+  - correcta: Diez · categoría: NUMERO
+- **[1844]** ¿Cuántas monedas de dracma perdió la mujer de la parábola?
+  - opciones: Una | Dos | Tres | Cinco
+  - correcta: Una · categoría: NUMERO
+- **[1845]** ¿Qué hizo la mujer para buscar la moneda perdida?
+  - opciones: Encendió una lámpara y barrió su casa buscándola con cuidado | Pidió ayuda a los vecinos | Compró otra | Esperó a que la encontraran
+  - correcta: Encendió una lámpara y barrió su casa buscándola con cuidado · categoría: SUCESO
+- **[1846]** ¿Qué moneda había perdido la mujer de la parábola?
+  - opciones: Un denario | Una moneda de dracma | Un talento | Un centavo
+  - correcta: Una moneda de dracma · categoría: MONEDA
+- **[2863]** ¿Qué pregunta se hacen las mujeres camino a la tumba?
+  - opciones: ¿Quién nos moverá la piedra de la entrada? | ¿Dónde está el guardia? | ¿Qué le diremos a Pedro? | ¿Dónde compramos especias?
+  - correcta: ¿Quién nos moverá la piedra de la entrada? · categoría: SUCESO
+- **[2864]** ¿Qué encuentran las mujeres cuando llegan a la tumba el domingo?
+  - opciones: La piedra movida y la tumba vacía | La tumba cerrada | A los soldados dormidos | El cuerpo de Jesús
+  - correcta: La piedra movida y la tumba vacía · categoría: SUCESO
+- **[2865]** ¿Qué había hecho el ángel de Dios con la piedra de la tumba?
+  - opciones: La había hecho rodar | La había roto | La había pintado | La había sellado
+  - correcta: La había hecho rodar · categoría: SUCESO
+- **[2871]** ¿Cómo se sienten las mujeres al salir corriendo de la tumba?
+  - opciones: Asustadas pero rebosantes de felicidad | Tristes y confundidas | Enojadas | Indiferentes
+  - correcta: Asustadas pero rebosantes de felicidad · categoría: OTRO
+- **[2876]** ¿Qué les dice Jesús a las mujeres cuando se encuentra con ellas?
+  - opciones: ¡Hola! | ¡Vengan conmigo! | ¡No teman! | ¡Vuelvan pronto!
+  - correcta: ¡Hola! · categoría: OTRO
+- **[2901]** ¿Qué se preparaban a aplicar al cuerpo de Jesús después del sábado?
+  - opciones: Especias aromáticas y aceites perfumados | Vino y miel | Sal y agua | Lino y mirra
+  - correcta: Especias aromáticas y aceites perfumados · categoría: SUCESO
+- **[3400]** ¿Qué instrumentos tocaban las mujeres mientras bailaban?
+  - opciones: Panderetas | Arpas | Trompetas | Tambores
+  - correcta: Panderetas · categoría: OTRO
+- **[4578]** Â¿CuÃ¡ntos aÃ±os llevaba enferma la mujer que tocÃ³ la ropa de JesÃºs?
+  - opciones: 12 aÃ±os | 10 aÃ±os | 20 aÃ±os | 5 aÃ±os
+  - correcta: 12 aÃ±os · categoría: NUMERO
+- **[4579]** Â¿QuÃ© hizo la mujer enferma para acercarse a JesÃºs?
+  - opciones: Se metiÃ³ entre la gente y le tocÃ³ el borde de su ropa | LlamÃ³ a JesÃºs desde lejos | MandÃ³ a alguien a pedir ayuda | EsperÃ³ a que JesÃºs la viera
+  - correcta: Se metiÃ³ entre la gente y le tocÃ³ el borde de su ropa · categoría: SUCESO
+- **[4580]** Â¿QuÃ© pasÃ³ con la mujer en el momento que tocÃ³ la ropa de JesÃºs?
+  - opciones: Se curÃ³ | Se desmayÃ³ | EmpezÃ³ a temblar | Se puso a llorar
+  - correcta: Se curÃ³ · categoría: SUCESO
+
+## Testigos  (9 preguntas)
+
+- **[8145]** En un país donde estaban prohibidas las actividades, ¿qué parte de los Testigos había aprendido la verdad en prisión?
+  - opciones: Casi la mitad | Casi la cuarta parte | Casi todos | Casi ninguna
+  - correcta: Casi la mitad · categoría: NUMERO
+- **[8206]** Según el texto, ¿dónde cuentan mentiras acerca de los Testigos con tal de avivar la oposición?
+  - opciones: En las escuelas y lugares de trabajo | En las iglesias y templos | En el gobierno y el ejército | En el campo y la montaña
+  - correcta: En las escuelas y lugares de trabajo · categoría: OTRO
+- **[8207]** ¿Qué dicen los enemigos en los tribunales de algunos países sobre los Testigos?
+  - opciones: "Esos Testigos están perturbando la paz y enseñando costumbres que nosotros no podemos aceptar" | "Esos Testigos son los mejores ciudadanos" | "Esos Testigos pagan muchos impuestos" | "Esos Testigos no existen"
+  - correcta: "Esos Testigos están perturbando la paz y enseñando costumbres que nosotros no podemos aceptar" · categoría: SUCESO
+- **[8238]** Según el texto, ¿cómo responden los cristianos verdaderos cuando hay persecución?
+  - opciones: Evitan enfrentamientos y buscan predicar de forma pacífica | Atacan a sus enemigos | Se esconden para siempre | Abandonan la fe
+  - correcta: Evitan enfrentamientos y buscan predicar de forma pacífica · categoría: OTRO
+- **[9456]** ¿En cuántos países y territorios hacen discípulos los Testigos hoy?
+  - opciones: 240 | 150 | 200 | 300
+  - correcta: 240 · categoría: NUMERO
+- **[9464]** ¿En cuántos países y territorios trabajan voluntariamente miles de Testigos en la traducción de publicaciones?
+  - opciones: Más de 150 | Más de 200 | Más de 100 | Más de 300
+  - correcta: Más de 150 · categoría: NUMERO
+- **[9484]** ¿En cuántos idiomas proclaman las buenas noticias los Testigos hoy?
+  - opciones: Cientos de idiomas | Doce idiomas | Unos cincuenta | Dos idiomas
+  - correcta: Cientos de idiomas · categoría: NUMERO
+- **[9488]** ¿Qué hacen los Testigos de Jehová hoy según el texto?
+  - opciones: Continúan la obra que iniciaron los cristianos del siglo primero | Han dejado de predicar | Solo predican en Jerusalén | Predican solo a los judíos
+  - correcta: Continúan la obra que iniciaron los cristianos del siglo primero · categoría: SUCESO
+- **[9492]** ¿Qué don milagroso no tienen hoy los Testigos, según el texto?
+  - opciones: El de hablar en lenguas | El de curar | El de resucitar | El de profetizar
+  - correcta: El de hablar en lenguas · categoría: OTRO
+
+## Testigos de Jehová  (6 preguntas)
+
+- **[9087]** ¿Qué usan los testigos de Jehová cuando sus enemigos les causan "problemas en nombre de la ley"?
+  - opciones: Los medios legales a su alcance | La fuerza | La protesta | La huida
+  - correcta: Los medios legales a su alcance · categoría: SUCESO
+- **[9155]** ¿En qué fecha el Tribunal Supremo de Estados Unidos anuló sentencias contra Testigos detenidos en Griffin (Georgia)?
+  - opciones: El 28 de marzo de 1938 | El 25 de mayo de 1993 | El 8 de enero de 2003 | El 28 de marzo de 1998
+  - correcta: El 28 de marzo de 1938 · categoría: FECHA
+- **[9156]** ¿En qué localidad de Georgia fueron detenidos los Testigos exonerados por el Tribunal Supremo de EE. UU.?
+  - opciones: Griffin | Atlanta | Savannah | Augusta
+  - correcta: Griffin · categoría: LUGAR
+- **[9157]** ¿Qué hicieron los testigos de Jehová tras la sentencia de 1938 por primera vez?
+  - opciones: Presentar apelaciones ante el Tribunal Supremo | Dejar de predicar | Pagar multas | Abandonar el país
+  - correcta: Presentar apelaciones ante el Tribunal Supremo · categoría: SUCESO
+- **[9160]** ¿En qué número de la revista ¡Despertad! se menciona el reportaje sobre la libertad de expresión?
+  - opciones: Del 8 de enero de 2003, páginas 3 a 11 | Del 28 de marzo de 1938 | Del 25 de mayo de 1993 | Del 8 de enero de 2003, páginas 1 a 5
+  - correcta: Del 8 de enero de 2003, páginas 3 a 11 · categoría: FECHA
+- **[9161]** ¿Qué afirmó el texto sobre los casos ganados por los Testigos en el tribunal europeo?
+  - opciones: Ninguna otra organización ha ganado tantos casos | Algunas organizaciones ganaron más | Fueron pocas las victorias | Perdieron la mayoría
+  - correcta: Ninguna otra organización ha ganado tantos casos · categoría: OTRO
+
+## El experto en la Ley  (7 preguntas)
+
+- **[1587]** ¿Quién le preguntó a Jesús qué tenía que hacer para heredar la vida eterna?
+  - opciones: Un experto en la Ley | Un fariseo | Un samaritano | Un sacerdote
+  - correcta: Un experto en la Ley · categoría: NOMBRE
+- **[1588]** ¿Con qué intención le hizo la pregunta el experto en la Ley a Jesús?
+  - opciones: Para ponerlo a prueba | Para aprender de él | Para seguir sus enseñanzas | Para defenderlo
+  - correcta: Para ponerlo a prueba · categoría: SUCESO
+- **[1589]** ¿En qué escritos basó el hombre su respuesta sobre amar a Dios?
+  - opciones: Deuteronomio 6:5 y Levítico 19:18 | Éxodo 20 y Deuteronomio 5 | Génesis 1 y Salmo 23 | Miqueas 6:8 y Salmo 1
+  - correcta: Deuteronomio 6:5 y Levítico 19:18 · categoría: OTRO
+- **[1590]** ¿Qué le dijo Jesús al hombre por su respuesta sobre la Ley?
+  - opciones: Contestaste correctamente; sigue haciendo eso y conseguirás la vida | No es suficiente | Estás equivocado | Vuelve a estudiarla
+  - correcta: Contestaste correctamente; sigue haciendo eso y conseguirás la vida · categoría: OTRO
+- **[1591]** ¿Qué segunda pregunta hizo el experto en la Ley?
+  - opciones: ¿Quién es en realidad mi prójimo? | ¿Cuál es el camino al cielo? | ¿Dónde está el Reino? | ¿Cuántas veces hay que perdonar?
+  - correcta: ¿Quién es en realidad mi prójimo? · categoría: SUCESO
+- **[1608]** ¿Cómo respondió el hombre a la pregunta de cuál de los tres se hizo prójimo?
+  - opciones: El que lo trató con compasión | El samaritano | El sacerdote | El levita
+  - correcta: El que lo trató con compasión · categoría: SUCESO
+- **[1654]** ¿Quién protestó diciendo: Maestro, diciendo esto nos insultas a nosotros también?
+  - opciones: Un experto en la Ley | Un fariseo | Un sacerdote | Un discípulo
+  - correcta: Un experto en la Ley · categoría: NOMBRE
+
+## El padre  (7 preguntas)
+
+- **[1855]** ¿Cuántos hijos tenía el hombre de la parábola del hijo perdido?
+  - opciones: Uno | Dos | Tres | Cuatro
+  - correcta: Dos · categoría: SUCESO
+- **[1859]** ¿Qué hizo el padre cuando su hijo menor le pidió la herencia?
+  - opciones: Lo echó de casa | Repartió sus bienes entre los dos hijos | Lo castigó | Le negó la herencia
+  - correcta: Repartió sus bienes entre los dos hijos · categoría: SUCESO
+- **[1868]** ¿Cómo reaccionó el padre cuando vio a su hijo venir de lejos?
+  - opciones: Corrió a su encuentro, lo abrazó y lo besó con ternura | Se enojó | Lo ignoró | Lo reprendió
+  - correcta: Corrió a su encuentro, lo abrazó y lo besó con ternura · categoría: SUCESO
+- **[1870]** ¿Qué les ordenó el padre a sus esclavos para vestir a su hijo?
+  - opciones: Sacar una túnica larga, la mejor, un anillo y sandalias | Ropa sencilla | Una corona | Un manto de luto
+  - correcta: Sacar una túnica larga, la mejor, un anillo y sandalias · categoría: SUCESO
+- **[1871]** ¿Qué animal mandó matar el padre para la celebración?
+  - opciones: El ternero engordado | Un cordero | Un cabrito | Una oveja
+  - correcta: El ternero engordado · categoría: SUCESO
+- **[1872]** ¿Qué dijo el padre de su hijo que estaba perdido?
+  - opciones: Estaba muerto y ha vuelto a vivir, estaba perdido y ha sido encontrado | Estaba enfermo y se curó | Se había ido y volvió | Estaba lejos y regresó
+  - correcta: Estaba muerto y ha vuelto a vivir, estaba perdido y ha sido encontrado · categoría: OTRO
+- **[1878]** ¿Qué le dijo el padre al hijo mayor para suplicarle que entrara?
+  - opciones: Hijo mío, tú siempre has estado conmigo, y todo lo que tengo es tuyo | Entra o perderás tu herencia | No seas terco | Te daré un cabrito
+  - correcta: Hijo mío, tú siempre has estado conmigo, y todo lo que tengo es tuyo · categoría: OTRO
+
+## Esclavo  (6 preguntas)
+
+- **[1404]** ¿Cuánto le debía el primer esclavo al rey?
+  - opciones: 10.000 talentos | 100 denarios | 100 talentos | 10.000 denarios
+  - correcta: 10.000 talentos · categoría: MONEDA
+- **[1405]** ¿A cuántos denarios equivalían los 10.000 talentos?
+  - opciones: 60 millones de denarios | 60.000 denarios | 600 denarios | 6 millones de denarios
+  - correcta: 60 millones de denarios · categoría: MONEDA
+- **[1407]** ¿Qué le dijo el esclavo al rey al suplicarle?
+  - opciones: «Ten paciencia conmigo y te lo pagaré todo» | «No tengo nada» | «Ya te pagué» | «Mátame antes»
+  - correcta: «Ten paciencia conmigo y te lo pagaré todo» · categoría: OTRO
+- **[1409]** ¿Cuánto le debía el compañero al esclavo que había sido perdonado?
+  - opciones: 100 denarios | 100 talentos | 10 denarios | 10.000 denarios
+  - correcta: 100 denarios · categoría: MONEDA
+- **[1410]** ¿Cómo trató el esclavo perdonado a su compañero que le debía poco?
+  - opciones: Lo agarró y comenzó a estrangularlo | Lo perdonó | Lo abrazó | Lo ignoró
+  - correcta: Lo agarró y comenzó a estrangularlo · categoría: SUCESO
+- **[1411]** ¿Qué hizo finalmente el esclavo con su compañero?
+  - opciones: Lo hizo meter en prisión | Lo vendió | Lo mató | Lo desterró
+  - correcta: Lo hizo meter en prisión · categoría: SUCESO
+
+## VARIOS  (6 preguntas)
+
+- **[5205]** ¿En qué año salieron los israelitas de Egipto?
+  - opciones: 1513 a. e. c. | 1473 a. e. c. | 1728 a. e. c. | 1943 a. e. c.
+  - correcta: 1513 a. e. c. · categoría: FECHA
+- **[5206]** ¿En qué año entraron los israelitas en Canaán?
+  - opciones: 1473 a. e. c. | 1513 a. e. c. | 1943 a. e. c. | 4026 a. e. c.
+  - correcta: 1473 a. e. c. · categoría: FECHA
+- **[5208]** ¿Qué potencia mundial se menciona hacia el año 1600 a. e. c.?
+  - opciones: Egipto | Babilonia | Asiria | Persia
+  - correcta: Egipto · categoría: FECHA
+- **[5209]** ¿Cuántos siglos abarca el viaje a través de esta sección?
+  - opciones: 22 siglos | 12 siglos | 30 siglos | 10 siglos
+  - correcta: 22 siglos · categoría: OTRO
+- **[5210]** Aunque la línea de tiempo fusiona la vida de varios personajes, ¿cuántos años representa ese periodo?
+  - opciones: 330 años | 100 años | 50 años | 40 años
+  - correcta: 330 años · categoría: OTRO
+- **[5213]** ¿Cuál de los siguientes NO se menciona entre los personajes valientes de esta sección?
+  - opciones: Job | Rahab | Débora | Gedeón
+  - correcta: Job · categoría: NOMBRE

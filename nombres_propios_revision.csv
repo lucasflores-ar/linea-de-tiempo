@@ -1,0 +1,834 @@
+﻿tipo,nombre_base,variantes,apariciones,problema,categoria,fuente
+persona,JESUS,Jesus | JESUS | JESÚS | Jesús,1872,sin_tilde,DOCTRINA; EDAD; FECHA; LECCION; LUGAR; MEDIDA; MONEDA; NOMBRE; NUMERO; OTRO; PARENTESCO; SUCESO; Siglo primero,hechos_biblicos.csv; personajes_biblicos.csv; preguntas.personaje
+persona,Pablo,PABLO | Pablo,1148,,FECHA; LECCION; LUGAR; MEDIDA; NOMBRE; NUMERO; OTRO; SUCESO; Siglo primero,hechos_biblicos.csv; personajes_biblicos.csv; preguntas.personaje
+persona,DAVID,DAVID | David,177,,EDAD; FECHA; LECCION; LUGAR; NOMBRE; NUMERO; OTRO; PARENTESCO; SUCESO; Un solo reino,hechos_biblicos.csv; personajes_biblicos.csv; preguntas.personaje
+persona,Saulo,Saulo | SAULO,141,,EDAD; FECHA; LECCION; LUGAR; NOMBRE; NUMERO; OTRO; PARENTESCO; SUCESO,hechos_biblicos.csv; preguntas.personaje
+persona,JehovÃ¡,JehovÃ¡ | Jehová | JEHOVA | JEHOVÁ,139,mojibake,DOCTRINA; FECHA; LECCION; LUGAR; NOMBRE; NUMERO; OTRO; PARENTESCO; SUCESO,hechos_biblicos.csv; preguntas.personaje
+persona,José,JOSE | JOSÉ | José,126,sin_tilde,Después del Diluvio; EDAD; LECCION; LUGAR; MONEDA; NOMBRE; NUMERO; OTRO; PARENTESCO; SUCESO,hechos_biblicos.csv; personajes_biblicos.csv; preguntas.personaje
+persona,Moisés,MOISES | Moisés,100,sin_tilde,DOCTRINA; Después del Diluvio; EDAD; FECHA; LECCION; LUGAR; NOMBRE; NUMERO; OTRO; PARENTESCO; SUCESO,hechos_biblicos.csv; personajes_biblicos.csv; preguntas.personaje
+persona,Esteban,ESTEBAN | Esteban,97,,DOCTRINA; FECHA; LECCION; LUGAR; NOMBRE; NUMERO; OTRO; SUCESO; Siglo primero,hechos_biblicos.csv; personajes_biblicos.csv; preguntas.personaje
+persona,ELIAS,Elías | ELIAS | Eliás,95,sin_tilde,LECCION; LUGAR; NOMBRE; NUMERO; OTRO; PARENTESCO; Profetas; SUCESO,hechos_biblicos.csv; personajes_biblicos.csv; preguntas.personaje
+persona,JesÃºs,JesÃºs,92,mojibake,EDAD; FECHA; LUGAR; NOMBRE; NUMERO; OTRO; SUCESO,preguntas.personaje
+persona,MARIA,MARIA | María | MARÍA,92,sin_tilde,DOCTRINA; EDAD; FECHA; LECCION; LUGAR; NOMBRE; NUMERO; OTRO; PARENTESCO; SUCESO,hechos_biblicos.csv; preguntas.personaje
+persona,Felipe,FELIPE | Felipe,81,,FECHA; LUGAR; NOMBRE; NUMERO; OTRO; PARENTESCO; SUCESO,hechos_biblicos.csv; preguntas.personaje
+persona,JUAN EL BAUTISTA,JUAN EL BAUTISTA | Juan el Bautista,78,,DOCTRINA; EDAD; FECHA; LECCION; LUGAR; NOMBRE; NUMERO; OTRO; PARENTESCO; SUCESO; Siglo primero,hechos_biblicos.csv; personajes_biblicos.csv; preguntas.personaje
+persona,NABUCODONOSOR,Nabucodonosor | NABUCODONOSOR,71,,DOCTRINA; FECHA; LECCION; LUGAR; NOMBRE; NUMERO; OTRO; SUCESO,hechos_biblicos.csv; preguntas.personaje
+persona,Abrahán,Abrahán | ABRAHÁN | ABRAHAN,69,sin_tilde,DOCTRINA; Después del Diluvio; EDAD; FECHA; LECCION; LUGAR; MEDIDA; NOMBRE; NUMERO; OTRO; PARENTESCO; SUCESO,hechos_biblicos.csv; personajes_biblicos.csv; preguntas.personaje
+persona,Jacob,JACOB | Jacob,61,,DOCTRINA; Después del Diluvio; EDAD; FECHA; LECCION; LUGAR; MONEDA; NOMBRE; NUMERO; OTRO; PARENTESCO; SUCESO,hechos_biblicos.csv; personajes_biblicos.csv; preguntas.personaje
+persona,1 CORINTIOS,1 CORINTIOS,60,,FECHA; LUGAR; NOMBRE; NUMERO; OTRO; PARENTESCO; SUCESO,preguntas.personaje
+persona,Bernabé,BERNABÉ | Bernabé | BERNABE,60,sin_tilde,DOCTRINA; FECHA; LECCION; LUGAR; NOMBRE; NUMERO; OTRO; PARENTESCO; SUCESO,hechos_biblicos.csv; preguntas.personaje
+persona,SALOMÓN,SALOMON | Salomón | SALOMÓN,53,sin_tilde,EDAD; FECHA; LUGAR; MEDIDA; NOMBRE; NUMERO; OTRO; PARENTESCO; SUCESO; Un solo reino,hechos_biblicos.csv; personajes_biblicos.csv; preguntas.personaje
+persona,1 JUAN,1 JUAN,50,,FECHA; LUGAR; NOMBRE; NUMERO; OTRO; SUCESO,preguntas.personaje
+persona,CALEB,CALEB | Caleb,50,,DOCTRINA; Después del Diluvio; EDAD; FECHA; LECCION; LUGAR; NOMBRE; SUCESO,hechos_biblicos.csv; personajes_biblicos.csv; preguntas.personaje
+persona,Noé,NOÉ | Noé | NOE,50,sin_tilde,Antes del Diluvio; DETALLE; DOCTRINA; EDAD; FECHA; LECCION; LUGAR; MEDIDA; NOMBRE; NUMERO; OTRO; PARENTESCO; SUCESO,hechos_biblicos.csv; personajes_biblicos.csv; preguntas.personaje
+persona,EZEQUÍAS,EZEQUÍAS | EZEQUIAS | Ezequías,49,sin_tilde,EDAD; LECCION; LUGAR; MONEDA; NOMBRE; NUMERO; OTRO; PARENTESCO; Reyes de Judá; SUCESO,hechos_biblicos.csv; personajes_biblicos.csv; preguntas.personaje
+persona,Sansón,Sansón,48,,FECHA; LUGAR; MONEDA; NOMBRE; NUMERO; OTRO; PARENTESCO; SUCESO,hechos_biblicos.csv; preguntas.personaje
+persona,ELISEO,Eliseo | ELISEO,47,,DOCTRINA; LECCION; LUGAR; NOMBRE; NUMERO; Profetas; SUCESO,hechos_biblicos.csv; personajes_biblicos.csv; preguntas.personaje
+persona,JOSÍAS,JOSIAS | JOSÍAS | Josías,44,sin_tilde,DOCTRINA; EDAD; LUGAR; NOMBRE; NUMERO; OTRO; PARENTESCO; Reyes de Judá; SUCESO,hechos_biblicos.csv; personajes_biblicos.csv; preguntas.personaje
+persona,2 TIMOTEO,2 TIMOTEO,43,,FECHA; LUGAR; NOMBRE; NUMERO; OTRO; PARENTESCO; SUCESO,preguntas.personaje
+persona,Pilato,Pilato,43,,NOMBRE; NUMERO; OTRO; SUCESO,hechos_biblicos.csv; preguntas.personaje
+persona,Cornelio,CORNELIO | Cornelio,42,,FECHA; LUGAR; MEDIDA; NOMBRE; NUMERO; OTRO; PARENTESCO; SUCESO,hechos_biblicos.csv; preguntas.personaje
+persona,JEHOIADA,JEHOIADA | Jehoiadá,41,sin_tilde,DOCTRINA; EDAD; LECCION; LUGAR; NOMBRE; NUMERO; OTRO; PARENTESCO; Reino dividido; SUCESO,personajes_biblicos.csv; preguntas.personaje
+persona,EL CANTAR DE LOS CANTARES,EL CANTAR DE LOS CANTARES,38,,FECHA; LUGAR; NOMBRE; NUMERO; OTRO; SUCESO,preguntas.personaje
+persona,Gedeón,Gedeón,38,,LECCION; LUGAR; NUMERO; OTRO; SUCESO; Época de los jueces,hechos_biblicos.csv; personajes_biblicos.csv; preguntas.personaje
+persona,NAAMAN,Naamán | NAAMAN,38,sin_tilde,DOCTRINA; LECCION; LUGAR; NOMBRE; NUMERO; OTRO; PARENTESCO; SUCESO,hechos_biblicos.csv; preguntas.personaje
+persona,RAHAB,Rahab | RAHAB,37,,DOCTRINA; Después del Diluvio; FECHA; LECCION; LUGAR; NOMBRE; NUMERO; OTRO; PARENTESCO; SUCESO,hechos_biblicos.csv; personajes_biblicos.csv; preguntas.personaje
+persona,JONATÁN,JONATÁN | Jonatán,36,,DOCTRINA; EDAD; LECCION; NOMBRE; NUMERO; OTRO; PARENTESCO; SUCESO; Un solo reino,hechos_biblicos.csv; personajes_biblicos.csv; preguntas.personaje
+persona,2 CORINTIOS,2 CORINTIOS,35,,FECHA; LUGAR; NOMBRE; NUMERO; OTRO; SUCESO,preguntas.personaje
+persona,AGEO,AGEO,35,,FECHA; LUGAR; NOMBRE; NUMERO; OTRO; SUCESO,preguntas.personaje
+persona,Lidia,LIDIA | Lidia,35,,FECHA; LUGAR; MEDIDA; NOMBRE; NUMERO; OTRO; SUCESO,preguntas.personaje
+persona,MARIA MAGDALENA,MARIA MAGDALENA | María Magdalena | MARÍA MAGDALENA,35,sin_tilde,FECHA; LECCION; LUGAR; NOMBRE; NUMERO; OTRO; SUCESO,hechos_biblicos.csv; preguntas.personaje
+persona,2 PEDRO,2 PEDRO,33,,FECHA; LUGAR; NOMBRE; NUMERO; OTRO; SUCESO,preguntas.personaje
+persona,JEZABEL,Jezabel | JEZABEL,33,,LUGAR; NOMBRE; NUMERO; OTRO; PARENTESCO; SUCESO,hechos_biblicos.csv; preguntas.personaje
+persona,SAÚL,SAUL | Saúl | SAÚL,33,sin_tilde,LUGAR; NOMBRE; NUMERO; OTRO; SUCESO; Un solo reino,hechos_biblicos.csv; personajes_biblicos.csv; preguntas.personaje
+persona,SAMUEL,Samuel | SAMUEL,31,,DOCTRINA; EDAD; FECHA; LECCION; LUGAR; NOMBRE; NUMERO; OTRO; PARENTESCO; SUCESO; Un solo reino,hechos_biblicos.csv; personajes_biblicos.csv; preguntas.personaje
+persona,Jefté,Jefté,30,,DOCTRINA; FECHA; LECCION; LUGAR; NOMBRE; NUMERO; OTRO; PARENTESCO; SUCESO,hechos_biblicos.csv; preguntas.personaje
+persona,JEROBOAN,Jeroboán | JEROBOAN,30,sin_tilde,LUGAR; NOMBRE; NUMERO; OTRO; PARENTESCO; SUCESO,hechos_biblicos.csv; preguntas.personaje
+persona,SEDEQUÍAS,Sedequías | SEDEQUÍAS | SEDEQUIAS,28,sin_tilde,LUGAR; NOMBRE; NUMERO; PARENTESCO; Reyes de Judá; SUCESO,hechos_biblicos.csv; personajes_biblicos.csv; preguntas.personaje
+persona,Abigaíl,Abigaíl,27,,FECHA; LECCION; NOMBRE; OTRO; SUCESO; Un solo reino,personajes_biblicos.csv; preguntas.personaje
+persona,Caifás,Caifás,27,,LUGAR; NOMBRE; OTRO; PARENTESCO; SUCESO,hechos_biblicos.csv; preguntas.personaje
+persona,2 JUAN,2 JUAN,26,,EDAD; FECHA; LUGAR; NOMBRE; OTRO; PARENTESCO; SUCESO,preguntas.personaje
+persona,Agripa,Agripa,26,,EDAD; FECHA; LUGAR; NOMBRE; NUMERO; OTRO; PARENTESCO; SUCESO,preguntas.personaje
+persona,JEHOSAFAT,JEHOSAFAT | Jehosafat,26,,LUGAR; NOMBRE; NUMERO; PARENTESCO; Reyes de Judá; SUCESO,hechos_biblicos.csv; personajes_biblicos.csv; preguntas.personaje
+persona,Festo,FESTO | Festo,25,,FECHA; LUGAR; NOMBRE; NUMERO; OTRO; SUCESO,hechos_biblicos.csv; preguntas.personaje
+persona,Herodes Agripa I,Herodes Agripa I,25,,FECHA; LUGAR; NOMBRE; NUMERO; OTRO; PARENTESCO; SUCESO,preguntas.personaje
+persona,ASÁ,ASA | Asá | ASÁ,24,sin_tilde,DOCTRINA; FECHA; LECCION; NOMBRE; NUMERO; OTRO; PARENTESCO; Reyes de Judá; SUCESO,hechos_biblicos.csv; personajes_biblicos.csv; preguntas.personaje
+persona,Gamaliel,Gamaliel,24,,LUGAR; NOMBRE; NUMERO; OTRO; PARENTESCO; SUCESO,preguntas.personaje
+persona,Herodes,HERODES | Herodes,23,,EDAD; FECHA; LUGAR; NOMBRE; OTRO; SUCESO,hechos_biblicos.csv; preguntas.personaje
+persona,MEFIBOSET,MEFIBÓSET | Mefibóset | MEFIBOSET,23,sin_tilde,EDAD; LECCION; LUGAR; NOMBRE; OTRO; PARENTESCO; SUCESO; Un solo reino,personajes_biblicos.csv; preguntas.personaje
+persona,Simón,Simón | SIMÓN,23,,FECHA; LUGAR; MONEDA; NOMBRE; NUMERO; OTRO; SUCESO,hechos_biblicos.csv; preguntas.personaje
+persona,Ananías,Ananías,22,,NOMBRE; OTRO; SUCESO,hechos_biblicos.csv; preguntas.personaje
+persona,ELISABET,ELISABET,22,,DOCTRINA; EDAD; LECCION; LUGAR; NOMBRE; NUMERO; OTRO; PARENTESCO; SUCESO,preguntas.personaje
+persona,Félix,Félix,22,,NOMBRE; NUMERO; OTRO; SUCESO,hechos_biblicos.csv; preguntas.personaje
+persona,Jael,Jael,22,,FECHA; LECCION; NOMBRE; OTRO; PARENTESCO; SUCESO; Época de los jueces,hechos_biblicos.csv; personajes_biblicos.csv; preguntas.personaje
+persona,MANASÉS,Manasés | MANASÉS | MANASES,20,sin_tilde,DOCTRINA; EDAD; LECCION; LUGAR; NUMERO; OTRO; PARENTESCO; Reyes de Judá; SUCESO,hechos_biblicos.csv; personajes_biblicos.csv; preguntas.personaje
+persona,Tabita,Tabita,20,,FECHA; LUGAR; NOMBRE; NUMERO; OTRO; SUCESO,preguntas.personaje
+persona,Ana,Ana | ANA,19,,EDAD; LUGAR; NOMBRE; NUMERO; OTRO; SUCESO,hechos_biblicos.csv; preguntas.personaje
+persona,La congregación,La congregación,19,,LUGAR; NOMBRE; OTRO; SUCESO,preguntas.personaje
+persona,Rebeca,Rebeca,19,,DOCTRINA; Después del Diluvio; LECCION; LUGAR; NOMBRE; OTRO; SUCESO,hechos_biblicos.csv; personajes_biblicos.csv; preguntas.personaje
+persona,Adán,ADAN | ADÁN | Adán,18,sin_tilde,Antes del Diluvio; EDAD; FECHA; NOMBRE; OTRO; PARENTESCO; SUCESO,hechos_biblicos.csv; personajes_biblicos.csv; preguntas.personaje
+persona,Diablo,Diablo | DIABLO,18,,NOMBRE; NUMERO; OTRO; SUCESO,preguntas.personaje
+persona,La viuda de Sarepta,La viuda de Sarepta,18,,DOCTRINA; LECCION; LUGAR; NOMBRE; OTRO; SUCESO,preguntas.personaje
+persona,Sanedrín,Sanedrín,18,,FECHA; LUGAR; NUMERO; OTRO; SUCESO,preguntas.personaje
+persona,Sara,Sara | SARA,18,,Después del Diluvio; EDAD; LECCION; LUGAR; NOMBRE; OTRO; SUCESO,hechos_biblicos.csv; personajes_biblicos.csv; preguntas.personaje
+persona,Judas Iscariote,Judas Iscariote,17,,MONEDA; NOMBRE; NUMERO; OTRO; SUCESO,preguntas.personaje
+persona,NATAN,Natán | NATAN | NATÁN,17,sin_tilde,DOCTRINA; LECCION; NOMBRE; OTRO; SUCESO; Un solo reino,hechos_biblicos.csv; personajes_biblicos.csv; preguntas.personaje
+persona,BELSASAR,Belsasar | BELSASAR,16,,NOMBRE; NUMERO; OTRO; PARENTESCO; SUCESO,hechos_biblicos.csv; preguntas.personaje
+persona,ELÍ,ELÍ | Elí,16,,NOMBRE; NUMERO; OTRO; SUCESO,hechos_biblicos.csv; preguntas.personaje
+persona,Barac,Barac,15,,LECCION; LUGAR; NOMBRE; NUMERO; OTRO; SUCESO; Época de los jueces,hechos_biblicos.csv; personajes_biblicos.csv; preguntas.personaje
+persona,ENOC,Enoc | ENOC,15,,Antes del Diluvio; DOCTRINA; LECCION; PARENTESCO; SUCESO,hechos_biblicos.csv; personajes_biblicos.csv; preguntas.personaje
+persona,la multitud,la multitud | La multitud,15,,LUGAR; NUMERO; OTRO; SUCESO,preguntas.personaje
+persona,Lot,Lot | LOT,15,,LUGAR; NUMERO; PARENTESCO; SUCESO,hechos_biblicos.csv; preguntas.personaje
+persona,Nicodemo,Nicodemo | NICODEMO,15,,FECHA; MEDIDA; NOMBRE; OTRO; SUCESO,hechos_biblicos.csv; preguntas.personaje
+persona,Herodes Antipas,Herodes Antipas | HERODES ANTIPAS,14,,FECHA; LUGAR; NOMBRE; OTRO; PARENTESCO; SUCESO,preguntas.personaje
+persona,Isaac,Isaac,14,,Después del Diluvio; EDAD; LUGAR; NOMBRE; NUMERO; OTRO; PARENTESCO; SUCESO,hechos_biblicos.csv; personajes_biblicos.csv; preguntas.personaje
+persona,Mardoqueo,Mardoqueo,14,,LECCION; LUGAR; NOMBRE; PARENTESCO; SUCESO,hechos_biblicos.csv; preguntas.personaje
+persona,Salomé,SALOME | Salomé,14,sin_tilde,NOMBRE; PARENTESCO; SUCESO,preguntas.personaje
+persona,Hermanos,Hermanos,13,,FECHA; NUMERO; OTRO; SUCESO,preguntas.personaje
+persona,Marta,Marta,13,,NOMBRE; NUMERO; OTRO; SUCESO,hechos_biblicos.csv; preguntas.personaje
+persona,Nerón,Nerón,13,,FECHA; NOMBRE; SUCESO,preguntas.personaje
+persona,Boaz,Boaz,12,,NOMBRE; PARENTESCO; SUCESO,preguntas.personaje
+persona,Faraón,Faraón,12,,NOMBRE; OTRO; PARENTESCO; SUCESO,hechos_biblicos.csv; preguntas.personaje
+persona,GABRIEL,GABRIEL,12,,DOCTRINA; FECHA; NOMBRE; NUMERO; SUCESO,preguntas.personaje
+persona,Soldados,Soldados | soldados,12,,NOMBRE; NUMERO; OTRO; SUCESO,hechos_biblicos.csv; preguntas.personaje
+persona,CAÍN,CAÍN | Caín,11,,LUGAR; NOMBRE; OTRO; PARENTESCO; SUCESO,hechos_biblicos.csv; preguntas.personaje
+persona,CIRO,Ciro | CIRO,11,,FECHA; LUGAR; NOMBRE; NUMERO; SUCESO,hechos_biblicos.csv; preguntas.personaje
+persona,Claudio,Claudio | CLAUDIO,11,,FECHA; NOMBRE; NUMERO; SUCESO,preguntas.personaje
+persona,Esaú,Esaú | ESAU,11,sin_tilde,NOMBRE; NUMERO; OTRO; SUCESO,hechos_biblicos.csv; preguntas.personaje
+persona,Eutico,EUTICO | Eutico,11,,EDAD; LUGAR; NOMBRE; NUMERO; SUCESO,preguntas.personaje
+persona,leprosos,Leprosos | leprosos,11,,NUMERO; OTRO; SUCESO,preguntas.personaje
+persona,Los tres hebreos,Los tres hebreos,11,,DOCTRINA; LECCION; LUGAR; NOMBRE; SUCESO,preguntas.personaje
+persona,Lázaro,Lázaro,11,,NOMBRE; OTRO; PARENTESCO; SUCESO,hechos_biblicos.csv; preguntas.personaje
+persona,Mendigo,Mendigo,11,,OTRO; SUCESO,preguntas.personaje
+persona,AARON,Aarón | AARON,10,sin_tilde,Después del Diluvio; NOMBRE; OTRO; PARENTESCO; SUCESO,hechos_biblicos.csv; personajes_biblicos.csv; preguntas.personaje
+persona,Apolos,Apolos,10,,LUGAR; NOMBRE; SUCESO,preguntas.personaje
+persona,Darío,Darío,10,,FECHA; NOMBRE; OTRO; SUCESO,hechos_biblicos.csv; preguntas.personaje
+persona,Dios,Dios,10,,FECHA; NUMERO; OTRO; SUCESO,preguntas.personaje
+persona,Egipcios,Egipcios,10,,NUMERO; OTRO; SUCESO,preguntas.personaje
+persona,El hijo menor,El hijo menor,10,,LUGAR; OTRO; SUCESO,preguntas.personaje
+persona,La gente,La gente | la gente,10,,OTRO; SUCESO,preguntas.personaje
+persona,Líderes religiosos,Líderes religiosos,10,,NOMBRE; OTRO; SUCESO,preguntas.personaje
+persona,Noemí,Noemí,10,,LUGAR; NUMERO; PARENTESCO; SUCESO; Época de los jueces,hechos_biblicos.csv; personajes_biblicos.csv; preguntas.personaje
+persona,Andrés,ANDRES | Andrés,9,sin_tilde,NOMBRE; NUMERO; OTRO; PARENTESCO; SUCESO,hechos_biblicos.csv; preguntas.personaje
+persona,Asuero,Asuero,9,,NOMBRE; OTRO; SUCESO,hechos_biblicos.csv; preguntas.personaje
+persona,Claudio Lisias,Claudio Lisias,9,,NOMBRE; NUMERO; OTRO; SUCESO,preguntas.personaje
+persona,Hombres del Oriente,Hombres del Oriente,9,,LUGAR; OTRO; SUCESO,preguntas.personaje
+persona,JosuÃ©,JosuÃ©,9,mojibake,EDAD; LUGAR; NUMERO; SUCESO,preguntas.personaje
+persona,Las vírgenes,Las vírgenes,9,,OTRO; SUCESO,preguntas.personaje
+persona,mujer,MUJER | mujer,9,,NOMBRE; NUMERO; OTRO; SUCESO,preguntas.personaje
+persona,Multitud,Multitud,9,,LUGAR; NOMBRE; OTRO; SUCESO,preguntas.personaje
+persona,samaritana,samaritana,9,,LUGAR; NUMERO; OTRO; PARENTESCO; SUCESO,preguntas.personaje
+persona,Sísara,Sísara,9,,FECHA; LUGAR; NOMBRE; OTRO; SUCESO,hechos_biblicos.csv; preguntas.personaje
+persona,Testigos,Testigos,9,,NUMERO; OTRO; SUCESO,preguntas.personaje
+persona,Tértulo,Tértulo,9,,NOMBRE; OTRO; SUCESO,preguntas.personaje
+persona,Ártemis,Ártemis,9,,MEDIDA; NUMERO; OTRO; SUCESO,preguntas.personaje
+persona,ASTROLOGOS,ASTROLOGOS,8,,LUGAR; OTRO; SUCESO,preguntas.personaje
+persona,Centurión,Centurión,8,,OTRO; SUCESO,preguntas.personaje
+persona,Congregación,Congregación | CONGREGACION,8,sin_tilde,LUGAR; NUMERO; OTRO; SUCESO,preguntas.personaje
+persona,El hombre endemoniado,El hombre endemoniado,8,,LUGAR; NUMERO; SUCESO,preguntas.personaje
+persona,Eva,Eva,8,,NOMBRE; OTRO; SUCESO,hechos_biblicos.csv; preguntas.personaje
+persona,Filemón y Baucis,Filemón y Baucis,8,,EDAD; NOMBRE; PARENTESCO; SUCESO,preguntas.personaje
+persona,Hamán,Hamán,8,,NOMBRE; NUMERO; OTRO; SUCESO,hechos_biblicos.csv; preguntas.personaje
+persona,La mujer,la mujer | La mujer,8,,MONEDA; NOMBRE; NUMERO; OTRO; SUCESO,preguntas.personaje
+persona,Los siete,Los siete,8,,NOMBRE; NUMERO; OTRO; SUCESO,preguntas.personaje
+persona,Pastores,Pastores,8,,LUGAR; OTRO; SUCESO,preguntas.personaje
+persona,Sumo sacerdote,Sumo sacerdote,8,,NUMERO; OTRO; PARENTESCO; SUCESO,preguntas.personaje
+persona,Tomás,Tomás,8,,NOMBRE; NUMERO; OTRO; SUCESO,preguntas.personaje
+persona,Ágabo,Ágabo | ÁGABO,8,,NOMBRE; OTRO; SUCESO,preguntas.personaje
+persona,Áquila y Priscila,Áquila y Priscila,8,,LUGAR; NOMBRE; PARENTESCO; SUCESO,preguntas.personaje
+persona,ACAB,Acab | ACAB,7,,NOMBRE; NUMERO; PARENTESCO; Reyes de Israel; SUCESO,hechos_biblicos.csv; personajes_biblicos.csv; preguntas.personaje
+persona,Ancianos,Ancianos,7,,OTRO; SUCESO,preguntas.personaje
+persona,Balaam,Balaam,7,,LUGAR; NUMERO; SUCESO,hechos_biblicos.csv; preguntas.personaje
+persona,El experto en la Ley,El experto en la Ley,7,,NOMBRE; OTRO; SUCESO,preguntas.personaje
+persona,El padre,El padre,7,,OTRO; SUCESO,preguntas.personaje
+persona,Epicúreos,Epicúreos,7,,OTRO; SUCESO,preguntas.personaje
+persona,Esceva,Esceva,7,,NOMBRE; NUMERO; PARENTESCO; SUCESO,preguntas.personaje
+persona,Galión,Galión,7,,NOMBRE; PARENTESCO; SUCESO,preguntas.personaje
+persona,Jairo,Jairo,7,,LUGAR; NOMBRE; SUCESO,hechos_biblicos.csv; preguntas.personaje
+persona,La mujer con hemorragias,La mujer con hemorragias,7,,EDAD; OTRO; SUCESO,preguntas.personaje
+persona,Los 70 discípulos,Los 70 discípulos,7,,NUMERO; OTRO; SUCESO,preguntas.personaje
+persona,Mujeres,Mujeres,7,,OTRO; SUCESO,preguntas.personaje
+persona,Ovidio,Ovidio,7,,FECHA; LUGAR; NOMBRE; NUMERO; PARENTESCO,preguntas.personaje
+persona,Phyllis,Phyllis,7,,LUGAR; NUMERO; OTRO; PARENTESCO; SUCESO,preguntas.personaje
+persona,Sem,Sem,7,,Antes del Diluvio; EDAD; NOMBRE; NUMERO; SUCESO,hechos_biblicos.csv; personajes_biblicos.csv; preguntas.personaje
+persona,AarÃ³n,AarÃ³n,6,mojibake,NOMBRE; NUMERO; OTRO; SUCESO,preguntas.personaje
+persona,ABEL,ABEL | Abel,6,,NOMBRE; OTRO; SUCESO,hechos_biblicos.csv; preguntas.personaje
+persona,Anás,Anás,6,,NOMBRE; OTRO; SUCESO,preguntas.personaje
+persona,bereanos,bereanos,6,,NUMERO; SUCESO,preguntas.personaje
+persona,Demetrio,Demetrio,6,,NOMBRE; OTRO; SUCESO,hechos_biblicos.csv; preguntas.personaje
+persona,Débora,Débora,6,,NOMBRE; NUMERO; SUCESO; Época de los jueces,hechos_biblicos.csv; personajes_biblicos.csv; preguntas.personaje
+persona,El samaritano,El samaritano,6,,MONEDA; NOMBRE; SUCESO,preguntas.personaje
+persona,esclavo,esclavo,6,,MONEDA; OTRO; SUCESO,preguntas.personaje
+persona,Espíritu santo,Espíritu santo,6,,OTRO; SUCESO,preguntas.personaje
+persona,Herodías,Herodías | HERODIAS,6,sin_tilde,NOMBRE; PARENTESCO; SUCESO,hechos_biblicos.csv; preguntas.personaje
+persona,JEHU,Jehú | JEHU,6,sin_tilde,NOMBRE; NUMERO; PARENTESCO; Reyes de Israel; SUCESO,hechos_biblicos.csv; personajes_biblicos.csv; preguntas.personaje
+persona,José de Arimatea,José de Arimatea,6,,LUGAR; NOMBRE; OTRO; SUCESO,hechos_biblicos.csv; preguntas.personaje
+persona,La niña israelita,La niña israelita,6,,LECCION; LUGAR; NOMBRE; OTRO; SUCESO,preguntas.personaje
+persona,magistrados,magistrados,6,,OTRO; SUCESO,preguntas.personaje
+persona,MELQUISEDEC,MELQUISEDEC | Melquisedec,6,,LUGAR; NOMBRE; OTRO,hechos_biblicos.csv; preguntas.personaje
+persona,Minos Kokkinakis,Minos Kokkinakis,6,,FECHA; LUGAR; NOMBRE; NUMERO,preguntas.personaje
+persona,MoisÃ©s,MoisÃ©s,6,mojibake,EDAD; LUGAR; NUMERO; SUCESO,preguntas.personaje
+persona,REHOBOAM,Rehoboam | REHOBOAM,6,,FECHA; NOMBRE; NUMERO; Reyes de Judá; SUCESO,personajes_biblicos.csv; preguntas.personaje
+persona,Satanás,SATANAS | Satanás,6,sin_tilde,NOMBRE; OTRO; SUCESO,hechos_biblicos.csv; preguntas.personaje
+persona,Siberia,Siberia,6,,FECHA; LUGAR; MEDIDA; OTRO; SUCESO,preguntas.personaje
+persona,Testigos de Jehová,Testigos de Jehová,6,,FECHA; LUGAR; OTRO; SUCESO,preguntas.personaje
+persona,VARIOS,VARIOS,6,,FECHA; NOMBRE; OTRO,preguntas.personaje
+persona,Ángel,Ángel,6,,LUGAR; OTRO; SUCESO,preguntas.personaje
+persona,Ángeles,Ángeles | ÁNGELES,6,,LUGAR; NOMBRE; NUMERO; OTRO; SUCESO,preguntas.personaje
+persona,ATALÍA,Atalía | ATALIA | ATALÍA,5,sin_tilde,NOMBRE; NUMERO; PARENTESCO; Reyes de Judá; SUCESO,hechos_biblicos.csv; personajes_biblicos.csv; preguntas.personaje
+persona,Calígula,Calígula,5,,FECHA; NOMBRE; SUCESO,preguntas.personaje
+persona,Domiciano,Domiciano,5,,FECHA; NOMBRE; OTRO; PARENTESCO,preguntas.personaje
+persona,DÃ©bora,DÃ©bora,5,mojibake,LUGAR; OTRO; SUCESO,preguntas.personaje
+persona,El hijo mayor,El hijo mayor,5,,OTRO; SUCESO,preguntas.personaje
+persona,El pastor,El pastor,5,,NUMERO; OTRO; SUCESO,preguntas.personaje
+persona,Henryk Dornik,Henryk Dornik,5,,FECHA; LUGAR; NOMBRE; SUCESO,preguntas.personaje
+persona,Herodes el Grande,Herodes el Grande,5,,LUGAR; NOMBRE; OTRO; SUCESO,preguntas.personaje
+persona,Julio,Julio,5,,SUCESO,preguntas.personaje
+persona,Los ciegos,Los ciegos,5,,NOMBRE; NUMERO; PARENTESCO; SUCESO,preguntas.personaje
+persona,Los demonios,Los demonios,5,,NOMBRE; NUMERO; SUCESO,preguntas.personaje
+persona,LUGAR,LUGAR,5,,LUGAR,preguntas.personaje
+persona,MATÍAS,Matías | MATÍAS,5,,NOMBRE; NUMERO,preguntas.personaje
+persona,NATANAEL,NATANAEL,5,,LUGAR; NOMBRE; NUMERO; SUCESO,preguntas.personaje
+persona,OCEZIAS,OCEZIAS,5,,LUGAR; NOMBRE; NUMERO; PARENTESCO,preguntas.personaje
+persona,Plinio,Plinio,5,,FECHA; NOMBRE; OTRO; SUCESO,preguntas.personaje
+persona,Pompeyo,Pompeyo,5,,FECHA; OTRO; SUCESO,preguntas.personaje
+persona,Zaqueo,Zaqueo,5,,NOMBRE; NUMERO; OTRO; SUCESO,hechos_biblicos.csv; preguntas.personaje
+persona,Abraham,Abraham,4,,LUGAR; NOMBRE; NUMERO; SUCESO,preguntas.personaje
+persona,ABSALON,Absalón | ABSALON,4,sin_tilde,LUGAR; MEDIDA; SUCESO,hechos_biblicos.csv; preguntas.personaje
+persona,Adolfo,Adolfo,4,,NOMBRE; SUCESO,preguntas.personaje
+persona,Adán y Eva,Adán y Eva,4,,LUGAR; NOMBRE; SUCESO,preguntas.personaje
+persona,Amram y Jokébed,Amram y Jokébed,4,,LECCION; PARENTESCO; SUCESO,preguntas.personaje
+persona,Christine,Christine,4,,NOMBRE; NUMERO; OTRO,preguntas.personaje
+persona,Cleopas,Cleopas,4,,LUGAR; NOMBRE; OTRO,preguntas.personaje
+persona,Cordero,Cordero,4,,NOMBRE; OTRO; SUCESO,preguntas.personaje
+persona,El amo,El amo,4,,OTRO; SUCESO,preguntas.personaje
+persona,El hombre que nació ciego,El hombre que nació ciego,4,,OTRO; SUCESO,preguntas.personaje
+persona,El hombre rico,El hombre rico,4,,OTRO; SUCESO,preguntas.personaje
+persona,El primer deudor,El primer deudor,4,,MEDIDA; NUMERO,preguntas.personaje
+persona,el rebaño pequeño,el rebaño pequeño,4,,NUMERO; OTRO; SUCESO,preguntas.personaje
+persona,esclava,esclava,4,,OTRO; SUCESO,preguntas.personaje
+persona,Estoicos,Estoicos,4,,SUCESO,preguntas.personaje
+persona,Higuera,Higuera,4,,FECHA; SUCESO,preguntas.personaje
+persona,Hija de Jefté,Hija de Jefté,4,,OTRO; SUCESO,preguntas.personaje
+persona,Hombre rico,Hombre rico,4,,OTRO; SUCESO,preguntas.personaje
+persona,JASÓN,Jasón | JASÓN,4,,NOMBRE; SUCESO,preguntas.personaje
+persona,JEHOÁS,JEHOÁS | JEHOAS,4,,NOMBRE; NUMERO; SUCESO,preguntas.personaje
+persona,Jesucristo,Jesucristo,4,,DOCTRINA; NOMBRE; OTRO,preguntas.personaje
+persona,Josefo,Josefo,4,,NOMBRE; OTRO,preguntas.personaje
+persona,LARRY,LARRY,4,,LUGAR; OTRO; SUCESO,preguntas.personaje
+persona,Leproso samaritano,Leproso samaritano,4,,NOMBRE; NUMERO; OTRO; SUCESO,preguntas.personaje
+persona,Miriam,Miriam,4,,LECCION; PARENTESCO; SUCESO,preguntas.personaje
+persona,Muchacha,Muchacha,4,,MONEDA; OTRO; SUCESO,preguntas.personaje
+persona,MUJER SAMARITANA,MUJER SAMARITANA,4,,NUMERO; SUCESO,preguntas.personaje
+persona,Onésimo,Onésimo,4,,LUGAR; NOMBRE; OTRO; PARENTESCO,hechos_biblicos.csv; preguntas.personaje
+persona,Padres del ciego,Padres del ciego,4,,OTRO; SUCESO,preguntas.personaje
+persona,REBECCA,REBECCA,4,,LUGAR; OTRO; SUCESO,preguntas.personaje
+persona,Rey,rey | Rey,4,,SUCESO,preguntas.personaje
+persona,Rode,Rode,4,,NOMBRE; OTRO; SUCESO,preguntas.personaje
+persona,"Sadrac, Mesac y Abednego","Sadrac, Mesac y Abednego",4,,NOMBRE; OTRO; SUCESO,preguntas.personaje
+persona,Sergio Paulo,Sergio Paulo,4,,NOMBRE; OTRO; SUCESO,preguntas.personaje
+persona,Viuda,Viuda,4,,NUMERO; OTRO,preguntas.personaje
+persona,ABÍAS,Abías | ABÍAS,3,,NUMERO; Reyes de Judá; SUCESO,personajes_biblicos.csv; preguntas.personaje
+persona,ACAZ,ACAZ | Acaz,3,,NUMERO; Reyes de Judá; SUCESO,hechos_biblicos.csv; personajes_biblicos.csv; preguntas.personaje
+persona,Aceite perfumado,Aceite perfumado,3,,MEDIDA; MONEDA,preguntas.personaje
+persona,AMASÍAS,AMASÍAS | Amasías | AMASIAS,3,sin_tilde,NUMERO; Reyes de Judá; SUCESO,hechos_biblicos.csv; personajes_biblicos.csv; preguntas.personaje
+persona,Ananías (sumo sacerdote),Ananías (sumo sacerdote),3,,NUMERO; OTRO; SUCESO,preguntas.personaje
+persona,Atenea,Atenea,3,,MEDIDA; OTRO,preguntas.personaje
+persona,Balac,Balac,3,,NOMBRE; SUCESO,hechos_biblicos.csv; preguntas.personaje
+persona,Bar-Jesús,Bar-Jesús,3,,NOMBRE; SUCESO,preguntas.personaje
+persona,Belcebú,Belcebú | BELCEBÚ,3,,NOMBRE; OTRO,preguntas.personaje
+persona,Cayo,Cayo,3,,FECHA; NOMBRE; OTRO,preguntas.personaje
+persona,Clemente,Clemente,3,,FECHA; NOMBRE; SUCESO,preguntas.personaje
+persona,Crispo,Crispo,3,,NOMBRE; SUCESO,preguntas.personaje
+persona,Cristianos judíos,Cristianos judíos,3,,OTRO; SUCESO,preguntas.personaje
+persona,César Augusto,César Augusto | CESAR AUGUSTO,3,sin_tilde,NOMBRE; SUCESO,preguntas.personaje
+persona,Diótrefes,Diótrefes,3,,OTRO,preguntas.personaje
+persona,El amigo del ejemplo,El amigo del ejemplo,3,,NUMERO; OTRO,preguntas.personaje
+persona,El camino de Jerusalén a Jericó,El camino de Jerusalén a Jericó,3,,MEDIDA; OTRO,preguntas.personaje
+persona,El hombre ciego,El hombre ciego,3,,OTRO; SUCESO,preguntas.personaje
+persona,El hombre mudo,El hombre mudo,3,,SUCESO,preguntas.personaje
+persona,El rico,El rico,3,,OTRO; SUCESO,preguntas.personaje
+persona,El segundo deudor,El segundo deudor,3,,MEDIDA; NUMERO,preguntas.personaje
+persona,El sirviente de Eliseo,El sirviente de Eliseo,3,,SUCESO,preguntas.personaje
+persona,Gente,Gente,3,,SUCESO,preguntas.personaje
+persona,Guardias,Guardias,3,,OTRO; SUCESO,preguntas.personaje
+persona,Hermanos de Jesús,Hermanos de Jesús,3,,NUMERO; OTRO; SUCESO,preguntas.personaje
+persona,Hija del faraón,Hija del faraón,3,,NOMBRE; SUCESO,preguntas.personaje
+persona,Hosea,Hosea | HOSEA,3,,DURACIÓN; NOMBRE; Reyes de Israel,hechos_biblicos.csv; personajes_biblicos.csv; preguntas.personaje
+persona,Héber,Héber,3,,PARENTESCO; SUCESO,preguntas.personaje
+persona,JEHORAM,JEHORAM,3,,NOMBRE; NUMERO; SUCESO,preguntas.personaje
+persona,JOAQUÍN,JOAQUÍN | Joaquín | JOAQUIN,3,sin_tilde,NUMERO; Reyes de Judá; SUCESO,hechos_biblicos.csv; personajes_biblicos.csv; preguntas.personaje
+persona,Juan Marcos,Juan Marcos,3,,NOMBRE; PARENTESCO,preguntas.personaje
+persona,la Fiesta de la Dedicación,la Fiesta de la Dedicación,3,,FECHA; OTRO; SUCESO,preguntas.personaje
+persona,La Ley,La Ley,3,,NUMERO; OTRO,preguntas.personaje
+persona,la mujer encorvada,la mujer encorvada,3,,NUMERO; PARENTESCO; SUCESO,preguntas.personaje
+persona,Los antepasados,Los antepasados | los antepasados,3,,NOMBRE; SUCESO,preguntas.personaje
+persona,Los escribas y fariseos,Los escribas y fariseos,3,,SUCESO,preguntas.personaje
+persona,Los expertos en la Ley,Los expertos en la Ley,3,,OTRO; SUCESO,preguntas.personaje
+persona,Miguel,Miguel,3,,NOMBRE; OTRO,preguntas.personaje
+persona,padre,PADRE | padre,3,,OTRO; SUCESO,preguntas.personaje
+persona,Poncio Pilato,Poncio Pilato,3,,NOMBRE; SUCESO,preguntas.personaje
+persona,Publio,Publio,3,,NUMERO; OTRO,preguntas.personaje
+persona,Sacerdote,Sacerdote,3,,LUGAR; SUCESO,preguntas.personaje
+persona,SENAQUERIB,SENAQUERIB | Senaquerib,3,,NOMBRE; SUCESO,hechos_biblicos.csv; preguntas.personaje
+persona,Silas,Silas,3,,NOMBRE; SUCESO,hechos_biblicos.csv; preguntas.personaje
+persona,Simón de Cirene,Simón de Cirene,3,,LUGAR; NOMBRE,preguntas.personaje
+persona,Sobrino de Pablo,Sobrino de Pablo,3,,NOMBRE; OTRO; PARENTESCO,preguntas.personaje
+persona,Solón,Solón,3,,NOMBRE; SUCESO,preguntas.personaje
+persona,SUPERINTENDENTE,SUPERINTENDENTE,3,,SUCESO,preguntas.personaje
+persona,SÃ­sara,SÃ­sara,3,mojibake,LUGAR; NOMBRE; SUCESO,preguntas.personaje
+persona,Sóstenes,Sóstenes,3,,NOMBRE; SUCESO,preguntas.personaje
+persona,Traducción del Nuevo Mundo,Traducción del Nuevo Mundo,3,,FECHA; NUMERO,preguntas.personaje
+persona,Tíquico,Tíquico,3,,NOMBRE,preguntas.personaje
+persona,UZAH,UZAH,3,,LUGAR; SUCESO,preguntas.personaje
+persona,UZÍAS,Uzías | UZÍAS,3,,NUMERO; Reyes de Judá; SUCESO,personajes_biblicos.csv; preguntas.personaje
+persona,Áquila,Áquila,3,,NOMBRE; SUCESO,preguntas.personaje
+persona,ADONIAS,ADONIAS,2,,NOMBRE,preguntas.personaje
+persona,Adversarios,Adversarios,2,,SUCESO,preguntas.personaje
+persona,Alejandro,Alejandro,2,,NOMBRE; SUCESO,preguntas.personaje
+persona,Alejandro Magno,Alejandro Magno,2,,LUGAR; NUMERO,hechos_biblicos.csv; preguntas.personaje
+persona,AMNON,AMNON,2,,NOMBRE; NUMERO,preguntas.personaje
+persona,Aristarco,Aristarco,2,,NOMBRE,preguntas.personaje
+persona,BAASA,Baasá | BAASA,2,sin_tilde,NOMBRE; NUMERO; Reyes de Israel,hechos_biblicos.csv; personajes_biblicos.csv; preguntas.personaje
+persona,Barrabás,Barrabás,2,,NOMBRE; SUCESO,hechos_biblicos.csv; preguntas.personaje
+persona,BEN-HADAD,BEN-HADAD | Ben-Hadad,2,,NOMBRE; SUCESO,preguntas.personaje
+persona,Berenice,Berenice,2,,PARENTESCO,preguntas.personaje
+persona,Betuel,Betuel,2,,DOCTRINA; NOMBRE,preguntas.personaje
+persona,Charles Haynes,Charles Haynes,2,,NOMBRE; OTRO,preguntas.personaje
+persona,Charles Russell,Charles Russell,2,,NOMBRE; OTRO,preguntas.personaje
+persona,Cleantes,Cleantes,2,,NOMBRE; OTRO,preguntas.personaje
+persona,Cristo,Cristo,2,,PARENTESCO,preguntas.personaje
+persona,Drusila,Drusila,2,,NOMBRE; PARENTESCO,preguntas.personaje
+persona,el presidente de la sinagoga,el presidente de la sinagoga,2,,NUMERO; OTRO,preguntas.personaje
+persona,El rey,El rey,2,,NUMERO; SUCESO,preguntas.personaje
+persona,El segundo invitado,El segundo invitado,2,,NUMERO; SUCESO,preguntas.personaje
+persona,Eliezer,Eliezer,2,,LECCION; NOMBRE,preguntas.personaje
+persona,emperadores,emperadores,2,,NOMBRE; NUMERO,preguntas.personaje
+persona,Epafrodito,Epafrodito,2,,NOMBRE; OTRO,preguntas.personaje
+persona,Epiménides,Epiménides,2,,NOMBRE; OTRO,preguntas.personaje
+persona,Esclavo malvado,Esclavo malvado,2,,NUMERO; SUCESO,preguntas.personaje
+persona,Escriba,Escriba,2,,NOMBRE,preguntas.personaje
+persona,Espías,Espías,2,,SUCESO,preguntas.personaje
+persona,Fariseo,Fariseo,2,,NUMERO; OTRO,preguntas.personaje
+persona,Gaio,Gaio,2,,NUMERO; OTRO,preguntas.personaje
+persona,gobernantes,Gobernantes | gobernantes,2,,SUCESO,preguntas.personaje
+persona,Griegos,Griegos,2,,OTRO; SUCESO,preguntas.personaje
+persona,Hombre,Hombre,2,,SUCESO,preguntas.personaje
+persona,Ismael,Ismael,2,,EDAD; NOMBRE,preguntas.personaje
+persona,JUANA,JUANA,2,,NOMBRE; PARENTESCO,preguntas.personaje
+persona,Juez injusto,Juez injusto,2,,OTRO,preguntas.personaje
+persona,la higuera,la higuera,2,,NUMERO; SUCESO,preguntas.personaje
+persona,La Ley de Moisés,La Ley de Moisés | la Ley de Moisés,2,,OTRO,preguntas.personaje
+persona,La niña,La niña,2,,NUMERO; SUCESO,preguntas.personaje
+persona,la torre de Siloam,la torre de Siloam,2,,LUGAR; NUMERO,preguntas.personaje
+persona,Ley,Ley,2,,NUMERO; OTRO,preguntas.personaje
+persona,Los líderes religiosos,Los líderes religiosos,2,,NOMBRE; OTRO,preguntas.personaje
+persona,Los ángeles,Los ángeles,2,,OTRO; SUCESO,preguntas.personaje
+persona,Matusalén,Matusalén,2,,EDAD; FECHA,hechos_biblicos.csv; preguntas.personaje
+persona,Misioneros,Misioneros,2,,NUMERO; SUCESO,preguntas.personaje
+persona,Mnasón,Mnasón,2,,NOMBRE; SUCESO,preguntas.personaje
+persona,Nefilim,Nefilim,2,,NOMBRE; SUCESO,hechos_biblicos.csv; preguntas.personaje
+persona,Nerva,Nerva,2,,NOMBRE; SUCESO,preguntas.personaje
+persona,Oficiales,Oficiales,2,,SUCESO,preguntas.personaje
+persona,OMRI,Omrí | OMRI,2,sin_tilde,LUGAR; NUMERO; Reyes de Israel,personajes_biblicos.csv; preguntas.personaje
+persona,Oponentes,Oponentes,2,,OTRO; SUCESO,preguntas.personaje
+persona,Persecución,Persecución,2,,LUGAR; SUCESO,preguntas.personaje
+persona,Priscila,Priscila,2,,NOMBRE,preguntas.personaje
+persona,Ricos,Ricos,2,,OTRO; SUCESO,preguntas.personaje
+persona,Salum,Salum,2,,DURACIÓN; Reyes de Israel; SUCESO,hechos_biblicos.csv; personajes_biblicos.csv; preguntas.personaje
+persona,Santiago y Juan,Santiago y Juan,2,,NOMBRE; SUCESO,preguntas.personaje
+persona,SECCIÓN 2,SECCIÓN 2,2,,SUCESO,preguntas.personaje
+persona,Set,Set,2,,EDAD; SUCESO,hechos_biblicos.csv; preguntas.personaje
+persona,Sifrá y Pua,Sifrá y Pua,2,,LECCION; NOMBRE,preguntas.personaje
+persona,SIMEON,SIMEON,2,,SUCESO,preguntas.personaje
+persona,Tiberio,Tiberio,2,,FECHA; SUCESO,preguntas.personaje
+persona,Ticio Justo,Ticio Justo,2,,NOMBRE; PARENTESCO,preguntas.personaje
+persona,Tácito,Tácito,2,,NOMBRE; SUCESO,preguntas.personaje
+persona,Uno de los invitados,Uno de los invitados | uno de los invitados,2,,OTRO; SUCESO,preguntas.personaje
+persona,Zebedeo,Zebedeo | ZEBEDEO,2,,NOMBRE; PARENTESCO,preguntas.personaje
+persona,ZOROBABEL,Zorobabel | ZOROBABEL,2,,NOMBRE; PARENTESCO,hechos_biblicos.csv; preguntas.personaje
+persona,Ática,Ática,2,,MEDIDA,preguntas.personaje
+persona,ABIYAM,ABIYAM,1,,NUMERO,preguntas.personaje
+persona,Agar,Agar,1,,NOMBRE,preguntas.personaje
+persona,AHITOFEL,AHITOFEL,1,,NOMBRE,preguntas.personaje
+persona,AMASA,AMASA,1,,NOMBRE,preguntas.personaje
+persona,Amram,Amram,1,,Después del Diluvio; NOMBRE,personajes_biblicos.csv; preguntas.personaje
+persona,Ananías (de Damasco),Ananías (de Damasco),1,,NOMBRE,preguntas.personaje
+persona,Antíoco IV Epífanes,Antíoco IV Epífanes,1,,NOMBRE,preguntas.personaje
+persona,Apostasía,Apostasía,1,,FECHA,preguntas.personaje
+persona,Arato,Arato,1,,NOMBRE,preguntas.personaje
+persona,Arpaksad,Arpaksad,1,,NUMERO,hechos_biblicos.csv; preguntas.personaje
+persona,ARQUELAO,ARQUELAO,1,,NOMBRE,preguntas.personaje
+persona,ARTAGERGES,ARTAGERGES,1,,SUCESO,preguntas.personaje
+persona,Artajerjes,Artajerjes,1,,NOMBRE,preguntas.personaje
+persona,ASEF,ASEF,1,,SUCESO,preguntas.personaje
+persona,Aspenaz,Aspenaz,1,,SUCESO,preguntas.personaje
+persona,AZARÍAS,AZARÍAS,1,,NOMBRE,preguntas.personaje
+persona,BAT-SEBA,BAT-SEBA | Bat-seba,1,,PARENTESCO,hechos_biblicos.csv; preguntas.personaje
+persona,Betfagué,Betfagué,1,,LUGAR,preguntas.personaje
+persona,Capitán,Capitán,1,,SUCESO,preguntas.personaje
+persona,Cesar,Cesar,1,,NOMBRE,preguntas.personaje
+persona,Cirene,Cirene,1,,NOMBRE,preguntas.personaje
+persona,Congregaciones,Congregaciones,1,,LUGAR,preguntas.personaje
+persona,Constantino,Constantino,1,,FECHA,preguntas.personaje
+persona,CorÃ©,CorÃ©,1,mojibake,SUCESO,preguntas.personaje
+persona,Creyentes,Creyentes,1,,NUMERO,preguntas.personaje
+persona,Cristiandad,Cristiandad,1,,FECHA,preguntas.personaje
+persona,DatÃ¡n,DatÃ¡n,1,mojibake,SUCESO,preguntas.personaje
+persona,Dionisio,Dionisio,1,,NOMBRE,preguntas.personaje
+persona,Discipulo,Discipulo,1,,SUCESO,preguntas.personaje
+persona,discípulos de Juan,discípulos de Juan,1,,SUCESO,preguntas.personaje
+persona,Dámaris,Dámaris,1,,NOMBRE,preguntas.personaje
+persona,Día del Juicio,Día del Juicio,1,,NUMERO,preguntas.personaje
+persona,El constructor,El constructor,1,,SUCESO,preguntas.personaje
+persona,El dedo de Dios,El dedo de Dios,1,,OTRO,preguntas.personaje
+persona,El esclavo,El esclavo,1,,SUCESO,preguntas.personaje
+persona,El espíritu maligno,El espíritu maligno,1,,NUMERO,preguntas.personaje
+persona,El fariseo,El fariseo,1,,NOMBRE,preguntas.personaje
+persona,el guardia,el guardia,1,,SUCESO,preguntas.personaje
+persona,El hombre de la multitud,El hombre de la multitud,1,,SUCESO,preguntas.personaje
+persona,El hombre de la parábola,El hombre de la parábola,1,,LUGAR,preguntas.personaje
+persona,El levita,El levita,1,,NOMBRE,preguntas.personaje
+persona,el lugar donde bautizó Juan,el lugar donde bautizó Juan,1,,LUGAR,preguntas.personaje
+persona,El mayordomo,El mayordomo,1,,OTRO,preguntas.personaje
+persona,el mayordomo fiel,el mayordomo fiel,1,,SUCESO,preguntas.personaje
+persona,el mes de kislev,el mes de kislev,1,,FECHA,preguntas.personaje
+persona,el niño,el niño,1,,NUMERO,preguntas.personaje
+persona,El país lejano,El país lejano,1,,SUCESO,preguntas.personaje
+persona,El primer invitado,El primer invitado,1,,SUCESO,preguntas.personaje
+persona,el Pórtico de Salomón,el Pórtico de Salomón,1,,LUGAR,preguntas.personaje
+persona,El rey enemigo,El rey enemigo,1,,NUMERO,preguntas.personaje
+persona,El sacerdote,El sacerdote,1,,NOMBRE,preguntas.personaje
+persona,el Sanedrín,el Sanedrín,1,,NUMERO,hechos_biblicos.csv; preguntas.personaje
+persona,El tercer invitado,El tercer invitado,1,,SUCESO,preguntas.personaje
+persona,ELIAB,ELIAB,1,,NOMBRE,preguntas.personaje
+persona,Elimas,Elimas,1,,NOMBRE,preguntas.personaje
+persona,Elimelec,Elimelec,1,,PARENTESCO,preguntas.personaje
+persona,emperador,emperador,1,,OTRO,preguntas.personaje
+persona,Enemigos de Jesús,Enemigos de Jesús,1,,SUCESO,preguntas.personaje
+persona,Enós,Enós,1,,NOMBRE,hechos_biblicos.csv; preguntas.personaje
+persona,Epicúreos y estoicos,Epicúreos y estoicos,1,,SUCESO,preguntas.personaje
+persona,Esposa de Lot,Esposa de Lot,1,,OTRO,preguntas.personaje
+persona,Estrabón,Estrabón,1,,NOMBRE,preguntas.personaje
+persona,Etbaal,Etbaal,1,,OTRO,preguntas.personaje
+persona,Falsos profetas,Falsos profetas,1,,SUCESO,preguntas.personaje
+persona,FAMILIA,FAMILIA,1,,SUCESO,preguntas.personaje
+persona,fariseos y escribas,fariseos y escribas,1,,NOMBRE,preguntas.personaje
+persona,fariseos y saduceos,fariseos y saduceos,1,,NOMBRE,preguntas.personaje
+persona,FILIPE,FILIPE,1,,LUGAR,preguntas.personaje
+persona,Filón,Filón,1,,NUMERO,preguntas.personaje
+persona,GAD,GAD | Gad,1,,NOMBRE,hechos_biblicos.csv; preguntas.personaje
+persona,GAD Y NATAN,GAD Y NATAN,1,,NOMBRE,preguntas.personaje
+persona,GOLIAT,Goliat | GOLIAT,1,,OTRO,hechos_biblicos.csv; preguntas.personaje
+persona,GUEDALIAS,GUEDALIAS,1,,NOMBRE,preguntas.personaje
+persona,GUEHAZI,GUEHAZI,1,,NOMBRE,preguntas.personaje
+persona,HAZAEL,HAZAEL,1,,NOMBRE,preguntas.personaje
+persona,Hermanos de Tiro,Hermanos de Tiro,1,,SUCESO,preguntas.personaje
+persona,Hermes,Hermes,1,,NOMBRE,preguntas.personaje
+persona,HIRAM,Hiram | HIRAM,1,,NOMBRE,hechos_biblicos.csv; preguntas.personaje
+persona,Horacio,Horacio,1,,OTRO,preguntas.personaje
+persona,Idumeos,Idumeos,1,,FECHA,preguntas.personaje
+persona,ITTAI,ITTAI,1,,NOMBRE,preguntas.personaje
+persona,Jabín,Jabín,1,,NOMBRE,preguntas.personaje
+persona,JEHOAQUIM,JEHOAQUIM,1,,NOMBRE,preguntas.personaje
+persona,JEHOASABEAT,JEHOASABEAT,1,,NOMBRE,preguntas.personaje
+persona,JEHONADAB,JEHONADAB,1,,NOMBRE,preguntas.personaje
+persona,JEOACAZ,JEOACAZ,1,,SUCESO,preguntas.personaje
+persona,JEOIAQUIM,JEOIAQUIM,1,,NOMBRE,preguntas.personaje
+persona,JESÉ,JESÉ,1,,NOMBRE,preguntas.personaje
+persona,JESÚA,JESÚA,1,,NOMBRE,preguntas.personaje
+persona,JOAB,JOAB | Joab,1,,LUGAR,hechos_biblicos.csv; preguntas.personaje
+persona,JOTÁN,Jotán | JOTÁN,1,,Reyes de Judá; SUCESO,hechos_biblicos.csv; personajes_biblicos.csv; preguntas.personaje
+persona,Judas (Tadeo),Judas (Tadeo),1,,NOMBRE,preguntas.personaje
+persona,Julio César,Julio César,1,,FECHA,preguntas.personaje
+persona,jw.org,jw.org,1,,NUMERO,preguntas.personaje
+persona,La comida,La comida,1,,FECHA,preguntas.personaje
+persona,La corte del faraón,La corte del faraón,1,,SUCESO,preguntas.personaje
+persona,la hidropesía,la hidropesía,1,,OTRO,preguntas.personaje
+persona,la hija,la hija,1,,SUCESO,preguntas.personaje
+persona,La hija de Jairo,La hija de Jairo,1,,EDAD,preguntas.personaje
+persona,La mujer de la multitud,La mujer de la multitud,1,,SUCESO,preguntas.personaje
+persona,La palabra de Jehová,La palabra de Jehová,1,,SUCESO,preguntas.personaje
+persona,La reina de Seba,La reina de Seba,1,,NOMBRE,preguntas.personaje
+persona,la samaritana,la samaritana,1,,NOMBRE,preguntas.personaje
+persona,La viuda,La viuda | la viuda,1,,PARENTESCO,hechos_biblicos.csv; preguntas.personaje
+persona,Labán,Labán,1,,PARENTESCO,preguntas.personaje
+persona,Ladrón,Ladrón,1,,OTRO,preguntas.personaje
+persona,Lamec,Lamec,1,,SUCESO,hechos_biblicos.csv; preguntas.personaje
+persona,Langostas,Langostas,1,,SUCESO,preguntas.personaje
+persona,las Escrituras,las Escrituras,1,,NOMBRE,preguntas.personaje
+persona,las ovejas,las ovejas,1,,SUCESO,preguntas.personaje
+persona,Las personas,Las personas,1,,SUCESO,preguntas.personaje
+persona,Las tumbas,Las tumbas,1,,OTRO,preguntas.personaje
+persona,Ley de Moisés,Ley de Moisés,1,,FECHA,preguntas.personaje
+persona,Lisias,Lisias,1,,NOMBRE,preguntas.personaje
+persona,Los 12 apóstoles,Los 12 apóstoles,1,,OTRO,preguntas.personaje
+persona,los adversarios,los adversarios,1,,SUCESO,preguntas.personaje
+persona,Los cerdos,Los cerdos,1,,SUCESO,preguntas.personaje
+persona,Los cuervos,Los cuervos,1,,SUCESO,preguntas.personaje
+persona,los enfermos,los enfermos,1,,SUCESO,preguntas.personaje
+persona,los galileos,los galileos,1,,SUCESO,preguntas.personaje
+persona,Los habitantes de Nazaret,Los habitantes de Nazaret,1,,OTRO,preguntas.personaje
+persona,los hijos de un sacerdote judío,los hijos de un sacerdote judío,1,,NOMBRE,preguntas.personaje
+persona,Los ladrones,Los ladrones,1,,SUCESO,preguntas.personaje
+persona,Los lirios,Los lirios,1,,SUCESO,preguntas.personaje
+persona,Los padres del ciego,Los padres del ciego,1,,SUCESO,preguntas.personaje
+persona,Los seguidores,Los seguidores,1,,OTRO,preguntas.personaje
+persona,"Lázaro, María y Marta","Lázaro, María y Marta",1,,PARENTESCO,preguntas.personaje
+persona,Líderes judíos,Líderes judíos,1,,FECHA,preguntas.personaje
+persona,Macedonia,Macedonia,1,,SUCESO,preguntas.personaje
+persona,Malco,Malco,1,,PARENTESCO,preguntas.personaje
+persona,MICAL,MICAL | Mical,1,,SUCESO,hechos_biblicos.csv; preguntas.personaje
+persona,Nemrod,Nemrod,1,,NOMBRE,hechos_biblicos.csv; preguntas.personaje
+persona,Nicolás,Nicolás,1,,NOMBRE,preguntas.personaje
+persona,Niños,Niños,1,,SUCESO,preguntas.personaje
+persona,Obed,Obed,1,,PARENTESCO,preguntas.personaje
+persona,OBED-EDOM,OBED-EDOM,1,,NOMBRE,preguntas.personaje
+persona,OCozías,OCozías,1,,SUCESO,preguntas.personaje
+persona,Oficial,Oficial,1,,OTRO,preguntas.personaje
+persona,Orpá,Orpá,1,,SUCESO,preguntas.personaje
+persona,Orígenes,Orígenes,1,,NOMBRE,preguntas.personaje
+persona,Otoniel,Otoniel,1,,NOMBRE,hechos_biblicos.csv; preguntas.personaje
+persona,Palas,Palas,1,,PARENTESCO,preguntas.personaje
+persona,Pentecostés,Pentecostés,1,,FECHA,preguntas.personaje
+persona,Profecía,Profecía,1,,LUGAR,preguntas.personaje
+persona,PUEBLO,PUEBLO,1,,NUMERO,preguntas.personaje
+persona,REINA DE SABA,REINA DE SABA,1,,NOMBRE,preguntas.personaje
+persona,REINA DE SEBA,reina de Seba | REINA DE SEBA,1,,MEDIDA,hechos_biblicos.csv; preguntas.personaje
+persona,RESTO,RESTO,1,,SUCESO,preguntas.personaje
+persona,Revistas,Revistas,1,,NOMBRE,preguntas.personaje
+persona,REYES,REYES,1,,NOMBRE,preguntas.personaje
+persona,RUBÉN,RUBÉN,1,,SUCESO,preguntas.personaje
+persona,Sacerdotes principales,Sacerdotes principales,1,,SUCESO,preguntas.personaje
+persona,SADOC,SADOC | Sadoc,1,,NOMBRE,hechos_biblicos.csv; preguntas.personaje
+persona,Schürer,Schürer,1,,NOMBRE,preguntas.personaje
+persona,SEBA,SEBA,1,,NOMBRE,preguntas.personaje
+persona,SISAQ,SISAQ,1,,NOMBRE,preguntas.personaje
+persona,SUSANA,SUSANA,1,,NOMBRE,preguntas.personaje
+persona,Sócrates,Sócrates,1,,NOMBRE,preguntas.personaje
+persona,Sópater,Sópater,1,,NOMBRE,preguntas.personaje
+persona,Taré,Taré,1,,PARENTESCO,hechos_biblicos.csv; preguntas.personaje
+persona,trabajador,trabajador,1,,MONEDA,preguntas.personaje
+persona,Trajano,Trajano,1,,NOMBRE,preguntas.personaje
+persona,Tubal-caín,Tubal-caín,1,,NOMBRE,hechos_biblicos.csv; preguntas.personaje
+persona,un líder de los fariseos,un líder de los fariseos,1,,SUCESO,preguntas.personaje
+persona,URIAS,URIAS | Urías,1,sin_tilde,SUCESO,hechos_biblicos.csv; preguntas.personaje
+persona,Vespasiano,Vespasiano,1,,NOMBRE,preguntas.personaje
+persona,William Edwards,William Edwards,1,,NOMBRE,preguntas.personaje
+persona,ZIMRI,Zimrí | ZIMRI,1,sin_tilde,NOMBRE; Reyes de Israel,hechos_biblicos.csv; personajes_biblicos.csv; preguntas.personaje
+persona,Ángel de Jehová,Ángel de Jehová,1,,NOMBRE,preguntas.personaje
+persona,Abednego,Abednego,0,,,hechos_biblicos.csv
+persona,Abías (Abiyam),Abías (Abiyam),0,,,hechos_biblicos.csv
+persona,Acán,Acán,0,,,hechos_biblicos.csv
+persona,Ajías,Ajías,0,,,hechos_biblicos.csv
+persona,artesanos,artesanos,0,,,hechos_biblicos.csv
+persona,Bezaleel,Bezaleel,0,,,hechos_biblicos.csv
+persona,Booz,Booz,0,,,hechos_biblicos.csv
+persona,Cainán,Cainán,0,,,hechos_biblicos.csv
+persona,Cam,Cam,0,,,hechos_biblicos.csv
+persona,el etíope,el etíope,0,,,hechos_biblicos.csv
+persona,Elcaná,Elcaná,0,,,hechos_biblicos.csv
+persona,Eleazar,Eleazar,0,,,hechos_biblicos.csv
+persona,Elá,Elá,0,,Reyes de Israel,hechos_biblicos.csv; personajes_biblicos.csv
+persona,Faraones,Faraones,0,,,hechos_biblicos.csv
+persona,Felipe el evangelizador,Felipe el evangelizador,0,,Siglo primero,personajes_biblicos.csv
+persona,Gayo,Gayo,0,,,hechos_biblicos.csv
+persona,Haggeo,Haggeo,0,,,hechos_biblicos.csv
+persona,Hananiás,Hananiás,0,,Destierro en Babilonia,personajes_biblicos.csv
+persona,Hilcías,Hilcías,0,,,hechos_biblicos.csv
+persona,Jabal,Jabal,0,,,hechos_biblicos.csv
+persona,Jafet,Jafet,0,,,hechos_biblicos.csv
+persona,Jared,Jared,0,,,hechos_biblicos.csv
+persona,Jefté y su hija,Jefté y su hija,0,,Época de los jueces,personajes_biblicos.csv
+persona,Jehoacaz,Jehoacaz,0,,Reyes de Judá,hechos_biblicos.csv; personajes_biblicos.csv
+persona,Jehoacaz (Israel),Jehoacaz (Israel),0,,Reyes de Israel,personajes_biblicos.csv
+persona,Jehoacaz y Jehoás,Jehoacaz y Jehoás,0,,,hechos_biblicos.csv
+persona,Jehoiaquim,Jehoiaquim,0,,Reyes de Judá,hechos_biblicos.csv; personajes_biblicos.csv
+persona,Jehoram (Israel),Jehoram (Israel),0,,Reyes de Israel,hechos_biblicos.csv; personajes_biblicos.csv
+persona,Jehoram (Judá),Jehoram (Judá),0,,Reyes de Judá,hechos_biblicos.csv; personajes_biblicos.csv
+persona,Jehoás (Israel),Jehoás (Israel),0,,Reyes de Israel,hechos_biblicos.csv; personajes_biblicos.csv
+persona,Jehoás (Judá),Jehoás (Judá),0,,Reyes de Judá,hechos_biblicos.csv; personajes_biblicos.csv
+persona,Jeroboán I,Jeroboán I,0,,Reyes de Israel,hechos_biblicos.csv; personajes_biblicos.csv
+persona,Jeroboán II,Jeroboán II,0,,Reyes de Israel,hechos_biblicos.csv; personajes_biblicos.csv
+persona,Jesucristo (profecía),Jesucristo (profecía),0,,,hechos_biblicos.csv
+persona,Jokébed y Míriam,Jokébed y Míriam,0,,Después del Diluvio,personajes_biblicos.csv
+persona,Juan el apóstol,Juan el apóstol,0,,Siglo primero,personajes_biblicos.csv
+persona,Jubal,Jubal,0,,,hechos_biblicos.csv
+persona,la mujer samaritana,la mujer samaritana,0,,,hechos_biblicos.csv
+persona,la sunamita,la sunamita,0,,,hechos_biblicos.csv
+persona,las tribus,las tribus,0,,,hechos_biblicos.csv
+persona,los doce apóstoles,los doce apóstoles,0,,,hechos_biblicos.csv
+persona,los espías,los espías,0,,,hechos_biblicos.csv
+persona,los setenta,los setenta,0,,,hechos_biblicos.csv
+persona,Mahalaleel,Mahalaleel,0,,,hechos_biblicos.csv
+persona,Menahem,Menahem,0,,Reyes de Israel,hechos_biblicos.csv; personajes_biblicos.csv
+persona,Mesac,Mesac,0,,,hechos_biblicos.csv
+persona,Misael y Azariás,Misael y Azariás,0,,Destierro en Babilonia,personajes_biblicos.csv
+persona,Nabot,Nabot,0,,,hechos_biblicos.csv
+persona,Nadab,Nadab,0,,Reyes de Israel,hechos_biblicos.csv; personajes_biblicos.csv
+persona,Ocozías (Israel),Ocozías (Israel),0,,Reyes de Israel,hechos_biblicos.csv; personajes_biblicos.csv
+persona,Ocozías (Judá),Ocozías (Judá),0,,Reyes de Judá,hechos_biblicos.csv; personajes_biblicos.csv
+persona,Omrí (solo),Omrí (solo),0,,,hechos_biblicos.csv
+persona,Omrí y Tibní,Omrí y Tibní,0,,,hechos_biblicos.csv
+persona,otras mujeres,otras mujeres,0,,,hechos_biblicos.csv
+persona,otros 10 espías,otros 10 espías,0,,,hechos_biblicos.csv
+persona,Pecahías,Pecahías,0,,Reyes de Israel,hechos_biblicos.csv; personajes_biblicos.csv
+persona,profetas de Baal,profetas de Baal,0,,,hechos_biblicos.csv
+persona,Pua,Pua,0,,Después del Diluvio,personajes_biblicos.csv
+persona,Pécah,Pécah,0,,Reyes de Israel,hechos_biblicos.csv; personajes_biblicos.csv
+persona,Péleg,Péleg,0,,,hechos_biblicos.csv
+persona,Roboam,Roboam,0,,,hechos_biblicos.csv
+persona,Sadrac,Sadrac,0,,,hechos_biblicos.csv
+persona,Safira,Safira,0,,,hechos_biblicos.csv
+persona,Saraí,Saraí,0,,,hechos_biblicos.csv
+persona,Satán,Satán,0,,,hechos_biblicos.csv
+persona,Selah,Selah,0,,,hechos_biblicos.csv
+persona,Sifrá,Sifrá,0,,Después del Diluvio,personajes_biblicos.csv
+persona,su madre,su madre,0,,,hechos_biblicos.csv
+persona,sus esposas,sus esposas,0,,,hechos_biblicos.csv
+persona,sus hermanos,sus hermanos,0,,,hechos_biblicos.csv
+persona,sus hijas,sus hijas,0,,,hechos_biblicos.csv
+persona,sus hijos,sus hijos,0,,,hechos_biblicos.csv
+persona,un joven rico,un joven rico,0,,,hechos_biblicos.csv
+persona,un padre,un padre,0,,,hechos_biblicos.csv
+persona,Uzías (Azarías),Uzías (Azarías),0,,,hechos_biblicos.csv
+persona,Zacarías (rey),Zacarías (rey),0,,Reyes de Israel,personajes_biblicos.csv
+persona,Éber,Éber,0,,,hechos_biblicos.csv
+lugar,Atenas,Atenas,33,,FECHA; LUGAR; MEDIDA; NOMBRE; OTRO; SUCESO,hechos_biblicos.csv; lugares_biblicos.csv; preguntas.personaje
+lugar,Éfeso,Éfeso,22,,LUGAR; MONEDA; NUMERO; OTRO; SUCESO,hechos_biblicos.csv; lugares_biblicos.csv; preguntas.personaje
+lugar,JERUSALÉN,JERUSALÉN | Jerusalen | Jerusalén,17,sin_tilde,FECHA; LUGAR; NUMERO; OTRO; SUCESO,hechos_biblicos.csv; lugares_biblicos.csv; preguntas.personaje
+lugar,Antioquía,Antioquía,15,,FECHA; LUGAR; MEDIDA; NOMBRE; OTRO; SUCESO,hechos_biblicos.csv; preguntas.personaje
+lugar,Cesarea,Cesarea,10,,LUGAR; OTRO; SUCESO,hechos_biblicos.csv; lugares_biblicos.csv; preguntas.personaje
+lugar,Betania,Betania,9,,LUGAR; MEDIDA; NUMERO,hechos_biblicos.csv; lugares_biblicos.csv; preguntas.personaje
+lugar,ISRAEL,ISRAEL | Israel,9,,FECHA; LUGAR; NUMERO; OTRO; SUCESO,hechos_biblicos.csv; preguntas.personaje
+lugar,Corinto,Corinto,4,,LUGAR; NOMBRE; OTRO; SUCESO,hechos_biblicos.csv; lugares_biblicos.csv; preguntas.personaje
+lugar,Filipos,Filipos | FILIPOS,4,,NOMBRE; OTRO; SUCESO,hechos_biblicos.csv; lugares_biblicos.csv; preguntas.personaje
+lugar,Templo,Templo,4,,FECHA; NUMERO,hechos_biblicos.csv; preguntas.personaje
+lugar,Areópago,Areópago,3,,LUGAR; OTRO; SUCESO,lugares_biblicos.csv; preguntas.personaje
+lugar,Berea,Berea,3,,NOMBRE; SUCESO,lugares_biblicos.csv; preguntas.personaje
+lugar,Jericó,Jericó,3,,LUGAR; NUMERO,hechos_biblicos.csv; lugares_biblicos.csv; preguntas.personaje
+lugar,TESALÓNICA,Tesalónica | TESALÓNICA,3,,LUGAR,hechos_biblicos.csv; lugares_biblicos.csv; preguntas.personaje
+lugar,BABILONIA,Babilonia | BABILONIA,2,,FECHA; OTRO,hechos_biblicos.csv; lugares_biblicos.csv; preguntas.personaje
+lugar,CAPERNAÚM,Capernaum | Capernaúm | CAPERNAÚM,2,sin_tilde,LUGAR; SUCESO,hechos_biblicos.csv; lugares_biblicos.csv; preguntas.personaje
+lugar,Emaús,Emaús,2,,MEDIDA,lugares_biblicos.csv; preguntas.personaje
+lugar,JUDA,Judá | JUDA,2,sin_tilde,FECHA,hechos_biblicos.csv; preguntas.personaje
+lugar,Judea,Judea,2,,FECHA; SUCESO,hechos_biblicos.csv; preguntas.personaje
+lugar,Laodicea,Laodicea,2,,OTRO; SUCESO,lugares_biblicos.csv; preguntas.personaje
+lugar,Perea,Perea,2,,LUGAR,hechos_biblicos.csv; preguntas.personaje
+lugar,Tiatira,Tiatira,2,,NOMBRE; SUCESO,lugares_biblicos.csv; preguntas.personaje
+lugar,AMÓN,AMÓN | Amón | Amon,1,sin_tilde,NUMERO; Reyes de Judá,hechos_biblicos.csv; lugares_biblicos.csv; personajes_biblicos.csv; preguntas.personaje
+lugar,Antioquía de Siria,Antioquía de Siria,1,,LUGAR,lugares_biblicos.csv; preguntas.personaje
+lugar,ASIRIA,ASIRIA | Asiria,1,,FECHA,hechos_biblicos.csv; lugares_biblicos.csv; preguntas.personaje
+lugar,Esmirna,Esmirna,1,,OTRO,lugares_biblicos.csv; preguntas.personaje
+lugar,Filadelfia,Filadelfia,1,,SUCESO,lugares_biblicos.csv; preguntas.personaje
+lugar,NÍNIVE,Nínive | NÍNIVE,1,,LUGAR,hechos_biblicos.csv; lugares_biblicos.csv; preguntas.personaje
+lugar,Pérgamo,Pérgamo,1,,LUGAR,lugares_biblicos.csv; preguntas.personaje
+lugar,Roma,Roma,1,,OTRO,hechos_biblicos.csv; lugares_biblicos.csv; preguntas.personaje
+lugar,SUNEM,Sunem | SUNEM,1,,LUGAR,hechos_biblicos.csv; preguntas.personaje
+lugar,Acor (valle),Acor (valle),0,,,lugares_biblicos.csv
+lugar,Ajalón (valle),Ajalón (valle),0,,,lugares_biblicos.csv
+lugar,Al este del Edén,Al este del Edén,0,,,hechos_biblicos.csv
+lugar,Alejandría,Alejandría,0,,,lugares_biblicos.csv
+lugar,Alto de Hermón,Alto de Hermón,0,,,lugares_biblicos.csv
+lugar,Antediluviano,Antediluviano,0,,,hechos_biblicos.csv
+lugar,Antioquía de Pisidia,Antioquía de Pisidia,0,,,lugares_biblicos.csv
+lugar,Antípatris,Antípatris,0,,,lugares_biblicos.csv
+lugar,Ararat (montañas),Ararat (montañas),0,,,hechos_biblicos.csv; lugares_biblicos.csv
+lugar,Ariél,Ariél,0,,,lugares_biblicos.csv
+lugar,Arpad,Arpad,0,,,lugares_biblicos.csv
+lugar,Ascalón,Ascalón,0,,,lugares_biblicos.csv
+lugar,Asdod,Asdod,0,,,lugares_biblicos.csv
+lugar,Babel,Babel,0,,,hechos_biblicos.csv; lugares_biblicos.csv
+lugar,Beer-seba,Beer-seba,0,,,hechos_biblicos.csv
+lugar,Belén,Belén,0,,,hechos_biblicos.csv; lugares_biblicos.csv
+lugar,Berseba,Berseba,0,,,lugares_biblicos.csv
+lugar,Bet-horón,Bet-horón,0,,,hechos_biblicos.csv; lugares_biblicos.csv
+lugar,Bet-saida,Bet-saida,0,,,hechos_biblicos.csv; lugares_biblicos.csv
+lugar,Bet-semes,Bet-semes,0,,,lugares_biblicos.csv
+lugar,Bet-sán,Bet-sán,0,,,lugares_biblicos.csv
+lugar,Betania del otro lado del Jordán,Betania del otro lado del Jordán,0,,,hechos_biblicos.csv
+lugar,Betel,Betel,0,,,hechos_biblicos.csv; lugares_biblicos.csv
+lugar,Betfage,Betfage | Betfagé,0,sin_tilde,,lugares_biblicos.csv
+lugar,Betsaida,Betsaida,0,,,hechos_biblicos.csv
+lugar,Boquim,Boquim,0,,,lugares_biblicos.csv
+lugar,Bosra,Bosra,0,,,lugares_biblicos.csv
+lugar,Cades-barnea,Cades-barnea,0,,,hechos_biblicos.csv; lugares_biblicos.csv
+lugar,Cafarnaúm,Cafarnaúm,0,,,lugares_biblicos.csv
+lugar,Caldea,Caldea,0,,,lugares_biblicos.csv
+lugar,Camino a Damasco,Camino a Damasco,0,,,hechos_biblicos.csv
+lugar,Camino de Gaza,Camino de Gaza,0,,,hechos_biblicos.csv
+lugar,Canaán,Canaán,0,,,hechos_biblicos.csv; lugares_biblicos.csv
+lugar,Canaán de la ciudad de Hazor,Canaán de la ciudad de Hazor,0,,,lugares_biblicos.csv
+lugar,Caná,Caná | Cana,0,sin_tilde,,hechos_biblicos.csv; lugares_biblicos.csv
+lugar,casa de Caifás,casa de Caifás,0,,,hechos_biblicos.csv
+lugar,Caverna de En-guedi,Caverna de En-guedi,0,,,lugares_biblicos.csv
+lugar,Cedrón,Cedrón,0,,,hechos_biblicos.csv
+lugar,Cedrón (torrente),Cedrón (torrente),0,,,lugares_biblicos.csv
+lugar,Cencrea,Cencrea,0,,,lugares_biblicos.csv
+lugar,Cerca de Capernaum,Cerca de Capernaum,0,,,hechos_biblicos.csv
+lugar,Cerca de Damasco,Cerca de Damasco,0,,,hechos_biblicos.csv
+lugar,Cesarea de Filipo,Cesarea de Filipo,0,,,hechos_biblicos.csv; lugares_biblicos.csv
+lugar,Chipre,Chipre,0,,,lugares_biblicos.csv
+lugar,Cnido,Cnido,0,,,lugares_biblicos.csv
+lugar,Colosas,Colosas,0,,,hechos_biblicos.csv
+lugar,Corsaín,Corsaín,0,,,lugares_biblicos.csv
+lugar,Corte de Saúl,Corte de Saúl,0,,,hechos_biblicos.csv
+lugar,Creta,Creta,0,,,hechos_biblicos.csv; lugares_biblicos.csv
+lugar,Cueva de Macpela,Cueva de Macpela,0,,,lugares_biblicos.csv
+lugar,Cuevas de Adulán,Cuevas de Adulán,0,,,lugares_biblicos.csv
+lugar,Damasco,Damasco,0,,,lugares_biblicos.csv
+lugar,Dan (ciudad),Dan (ciudad),0,,,lugares_biblicos.csv
+lugar,Decápolis,Decápolis,0,,,hechos_biblicos.csv
+lugar,Derbe,Derbe,0,,,lugares_biblicos.csv
+lugar,Desconocido,Desconocido,0,,,hechos_biblicos.csv
+lugar,Desierto de Judea,Desierto de Judea,0,,,hechos_biblicos.csv
+lugar,Desierto de Parán,Desierto de Parán,0,,,lugares_biblicos.csv
+lugar,Desierto de Sinaí,Desierto de Sinaí,0,,,hechos_biblicos.csv
+lugar,Dotán,Dotán,0,,,hechos_biblicos.csv; lugares_biblicos.csv
+lugar,Ecbatana,Ecbatana,0,,,lugares_biblicos.csv
+lugar,Ecrón,Ecrón,0,,,lugares_biblicos.csv
+lugar,Edom,Edom,0,,,hechos_biblicos.csv; lugares_biblicos.csv
+lugar,Edén,Edén,0,,,hechos_biblicos.csv; lugares_biblicos.csv
+lugar,Efraín,Efraín,0,,,hechos_biblicos.csv
+lugar,Egipto,Egipto,0,,,hechos_biblicos.csv; lugares_biblicos.csv
+lugar,Elam,Elam,0,,,lugares_biblicos.csv
+lugar,En-guedi,En-guedi,0,,,hechos_biblicos.csv; lugares_biblicos.csv
+lugar,Endor,Endor,0,,,lugares_biblicos.csv
+lugar,Enón,Enón,0,,,hechos_biblicos.csv
+lugar,Fenicia,Fenicia,0,,,hechos_biblicos.csv
+lugar,Foro de Apio,Foro de Apio,0,,,lugares_biblicos.csv
+lugar,Gabaón,Gabaón,0,,,hechos_biblicos.csv; lugares_biblicos.csv
+lugar,Gabaón (estanque),Gabaón (estanque),0,,,lugares_biblicos.csv
+lugar,Gadara,Gadara,0,,,hechos_biblicos.csv
+lugar,Galaad,Galaad,0,,,hechos_biblicos.csv
+lugar,Galacia,Galacia,0,,,hechos_biblicos.csv
+lugar,Galilea,Galilea,0,,,hechos_biblicos.csv; lugares_biblicos.csv
+lugar,Galilea y Samaria,Galilea y Samaria,0,,,hechos_biblicos.csv
+lugar,Gares,Gares,0,,,lugares_biblicos.csv
+lugar,Gat,Gat,0,,,lugares_biblicos.csv
+lugar,Gaza,Gaza,0,,,hechos_biblicos.csv; lugares_biblicos.csv
+lugar,Getsemaní,Getsemaní,0,,,hechos_biblicos.csv; lugares_biblicos.csv
+lugar,Gilboa,Gilboa,0,,,lugares_biblicos.csv
+lugar,Gilboa (monte),Gilboa (monte),0,,,lugares_biblicos.csv
+lugar,Gilgal,Gilgal,0,,,lugares_biblicos.csv
+lugar,Gobernador de Damasco,Gobernador de Damasco,0,,,lugares_biblicos.csv
+lugar,Gosén,Gosén,0,,,lugares_biblicos.csv
+lugar,"Gosén, Egipto","Gosén, Egipto",0,,,hechos_biblicos.csv
+lugar,Grecia,Grecia,0,,,hechos_biblicos.csv
+lugar,Guibeá,Guibeá,0,,,lugares_biblicos.csv
+lugar,Guilgal,Guilgal,0,,,hechos_biblicos.csv
+lugar,Gólgota,Gólgota,0,,,hechos_biblicos.csv; lugares_biblicos.csv
+lugar,Hai,Hai,0,,,lugares_biblicos.csv
+lugar,Halah,Halah,0,,,lugares_biblicos.csv
+lugar,Hamat,Hamat,0,,,lugares_biblicos.csv
+lugar,Harán,Harán,0,,,lugares_biblicos.csv
+lugar,Hazor,Hazor,0,,,lugares_biblicos.csv
+lugar,Hebrón,Hebrón,0,,,hechos_biblicos.csv; lugares_biblicos.csv
+lugar,Iconio,Iconio,0,,,lugares_biblicos.csv
+lugar,Italia,Italia,0,,,hechos_biblicos.csv
+lugar,Jezreel,Jezreel,0,,,hechos_biblicos.csv
+lugar,Jezreel (ciudad),Jezreel (ciudad),0,,,lugares_biblicos.csv
+lugar,Jope,Jope,0,,,lugares_biblicos.csv
+lugar,Jordania (Betabara),Jordania (Betabara),0,,,lugares_biblicos.csv
+lugar,Jordán,Jordán,0,,,hechos_biblicos.csv
+lugar,Laguardia del valle,Laguardia del valle,0,,,lugares_biblicos.csv
+lugar,Lais,Lais,0,,,lugares_biblicos.csv
+lugar,Lasea,Lasea,0,,,lugares_biblicos.csv
+lugar,Lehi,Lehi,0,,,hechos_biblicos.csv; lugares_biblicos.csv
+lugar,Lida,Lida,0,,,lugares_biblicos.csv
+lugar,Listra,Listra,0,,,lugares_biblicos.csv
+lugar,Llanura de Dura,Llanura de Dura,0,,,hechos_biblicos.csv
+lugar,Llanuras de Moab,Llanuras de Moab,0,,,hechos_biblicos.csv
+lugar,Luz,Luz,0,,,lugares_biblicos.csv
+lugar,Madián,Madián,0,,,lugares_biblicos.csv
+lugar,Magadán,Magadán,0,,,hechos_biblicos.csv
+lugar,Magdala,Magdala,0,,,lugares_biblicos.csv
+lugar,Mahanaim,Mahanaim,0,,,hechos_biblicos.csv
+lugar,Malta,Malta,0,,,lugares_biblicos.csv
+lugar,Manantial de Harod,Manantial de Harod,0,,,hechos_biblicos.csv; lugares_biblicos.csv
+lugar,Mar de Galilea,Mar de Galilea | mar de Galilea,0,,,hechos_biblicos.csv; lugares_biblicos.csv
+lugar,Mar Grande (Mediterráneo),Mar Grande (Mediterráneo),0,,,lugares_biblicos.csv
+lugar,Mar Mediterráneo,Mar Mediterráneo,0,,,hechos_biblicos.csv
+lugar,Mar Muerto,Mar Muerto,0,,,lugares_biblicos.csv
+lugar,Mar Rojo,Mar Rojo,0,,,hechos_biblicos.csv; lugares_biblicos.csv
+lugar,Media,Media,0,,,lugares_biblicos.csv
+lugar,Meguido,Meguido,0,,,lugares_biblicos.csv
+lugar,Memfis,Memfis,0,,,lugares_biblicos.csv
+lugar,Mesopotamia,Mesopotamia,0,,,hechos_biblicos.csv
+lugar,Mileto,Mileto,0,,,lugares_biblicos.csv
+lugar,Mispá,Mispá,0,,,hechos_biblicos.csv; lugares_biblicos.csv
+lugar,Moab,Moab,0,,,lugares_biblicos.csv
+lugar,Monte Carmelo,Monte Carmelo,0,,,hechos_biblicos.csv; lugares_biblicos.csv
+lugar,Monte de los Olivos,Monte de los Olivos,0,,,hechos_biblicos.csv; lugares_biblicos.csv
+lugar,Monte Ebal,Monte Ebal,0,,,lugares_biblicos.csv
+lugar,Monte Gerizim,Monte Gerizim,0,,,lugares_biblicos.csv
+lugar,Monte Gilboa,Monte Gilboa,0,,,hechos_biblicos.csv
+lugar,Monte Moria,Monte Moria,0,,,hechos_biblicos.csv; lugares_biblicos.csv
+lugar,Monte Nebo (Pisga),Monte Nebo (Pisga),0,,,hechos_biblicos.csv
+lugar,Monte Sinaí,Monte Sinaí,0,,,hechos_biblicos.csv; lugares_biblicos.csv
+lugar,Monte Sinaí (Horeb),Monte Sinaí (Horeb),0,,,hechos_biblicos.csv; lugares_biblicos.csv
+lugar,Monte Sión,Monte Sión,0,,,lugares_biblicos.csv
+lugar,Monte Tabor,Monte Tabor,0,,,hechos_biblicos.csv; lugares_biblicos.csv
+lugar,Montes de Ararat,Montes de Ararat,0,,,hechos_biblicos.csv
+lugar,Naim,Naim,0,,,lugares_biblicos.csv
+lugar,Nazaret,Nazaret,0,,,hechos_biblicos.csv; lugares_biblicos.csv
+lugar,Néguev,Néguev,0,,,lugares_biblicos.csv
+lugar,Ofra,Ofra,0,,,lugares_biblicos.csv
+lugar,Pafos,Pafos,0,,,lugares_biblicos.csv
+lugar,Palestina,Palestina,0,,,hechos_biblicos.csv
+lugar,Panes,Panes,0,,,lugares_biblicos.csv
+lugar,Patmos,Patmos,0,,,hechos_biblicos.csv; lugares_biblicos.csv
+lugar,Persia,Persia,0,,,hechos_biblicos.csv
+lugar,Persépolis,Persépolis,0,,,lugares_biblicos.csv
+lugar,Petra,Petra,0,,,lugares_biblicos.csv
+lugar,Pueerto Buenos,Pueerto Buenos,0,,,lugares_biblicos.csv
+lugar,Puteoli,Puteoli,0,,,lugares_biblicos.csv
+lugar,Rabá (Rabat-Amón),Rabá (Rabat-Amón),0,,,lugares_biblicos.csv
+lugar,Ráma,Ráma,0,,,lugares_biblicos.csv
+lugar,Rímat-racal,Rímat-racal,0,,,lugares_biblicos.csv
+lugar,Río Jordán,Río Jordán,0,,,hechos_biblicos.csv; lugares_biblicos.csv
+lugar,Río Nilo,Río Nilo,0,,,lugares_biblicos.csv
+lugar,Río Tigris,Río Tigris,0,,,lugares_biblicos.csv
+lugar,Río Éufrates,Río Éufrates,0,,,lugares_biblicos.csv
+lugar,Ríon de Gozán,Ríon de Gozán,0,,,lugares_biblicos.csv
+lugar,Safet,Safet,0,,,lugares_biblicos.csv
+lugar,Salamina,Salamina,0,,,lugares_biblicos.csv
+lugar,Samaria,Samaria,0,,,hechos_biblicos.csv
+lugar,Samaria (ciudad),Samaria (ciudad),0,,,lugares_biblicos.csv
+lugar,Samaria (región),Samaria (región),0,,,lugares_biblicos.csv
+lugar,Samaria o Galilea,Samaria o Galilea,0,,,hechos_biblicos.csv
+lugar,Sardis,Sardis,0,,,lugares_biblicos.csv
+lugar,Sarepta,Sarepta,0,,,hechos_biblicos.csv
+lugar,Sefar,Sefar,0,,,lugares_biblicos.csv
+lugar,Sefelá,Sefelá,0,,,lugares_biblicos.csv
+lugar,Sela,Sela | Selá,0,sin_tilde,,lugares_biblicos.csv
+lugar,Seleucia,Seleucia,0,,,lugares_biblicos.csv
+lugar,Selínuntia,Selínuntia,0,,,lugares_biblicos.csv
+lugar,Sicar,Sicar,0,,,hechos_biblicos.csv; lugares_biblicos.csv
+lugar,Sidón,Sidón,0,,,lugares_biblicos.csv
+lugar,Silo,Silo,0,,,hechos_biblicos.csv; lugares_biblicos.csv
+lugar,Sinar,Sinar,0,,,lugares_biblicos.csv
+lugar,Sinaí (península),Sinaí (península),0,,,lugares_biblicos.csv
+lugar,Siquem,Siquem,0,,,hechos_biblicos.csv; lugares_biblicos.csv
+lugar,Siracusa,Siracusa,0,,,lugares_biblicos.csv
+lugar,Siria (Aram),Siria (Aram),0,,,lugares_biblicos.csv
+lugar,Sodoma y Gomorra,Sodoma y Gomorra,0,,,hechos_biblicos.csv; lugares_biblicos.csv
+lugar,Susa,Susa,0,,,hechos_biblicos.csv; lugares_biblicos.csv
+lugar,Tabernas Tres,Tabernas Tres,0,,,lugares_biblicos.csv
+lugar,Tarso,Tarso,0,,,lugares_biblicos.csv
+lugar,"Tel-abib, Babilonia","Tel-abib, Babilonia",0,,,hechos_biblicos.csv
+lugar,Tiberíades,Tiberíades,0,,,hechos_biblicos.csv; lugares_biblicos.csv
+lugar,Tierra de la Huida (Nod),Tierra de la Huida (Nod),0,,,hechos_biblicos.csv
+lugar,Tierra de Uz,Tierra de Uz,0,,,hechos_biblicos.csv
+lugar,Timna,Timna,0,,,lugares_biblicos.csv
+lugar,Timnat-serah (Efraín),Timnat-serah (Efraín),0,,,hechos_biblicos.csv
+lugar,Tiro,Tiro,0,,,lugares_biblicos.csv
+lugar,Torrente de Querit,Torrente de Querit,0,,,hechos_biblicos.csv
+lugar,Tróade,Tróade,0,,,lugares_biblicos.csv
+lugar,tumba,tumba,0,,,hechos_biblicos.csv
+lugar,Valle de Acor,Valle de Acor,0,,,hechos_biblicos.csv
+lugar,Valle de Cedrón,Valle de Cedrón,0,,,lugares_biblicos.csv
+lugar,Valle de Elá,Valle de Elá,0,,,hechos_biblicos.csv; lugares_biblicos.csv
+lugar,Valle de Jezreel (Esdrelón),Valle de Jezreel (Esdrelón),0,,,lugares_biblicos.csv
+lugar,Zora,Zora,0,,,lugares_biblicos.csv
+lugar,Éufrates,Éufrates | Eufrates,0,,,lugares_biblicos.csv

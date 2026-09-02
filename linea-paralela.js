@@ -3,6 +3,41 @@
 const D = window.LT_DATA;
 let pxPerYear = parseFloat(localStorage.getItem('lt-par-zoom')) || 2.4;
 let autoFit = true;
+const MIN_FOCUS_SPAN = 5;
+const FONT_SCALE_OPTIONS = [1, 1.2, 1.4];
+let viewWindow = loadViewWindow();
+let fontScale = loadFontScale();
+let rectZoomMode = false;
+let focusMarquee = null;
+let pinchState = null;
+
+function loadViewWindow(){
+  try{
+    const raw = localStorage.getItem('lt-par-focus');
+    if(!raw) return null;
+    const v = JSON.parse(raw);
+    if(v && Number.isFinite(v.min) && Number.isFinite(v.max) && v.max > v.min) return v;
+  }catch(e){}
+  return null;
+}
+function saveViewWindow(){
+  try{
+    localStorage.setItem('lt-par-focus', viewWindow ? JSON.stringify(viewWindow) : '');
+  }catch(e){}
+}
+function loadFontScale(){
+  const v = parseFloat(localStorage.getItem('lt-par-font-scale'));
+  return FONT_SCALE_OPTIONS.includes(v) ? v : 1;
+}
+function saveFontScale(){
+  try{ localStorage.setItem('lt-par-font-scale', String(fontScale)); }catch(e){}
+}
+function applyFontScale(){
+  if(document.documentElement && document.documentElement.style){
+    document.documentElement.style.setProperty('--tl-font-scale', String(fontScale));
+  }
+  if(fontScaleEl) fontScaleEl.value = String(fontScale);
+}
 const VIZ_STYLES = ['editorial', 'waterfall'];
 let vizStyle = VIZ_STYLES.includes(localStorage.getItem('lt-par-viz')) ? localStorage.getItem('lt-par-viz') : 'editorial';
 const ROW_LAYOUTS = ['expanded', 'compact'];
@@ -12,8 +47,9 @@ let rowLayout = ROW_LAYOUTS.includes(localStorage.getItem('lt-par-row-layout'))
 function layoutMetrics(){
   const wf = vizStyle === 'waterfall';
   const compact = rowLayout === 'compact';
+  const periodRows = compact || wf;
   return {
-    rowH: compact ? (wf ? 44 : 58) : (wf ? 44 : 48),
+    rowH: periodRows ? 54 : 48,
     laneGap: wf ? 12 : 14,
     laneHdr: wf ? 28 : 32,
     axisH: wf ? 36 : 40,
@@ -42,12 +78,13 @@ function textWidth(text, font){
 }
 function minBarWidthForPe(pe){
   const wf = vizStyle === 'waterfall';
+  const fs = fontScale;
   const nameFont = wf
-    ? '600 11px Inter, "Segoe UI", sans-serif'
-    : '600 11px "Libre Baskerville", Georgia, serif';
+    ? `600 ${11 * fs}px Inter, "Segoe UI", sans-serif`
+    : `600 ${11 * fs}px "Libre Baskerville", Georgia, serif`;
   const dateFont = wf
-    ? '400 9px Inter, "Segoe UI", sans-serif'
-    : '400 9px Karla, "Segoe UI", sans-serif';
+    ? `400 ${9 * fs}px Inter, "Segoe UI", sans-serif`
+    : `400 ${9 * fs}px Karla, "Segoe UI", sans-serif`;
   const nameW = textWidth(pe.n, nameFont);
   const datesW = textWidth(fmtRange(pe.inicio, pe.fin), dateFont);
   return Math.ceil(Math.max(nameW, datesW) + 20);
@@ -81,6 +118,7 @@ const THEME_LANE_META = {
   RESTAURACION: { key:'tres', color:'var(--c-res)', label:'Sucesos · Restauración' },
   'SIGLO-PRIMERO': { key:'tsig', color:'var(--c-ec)', label:'Sucesos · Siglo primero' },
   HECHOS: { key:'hec', color:'var(--c-pat)', label:'Sucesos · Hechos' },
+  'NT-ESCRITURA': { key:'ntesc', color:'var(--c-ntesc)', label:'Sucesos · Escritura NT' },
 };
 
 const LANE_FILTERS = [
@@ -107,6 +145,7 @@ const LANE_FILTERS = [
   { id:'sem',   cron:33,    mode:'ultima_semana', label:'Última semana', color:'var(--lane-sem)' },
   { id:'tsig',  cron:34,    mode:'tema', tema:'SIGLO-PRIMERO', label:'Siglo primero (sucesos)', color:'var(--c-ec)' },
   { id:'hec',   cron:35,    mode:'tema', tema:'HECHOS', label:'Hechos', color:'var(--c-pat)' },
+  { id:'ntesc', cron:36,    mode:'tema', tema:'NT-ESCRITURA', label:'Escritura NT', color:'var(--c-ntesc)' },
 ];
 const LANE_ORDER = [...LANE_FILTERS].sort((a, b)=>a.cron - b.cron).map(f=>f.id);
 const DEFAULT_FOCUS_YEAR = 30;
@@ -141,7 +180,7 @@ const BAR_COLORS = {
   pre:'#6b5b8a', postd:'#4a7a55', babil:'#7a7468', rest:'#4a8494', sig:'#3d6b7a', rdiv:'#9e4a4a',
   jes:'#3d6b7a', sem:'#4a8494',
   gen:'#6b5b8a', exo:'#a8843a', con:'#4a7a55', tjue:'#a86a32', tre:'#a8843a', tpro:'#6b5b8a',
-  exi:'#7a7468', tres:'#4a8494', tsig:'#3d6b7a', hec:'#4a7a55',
+  exi:'#7a7468', tres:'#4a8494', tsig:'#3d6b7a', hec:'#4a7a55', ntesc:'#6b6080',
 };
 const MARKER_COLORS = { batalla:'#9e4a4a', milagro:'#4a8494', 'profecía':'#6b5b8a', juicio:'#a8843a', muerte:'#7a7468', reforma:'#4a7a55', 'destrucción':'#a86a32', otro:'#3d6b7a' };
 
@@ -153,6 +192,29 @@ function markerColorFor(ev){
     if(k.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase() === flat) return v;
   }
   return MARKER_COLORS.otro;
+}
+
+function markerNameInset(pe, barX, yMin, yMax, chartW){
+  if(!showMarkers || pe.isEvent) return 0;
+  const wf = vizStyle === 'waterfall';
+  const nameFont = wf
+    ? '600 11px Inter, "Segoe UI", sans-serif'
+    : '600 11px "Libre Baskerville", Georgia, serif';
+  const nameW = textWidth(pe.n, nameFont);
+  const half = 9;
+  const gap = 5;
+  let inset = 0;
+  for(const ev of eventsForPerson(pe, yMin, yMax)){
+    const mx = yearToX(chartYear(ev) ?? ev.fa, yMin, yMax, chartW);
+    const rel = mx - barX;
+    const mLeft = rel - half;
+    const mRight = rel + half;
+    if(mRight <= 0) continue;
+    if(mLeft < nameW + gap){
+      inset = Math.max(inset, Math.ceil(mRight + gap));
+    }
+  }
+  return inset;
 }
 
 function renderRowEventMarkers(pe, yMin, yMax, chartW, q){
@@ -213,8 +275,14 @@ const optPotencias = document.getElementById('opt-potencias');
 const potChipsEl = document.getElementById('pot-chips');
 const exportBtn = document.getElementById('export-btn');
 const fitBtn = document.getElementById('fit-btn');
+const focusResetBtn = document.getElementById('focus-reset-btn');
+const focusRectBtn = document.getElementById('focus-rect-btn');
+const focusVal = document.getElementById('focus-val');
+const focusMarqueeEl = document.getElementById('focus-marquee');
+const fontScaleEl = document.getElementById('font-scale');
 const vizStyleEl = document.getElementById('viz-style');
 const rowLayoutEl = document.getElementById('row-layout');
+applyFontScale();
 
 function applyVizStyle(){
   document.documentElement.setAttribute('data-viz', vizStyle);
@@ -267,6 +335,103 @@ function updateZoomUi(span2, chartW){
   return effective;
 }
 
+function isFullFocusRange(min, max, dataMin, dataMax){
+  const span = dataMax - dataMin;
+  return span <= 0 || (max - min) >= span * 0.995;
+}
+function getLogicalRange(dataMin, dataMax){
+  if(!viewWindow) return { min: dataMin, max: dataMax };
+  return { min: viewWindow.min, max: viewWindow.max };
+}
+function chartXFromClient(clientX){
+  const rect = chartScroll.getBoundingClientRect();
+  return clientX - rect.left + chartScroll.scrollLeft;
+}
+function xToYear(x, yMin, yMax, chartW){
+  if(chartW <= 0) return (yMin + yMax) / 2;
+  return yMin + (x / chartW) * (yMax - yMin);
+}
+function touchDistance(touches){
+  const dx = touches[0].clientX - touches[1].clientX;
+  const dy = touches[0].clientY - touches[1].clientY;
+  return Math.hypot(dx, dy);
+}
+function touchCenterClientX(touches){
+  return (touches[0].clientX + touches[1].clientX) / 2;
+}
+function applyFocusZoom(newMin, newMax, dataMin, dataMax){
+  let min = Math.max(dataMin, newMin);
+  let max = Math.min(dataMax, newMax);
+  if(max - min < MIN_FOCUS_SPAN){
+    const c = (min + max) / 2;
+    min = c - MIN_FOCUS_SPAN / 2;
+    max = c + MIN_FOCUS_SPAN / 2;
+    if(min < dataMin){ min = dataMin; max = dataMin + MIN_FOCUS_SPAN; }
+    if(max > dataMax){ max = dataMax; min = dataMax - MIN_FOCUS_SPAN; }
+  }
+  if(isFullFocusRange(min, max, dataMin, dataMax)){
+    viewWindow = null;
+  } else {
+    viewWindow = { min, max };
+  }
+  saveViewWindow();
+  render._scrolled = true;
+  render();
+}
+function zoomFocusAt(year, factor, dataMin, dataMax){
+  const { min: vMin, max: vMax } = getLogicalRange(dataMin, dataMax);
+  const span = vMax - vMin;
+  const newSpan = Math.max(MIN_FOCUS_SPAN, span / factor);
+  const t = span > 0 ? (year - vMin) / span : 0.5;
+  let newMin = year - t * newSpan;
+  let newMax = newMin + newSpan;
+  if(newMin < dataMin){ newMin = dataMin; newMax = dataMin + newSpan; }
+  if(newMax > dataMax){ newMax = dataMax; newMin = dataMax - newSpan; }
+  applyFocusZoom(newMin, newMax, dataMin, dataMax);
+}
+function resetFocusZoom(){
+  if(!viewWindow) return;
+  viewWindow = null;
+  saveViewWindow();
+  render._scrolled = true;
+  render();
+}
+function updateFocusUi(dataMin, dataMax){
+  const focused = viewWindow && !isFullFocusRange(viewWindow.min, viewWindow.max, dataMin, dataMax);
+  if(focusResetBtn) focusResetBtn.disabled = !focused;
+  chartScroll.classList.toggle('has-focus-zoom', !!focused);
+  if(focusVal){
+    focusVal.textContent = focused
+      ? `${fmtYear(viewWindow.min)} – ${fmtYear(viewWindow.max)}`
+      : 'Todo el rango';
+  }
+}
+function setRectZoomMode(on){
+  rectZoomMode = !!on;
+  if(focusRectBtn){
+    focusRectBtn.classList.toggle('on', rectZoomMode);
+    focusRectBtn.setAttribute('aria-pressed', rectZoomMode ? 'true' : 'false');
+  }
+  chartScroll.classList.toggle('focus-rect-mode', rectZoomMode);
+}
+function hideFocusMarquee(){
+  focusMarquee = null;
+  if(focusMarqueeEl){
+    focusMarqueeEl.hidden = true;
+    focusMarqueeEl.classList.remove('is-visible');
+    focusMarqueeEl.style.width = '0';
+  }
+}
+function updateFocusMarqueeDom(x0, x1){
+  if(!focusMarqueeEl) return;
+  const left = Math.min(x0, x1) - chartScroll.scrollLeft;
+  const w = Math.abs(x1 - x0);
+  focusMarqueeEl.style.left = left + 'px';
+  focusMarqueeEl.style.width = w + 'px';
+  focusMarqueeEl.hidden = false;
+  focusMarqueeEl.classList.add('is-visible');
+}
+
 function bandLabelHtml(text, bandW, slot){
   if(bandW < 44) return '';
   let label = text;
@@ -298,6 +463,25 @@ function fmtRange(ini, fin){
   if(ini === fin) return fmtYear(ini);
   return fmtYear(ini) + ' – ' + fmtYear(fin);
 }
+/** Fondo con fade lateral donde la fecha es estimada (ini/fe en datos). */
+function estBarBg(color, pe){
+  if(!pe || (!pe.ie && !pe.fe)) return color;
+  const fade = 'transparent';
+  const mid = `color-mix(in srgb, ${color} 42%, transparent)`;
+  if(pe.ie && pe.fe){
+    return `linear-gradient(90deg,${fade} 0%,${mid} 11%,${color} 24%,${color} 76%,${mid} 89%,${fade} 100%)`;
+  }
+  if(pe.ie){
+    return `linear-gradient(90deg,${fade} 0%,${mid} 10%,${color} 26%,${color} 100%)`;
+  }
+  return `linear-gradient(90deg,${color} 0%,${color} 74%,${mid} 90%,${fade} 100%)`;
+}
+function estBarClasses(pe){
+  const cls = [];
+  if(pe.ie) cls.push('est-ini');
+  if(pe.fe) cls.push('est-fin');
+  return cls;
+}
 function norm(s){ return (s||'').toLowerCase().normalize('NFD').replace(/\p{M}/gu,''); }
 
 function personNamesFromField(s){
@@ -322,12 +506,24 @@ function chartYear(ev){
   }
   return ev.fa;
 }
+function chartYearEnd(ev){
+  const y = chartYear(ev);
+  if(y == null) return null;
+  if(ev.fa_fin == null || ev.fa_fin === ev.fa) return y;
+  return ev.fa_fin;
+}
+function eventHasRange(pe){
+  return !!(pe.isEvent && pe.inicio != null && pe.fin != null && pe.inicio !== pe.fin);
+}
 function evToRow(ev, barKey){
   const y = chartYear(ev);
+  const yFin = chartYearEnd(ev);
+  const estIni = ev.ini_est != null ? !!ev.ini_est : !!ev.fest;
+  const estFin = ev.fin_est != null ? !!ev.fin_est : !!ev.fest;
   return {
-    id:'ev'+ev.id, n:ev.n, inicio:y, fin:y,
+    id:'ev'+ev.id, n:ev.n, inicio:y, fin:yFin ?? y,
     nota: ev.mcuando || ev.d || ev.ref,
-    ie: !!ev.fest, fe: !!ev.fest,
+    ie: estIni, fe: estFin,
     isEvent: true, ev, barKey,
   };
 }
@@ -354,7 +550,26 @@ function parseHash(h){
 }
 function overlaps(a1,a2,b1,b2){ return a1 <= b2 && b1 <= a2; }
 
-function layoutBlockTracks(people, compact){
+/** ¿Dos barras se pisarían en pantalla al zoom/ancho actuales? (solo píxeles, no años abstractos) */
+function periodVisualClash(a, b, chartLayout){
+  const { yMin, yMax, chartW } = chartLayout || {};
+  if(!chartW || a.inicio == null || b.inicio == null || a.fin == null || b.fin == null) return false;
+  const left = a.inicio <= b.inicio ? a : b;
+  const right = left === a ? b : a;
+  const lx = yearToX(left.inicio, yMin, yMax, chartW);
+  const rx = yearToX(right.inicio, yMin, yMax, chartW);
+  const lBarW = Math.max(4, yearToX(left.fin, yMin, yMax, chartW) - lx);
+  const rBarW = Math.max(4, yearToX(right.fin, yMin, yMax, chartW) - rx);
+  const labelW = minBarWidthForPe(left);
+  const visualEnd = lx + Math.max(lBarW, labelW);
+  const gap = 6;
+  if(visualEnd + gap > rx) return true;
+  const lBarEnd = lx + lBarW;
+  const rBarEnd = rx + rBarW;
+  return lBarEnd + gap > rx && rBarEnd + gap > lx;
+}
+
+function layoutBlockTracks(people, compact, chartLayout){
   if(!compact) return people.map(pe=>({ people: [pe] }));
   const sorted = [...people].sort((a, b)=>
     (a.inicio ?? 9999) - (b.inicio ?? 9999) ||
@@ -369,9 +584,7 @@ function layoutBlockTracks(people, compact){
     }
     let placed = false;
     for(const track of tracks){
-      const clash = track.some(o=>
-        o.inicio != null && o.fin != null && overlaps(o.inicio, o.fin, pe.inicio, pe.fin),
-      );
+      const clash = track.some(o=> periodVisualClash(o, pe, chartLayout));
       if(!clash){ track.push(pe); placed = true; break; }
     }
     if(!placed) tracks.push([pe]);
@@ -379,7 +592,14 @@ function layoutBlockTracks(people, compact){
   return tracks.map(people=>({ people }));
 }
 
-function enrichLaneData(laneData, q){
+function laneDataForBounds(rawLaneData){
+  return rawLaneData.map(block=>({
+    ...block,
+    tracks: block.people.map(pe=>({ people: [pe] })),
+  }));
+}
+
+function enrichLaneData(laneData, q, chartLayout){
   const compact = rowLayout === 'compact';
   const nq = norm(q || '');
   return laneData.map(block=>{
@@ -389,7 +609,7 @@ function enrichLaneData(laneData, q){
     });
     return {
       ...block,
-      tracks: layoutBlockTracks(active, compact),
+      tracks: layoutBlockTracks(active, compact, chartLayout),
     };
   });
 }
@@ -647,6 +867,40 @@ function buildThemeBlocks(tema, laneId){
   }];
 }
 
+/** ¿Esta fila aportaría contenido visible con la configuración actual? */
+function laneFilterHasContent(f){
+  if(f.mode === 'personaje'){
+    return D.personajes.some(p=>p.grupo === f.grupo && p.inicio != null && p.fin != null);
+  }
+  if(f.mode === 'ministerio') return buildMinisterioBlocks().length > 0;
+  if(f.mode === 'ultima_semana') return buildUltimaSemanaBlocks().length > 0;
+  if(f.mode === 'tema'){
+    if(showMarkers && f.tema !== 'NT-ESCRITURA') return false;
+    return buildThemeBlocks(f.tema, f.id).length > 0;
+  }
+  return false;
+}
+
+function availableLaneFilters(){
+  return laneFiltersSorted().filter(laneFilterHasContent);
+}
+
+function pruneSelLanes(){
+  const avail = new Set(availableLaneFilters().map(f=>f.id));
+  for(const id of [...selLanes]){
+    if(!avail.has(id)) selLanes.delete(id);
+  }
+  if(!selLanes.size){
+    for(const id of DEFAULT_LANES){
+      if(avail.has(id)) selLanes.add(id);
+    }
+    if(!selLanes.size){
+      availableLaneFilters().slice(0, 4).forEach(f=>selLanes.add(f.id));
+    }
+  }
+  try{ localStorage.setItem('lt-par-lanes', JSON.stringify([...selLanes])); }catch(e){}
+}
+
 function buildAllLaneData(){
   const out = [];
   for(const id of LANE_ORDER){
@@ -656,8 +910,8 @@ function buildAllLaneData(){
     else if(f.mode === 'ministerio') out.push(...buildMinisterioBlocks());
     else if(f.mode === 'ultima_semana') out.push(...buildUltimaSemanaBlocks());
     else if(f.mode === 'tema'){
-      // Con marcadores activos, los sucesos ya van sobre las barras de personajes
-      if(showMarkers) continue;
+      // Con marcadores activos, los sucesos temáticos van sobre personajes — salvo Escritura NT
+      if(showMarkers && f.tema !== 'NT-ESCRITURA') continue;
       out.push(...buildThemeBlocks(f.tema, f.id));
     }
   }
@@ -677,11 +931,68 @@ function tickStep(span2, yMin, yMax){
   return 100;
 }
 
+function isRedaccionTipo(tipo){
+  const t = norm(tipo || '');
+  return t.includes('redaccion');
+}
+
+/** Quién lleva marcador en la fila del personaje (evita duplicar cartas en autor y destinatario). */
+function eventMarkerPeople(ev){
+  const parts = personNamesFromField(ev.per);
+  if(!parts.length) return parts;
+  if(isRedaccionTipo(ev.tipo) && parts.length >= 2){
+    return parts.slice(1);
+  }
+  return parts;
+}
+
+function peNormParts(pe){
+  if(!pe || !pe.n) return [];
+  return pe.n.includes(',') ? personNamesFromField(pe.n) : [norm(pe.n.trim())];
+}
+
 function eventMatchesPerson(ev, pe){
-  const perParts = personNamesFromField(ev.per);
-  if(!perParts.length || !pe.n) return false;
-  const peParts = pe.n.includes(',') ? personNamesFromField(pe.n) : [norm(pe.n.trim())];
-  return peParts.some(pn=> pn && perParts.includes(pn));
+  const markers = eventMarkerPeople(ev);
+  if(!markers.length || !pe.n) return false;
+  const peParts = peNormParts(pe);
+  return peParts.some(pn=> pn && markers.includes(pn));
+}
+
+function personajeFieldMatches(pe, qPerRaw){
+  const peParts = peNormParts(pe);
+  if(!peParts.length) return false;
+  const qNorm = norm(qPerRaw || '');
+  if(!qNorm) return false;
+  const qParts = personNamesFromField(qPerRaw);
+  if(qParts.length){
+    return peParts.some(pn=> qParts.includes(pn));
+  }
+  return peParts.some(pn=> qNorm.includes(pn) || pn.includes(qNorm));
+}
+
+function questionMatchesPerson(q, pe, ev){
+  const qPer = (q.per || '').trim();
+  if(qPer) return personajeFieldMatches(pe, qPer);
+  if(ev && isRedaccionTipo(ev.tipo)){
+    const markers = eventMarkerPeople(ev);
+    const peParts = peNormParts(pe);
+    return peParts.some(pn=> markers.includes(pn));
+  }
+  return true;
+}
+
+function questionsForPerson(pe, evs){
+  const seen = new Set();
+  const out = [];
+  for(const ev of evs){
+    for(const p of (D.preguntas || [])){
+      if(p.hid !== ev.id || seen.has(p.id)) continue;
+      if(!questionMatchesPerson(p, pe, ev)) continue;
+      seen.add(p.id);
+      out.push(p);
+    }
+  }
+  return out;
 }
 
 function eventsForPerson(pe, yMin, yMax){
@@ -713,7 +1024,8 @@ function laneFiltersSorted(){
 }
 
 function buildLaneFilters(){
-  laneFiltersEl.innerHTML = laneFiltersSorted().map(f=>{
+  pruneSelLanes();
+  laneFiltersEl.innerHTML = availableLaneFilters().map(f=>{
     const on = selLanes.has(f.id);
     return `<label class="lane-check${on?' on':''}">`+
       `<input type="checkbox" data-id="${f.id}"${on?' checked':''} />`+
@@ -761,9 +1073,14 @@ function showPeTip(ev, pe){
 }
 function showEvTip(ev, e){
   const when = e.mcuando ? `<div class="t-note">${esc(e.mcuando)}</div>` : '';
+  let dates = fmtYear(chartYear(e) ?? e.fa);
+  if(e.fa_fin != null && e.fa_fin !== e.fa){
+    dates += ' – ' + (e.ft_fin || fmtYear(e.fa_fin));
+  }
+  const est = (e.fest || e.ini_est || e.fin_est) ? '<div class="t-est">Fechas estimadas</div>' : '';
   showTipHtml(
-    `<div class="t-name">${esc(e.n)}</div><div class="t-dates">${fmtYear(chartYear(e) ?? e.fa)} · ${esc(e.tipo||'')}</div>`+
-    (e.d ? `<div class="t-note">${esc(e.d)}</div>` : '') + when, ev);
+    `<div class="t-name">${esc(e.n)}</div><div class="t-dates">${dates} · ${esc(e.tipo||'')}</div>`+
+    (e.d ? `<div class="t-note">${esc(e.d)}</div>` : '') + when + est, ev);
 }
 function moveTip(ev){
   const pad = 14;
@@ -785,6 +1102,7 @@ const DRAWER_THEMES = [
   ['GENESIS','Génesis'],['EXODO','Éxodo'],['CONQUISTA','Conquista'],['JUECES','Jueces'],
   ['REYES','Reyes'],['PROFETAS','Profetas'],['EXILIO','Exilio'],['RESTAURACION','Restauración'],
   ['SIGLO-PRIMERO','Siglo primero'],['HECHOS','Hechos de los apóstoles'],
+  ['NT-ESCRITURA','Escritura del NT'],
 ];
 const DRAWER_ERAS = [
   {id:'pre', color:'var(--c-pre)', keys:['PREHISTORIA / GÉNESIS','DILUVIO']},
@@ -903,11 +1221,21 @@ function openDrawer(ev){
   document.getElementById('d-badge').textContent = drawerEraKey(ev.era);
   document.getElementById('d-badge').style.background = col.color;
   document.getElementById('d-title').textContent = ev.n;
-  document.getElementById('d-date').textContent = (ev.ft || fmtFechaDrawer(ev.fa)) + (ev.lug ? ' · ' + ev.lug : '');
+  let dateLine = ev.ft || fmtFechaDrawer(ev.fa);
+  if(ev.fa_fin != null && ev.fa_fin !== ev.fa){
+    dateLine += ' – ' + (ev.ft_fin || fmtFechaDrawer(ev.fa_fin));
+  }
+  document.getElementById('d-date').textContent = dateLine + (ev.lug ? ' · ' + ev.lug : '');
   const refEl = document.getElementById('d-ref');
   refEl.textContent = ev.ref ? ('“' + ev.ref + '”') : 'Sin referencia registrada.';
   refEl.className = '';
-  document.getElementById('d-desc').textContent = ev.d || 'Sin descripción.';
+  const descEl = document.getElementById('d-desc');
+  const desc = ev.d || 'Sin descripción.';
+  if(desc.includes('\n\n')){
+    descEl.innerHTML = desc.split('\n\n').map(p=>'<p>'+esc(p.trim())+'</p>').join('');
+  } else {
+    descEl.textContent = desc;
+  }
   document.getElementById('d-char').innerHTML = (ev.per || '—').split(/[,/]/).filter(Boolean)
     .map(c=>'<span class="chip">'+esc(c.trim())+'</span>').join('');
   document.getElementById('d-meta').innerHTML =
@@ -1011,7 +1339,7 @@ function openPersonDrawer(pe){
   document.getElementById('d-par').innerHTML = pot
     ? '<span class="pw">Potencia mundial al inicio: '+pot[2]+' '+pot[1]+'</span>'
     : '<span style="color:var(--mut)">Contexto histórico según la cronología bíblica.</span>';
-  const qs = evs.flatMap(ev=>(D.preguntas||[]).filter(p=>p.hid===ev.id));
+  const qs = questionsForPerson(pe, evs);
   const listEl = document.getElementById('d-qlist');
   const moreEl = document.getElementById('d-more');
   document.getElementById('d-qcount').textContent = 'Preguntas vinculadas: ' + qs.length;
@@ -1136,7 +1464,7 @@ function bindRowHover(){
     el.addEventListener('mouseenter', ()=>enter(el));
     el.addEventListener('mouseleave', ()=>leave(el));
   });
-  chartCanvas.querySelectorAll('.bar[data-pe], .life-pill[data-pe]').forEach(el=>{
+  chartCanvas.querySelectorAll('.bar[data-pe], .bar-compact-narrow[data-pe]').forEach(el=>{
     el.addEventListener('mouseenter', ()=>enter(el));
     el.addEventListener('mouseleave', ()=>leave(el));
   });
@@ -1166,70 +1494,78 @@ function buildPhaseAxis(chartW, yMin, yMax, laneData, effectivePx){
   return html + `</div>`;
 }
 
-function renderCompactEventPin(block, pe, x, w, dataAttr){
-  const cx = x + w / 2;
-  const mkColor = markerColorFor(pe.ev || {});
-  const cls = ['bar', 'bar-event-pin', 'bar--' + block.meta.key];
-  return `<div class="${cls.join(' ')}" style="left:${cx}px;--mk-color:${mkColor}" tabindex="0" role="button" aria-label="${esc(pe.n)}" ${dataAttr}>`+
-    `<span class="evt-marker__tip">${esc(pe.n)}</span></div>`;
+function renderPointEventBar(block, pe, x, w, dataAttr, ini, fin, layoutOpts){
+  const cls = ['bar','bar--'+block.meta.key,'bar-compact-narrow','bar-point-event', ...estBarClasses(pe)];
+  const cx = x + Math.max(4, w) / 2;
+  const boxW = Math.max(minBarWidthForPe(pe), 28);
+  const left = cx - boxW / 2;
+  const laneColor = BAR_COLORS[block.meta.key] || block.meta.color || 'var(--acc)';
+  const mkColor = pe.ev ? markerColorFor(pe.ev) : laneColor;
+  const peAttr = ` data-pe="${esc(peKey(pe))}"`;
+  let nameStyle = '';
+  if(layoutOpts?.compactLayout && layoutOpts.yMin != null){
+    const inset = markerNameInset(pe, left, layoutOpts.yMin, layoutOpts.yMax, layoutOpts.chartW);
+    if(inset) nameStyle = ` style="margin-left:${inset}px"`;
+  }
+  return `<div class="${cls.join(' ')}" style="left:${left}px;width:${boxW}px" tabindex="0" role="button" aria-label="${esc(pe.n)}, ${fmtRange(ini,fin)}" ${dataAttr}${peAttr}>`+
+    `<span class="bar-caption__name"${nameStyle}>${esc(pe.n)}</span>`+
+    `<div class="bar-point-event__pin" style="--mk-color:${mkColor};--lane-color:${laneColor}"></div>`+
+    `<span class="bar-caption__dates">${esc(fmtRange(ini, fin))}</span>`+
+    `</div>`;
 }
 
-function renderCompactNarrowBar(block, pe, x, w, dataAttr, ini, fin, laneColor){
-  const cls = ['bar','bar--'+block.meta.key,'bar-compact-narrow'];
-  if(pe.ie) cls.push('est-ini');
-  if(pe.fe) cls.push('est-fin');
+function renderCompactNarrowBar(block, pe, x, w, dataAttr, ini, fin, laneColor, layoutOpts){
+  const cls = ['bar','bar--'+block.meta.key,'bar-compact-narrow', ...estBarClasses(pe)];
   const peAttr = ` data-pe="${esc(peKey(pe))}"`;
   const lineW = Math.max(4, w);
+  const barBg = estBarBg(laneColor, pe);
+  let nameStyle = '';
+  if(layoutOpts?.compactLayout && layoutOpts.yMin != null){
+    const inset = markerNameInset(pe, x, layoutOpts.yMin, layoutOpts.yMax, layoutOpts.chartW);
+    if(inset) nameStyle = ` style="margin-left:${inset}px"`;
+  }
   return `<div class="${cls.join(' ')}" style="left:${x}px;width:${lineW}px" tabindex="0" role="button" aria-label="${esc(pe.n)}, ${fmtRange(ini,fin)}" ${dataAttr}${peAttr}>`+
-    `<span class="bar-caption__text">`+
-      `<span class="bar-caption__name">${esc(pe.n)}</span>`+
-      `<span class="bar-caption__dates">${esc(fmtRange(ini, fin))}</span>`+
-    `</span>`+
-    `<div class="span-line span-line--${block.meta.key} bar-compact-narrow__line" style="width:100%;background:${laneColor}"></div>`+
+    `<span class="bar-caption__name"${nameStyle}>${esc(pe.n)}</span>`+
+    `<div class="span-line span-line--${block.meta.key} bar-compact-narrow__line ${estBarClasses(pe).join(' ')}" style="width:100%;background:${barBg}"></div>`+
+    `<span class="bar-caption__dates">${esc(fmtRange(ini, fin))}</span>`+
     `</div>`;
+}
+
+function renderPeriodBar(block, pe, x, w, dataAttr, ini, fin, layoutOpts){
+  const laneColor = BAR_COLORS[block.meta.key] || block.meta.color || 'var(--acc)';
+  return renderCompactNarrowBar(block, pe, x, w, dataAttr, ini, fin, laneColor, layoutOpts);
 }
 
 function renderPersonBar(block, pe, draw, x, w, dataAttr, ini, fin, layoutOpts){
   if(!draw) return '';
-  const cls = ['bar','bar--'+block.meta.key];
-  if(pe.ie) cls.push('est-ini');
-  if(pe.fe) cls.push('est-fin');
+  const cls = ['bar','bar--'+block.meta.key, ...estBarClasses(pe)];
   const peAttr = ` data-pe="${esc(peKey(pe))}"`;
   const laneColor = BAR_COLORS[block.meta.key] || block.meta.color || 'var(--acc)';
+  const barBg = estBarBg(laneColor, pe);
   const compact = layoutOpts.compactLayout;
 
-  if(compact && pe.isEvent){
-    return renderCompactEventPin(block, pe, x, w, dataAttr);
+  if(pe.isEvent && !eventHasRange(pe)){
+    return renderPointEventBar(block, pe, x, w, dataAttr, ini, fin, layoutOpts);
+  }
+
+  if(eventHasRange(pe) || (!pe.isEvent && (compact || vizStyle === 'waterfall'))){
+    return renderPeriodBar(block, pe, x, w, dataAttr, ini, fin, layoutOpts);
   }
 
   if(vizStyle === 'waterfall'){
-    if(compact && !pe.isEvent){
-      if(barLabelFitsInside(pe, w)){
-        const inner = `<span class="bar-label">${esc(pe.n)}</span><span class="bar-sublabel">${esc(fmtRange(ini, fin))}</span>`;
-        return `<div class="${cls.join(' ')} bar--compact-pill pill-narrow" style="left:${x}px;width:${w}px;background:${laneColor}" tabindex="0" role="img" aria-label="${esc(pe.n)}, ${fmtRange(ini,fin)}" ${dataAttr}${peAttr}>${inner}</div>`;
-      }
-      return renderCompactNarrowBar(block, pe, x, w, dataAttr, ini, fin, laneColor);
-    }
     const pillCls = w < 56 ? cls.concat('pill-narrow') : cls;
     const inner = w >= 56 ? `<span class="bar-label">${esc(pe.n)}</span>` : '';
-    let html = `<div class="${pillCls.join(' ')}" style="left:${x}px;width:${w}px" tabindex="0" role="img" aria-label="${esc(pe.n)}, ${fmtRange(ini,fin)}" ${dataAttr}${peAttr}>${inner}</div>`;
+    let html = `<div class="${pillCls.join(' ')}" style="left:${x}px;width:${w}px;background:${barBg}" tabindex="0" role="img" aria-label="${esc(pe.n)}, ${fmtRange(ini,fin)}" ${dataAttr}${peAttr}>${inner}</div>`;
     if(w < 56 && layoutOpts.showChartTags) html += `<span class="bar-tag" style="left:${x + w + 6}px">${esc(pe.n)}</span>`;
     return html;
-  }
-
-  if(compact && !pe.isEvent){
-    if(barLabelFitsInside(pe, w)){
-      const inner = `<span class="life-pill__name">${esc(pe.n)}</span><span class="life-pill__dates">${esc(fmtRange(ini, fin))}</span>`;
-      return `<div class="life-pill ${cls.join(' ')}" style="left:${x}px;width:${w}px;background:${laneColor}" tabindex="0" role="img" aria-label="${esc(pe.n)}, ${fmtRange(ini,fin)}" ${dataAttr}${peAttr}>${inner}</div>`;
-    }
-    return renderCompactNarrowBar(block, pe, x, w, dataAttr, ini, fin, laneColor);
   }
 
   const cx = x + w / 2;
   const r = orbRadius(pe);
   let html = '';
   if(!pe.isEvent && w >= 4){
-    html += `<div class="span-line span-line--${block.meta.key}" style="left:${x}px;width:${w}px;background:${laneColor}"></div>`;
+    const spanCls = ['span-line', `span-line--${block.meta.key}`, ...estBarClasses(pe)].join(' ');
+    html += `<div class="${spanCls}" style="left:${x}px;width:${w}px;background:${barBg}"></div>`;
   }
   html += `<div class="orb-stem" style="left:${cx}px"></div>`;
   html += `<div class="${cls.join(' ')}" style="--orb-r:${r};left:${cx}px" tabindex="0" role="img" aria-label="${esc(pe.n)}, ${fmtRange(ini,fin)}" ${dataAttr}${peAttr}></div>`;
@@ -1331,13 +1667,12 @@ function buildConnections(rowMap, yMin, yMax, chartW, totalH){
 function render(){
   const L = layoutMetrics();
   const rawLaneData = buildAllLaneData();
-  const laneData = enrichLaneData(rawLaneData, query);
   const hiddenList = collectHiddenInView(rawLaneData, query);
   const q = norm(query);
   const potOffset = showPotencias ? L.potStrip : 0;
   const topOffset = L.phaseH + potOffset;
 
-  if(!laneData.some(b=>b.tracks.length) && !hiddenList.length){
+  if(!rawLaneData.some(b=>b.people.length) && !hiddenList.length){
     labelsCol.innerHTML = '';
     chartCanvas.innerHTML = '<div class="empty-msg" style="padding:24px;color:var(--mut)">Marca al menos una fila para ver la comparación.</div>';
     axisArea.innerHTML = '';
@@ -1346,18 +1681,50 @@ function render(){
     return;
   }
 
-  let [yMin, yMax] = computeRangeFromLaneData(laneData);
-  if(yMin > yMax) [yMin, yMax] = [yMax, yMin];
+  let [dataMin, dataMax] = computeRangeFromLaneData(laneDataForBounds(rawLaneData));
+  if(dataMin > dataMax) [dataMin, dataMax] = [dataMax, dataMin];
+  if(viewWindow){
+    if(viewWindow.min >= dataMax || viewWindow.max <= dataMin){
+      viewWindow = null;
+      saveViewWindow();
+    } else {
+      viewWindow = {
+        min: Math.max(dataMin, viewWindow.min),
+        max: Math.min(dataMax, viewWindow.max),
+      };
+      if(viewWindow.max - viewWindow.min < MIN_FOCUS_SPAN){
+        viewWindow = null;
+        saveViewWindow();
+      }
+    }
+  }
+  let yMin = viewWindow ? viewWindow.min : dataMin;
+  let yMax = viewWindow ? viewWindow.max : dataMax;
+  const fullSpan = dataMax - dataMin;
   const span = yMax - yMin;
   const padY = Math.max(span * 0.02, span < 2 ? 0.02 : 0);
   yMin -= padY; yMax += padY;
   const span2 = yMax - yMin;
-  const chartW = computeChartWidth(span, span2);
+  const chartW = computeChartWidth(viewWindow ? span2 : fullSpan, span2);
   const effectivePx = updateZoomUi(span2, chartW);
+  updateFocusUi(dataMin, dataMax);
+  const chartLayout = { yMin, yMax, chartW };
+  const laneData = enrichLaneData(rawLaneData, query, chartLayout);
+  if(!laneData.some(b=>b.tracks.length) && !hiddenList.length){
+    labelsCol.innerHTML = '';
+    chartCanvas.innerHTML = '<div class="empty-msg" style="padding:24px;color:var(--mut)">Marca al menos una fila para ver la comparación.</div>';
+    axisArea.innerHTML = '';
+    renderHiddenDock([]);
+    resultCount.textContent = '0 personajes';
+    return;
+  }
   const layoutOpts = {
     effectivePx,
     showChartTags: effectivePx >= 0.55 && chartScroll.clientWidth >= 680,
     compactLayout: rowLayout === 'compact',
+    yMin,
+    yMax,
+    chartW,
   };
   const focusRange = computeRangeFromLaneData(laneData);
 
@@ -1489,7 +1856,7 @@ function render(){
   axisArea.innerHTML = axisLabels;
   labelsCol.style.paddingBottom = L.axisH + 'px';
 
-  lastLayout = { viewLabel: viewLabel(), laneData, yMin, yMax, chartW, totalH, potOffset: topOffset, rowMap, markerCount, markers: [], effectivePx: span2 / chartW, metrics: L, vizStyle, rowLayout };
+  lastLayout = { viewLabel: viewLabel(), laneData, dataMin, dataMax, yMin, yMax, chartW, totalH, potOffset: topOffset, rowMap, markerCount, markers: [], effectivePx: span2 / chartW, metrics: L, vizStyle, rowLayout };
   chartCanvas.querySelectorAll('.evt-marker, .bar-event-pin').forEach(m=>{
     const row = m.closest('.row');
     const ev = D.eventos.find(e=>String(e.id)===m.dataset.ev);
@@ -1610,19 +1977,10 @@ function exportPng(){
         const cx = x + w / 2;
         const r = orbRadius(pe);
         const pill = BAR_COLORS[block.meta.key];
-        if(wf){
-          svg += `<rect x="${x}" y="${yOff + trackH/2 - 16}" width="${w}" height="32" rx="8" fill="${pill}" opacity="0.82"/>`;
-          svg += `<text x="${x + 8}" y="${yOff + trackH/2 - 1}" fill="${txt}" font-family="Inter,Segoe UI,sans-serif" font-size="10" font-weight="600">${esc(pe.n.length>18&&w<90?pe.n.slice(0,16)+'…':pe.n)}</text>`;
-          if(w >= 72) svg += `<text x="${x + 8}" y="${yOff + trackH/2 + 11}" fill="${mut}" font-family="Inter,Segoe UI,sans-serif" font-size="8">${esc(fmtRange(pe.inicio, pe.fin))}</text>`;
-        } else if(L.rowLayout === 'compact' && !pe.isEvent){
-          if(barLabelFitsInside(pe, w)){
-            svg += `<rect x="${x}" y="${yOff + trackH/2 - 16}" width="${w}" height="32" rx="8" fill="${pill}" opacity="0.88"/>`;
-            svg += `<text x="${x + 8}" y="${yOff + trackH/2 - 1}" fill="#fff" font-family="Libre Baskerville,Georgia,serif" font-size="10" font-weight="600">${esc(pe.n)}</text>`;
-            svg += `<text x="${x + 8}" y="${yOff + trackH/2 + 11}" fill="#fff" fill-opacity="0.82" font-family="Karla,Segoe UI,sans-serif" font-size="8">${esc(fmtRange(pe.inicio, pe.fin))}</text>`;
-          } else {
-            svg += `<text x="${x}" y="${yOff + trackH/2 - 14}" fill="${txt}" font-family="Libre Baskerville,Georgia,serif" font-size="10" font-weight="600">${esc(pe.n)}</text>`;
-            svg += `<line x1="${x}" y1="${yOff + trackH/2 + 6}" x2="${x + w}" y2="${yOff + trackH/2 + 6}" stroke="${pill}" stroke-width="5" stroke-linecap="round" opacity="0.88"/>`;
-          }
+        if((wf || L.rowLayout === 'compact') && !pe.isEvent){
+          svg += `<text x="${x}" y="${yOff + trackH/2 - 14}" fill="${txt}" font-family="${wf?'Inter,Segoe UI,sans-serif':'Libre Baskerville,Georgia,serif'}" font-size="10" font-weight="600">${esc(pe.n.length>22?pe.n.slice(0,20)+'…':pe.n)}</text>`;
+          svg += `<line x1="${x}" y1="${yOff + trackH/2 + 2}" x2="${x + w}" y2="${yOff + trackH/2 + 2}" stroke="${pill}" stroke-width="6" stroke-linecap="round" opacity="0.88"/>`;
+          svg += `<text x="${x}" y="${yOff + trackH/2 + 16}" fill="${mut}" font-family="${wf?'Inter,Segoe UI,sans-serif':'Karla,Segoe UI,sans-serif'}" font-size="8">${esc(fmtRange(pe.inicio, pe.fin))}</text>`;
         } else {
           if(!pe.isEvent && w >= 4){
             svg += `<line x1="${x}" y1="${yOff + trackH/2}" x2="${x + w}" y2="${yOff + trackH/2}" stroke="${pill}" stroke-width="5" stroke-linecap="round" opacity="0.72"/>`;
@@ -1670,18 +2028,104 @@ function exportPng(){
 
 let drag = false, sx = 0, sl = 0;
 chartScroll.addEventListener('mousedown', e=>{
-  if(e.target.closest('.bar,.evt-marker')) return;
+  if(e.target.closest('.bar,.evt-marker,.bar-event-pin')) return;
+  if(e.button !== 0) return;
+  if((rectZoomMode || e.shiftKey) && lastLayout){
+    const x0 = chartXFromClient(e.clientX);
+    focusMarquee = { x0, x1: x0, active: true };
+    updateFocusMarqueeDom(x0, x0);
+    e.preventDefault();
+    return;
+  }
   drag = true; sx = e.clientX; sl = chartScroll.scrollLeft;
   chartScroll.classList.add('dragging');
 });
-window.addEventListener('mousemove', e=>{ if(drag) chartScroll.scrollLeft = sl - (e.clientX - sx); });
-window.addEventListener('mouseup', ()=>{ drag = false; chartScroll.classList.remove('dragging'); });
+window.addEventListener('mousemove', e=>{
+  if(focusMarquee?.active){
+    focusMarquee.x1 = chartXFromClient(e.clientX);
+    updateFocusMarqueeDom(focusMarquee.x0, focusMarquee.x1);
+    return;
+  }
+  if(drag) chartScroll.scrollLeft = sl - (e.clientX - sx);
+});
+window.addEventListener('mouseup', ()=>{
+  if(focusMarquee?.active){
+    const xMin = Math.min(focusMarquee.x0, focusMarquee.x1);
+    const xMax = Math.max(focusMarquee.x0, focusMarquee.x1);
+    hideFocusMarquee();
+    if(Math.abs(xMax - xMin) > 24 && lastLayout){
+      const y1 = xToYear(xMin, lastLayout.yMin, lastLayout.yMax, lastLayout.chartW);
+      const y2 = xToYear(xMax, lastLayout.yMin, lastLayout.yMax, lastLayout.chartW);
+      applyFocusZoom(Math.min(y1, y2), Math.max(y1, y2), lastLayout.dataMin, lastLayout.dataMax);
+    }
+    return;
+  }
+  drag = false;
+  chartScroll.classList.remove('dragging');
+});
+chartScroll.addEventListener('wheel', e=>{
+  if(!lastLayout) return;
+  e.preventDefault();
+  const year = xToYear(chartXFromClient(e.clientX), lastLayout.yMin, lastLayout.yMax, lastLayout.chartW);
+  const factor = e.deltaY < 0 ? 1.12 : 1 / 1.12;
+  zoomFocusAt(year, factor, lastLayout.dataMin, lastLayout.dataMax);
+}, { passive: false });
+chartScroll.addEventListener('touchstart', e=>{
+  if(e.touches.length === 2 && lastLayout){
+    const lr = getLogicalRange(lastLayout.dataMin, lastLayout.dataMax);
+    const cx = chartXFromClient(touchCenterClientX(e.touches));
+    pinchState = {
+      dist0: touchDistance(e.touches),
+      vMin: lr.min,
+      vMax: lr.max,
+      centerYear: xToYear(cx, lastLayout.yMin, lastLayout.yMax, lastLayout.chartW),
+    };
+    drag = false;
+    chartScroll.classList.remove('dragging');
+  }
+}, { passive: true });
+chartScroll.addEventListener('touchmove', e=>{
+  if(e.touches.length === 2 && pinchState && lastLayout){
+    e.preventDefault();
+    const factor = touchDistance(e.touches) / pinchState.dist0;
+    if(!Number.isFinite(factor) || factor <= 0) return;
+    const span0 = pinchState.vMax - pinchState.vMin;
+    const newSpan = Math.max(MIN_FOCUS_SPAN, span0 / factor);
+    const t = span0 > 0 ? (pinchState.centerYear - pinchState.vMin) / span0 : 0.5;
+    let newMin = pinchState.centerYear - t * newSpan;
+    let newMax = newMin + newSpan;
+    const { dataMin, dataMax } = lastLayout;
+    if(newMin < dataMin){ newMin = dataMin; newMax = dataMin + newSpan; }
+    if(newMax > dataMax){ newMax = dataMax; newMin = dataMax - newSpan; }
+    if(isFullFocusRange(newMin, newMax, dataMin, dataMax)){
+      if(viewWindow){ viewWindow = null; saveViewWindow(); render._scrolled = true; render(); }
+    } else {
+      viewWindow = { min: newMin, max: newMax };
+      saveViewWindow();
+      render._scrolled = true;
+      render();
+      pinchState = {
+        dist0: touchDistance(e.touches),
+        vMin: newMin,
+        vMax: newMax,
+        centerYear: pinchState.centerYear,
+      };
+    }
+  }
+}, { passive: false });
+chartScroll.addEventListener('touchend', ()=>{ pinchState = null; });
+chartScroll.addEventListener('touchcancel', ()=>{ pinchState = null; });
 
 chartScroll.addEventListener('scroll', ()=>{ labelsCol.scrollTop = chartScroll.scrollTop; });
 labelsCol.addEventListener('scroll', ()=>{ chartScroll.scrollTop = labelsCol.scrollTop; });
 
 searchEl.addEventListener('input', ()=>{ query = searchEl.value.trim(); render(); });
-optMarkers.addEventListener('change', ()=>{ showMarkers = optMarkers.checked; localStorage.setItem('lt-par-markers', showMarkers?'1':'0'); render(); });
+optMarkers.addEventListener('change', ()=>{
+  showMarkers = optMarkers.checked;
+  localStorage.setItem('lt-par-markers', showMarkers?'1':'0');
+  buildLaneFilters();
+  render();
+});
 optConnections.addEventListener('change', ()=>{ showConnections = optConnections.checked; localStorage.setItem('lt-par-conn', showConnections?'1':'0'); render(); });
 optPotencias.addEventListener('change', ()=>{ showPotencias = optPotencias.checked; localStorage.setItem('lt-par-pot', showPotencias?'1':'0'); render(); });
 zoomEl.addEventListener('input', ()=>{
@@ -1698,6 +2142,22 @@ fitBtn.addEventListener('click', ()=>{
   render._scrolled = false;
   render();
 });
+if(focusResetBtn){
+  focusResetBtn.addEventListener('click', resetFocusZoom);
+}
+if(focusRectBtn){
+  focusRectBtn.addEventListener('click', ()=> setRectZoomMode(!rectZoomMode));
+}
+if(fontScaleEl){
+  fontScaleEl.addEventListener('change', ()=>{
+    const v = parseFloat(fontScaleEl.value);
+    fontScale = FONT_SCALE_OPTIONS.includes(v) ? v : 1;
+    saveFontScale();
+    applyFontScale();
+    render._scrolled = true;
+    render();
+  });
+}
 exportBtn.addEventListener('click', exportPng);
 const peShowAllBtn = document.getElementById('pe-show-all');
 const peHideAllBtn = document.getElementById('pe-hide-all');

@@ -32,13 +32,17 @@ function makeEl(tag){
 }
 const byId={};
 ['labels-col','chart-scroll','chart-canvas','axis-area','lane-filters','search','result-count','theme-btn',
- 'zoom','zoom-val','opt-markers','opt-connections','opt-potencias','pot-chips','export-btn','fit-btn','viz-style','row-layout','hidden-dock'].forEach(id=>{
+ 'zoom','zoom-val','opt-markers','opt-connections','opt-potencias','pot-chips','export-btn','fit-btn',
+ 'focus-reset-btn','focus-rect-btn','focus-val','focus-marquee','font-scale',
+ 'viz-style','row-layout','hidden-dock'].forEach(id=>{
   const el = makeEl('div');
   if(id.startsWith('opt-')){ el.checked = true; el.type = 'checkbox'; }
   if(id==='zoom'){ el.value = '2.4'; el.type = 'range'; }
   if(id==='viz-style'){ el.value = 'editorial'; el.tagName = 'select'; }
   if(id==='row-layout'){ el.value = 'expanded'; el.tagName = 'select'; }
-  if(id==='fit-btn'){ el.classList = { toggle(){}, setAttribute(){} }; }
+  if(id==='font-scale'){ el.value = '1'; el.tagName = 'select'; }
+  if(id==='fit-btn' || id==='focus-rect-btn'){ el.classList = { _s:new Set(), toggle(){}, add(){}, remove(){}, contains(){return false;} }; el.setAttribute = ()=>{}; }
+  if(id==='focus-reset-btn'){ el.disabled = true; }
   byId[id]=el;
 });
 byId['chart-scroll'].clientWidth=900;
@@ -47,12 +51,16 @@ byId['chart-scroll'].classList = { toggle(){}, add(){}, remove(){} };
 const ctx={
   document:{
     getElementById(id){ return byId[id]||makeEl('div'); },
-    documentElement:{ _t:'dark', setAttribute(k,v){this._t=v;}, getAttribute(k){return this._t;} },
+    documentElement:{ _t:'dark', style:{ setProperty(){} }, setAttribute(k,v){this._t=v;}, getAttribute(k){return this._t;} },
     querySelector(){ return makeEl('div'); },
     querySelectorAll(){ return []; },
     createElement(tag){
       const el = makeEl(tag);
-      if(tag==='canvas') el.getContext = ()=>({ scale(){}, fillRect(){}, drawImage(){} });
+      if(tag==='canvas') el.getContext = ()=>({
+        scale(){}, fillRect(){}, drawImage(){},
+        measureText(t){ return { width: String(t || '').length * 7 }; },
+        font: '',
+      });
       if(tag==='a') el.click = ()=>{};
       return el;
     },
@@ -87,8 +95,145 @@ const conn = byId['chart-canvas'].innerHTML.includes('conn-layer');
 const pots = (byId['pot-chips'].innerHTML.match(/class="pot-chip/g)||[]).length;
 const filters = (byId['lane-filters'].innerHTML.match(/type="checkbox"/g)||[]).length;
 console.log('barras:', bars, '| marcadores:', markers, '| conexiones:', conn, '| imperios:', pots, '| filtros:', filters);
-if(bars < 20 || markers < 5 || !conn || pots !== 6 || filters < 15){
+const estFade = (byId['chart-canvas'].innerHTML.match(/linear-gradient\(90deg,transparent/g)||[]).length;
+console.log('barras con fade estimado:', estFade, '(esperado >= 1)');
+if(bars < 20 || markers < 5 || !conn || pots !== 6 || filters < 10 || estFade < 1){
   console.log('FAIL');
+  process.exit(1);
+}
+
+// Fase 2: fila Escritura NT con barras de período
+const ntEvents = DATA.eventos.filter(e => (e.t || []).includes('NT-ESCRITURA'));
+const ntRanges = ntEvents.filter(e => e.fa_fin != null && e.fa_fin !== e.fa);
+console.log('NT-ESCRITURA:', ntEvents.length, '| con rango:', ntRanges.length);
+if(ntEvents.length !== 27 || ntRanges.length < 10){
+  console.log('FAIL nt data');
+  process.exit(1);
+}
+
+const byIdNt = {};
+['labels-col','chart-scroll','chart-canvas','axis-area','lane-filters','search','result-count','theme-btn',
+ 'zoom','zoom-val','opt-markers','opt-connections','opt-potencias','pot-chips','export-btn','fit-btn',
+ 'focus-reset-btn','focus-rect-btn','focus-val','focus-marquee','font-scale',
+ 'viz-style','row-layout','hidden-dock'].forEach(id=>{
+  const el = makeEl('div');
+  if(id.startsWith('opt-')){ el.checked = true; el.type = 'checkbox'; }
+  if(id==='zoom'){ el.value = '2.4'; el.type = 'range'; }
+  if(id==='viz-style'){ el.value = 'editorial'; el.tagName = 'select'; }
+  if(id==='row-layout'){ el.value = 'expanded'; el.tagName = 'select'; }
+  if(id==='font-scale'){ el.value = '1'; el.tagName = 'select'; }
+  if(id==='fit-btn' || id==='focus-rect-btn'){ el.classList = { _s:new Set(), toggle(){}, add(){}, remove(){}, contains(){return false;} }; el.setAttribute = ()=>{}; }
+  if(id==='focus-reset-btn'){ el.disabled = true; }
+  byIdNt[id]=el;
+});
+byIdNt['chart-scroll'].clientWidth=900;
+byIdNt['chart-scroll'].classList = { toggle(){}, add(){}, remove(){} };
+const ctxNt={
+  document:{
+    getElementById(id){ return byIdNt[id]||makeEl('div'); },
+    documentElement:{ _t:'dark', style:{ setProperty(){} }, setAttribute(k,v){this._t=v;}, getAttribute(k){return this._t;} },
+    querySelector(){ return makeEl('div'); },
+    querySelectorAll(){ return []; },
+    createElement(tag){
+      const el = makeEl(tag);
+      if(tag==='canvas') el.getContext = ()=>({
+        scale(){}, fillRect(){}, drawImage(){},
+        measureText(t){ return { width: String(t || '').length * 7 }; },
+        font: '',
+      });
+      if(tag==='a') el.click = ()=>{};
+      return el;
+    },
+    addEventListener(){},
+  },
+  innerWidth:1200, innerHeight:800, location:{hash:'',search:''},
+  history:{ replaceState(){} },
+  localStorage:{
+    getItem(k){ if(k==='lt-par-lanes') return JSON.stringify(['ntesc']); return null; },
+    setItem(){},
+  },
+  URLSearchParams: global.URLSearchParams,
+  Image: class{ set src(v){ if(this.onload) setTimeout(()=>this.onload(),0); } },
+  URL: global.URL,
+  Blob: global.Blob,
+  console, addEventListener(){},
+};
+ctxNt.window=ctxNt;
+vm.createContext(ctxNt);
+vm.runInContext('window.LT_DATA='+JSON.stringify(DATA)+';', ctxNt);
+vm.runInContext(fs.readFileSync(path.join(REPO, 'fichas-personajes.js'), 'utf-8'), ctxNt);
+vm.runInContext(JS, ctxNt, {timeout:8000});
+const ntBars = (byIdNt['chart-canvas'].innerHTML.match(/class="bar /g)||[]).length;
+const ntPeriodBars = (byIdNt['chart-canvas'].innerHTML.match(/bar-compact-narrow/g)||[]).length;
+const ntFade = (byIdNt['chart-canvas'].innerHTML.match(/linear-gradient\(90deg,transparent/g)||[]).length;
+const ntFilter = byIdNt['lane-filters'].innerHTML.includes('Escritura NT');
+console.log('ntesc barras:', ntBars, '| periodo:', ntPeriodBars, '| fade:', ntFade, '| filtro:', ntFilter);
+if(ntBars < 27 || ntPeriodBars < 10 || ntFade < 10 || !ntFilter){
+  console.log('FAIL ntesc lane');
+  process.exit(1);
+}
+
+// Modo compacto: pistas apiladas cuando las etiquetas se solapan
+const byIdNtCompact = {};
+['labels-col','chart-scroll','chart-canvas','axis-area','lane-filters','search','result-count','theme-btn',
+ 'zoom','zoom-val','opt-markers','opt-connections','opt-potencias','pot-chips','export-btn','fit-btn',
+ 'focus-reset-btn','focus-rect-btn','focus-val','focus-marquee','font-scale',
+ 'viz-style','row-layout','hidden-dock'].forEach(id=>{
+  const el = makeEl('div');
+  if(id.startsWith('opt-')){ el.checked = true; el.type = 'checkbox'; }
+  if(id==='zoom'){ el.value = '2.4'; el.type = 'range'; }
+  if(id==='viz-style'){ el.value = 'editorial'; el.tagName = 'select'; }
+  if(id==='row-layout'){ el.value = 'compact'; el.tagName = 'select'; }
+  if(id==='font-scale'){ el.value = '1'; el.tagName = 'select'; }
+  if(id==='fit-btn' || id==='focus-rect-btn'){ el.classList = { _s:new Set(), toggle(){}, add(){}, remove(){}, contains(){return false;} }; el.setAttribute = ()=>{}; }
+  if(id==='focus-reset-btn'){ el.disabled = true; }
+  byIdNtCompact[id]=el;
+});
+byIdNtCompact['chart-scroll'].clientWidth=900;
+byIdNtCompact['chart-scroll'].classList = { toggle(){}, add(){}, remove(){} };
+const ctxNtCompact={
+  document:{
+    getElementById(id){ return byIdNtCompact[id]||makeEl('div'); },
+    documentElement:{ _t:'dark', style:{ setProperty(){} }, setAttribute(k,v){this._t=v;}, getAttribute(k){return this._t;} },
+    querySelector(){ return makeEl('div'); },
+    querySelectorAll(){ return []; },
+    createElement(tag){
+      const el = makeEl(tag);
+      if(tag==='canvas') el.getContext = ()=>({
+        scale(){}, fillRect(){}, drawImage(){},
+        measureText(t){ return { width: String(t || '').length * 7 }; },
+        font: '',
+      });
+      if(tag==='a') el.click = ()=>{};
+      return el;
+    },
+    addEventListener(){},
+  },
+  innerWidth:1200, innerHeight:800, location:{hash:'',search:''},
+  history:{ replaceState(){} },
+  localStorage:{
+    getItem(k){
+      if(k==='lt-par-lanes') return JSON.stringify(['ntesc']);
+      if(k==='lt-par-row-layout') return 'compact';
+      return null;
+    },
+    setItem(){},
+  },
+  URLSearchParams: global.URLSearchParams,
+  Image: class{ set src(v){ if(this.onload) setTimeout(()=>this.onload(),0); } },
+  URL: global.URL,
+  Blob: global.Blob,
+  console, addEventListener(){},
+};
+ctxNtCompact.window=ctxNtCompact;
+vm.createContext(ctxNtCompact);
+vm.runInContext('window.LT_DATA='+JSON.stringify(DATA)+';', ctxNtCompact);
+vm.runInContext(fs.readFileSync(path.join(REPO, 'fichas-personajes.js'), 'utf-8'), ctxNtCompact);
+vm.runInContext(JS, ctxNtCompact, {timeout:8000});
+const ntRows = (byIdNtCompact['chart-canvas'].innerHTML.match(/class="row"/g)||[]).length;
+console.log('ntesc compact pistas:', ntRows, '(esperado > 1)');
+if(ntRows < 2){
+  console.log('FAIL ntesc stacking');
   process.exit(1);
 }
 console.log('PASS');

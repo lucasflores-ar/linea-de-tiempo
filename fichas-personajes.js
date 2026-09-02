@@ -863,7 +863,7 @@ window.LT_FICHAS = [
     id:87, nombre:'Pedro', alt:'simon; simon pedro', genero:'M', tribu:'',
     profesion:'Apóstol', profesion_sub:'Ficha de Personaje: Apóstol', profesion_2:'',
     nac:'-1', fal:'64', edad:'65', era:'ec', seccion:'S3', potencia:'Roma',
-    lugares:['Galilea', 'Mar de Galilea', 'Monte Tabor', 'Jerusalén', 'Cesarea', 'Babilonia', 'Betania del otro lado del Jordán', 'Cesarea de Filipo', 'Capernaúm', 'Betania'], hitos:['Primeros discípulos (29 E. C.) [Mateo 4:18-22', 'Marcos 1:16-20]', 'Primeros discípulos con Juan el Bautista (29 E. C.) [Juan 1:15-51]', 'Jesús camina sobre el agua (32 E. C.) [Marcos 6:45-52', 'Mateo 14:22-33]', 'Transfiguración (32 E. C.) [Marcos 9:2-8', 'Mateo 17:1-8]', 'Llaves del Reino en Cesarea de Filipo (32 E. C.) [Mateo 16:13-28', 'Marcos 8:27–9:1', 'Lucas 9:18-27]', 'Moneda del pez en Capernaúm (32 E. C.) [Mateo 17:24-27]', 'Pentecostés (33 E. C.) [Hechos 2:1-47]', 'Curación del cojo (33 E. C.) [Hechos 3:1-26]', 'Ananías y Safira (33 E. C.) [Hechos 5:1-11]', 'Cena en casa de Simón el leproso (33 E. C.) [Mateo 26:6-13', 'Marcos 14:3-9', 'Juan 12:2-11]', 'Preparativos de la Pascua (33 E. C.) [Mateo 26:17-19', 'Marcos 14:12-16', 'Lucas 22:7-13]', 'Cornelio (c. 36 E. C.) [Hechos 10:1-48]', 'Liberación de Pedro (c. 44 E. C.) [Hechos 12:1-19]', 'Concilio de Jerusalén (c. 49 E. C.) [Hechos 15:1-35]', 'Pedro escribe 1 Pedro (c. 64 E. C.) [1 PEDRO 1-5]', 'Pedro escribe 2 Pedro (c. 64 E. C.) [2 PEDRO 1-3]'], rel:['Jesús (8)', 'Juan el apóstol (4)', 'Santiago (3)', 'Andrés (2)', 'Moisés (1)', 'Eliás (1)'],
+    lugares:['Galilea', 'Mar de Galilea', 'Monte Tabor', 'Jerusalén', 'Cesarea', 'Babilonia', 'Babilonia (?)', 'Betania del otro lado del Jordán', 'Cesarea de Filipo', 'Capernaúm', 'Betania'], hitos:['Primeros discípulos (29 E. C.) [Mateo 4:18-22', 'Marcos 1:16-20]', 'Primeros discípulos con Juan el Bautista (29 E. C.) [Juan 1:15-51]', 'Jesús camina sobre el agua (32 E. C.) [Marcos 6:45-52', 'Mateo 14:22-33]', 'Transfiguración (32 E. C.) [Marcos 9:2-8', 'Mateo 17:1-8]', 'Llaves del Reino en Cesarea de Filipo (32 E. C.) [Mateo 16:13-28', 'Marcos 8:27–9:1', 'Lucas 9:18-27]', 'Moneda del pez en Capernaúm (32 E. C.) [Mateo 17:24-27]', 'Pentecostés (33 E. C.) [Hechos 2:1-47]', 'Curación del cojo (33 E. C.) [Hechos 3:1-26]', 'Ananías y Safira (33 E. C.) [Hechos 5:1-11]', 'Cena en casa de Simón el leproso (33 E. C.) [Mateo 26:6-13', 'Marcos 14:3-9', 'Juan 12:2-11]', 'Preparativos de la Pascua (33 E. C.) [Mateo 26:17-19', 'Marcos 14:12-16', 'Lucas 22:7-13]', 'Cornelio (c. 36 E. C.) [Hechos 10:1-48]', 'Liberación de Pedro (c. 44 E. C.) [Hechos 12:1-19]', 'Concilio de Jerusalén (c. 49 E. C.) [Hechos 15:1-35]', 'Primera carta de Pedro (c. 62 e.c.) [1 Pedro 1:1]', 'Segunda carta de Pedro (c. 64 e.c.) [2 Pedro 1:1]'], rel:['Jesús (8)', 'Juan el apóstol (4)', 'Santiago (3)', 'Andrés (2)', 'Moisés (1)', 'Eliás (1)'],
     primera:'29', ultima:'64',
     versiculo:'Mateo 16:16', opinion_jehova:'Fundamento de la congregación; recibió llaves del Reino', opinion_ref:'Mateo 16:18-19', opinion_cita:'',
     cualidades:'Leal; valiente; amoroso; restaurado tras fallar', cualidades_refs:'Juan 21:15-17; Hechos 2', defectos:'Negó a Jesús tres veces; en Antioquía mostró parcialidad', defectos_refs:'Mateo 26:69-75; Gálatas 2:11-14', leccion:'El arrepentimiento sincero permite recuperar una responsabilidad de servicio',
@@ -873,7 +873,7 @@ window.LT_FICHAS = [
     id:88, nombre:'Pablo', alt:'pablo de tarso; saulo', genero:'M', tribu:'Benjamín',
     profesion:'Apóstol', profesion_sub:'Ficha de Personaje: Apóstol', profesion_2:'Misionero',
     nac:'1', fal:'65', edad:'64', era:'ec', seccion:'S3', potencia:'Roma',
-    lugares:['Jerusalén', 'Camino a Damasco', 'Antioquía → Galacia', 'Galacia → Grecia', 'Atenas', 'Éfeso → Grecia', 'Éfeso', 'Cesarea', 'Mar Mediterráneo', 'Roma', 'Corinto', 'Tesalónica', 'Colosas', 'Filipos', 'Galacia', 'Roma / Italia', 'Creta'], hitos:['Muerte de Esteban (34 E. C.) [Hechos 6:1-7:60]', 'Conversión de Saulo (c. 34 E. C.) [Hechos 9:1-19]', 'Primer viaje misionero de Pablo (c. 47-48 E. C.) [Hechos 13:1-14:28]', 'Concilio de Jerusalén (c. 49 E. C.) [Hechos 15:1-35]', 'Segundo viaje misionero (c. 49-52 E. C.) [Hechos 16:1-18:22]', 'Pablo en Atenas (c. 50 E. C.) [Hechos 17:16-34]', 'Pablo escribe 1 Tesalonicenses (c. 50 E. C.) [1 TESALONICENSES 1-5]', 'Pablo escribe 2 Tesalonicenses (c. 51 E. C.) [2 TESALONICENSES 1-3]', 'Pablo escribe a los Gálatas (c. 50-52 E. C.) [GÁLATAS 1-6]', 'Tercer viaje misionero (c. 52-56 E. C.) [Hechos 18:23-21:16]', 'Revuelta en Éfeso (c. 55 E. C.) [Hechos 19:23-41]', 'Pablo escribe 1 Corintios (c. 55 E. C.) [1 CORINTIOS 1-16]', 'Pablo escribe 2 Corintios (c. 55 E. C.) [2 CORINTIOS 1-13]', 'Pablo arrestado en Jerusalén (c. 56 E. C.) [Hechos 21:27-23:35]', 'Pablo ante Félix y Festo (c. 56-58 E. C.) [Hechos 24:1-26:32]', 'Pablo escribe a los Romanos (c. 56 E. C.) [ROMANOS 1-16]', 'Naufragio de Pablo (c. 59 E. C.) [Hechos 27:1-44]', 'Pablo en Roma (c. 59-61 E. C.) [Hechos 28:16-31]', 'Pablo escribe a los Colosenses (c. 60-61 E. C.) [COLOSENSES 1-4]', 'Pablo escribe a los Efesios (c. 60-61 E. C.) [EFESIOS 1-6]', 'Pablo escribe a Filemón (c. 60-61 E. C.) [FILEMÓN 1-1]', 'Pablo escribe a los Filipenses (c. 60-61 E. C.) [FILIPENSES 1-4]', 'Pablo escribe 1 Timoteo (c. 61 E. C.) [1 TIMOTEO 1-6]', 'Carta a los Hebreos (c. 61 E. C.) [HEBREOS 1-13]', 'Pablo escribe a Tito (c. 61 E. C.) [TITO 1-3]', 'Pablo escribe 2 Timoteo (c. 65 E. C.) [2 TIMOTEO 1-4]'], rel:['Timoteo (3)', 'Esteban (1)', 'Jesús (1)', 'Bernabé (1)', 'Pedro (1)', 'Santiago (1)'],
+    lugares:['Jerusalén', 'Camino a Damasco', 'Antioquía → Galacia', 'Galacia → Grecia', 'Atenas', 'Éfeso → Grecia', 'Éfeso', 'Cesarea', 'Mar Mediterráneo', 'Roma', 'Corinto', 'Macedonia', 'Corinto o Antioquía de Siria (?)', 'Macedonia (?)'], hitos:['Muerte de Esteban (34 E. C.) [Hechos 6:1-7:60]', 'Conversión de Saulo (c. 34 E. C.) [Hechos 9:1-19]', 'Primer viaje misionero de Pablo (c. 47-48 E. C.) [Hechos 13:1-14:28]', 'Concilio de Jerusalén (c. 49 E. C.) [Hechos 15:1-35]', 'Segundo viaje misionero (c. 49-52 E. C.) [Hechos 16:1-18:22]', 'Pablo en Atenas (c. 50 E. C.) [Hechos 17:16-34]', 'Primera carta a los Tesalonicenses (c. 50 e.c.) [1 Tesalonicenses 1:1]', 'Carta a los Gálatas (c. 50 e.c.) [Gálatas 1:2]', 'Segunda carta a los Tesalonicenses (c. 51 e.c.) [2 Tesalonicenses 1:1]', 'Tercer viaje misionero (c. 52-56 E. C.) [Hechos 18:23-21:16]', 'Revuelta en Éfeso (c. 55 E. C.) [Hechos 19:23-41]', 'Primera carta a los Corintios (c. 55 e.c.) [1 Corintios 1:2]', 'Segunda carta a los Corintios (c. 55 e.c.) [2 Corintios 1:1]', 'Pablo arrestado en Jerusalén (c. 56 E. C.) [Hechos 21:27-23:35]', 'Pablo ante Félix y Festo (c. 56-58 E. C.) [Hechos 24:1-26:32]', 'Carta a los Romanos (c. 56 e.c.) [Romanos 1:1]', 'Naufragio de Pablo (c. 59 E. C.) [Hechos 27:1-44]', 'Pablo en Roma (c. 59-61 E. C.) [Hechos 28:16-31]', 'Carta a los Colosenses (c. 60 e.c.) [Colosenses 1:2]', 'Carta a los Efesios (c. 60 e.c.) [Efesios 1:1]', 'Carta a Filemón (c. 60 e.c.) [Filemón 1:1]', 'Carta a los Filipenses (c. 60 e.c.) [Filipenses 1:1]', 'Primera carta a Timoteo (c. 61 e.c.) [1 Timoteo 1:2]', 'Carta a los Hebreos (c. 61 e.c.) [Hebreos 1:1]', 'Carta a Tito (c. 61 e.c.) [Tito 1:4]', 'Segunda carta a Timoteo (c. 65 e.c.) [2 Timoteo 1:2]'], rel:['Timoteo (3)', 'Corintios (2)', 'Tesalonicenses (2)', 'Esteban (1)', 'Jesús (1)', 'Bernabé (1)'],
     primera:'34', ultima:'65',
     versiculo:'Hechos 9:15', opinion_jehova:'Escogido como instrumento para llevar el nombre de Jesús a naciones y reyes', opinion_ref:'Hechos 9:15', opinion_cita:'',
     cualidades:'Celoso ministerio; valentía; humildad; perseverancia', cualidades_refs:'Hechos 20:24; 2 Corintios 11:23-28', defectos:'Antes perseguía a los discípulos con celo mal dirigido', defectos_refs:'Hechos 8:3; Gálatas 1:13', leccion:'Nadie está fuera del alcance de la misericordia de Jehová si responde con cambio genuino',
@@ -893,11 +893,11 @@ window.LT_FICHAS = [
     id:90, nombre:'Marcos', alt:'juan marcos', genero:'M', tribu:'',
     profesion:'Evangelista', profesion_sub:'', profesion_2:'',
     nac:'5', fal:'65', edad:'60', era:'ec', seccion:'S3', potencia:'Roma',
-    lugares:[], hitos:[], rel:[],
-    primera:'', ultima:'',
+    lugares:['Roma'], hitos:['Evangelio según Marcos (c. 60 e.c.) [Marcos 1:1]'], rel:[],
+    primera:'60', ultima:'60',
     versiculo:'2 Timoteo 4:11', opinion_jehova:'Compañero útil en el ministerio; autor del Evangelio de Marcos', opinion_ref:'Hechos 12:25; 2 Timoteo 4:11', opinion_cita:'',
     cualidades:'Servicio; recuperación tras un tropiezo; lealtad restaurada', cualidades_refs:'Hechos 13; Hechos 15:37-39; Colosenses 4:10', defectos:'Abandonó a Pablo y Bernabé en Pamfilia en un viaje misionero', defectos_refs:'Hechos 13:13; Hechos 15:38', leccion:'Un tropiezo en el servicio no tiene que ser el final si hay arrepentimiento',
-    nq:112, nh:0, fuente:'personajes_biblicos,preguntas,curacion_manual'
+    nq:112, nh:1, fuente:'personajes_biblicos,hechos_biblicos,preguntas,curacion_manual'
   },
   {
     id:91, nombre:'Felipe el evangelizador', alt:'felipe', genero:'M', tribu:'',
@@ -913,7 +913,7 @@ window.LT_FICHAS = [
     id:92, nombre:'Timoteo', alt:'', genero:'M', tribu:'Efraín (de madre)',
     profesion:'Misionero', profesion_sub:'Ficha de Personaje: Misionero', profesion_2:'Superintendente',
     nac:'30', fal:'97', edad:'67', era:'ec', seccion:'S3', potencia:'Roma',
-    lugares:['Galacia → Grecia', 'Éfeso', 'Roma'], hitos:['Segundo viaje misionero (c. 49-52 E. C.) [Hechos 16:1-18:22]', 'Pablo escribe 1 Timoteo (c. 61 E. C.) [1 TIMOTEO 1-6]', 'Pablo escribe 2 Timoteo (c. 65 E. C.) [2 TIMOTEO 1-4]'], rel:['Pablo (3)', 'Silas (1)'],
+    lugares:['Galacia → Grecia', 'Macedonia', 'Roma'], hitos:['Segundo viaje misionero (c. 49-52 E. C.) [Hechos 16:1-18:22]', 'Primera carta a Timoteo (c. 61 e.c.) [1 Timoteo 1:2]', 'Segunda carta a Timoteo (c. 65 e.c.) [2 Timoteo 1:2]'], rel:['Pablo (3)', 'Silas (1)'],
     primera:'49', ultima:'65',
     versiculo:'1 Timoteo 4:12', opinion_jehova:'Joven siervo bien reportado; colaborador muy apreciado de Pablo', opinion_ref:'Hechos 16:1-2; Filipenses 2:19-22', opinion_cita:'',
     cualidades:'Humildad; fidelidad; celo; ternura pastoral', cualidades_refs:'1 Timoteo 4; 2 Timoteo 1', defectos:'Tendía a ser tímido y necesitaba ánimo para ejercer su autoridad', defectos_refs:'1 Timoteo 4:12; 2 Timoteo 1:6-7', leccion:'La edad no limita el servicio cuando hay ejemplo y madurez espiritual',
@@ -923,11 +923,11 @@ window.LT_FICHAS = [
     id:93, nombre:'Juan el apóstol', alt:'juan', genero:'M', tribu:'',
     profesion:'Apóstol', profesion_sub:'', profesion_2:'',
     nac:'1', fal:'100', edad:'99', era:'ec', seccion:'S3', potencia:'Roma',
-    lugares:['Galilea', 'Monte Tabor', 'Gólgota', 'Jerusalén', 'Patmos', 'Éfeso', 'Perea'], hitos:['Primeros discípulos (29 E. C.) [Mateo 4:18-22', 'Marcos 1:16-20]', 'Transfiguración (32 E. C.) [Marcos 9:2-8', 'Mateo 17:1-8]', 'Petición de Santiago y Juan (32 E. C.) [Mateo 20:20-28', 'Marcos 10:35-45]', 'Crucifixión y muerte de Jesús (33 E. C.) [Mateo 27:32-61', 'Marcos 15:21-47', 'Juan 19:17-42]', 'Curación del cojo (33 E. C.) [Hechos 3:1-26]', 'Preparativos de la Pascua (33 E. C.) [Mateo 26:17-19', 'Marcos 14:12-16', 'Lucas 22:7-13]', 'Visión de Juan en Patmos (c. 96 E. C.) [Apocalipsis 1:1-22:21]', 'Juan escribe 1 Juan (c. 98 E. C.) [1 JUAN 1-5]', 'Juan escribe 2 Juan (c. 98 E. C.) [2 JUAN 1-1]', 'Juan escribe 3 Juan (c. 98 E. C.) [3 JUAN 1-1]'], rel:['Jesús (5)', 'Pedro (4)', 'Santiago (3)', 'Andrés (1)', 'Moisés (1)', 'Eliás (1)'],
+    lugares:['Galilea', 'Monte Tabor', 'Gólgota', 'Jerusalén', 'Patmos', 'Éfeso, o cerca (?)', 'Perea'], hitos:['Primeros discípulos (29 E. C.) [Mateo 4:18-22', 'Marcos 1:16-20]', 'Transfiguración (32 E. C.) [Marcos 9:2-8', 'Mateo 17:1-8]', 'Petición de Santiago y Juan (32 E. C.) [Mateo 20:20-28', 'Marcos 10:35-45]', 'Crucifixión y muerte de Jesús (33 E. C.) [Mateo 27:32-61', 'Marcos 15:21-47', 'Juan 19:17-42]', 'Curación del cojo (33 E. C.) [Hechos 3:1-26]', 'Preparativos de la Pascua (33 E. C.) [Mateo 26:17-19', 'Marcos 14:12-16', 'Lucas 22:7-13]', 'Visión de Juan en Patmos (c. 96 E. C.) [Apocalipsis 1:1-22:21]', 'Revelación (Apocalipsis) (c. 96 e.c.) [Revelación 1:9]', 'Primera carta de Juan (c. 98 e.c.) [1 Juan 1:1]', 'Segunda carta de Juan (c. 98 e.c.) [2 Juan 1:1]', 'Tercera carta de Juan (c. 98 e.c.) [3 Juan 1:1]', 'Evangelio según Juan (c. 98 e.c.) [Juan 20:31]'], rel:['Jesús (5)', 'Pedro (4)', 'Santiago (3)', 'Andrés (1)', 'Moisés (1)', 'Eliás (1)'],
     primera:'29', ultima:'98',
     versiculo:'Juan 13:23', opinion_jehova:'Discípulo amado, testigo cercano de Cristo', opinion_ref:'Juan 21:20-24', opinion_cita:'',
     cualidades:'Amor profundo; lealtad; celo inicial madurado', cualidades_refs:'Juan 19:26-27; 1 Juan 4:7-8', defectos:'De joven mostró espíritu destructivo y ambición por prominencia', defectos_refs:'Lucas 9:54; Marcos 10:37', leccion:'El amor cristiano maduro transforma el celo en servicio edificante',
-    nq:295, nh:10, fuente:'personajes_biblicos,hechos_biblicos,preguntas,curacion_manual'
+    nq:295, nh:12, fuente:'personajes_biblicos,hechos_biblicos,preguntas,curacion_manual'
   },
   {
     id:94, nombre:'Nabucodonosor', alt:'', genero:'M', tribu:'',
@@ -1813,7 +1813,7 @@ window.LT_FICHAS = [
     id:182, nombre:'Santiago', alt:'', genero:'M', tribu:'',
     profesion:'Apóstol', profesion_sub:'', profesion_2:'',
     nac:'', fal:'', edad:'', era:'ec', seccion:'S3', potencia:'Roma',
-    lugares:['Galilea', 'Monte Tabor', 'Jerusalén', 'Perea'], hitos:['Primeros discípulos (29 E. C.) [Mateo 4:18-22', 'Marcos 1:16-20]', 'Transfiguración (32 E. C.) [Marcos 9:2-8', 'Mateo 17:1-8]', 'Petición de Santiago y Juan (32 E. C.) [Mateo 20:20-28', 'Marcos 10:35-45]', 'Concilio de Jerusalén (c. 49 E. C.) [Hechos 15:1-35]', 'Carta de Santiago (c. 62 E. C.) [SANTIAGO 1-5]'], rel:['Jesús (3)', 'Pedro (3)', 'Juan el apóstol (3)', 'Andrés (1)', 'Moisés (1)', 'Eliás (1)'],
+    lugares:['Galilea', 'Monte Tabor', 'Jerusalén', 'Perea'], hitos:['Primeros discípulos (29 E. C.) [Mateo 4:18-22', 'Marcos 1:16-20]', 'Transfiguración (32 E. C.) [Marcos 9:2-8', 'Mateo 17:1-8]', 'Petición de Santiago y Juan (32 E. C.) [Mateo 20:20-28', 'Marcos 10:35-45]', 'Concilio de Jerusalén (c. 49 E. C.) [Hechos 15:1-35]', 'Carta de Santiago (c. 62 e.c.) [Santiago 1:1]'], rel:['Jesús (3)', 'Pedro (3)', 'Juan el apóstol (3)', 'Andrés (1)', 'Moisés (1)', 'Eliás (1)'],
     primera:'29', ultima:'62',
     versiculo:'Hechos 12:2', opinion_jehova:'Apóstol de Cristo; primer apóstol en morir por su fe', opinion_ref:'Marcos 3:17; Hechos 12:1-2', opinion_cita:'',
     cualidades:'Celo; lealtad; valentía', cualidades_refs:'Marcos 10:35-40; Hechos 12:1-2', defectos:'De joven buscó posiciones de prominencia con ambición', defectos_refs:'Marcos 10:35-37', leccion:'El servicio cristiano puede exigir sacrificio total, no solo ambición',
@@ -1873,7 +1873,7 @@ window.LT_FICHAS = [
     id:188, nombre:'Judas', alt:'', genero:'M', tribu:'',
     profesion:'Apóstol', profesion_sub:'', profesion_2:'',
     nac:'', fal:'', edad:'', era:'ec', seccion:'S3', potencia:'Roma',
-    lugares:['Getsemaní', 'Palestina', 'Jerusalén / Betania'], hitos:['Traición de Judas (33 E. C.) [Mateo 26:47-56', 'Marcos 14:43-52]', 'Judas prepara la traición (33 E. C.) [Mateo 26:1-5, 14-16', 'Marcos 14:1-2, 10-11', 'Lucas 22:1-6]', 'Carta de Judas (c. 65 E. C.) [JUDAS 1-1]'], rel:['Jesús (2)'],
+    lugares:['Getsemaní', 'Palestina (?)', 'Jerusalén / Betania'], hitos:['Traición de Judas (33 E. C.) [Mateo 26:47-56', 'Marcos 14:43-52]', 'Judas prepara la traición (33 E. C.) [Mateo 26:1-5, 14-16', 'Marcos 14:1-2, 10-11', 'Lucas 22:1-6]', 'Carta de Judas (c. 65 e.c.) [Judas 1:1]'], rel:['Jesús (2)'],
     primera:'33', ultima:'65',
     versiculo:'Mateo 26:24', opinion_jehova:'Apóstol que traicionó a Jesús por codicia', opinion_ref:'Mateo 26:14-16; Juan 12:6', opinion_cita:'',
     cualidades:'Ninguna fiel destacada en las Escrituras', cualidades_refs:'', defectos:'Codicia; hipocresía; traición; amor al dinero', defectos_refs:'Juan 12:6; Mateo 26:14-16; Mateo 27:3-5', leccion:'Servir por interés personal lleva a la destrucción espiritual',
@@ -2013,7 +2013,7 @@ window.LT_FICHAS = [
     id:202, nombre:'Tito', alt:'', genero:'M', tribu:'',
     profesion:'Misionero', profesion_sub:'', profesion_2:'Superintendente',
     nac:'', fal:'', edad:'', era:'ec', seccion:'S3', potencia:'Roma',
-    lugares:['Jerusalén', 'Creta'], hitos:['Pablo escribe a Tito (c. 61 E. C.) [TITO 1-3]', 'Destrucción de Jerusalén (70 E. C.) [Mateo 24:1, 2', 'Lucas 19:43, 44', '21:20-24]'], rel:['Jesucristo (profecía) (1)', 'Pablo (1)'],
+    lugares:['Jerusalén', 'Macedonia (?)'], hitos:['Carta a Tito (c. 61 e.c.) [Tito 1:4]', 'Destrucción de Jerusalén (70 E. C.) [Mateo 24:1, 2', 'Lucas 19:43, 44', '21:20-24]'], rel:['Jesucristo (profecía) (1)', 'Pablo (1)'],
     primera:'61', ultima:'70',
     versiculo:'Tito 1:4', opinion_jehova:'Compañero fiel de Pablo; encargado de organizar congregaciones', opinion_ref:'Tito 1:4-5; 2 Corintios 8:23', opinion_cita:'',
     cualidades:'Lealtad; capacidad organizativa; celo por el orden congregacional', cualidades_refs:'Tito 1; 2 Corintios 2:13', defectos:'', defectos_refs:'', leccion:'El servicio fiel en la organización fortalece a las congregaciones',
@@ -2040,37 +2040,77 @@ window.LT_FICHAS = [
     nq:2, nh:1, fuente:'hechos_biblicos,preguntas,curacion_manual'
   },
   {
-    id:205, nombre:'Gayo', alt:'', genero:'', tribu:'',
+    id:205, nombre:'Corintios', alt:'', genero:'', tribu:'',
     profesion:'', profesion_sub:'', profesion_2:'',
     nac:'', fal:'', edad:'', era:'ec', seccion:'S3', potencia:'Roma',
-    lugares:['Éfeso'], hitos:['Juan escribe 3 Juan (c. 98 E. C.) [3 JUAN 1-1]'], rel:['Juan el apóstol (1)'],
-    primera:'98', ultima:'98',
+    lugares:['Éfeso', 'Macedonia'], hitos:['Primera carta a los Corintios (c. 55 e.c.) [1 Corintios 1:2]', 'Segunda carta a los Corintios (c. 55 e.c.) [2 Corintios 1:1]'], rel:['Pablo (2)'],
+    primera:'55', ultima:'55',
     versiculo:'', opinion_jehova:'', opinion_ref:'', opinion_cita:'',
     cualidades:'', cualidades_refs:'', defectos:'', defectos_refs:'', leccion:'',
-    nq:0, nh:1, fuente:'hechos_biblicos'
+    nq:0, nh:2, fuente:'hechos_biblicos'
   },
   {
-    id:206, nombre:'Filemón', alt:'', genero:'', tribu:'',
+    id:206, nombre:'Tesalonicenses', alt:'', genero:'', tribu:'',
     profesion:'', profesion_sub:'', profesion_2:'',
     nac:'', fal:'', edad:'', era:'ec', seccion:'S3', potencia:'Roma',
-    lugares:['Colosas'], hitos:['Pablo escribe a Filemón (c. 60-61 E. C.) [FILEMÓN 1-1]'], rel:['Pablo (1)', 'Onésimo (1)'],
+    lugares:['Corinto'], hitos:['Primera carta a los Tesalonicenses (c. 50 e.c.) [1 Tesalonicenses 1:1]', 'Segunda carta a los Tesalonicenses (c. 51 e.c.) [2 Tesalonicenses 1:1]'], rel:['Pablo (2)'],
+    primera:'50', ultima:'51',
+    versiculo:'', opinion_jehova:'', opinion_ref:'', opinion_cita:'',
+    cualidades:'', cualidades_refs:'', defectos:'', defectos_refs:'', leccion:'',
+    nq:0, nh:2, fuente:'hechos_biblicos'
+  },
+  {
+    id:207, nombre:'Colosenses', alt:'', genero:'', tribu:'',
+    profesion:'', profesion_sub:'', profesion_2:'',
+    nac:'', fal:'', edad:'', era:'ec', seccion:'S3', potencia:'Roma',
+    lugares:['Roma'], hitos:['Carta a los Colosenses (c. 60 e.c.) [Colosenses 1:2]'], rel:['Pablo (1)'],
+    primera:'60', ultima:'60',
+    versiculo:'', opinion_jehova:'', opinion_ref:'', opinion_cita:'',
+    cualidades:'', cualidades_refs:'', defectos:'', defectos_refs:'', leccion:'',
+    nq:41, nh:1, fuente:'hechos_biblicos,preguntas'
+  },
+  {
+    id:208, nombre:'Efesios', alt:'', genero:'', tribu:'',
+    profesion:'', profesion_sub:'', profesion_2:'',
+    nac:'', fal:'', edad:'', era:'ec', seccion:'S3', potencia:'Roma',
+    lugares:['Roma'], hitos:['Carta a los Efesios (c. 60 e.c.) [Efesios 1:1]'], rel:['Pablo (1)'],
+    primera:'60', ultima:'60',
+    versiculo:'', opinion_jehova:'', opinion_ref:'', opinion_cita:'',
+    cualidades:'', cualidades_refs:'', defectos:'', defectos_refs:'', leccion:'',
+    nq:41, nh:1, fuente:'hechos_biblicos,preguntas'
+  },
+  {
+    id:209, nombre:'Filemón', alt:'', genero:'', tribu:'',
+    profesion:'', profesion_sub:'', profesion_2:'',
+    nac:'', fal:'', edad:'', era:'ec', seccion:'S3', potencia:'Roma',
+    lugares:['Roma'], hitos:['Carta a Filemón (c. 60 e.c.) [Filemón 1:1]'], rel:['Pablo (1)'],
     primera:'60', ultima:'60',
     versiculo:'', opinion_jehova:'', opinion_ref:'', opinion_cita:'',
     cualidades:'', cualidades_refs:'', defectos:'', defectos_refs:'', leccion:'',
     nq:38, nh:1, fuente:'hechos_biblicos,preguntas'
   },
   {
-    id:207, nombre:'Onésimo', alt:'', genero:'', tribu:'',
+    id:210, nombre:'Filipenses', alt:'', genero:'', tribu:'',
     profesion:'', profesion_sub:'', profesion_2:'',
     nac:'', fal:'', edad:'', era:'ec', seccion:'S3', potencia:'Roma',
-    lugares:['Colosas'], hitos:['Pablo escribe a Filemón (c. 60-61 E. C.) [FILEMÓN 1-1]'], rel:['Pablo (1)', 'Filemón (1)'],
+    lugares:['Roma'], hitos:['Carta a los Filipenses (c. 60 e.c.) [Filipenses 1:1]'], rel:['Pablo (1)'],
     primera:'60', ultima:'60',
     versiculo:'', opinion_jehova:'', opinion_ref:'', opinion_cita:'',
     cualidades:'', cualidades_refs:'', defectos:'', defectos_refs:'', leccion:'',
-    nq:4, nh:1, fuente:'hechos_biblicos,preguntas'
+    nq:47, nh:1, fuente:'hechos_biblicos,preguntas'
   },
   {
-    id:208, nombre:'Hageo', alt:'', genero:'', tribu:'',
+    id:211, nombre:'Gálatas', alt:'', genero:'', tribu:'',
+    profesion:'', profesion_sub:'', profesion_2:'',
+    nac:'', fal:'', edad:'', era:'ec', seccion:'S3', potencia:'Roma',
+    lugares:['Corinto o Antioquía de Siria (?)'], hitos:['Carta a los Gálatas (c. 50 e.c.) [Gálatas 1:2]'], rel:['Pablo (1)'],
+    primera:'50', ultima:'50',
+    versiculo:'', opinion_jehova:'', opinion_ref:'', opinion_cita:'',
+    cualidades:'', cualidades_refs:'', defectos:'', defectos_refs:'', leccion:'',
+    nq:40, nh:1, fuente:'hechos_biblicos,preguntas'
+  },
+  {
+    id:212, nombre:'Hageo', alt:'', genero:'', tribu:'',
     profesion:'Profeta', profesion_sub:'Ficha de Personaje: Profetas', profesion_2:'',
     nac:'', fal:'', edad:'', era:'res', seccion:'S2', potencia:'Medopersia',
     lugares:['Jerusalén'], hitos:['Profecía de Hageo (c. 520 a. E. C.) [HAGEO 1-2]'], rel:['Zorobabel (1)'],
@@ -2080,7 +2120,7 @@ window.LT_FICHAS = [
     nq:0, nh:1, fuente:'hechos_biblicos'
   },
   {
-    id:209, nombre:'Malaquías', alt:'', genero:'', tribu:'',
+    id:213, nombre:'Malaquías', alt:'', genero:'', tribu:'',
     profesion:'Profeta', profesion_sub:'Ficha de Personaje: Profetas', profesion_2:'',
     nac:'', fal:'', edad:'', era:'res', seccion:'S2', potencia:'Medopersia',
     lugares:['Jerusalén'], hitos:['Profecía de Malaquías (c. 443 a. E. C.) [MALAQUÍAS 1-4]'], rel:[],
@@ -2090,7 +2130,27 @@ window.LT_FICHAS = [
     nq:32, nh:1, fuente:'hechos_biblicos,preguntas'
   },
   {
-    id:210, nombre:'Herodías', alt:'', genero:'', tribu:'',
+    id:214, nombre:'Mateo', alt:'', genero:'', tribu:'',
+    profesion:'', profesion_sub:'', profesion_2:'',
+    nac:'', fal:'', edad:'', era:'ec', seccion:'S3', potencia:'Roma',
+    lugares:['Palestina'], hitos:['Evangelio según Mateo (c. 41 e.c.) [Mateo 1:1]'], rel:[],
+    primera:'41', ultima:'41',
+    versiculo:'', opinion_jehova:'', opinion_ref:'', opinion_cita:'',
+    cualidades:'', cualidades_refs:'', defectos:'', defectos_refs:'', leccion:'',
+    nq:71, nh:1, fuente:'hechos_biblicos,preguntas'
+  },
+  {
+    id:215, nombre:'Lucas', alt:'', genero:'', tribu:'',
+    profesion:'Apóstol', profesion_sub:'Ficha de Personaje: Apóstol', profesion_2:'',
+    nac:'', fal:'', edad:'', era:'ec', seccion:'S3', potencia:'Roma',
+    lugares:['Cesarea', 'Roma'], hitos:['Evangelio según Lucas (c. 56 e.c.) [Lucas 1:3]', 'Hechos de los Apóstoles (c. 61 e.c.) [Hechos 1:1]'], rel:[],
+    primera:'56', ultima:'61',
+    versiculo:'', opinion_jehova:'', opinion_ref:'', opinion_cita:'',
+    cualidades:'', cualidades_refs:'', defectos:'', defectos_refs:'', leccion:'',
+    nq:102, nh:2, fuente:'hechos_biblicos,preguntas'
+  },
+  {
+    id:216, nombre:'Herodías', alt:'', genero:'', tribu:'',
     profesion:'', profesion_sub:'', profesion_2:'',
     nac:'', fal:'', edad:'', era:'ec', seccion:'S3', potencia:'Roma',
     lugares:['Tiberíades'], hitos:['Decapitación de Juan el Bautista (31 E. C.) [Mateo 14:1-12', 'Marcos 6:14-29', 'Lucas 9:7-9]'], rel:['Juan el Bautista (1)', 'Herodes (1)'],
@@ -2100,7 +2160,7 @@ window.LT_FICHAS = [
     nq:6, nh:1, fuente:'hechos_biblicos,preguntas'
   },
   {
-    id:211, nombre:'fariseos', alt:'', genero:'', tribu:'',
+    id:217, nombre:'fariseos', alt:'', genero:'', tribu:'',
     profesion:'Escriba', profesion_sub:'Ficha de Personaje: Escribas', profesion_2:'',
     nac:'', fal:'', edad:'', era:'ec', seccion:'S3', potencia:'Roma',
     lugares:['Capernaúm', 'Magadán', 'Jerusalén', 'Judea', 'Jerusalén / Efraín', 'Jerusalén / Templo'], hitos:['Denuncia de tradiciones humanas (32 E. C.) [Mateo 15:1-20', 'Marcos 7:1-23]', 'Señal de Jonás (32 E. C.) [Mateo 15:39–16:4', 'Marcos 8:10-12]', 'Enseñanza en la Fiesta de los Tabernáculos (32 E. C.) [Juan 7:11-52]', 'Ayes contra fariseos y escribas (32 E. C.) [Lucas 11:37-54]', 'Conspiración para matar a Jesús (32 E. C.) [Juan 11:47-54]', 'Enseñanza y denuncias en el templo (33 E. C.) [Mateo 21:19–23:39', 'Marcos 11:20–12:44', 'Lucas 20:1–21:4]'], rel:['Jesús (6)', 'Caifás (1)'],
@@ -2110,7 +2170,7 @@ window.LT_FICHAS = [
     nq:34, nh:6, fuente:'hechos_biblicos,preguntas'
   },
   {
-    id:212, nombre:'Zaqueo', alt:'', genero:'', tribu:'',
+    id:218, nombre:'Zaqueo', alt:'', genero:'', tribu:'',
     profesion:'', profesion_sub:'', profesion_2:'',
     nac:'', fal:'', edad:'', era:'ec', seccion:'S3', potencia:'Roma',
     lugares:['Jericó'], hitos:['Zaqueo en Jericó y parábola de las minas (32 E. C.) [Mateo 20:29-34', 'Marcos 10:46-52', 'Lucas 18:35–19:28]'], rel:['Jesús (1)'],
@@ -2120,7 +2180,7 @@ window.LT_FICHAS = [
     nq:5, nh:1, fuente:'hechos_biblicos,preguntas'
   },
   {
-    id:213, nombre:'Simón', alt:'', genero:'', tribu:'',
+    id:219, nombre:'Simón', alt:'', genero:'', tribu:'',
     profesion:'', profesion_sub:'', profesion_2:'',
     nac:'', fal:'', edad:'', era:'ec', seccion:'S3', potencia:'',
     lugares:[], hitos:[], rel:[],
@@ -2130,7 +2190,7 @@ window.LT_FICHAS = [
     nq:0, nh:0, fuente:''
   },
   {
-    id:214, nombre:'José de Arimatea', alt:'', genero:'', tribu:'',
+    id:220, nombre:'José de Arimatea', alt:'', genero:'', tribu:'',
     profesion:'', profesion_sub:'', profesion_2:'',
     nac:'', fal:'', edad:'', era:'ec', seccion:'S3', potencia:'Roma',
     lugares:['Gólgota / tumba'], hitos:['Sepultura de Jesús (33 E. C.) [Mateo 27:57-61', 'Marcos 15:42-47', 'Lucas 23:50-56', 'Juan 19:38-42]'], rel:['Jesús (1)', 'Nicodemo (1)'],
@@ -2140,7 +2200,7 @@ window.LT_FICHAS = [
     nq:6, nh:1, fuente:'hechos_biblicos,preguntas'
   },
   {
-    id:215, nombre:'otras mujeres', alt:'', genero:'', tribu:'',
+    id:221, nombre:'otras mujeres', alt:'', genero:'', tribu:'',
     profesion:'', profesion_sub:'', profesion_2:'',
     nac:'', fal:'', edad:'', era:'ec', seccion:'S3', potencia:'Roma',
     lugares:['Jerusalén'], hitos:['Compra de especias (33 E. C.) [Marcos 16:1]'], rel:['María Magdalena (1)'],
@@ -2150,7 +2210,7 @@ window.LT_FICHAS = [
     nq:0, nh:1, fuente:'hechos_biblicos'
   },
   {
-    id:216, nombre:'Jabal', alt:'', genero:'', tribu:'',
+    id:222, nombre:'Jabal', alt:'', genero:'', tribu:'',
     profesion:'', profesion_sub:'', profesion_2:'',
     nac:'', fal:'', edad:'', era:'pre', seccion:'S1', potencia:'Sin potencia (anterior a Egipto)',
     lugares:['Tierra de la Huida (Nod)'], hitos:['Línea de Lamec cainita (poligamia y violencia) (3400-3300 a. E. C.) [Génesis 4:17-24]'], rel:['Lamec (1)', 'Jubal (1)', 'Tubal-caín (1)'],
@@ -2160,7 +2220,7 @@ window.LT_FICHAS = [
     nq:0, nh:1, fuente:'hechos_biblicos'
   },
   {
-    id:217, nombre:'Jubal', alt:'', genero:'', tribu:'',
+    id:223, nombre:'Jubal', alt:'', genero:'', tribu:'',
     profesion:'', profesion_sub:'', profesion_2:'',
     nac:'', fal:'', edad:'', era:'pre', seccion:'S1', potencia:'Sin potencia (anterior a Egipto)',
     lugares:['Tierra de la Huida (Nod)'], hitos:['Línea de Lamec cainita (poligamia y violencia) (3400-3300 a. E. C.) [Génesis 4:17-24]'], rel:['Lamec (1)', 'Jabal (1)', 'Tubal-caín (1)'],
@@ -2170,7 +2230,7 @@ window.LT_FICHAS = [
     nq:0, nh:1, fuente:'hechos_biblicos'
   },
   {
-    id:218, nombre:'Tubal-caín', alt:'', genero:'', tribu:'',
+    id:224, nombre:'Tubal-caín', alt:'', genero:'', tribu:'',
     profesion:'', profesion_sub:'', profesion_2:'',
     nac:'', fal:'', edad:'', era:'pre', seccion:'S1', potencia:'Sin potencia (anterior a Egipto)',
     lugares:['Tierra de la Huida (Nod)'], hitos:['Línea de Lamec cainita (poligamia y violencia) (3400-3300 a. E. C.) [Génesis 4:17-24]'], rel:['Lamec (1)', 'Jabal (1)', 'Jubal (1)'],
@@ -2180,7 +2240,7 @@ window.LT_FICHAS = [
     nq:1, nh:1, fuente:'hechos_biblicos,preguntas'
   },
   {
-    id:219, nombre:'Nefilim', alt:'', genero:'', tribu:'',
+    id:225, nombre:'Nefilim', alt:'', genero:'', tribu:'',
     profesion:'', profesion_sub:'', profesion_2:'',
     nac:'', fal:'', edad:'', era:'pre', seccion:'S1', potencia:'Sin potencia (anterior a Egipto)',
     lugares:['Antediluviano'], hitos:['Invasión de los Nefilim (2800-2370 a. E. C.) [Génesis 6:1-4', '2 Pedro 2:4', 'Judas 6]'], rel:['Noé (1)', 'Matusalén (1)', 'Lamec (1)'],
@@ -2190,7 +2250,7 @@ window.LT_FICHAS = [
     nq:2, nh:1, fuente:'hechos_biblicos,preguntas'
   },
   {
-    id:220, nombre:'Canaán', alt:'', genero:'', tribu:'',
+    id:226, nombre:'Canaán', alt:'', genero:'', tribu:'',
     profesion:'', profesion_sub:'', profesion_2:'',
     nac:'', fal:'', edad:'', era:'pat', seccion:'S1', potencia:'Sin potencia (anterior a Egipto)',
     lugares:['Montes de Ararat'], hitos:['Salida del arca y pacto del arcoíris (2369-2368 a. E. C.) [Génesis 8:15-9:27]'], rel:['Noé (1)', 'Sem (1)', 'Cam (1)', 'Jafet (1)'],
@@ -2200,7 +2260,7 @@ window.LT_FICHAS = [
     nq:0, nh:1, fuente:'hechos_biblicos'
   },
   {
-    id:221, nombre:'Otoniel', alt:'', genero:'', tribu:'',
+    id:227, nombre:'Otoniel', alt:'', genero:'', tribu:'',
     profesion:'', profesion_sub:'', profesion_2:'',
     nac:'', fal:'', edad:'', era:'jue', seccion:'S1', potencia:'Egipto',
     lugares:['Timnat-serah (Efraín)'], hitos:['Muerte de Josué / inicio de los Jueces (c. 1380 a. E. C.) [Josué 24:29-31', 'Jueces 2:7-16]'], rel:['Josué (1)', 'Caleb (1)', 'Eleazar (1)'],
@@ -2210,7 +2270,7 @@ window.LT_FICHAS = [
     nq:1, nh:1, fuente:'hechos_biblicos,preguntas'
   },
   {
-    id:222, nombre:'Abías (Abiyam)', alt:'', genero:'', tribu:'',
+    id:228, nombre:'Abías (Abiyam)', alt:'', genero:'', tribu:'',
     profesion:'Rey', profesion_sub:'Ficha de Personaje: Reyes', profesion_2:'',
     nac:'', fal:'', edad:'', era:'div', seccion:'S2', potencia:'Egipto',
     lugares:['Jerusalén'], hitos:['Reinado de Abías (Abiyam) (980-977 a. E. C.) [1 Reyes 15:1-2]'], rel:[],
@@ -2220,7 +2280,7 @@ window.LT_FICHAS = [
     nq:0, nh:1, fuente:'hechos_biblicos'
   },
   {
-    id:223, nombre:'Uzías (Azarías)', alt:'', genero:'', tribu:'',
+    id:229, nombre:'Uzías (Azarías)', alt:'', genero:'', tribu:'',
     profesion:'Rey', profesion_sub:'Ficha de Personaje: Reyes', profesion_2:'',
     nac:'', fal:'', edad:'', era:'div', seccion:'S2', potencia:'Asiria',
     lugares:['Jerusalén'], hitos:['Reinado de Uzías (Azarías) (829-777 a. E. C.) [2 Reyes 15:2]'], rel:[],
@@ -2230,7 +2290,7 @@ window.LT_FICHAS = [
     nq:0, nh:1, fuente:'hechos_biblicos'
   },
   {
-    id:224, nombre:'Omrí y Tibní', alt:'', genero:'', tribu:'',
+    id:230, nombre:'Omrí y Tibní', alt:'', genero:'', tribu:'',
     profesion:'Rey', profesion_sub:'Ficha de Personaje: Reyes', profesion_2:'',
     nac:'', fal:'', edad:'', era:'div', seccion:'S2', potencia:'Egipto',
     lugares:['Samaria'], hitos:['Reinado de Omrí y Tibní (c. 947-943 a. E. C.) [1 Reyes 16:21-22]'], rel:[],
@@ -2240,7 +2300,7 @@ window.LT_FICHAS = [
     nq:0, nh:1, fuente:'hechos_biblicos'
   },
   {
-    id:225, nombre:'Omrí (solo)', alt:'', genero:'', tribu:'',
+    id:231, nombre:'Omrí (solo)', alt:'', genero:'', tribu:'',
     profesion:'Rey', profesion_sub:'Ficha de Personaje: Reyes', profesion_2:'',
     nac:'', fal:'', edad:'', era:'div', seccion:'S2', potencia:'Egipto',
     lugares:['Samaria'], hitos:['Reinado de Omrí (solo) (c. 940-932 a. E. C.) [1 Reyes 16:23]'], rel:[],
@@ -2250,7 +2310,7 @@ window.LT_FICHAS = [
     nq:0, nh:1, fuente:'hechos_biblicos'
   },
   {
-    id:226, nombre:'Jehoacaz y Jehoás', alt:'', genero:'', tribu:'',
+    id:232, nombre:'Jehoacaz y Jehoás', alt:'', genero:'', tribu:'',
     profesion:'Rey', profesion_sub:'Ficha de Personaje: Reyes', profesion_2:'',
     nac:'', fal:'', edad:'', era:'div', seccion:'S2', potencia:'Asiria',
     lugares:['Samaria'], hitos:['Reinado de Jehoacaz y Jehoás (c. 862-859 a. E. C.)'], rel:[],

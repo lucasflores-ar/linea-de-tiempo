@@ -164,7 +164,6 @@ main{flex:1;padding:20px 18px 40px}
     <button class="iconbtn" id="theme-btn" title="Alternar tema">☀️</button>
     <nav class="site-nav" aria-label="Navegación principal">
       <a class="site-nav__link" href="linea-paralela.html">Cronología</a>
-      <a class="site-nav__link" href="linea-horizontal.html">Por épocas</a>
       <a class="site-nav__link site-nav__link--on" href="fichas.html" aria-current="page">Personajes</a>
     </nav>
   </div>
@@ -222,8 +221,7 @@ main{flex:1;padding:20px 18px 40px}
     </div>
     <p class="note">❓ Preguntas vinculadas: <b id="d-nq"></b> · 📜 Sucesos: <b id="d-nh"></b> · Fuentes: <span id="d-fuente"></span></p>
     <div class="links-row">
-      <a class="iconbtn" id="d-open-linea" href="#" title="Buscar en la línea de tiempo" style="padding:0 10px">🔍 Línea</a>
-      <a class="iconbtn" id="d-open-app" href="#" title="Ver en la app principal" style="padding:0 10px">◉ App</a>
+      <a class="iconbtn" id="d-open-app" href="#" title="Ver en la cronología" style="padding:0 10px">⇉ Cronología</a>
     </div>
   </div>
 </aside>
@@ -367,7 +365,6 @@ function openDrawer(f){
   document.getElementById('d-nq').textContent=f.nq||0;
   document.getElementById('d-nh').textContent=f.nh||0;
   document.getElementById('d-fuente').textContent=f.fuente||'';
-  document.getElementById('d-open-linea').href='linea-horizontal.html?q='+encodeURIComponent(f.nombre.split(',')[0].trim());
   document.getElementById('d-open-app').href='linea-paralela.html?q='+encodeURIComponent(f.nombre.split(',')[0].trim());
   drawer.classList.add('on'); overlay.classList.add('on'); openId=f.id;
 }
