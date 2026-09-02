@@ -1,87 +1,47 @@
 {
-  "version": 1,
-  "nota": "Lámina B12: última semana de Jesús (8–16 de nisán, 33 e.c.). hecho_id = existente; clave = nuevo idempotente.",
+  "version": 2,
+  "nota": "Lámina B12: última semana (8–16 nisán + ascensión). Generado desde TSV.",
   "linea": "La última semana de Jesús en la tierra",
   "dias": [
-    {
-      "codigo": "B12",
-      "titulo": "8 de nisán (sábado)",
-      "seccion": "S3",
-      "eventos": [
-        {
-          "clave": "llegada_betania_8nis",
-          "etiqueta_jw": "Jesús llega a Betania seis días antes de la Pascua",
-          "nombre": "Jesús llega a Betania",
-          "descripcion": "Jesús llega a Betania seis días antes de la Pascua, donde están Lázaro, Marta y María.",
-          "fecha_texto": "33 E. C.", "fecha_anio": 33, "era": "E.C.",
-          "lugar_antiguo": "Betania", "lat": "31.77", "lon": "35.28",
-          "tipo_suceso": "viaje", "personajes": "Jesús, Lázaro, Marta, María",
-          "referencia": "Juan 11:55–12:1", "libro": "JUAN", "capitulo_inicio": "11", "capitulo_fin": "12"
-        }
-      ]
-    },
-    {
-      "codigo": "B12",
-      "titulo": "9 de nisán",
-      "seccion": "S3",
-      "eventos": [
-        {
-          "clave": "cena_simon_ungimiento",
-          "etiqueta_jw": "Come con Simón el leproso; María derrama aceite perfumado",
-          "nombre": "Cena en casa de Simón el leproso",
-          "descripcion": "Jesús come con Simón el leproso; María derrama aceite perfumado sobre Jesús; muchos judíos vienen a ver a Jesús y a Lázaro.",
-          "fecha_texto": "33 E. C.", "fecha_anio": 33, "era": "E.C.",
-          "lugar_antiguo": "Betania", "lat": "31.77", "lon": "35.28",
-          "tipo_suceso": "enseñanza", "personajes": "Jesús, María, Lázaro, Simón",
-          "referencia": "Mateo 26:6-13; Marcos 14:3-9; Juan 12:2-11", "libro": "MATEO", "capitulo_inicio": "26", "capitulo_fin": "26"
-        },
-        {"hecho_id": 126, "etiqueta_jw": "Jesús entra triunfalmente en Jerusalén"},
-        {
-          "clave": "ensenanza_templo_9nis",
-          "etiqueta_jw": "Enseña en el templo",
-          "nombre": "Enseñanza en el templo (9 de nisán)",
-          "descripcion": "Tras la entrada triunfal, Jesús enseña en el templo de Jerusalén.",
-          "fecha_texto": "33 E. C.", "fecha_anio": 33, "era": "E.C.",
-          "lugar_antiguo": "Jerusalén / Templo", "lat": "31.78", "lon": "35.21",
-          "tipo_suceso": "enseñanza", "personajes": "Jesús",
-          "referencia": "Mateo 21:14-17; Marcos 11:11", "libro": "MATEO", "capitulo_inicio": "21", "capitulo_fin": "21"
-        }
-      ]
-    },
     {
       "codigo": "B12",
       "titulo": "10 de nisán",
       "seccion": "S3",
       "eventos": [
         {
-          "clave": "noche_betania_10nis",
-          "etiqueta_jw": "Pasa la noche en Betania",
-          "nombre": "Noche en Betania",
-          "descripcion": "Jesús pasa la noche en Betania antes de regresar a Jerusalén.",
-          "fecha_texto": "33 E. C.", "fecha_anio": 33, "era": "E.C.",
-          "lugar_antiguo": "Betania", "lat": "31.77", "lon": "35.28",
-          "tipo_suceso": "viaje", "personajes": "Jesús",
-          "referencia": "Marcos 11:11", "libro": "MARCOS", "capitulo_inicio": "11", "capitulo_fin": "11"
+          "nombre": "Maldice higuera sin fruto; limpia el templo",
+          "fecha_texto": "33 e. c.",
+          "fecha_anio": 33,
+          "era": "E.C.",
+          "lugar_antiguo": "Jerusalén",
+          "lat": "31.78",
+          "lon": "35.21",
+          "tipo_suceso": "suceso",
+          "personajes": "Jesús",
+          "referencia": "Mt 21:18, 19, 12, 13; Mr 11:12-17; Lu 19:45, 46",
+          "etiqueta_jw": "maldice_higuera",
+          "ministerio_cuando": "10 de nisán",
+          "clave": "maldice_higuera"
         },
         {
-          "clave": "limpia_templo_semana",
-          "etiqueta_jw": "Limpia el templo",
-          "nombre": "Segunda limpieza del templo",
-          "descripcion": "Jesús expulsa de nuevo a los cambistas y vendedores del templo.",
-          "fecha_texto": "33 E. C.", "fecha_anio": 33, "era": "E.C.",
-          "lugar_antiguo": "Jerusalén / Templo", "lat": "31.78", "lon": "35.21",
-          "tipo_suceso": "limpieza", "personajes": "Jesús",
-          "referencia": "Mateo 21:12-13; Marcos 11:15-19; Lucas 19:45-48", "libro": "MATEO", "capitulo_inicio": "21", "capitulo_fin": "21"
+          "nombre": "Sacerdotes traman destruir a Jesús",
+          "fecha_texto": "33 e. c.",
+          "fecha_anio": 33,
+          "era": "E.C.",
+          "lugar_antiguo": "Jerusalén",
+          "lat": "31.78",
+          "lon": "35.21",
+          "tipo_suceso": "suceso",
+          "personajes": "Jesús",
+          "referencia": "Mr 11:18, 19; Lu 19:47, 48",
+          "etiqueta_jw": "sacerdotes_traman",
+          "ministerio_cuando": "10 de nisán",
+          "clave": "sacerdotes_traman"
         },
         {
-          "clave": "voz_cielo_10nis",
-          "etiqueta_jw": "Jehová habla desde el cielo",
-          "nombre": "Voz del cielo en Jerusalén",
-          "descripcion": "Jehová responde desde el cielo cuando Jesús ora; algunos lo toman por trueno.",
-          "fecha_texto": "33 E. C.", "fecha_anio": 33, "era": "E.C.",
-          "lugar_antiguo": "Jerusalén", "lat": "31.78", "lon": "35.21",
-          "tipo_suceso": "milagro", "personajes": "Jesús, Jehová",
-          "referencia": "Juan 12:20-50", "libro": "JUAN", "capitulo_inicio": "12", "capitulo_fin": "12"
+          "hecho_id": 254,
+          "etiqueta_jw": "discusion_griegos",
+          "ministerio_cuando": "10 de nisán"
         }
       ]
     },
@@ -91,24 +51,119 @@
       "seccion": "S3",
       "eventos": [
         {
-          "clave": "ensenanza_11nis_templo",
-          "etiqueta_jw": "Enseña en el templo; denuncia a los fariseos; viuda pobre",
-          "nombre": "Enseñanza y denuncias en el templo",
-          "descripcion": "Jesús enseña con comparaciones, denuncia a fariseos y escribas, y observa la contribución de una viuda pobre.",
-          "fecha_texto": "33 E. C.", "fecha_anio": 33, "era": "E.C.",
-          "lugar_antiguo": "Jerusalén / Templo", "lat": "31.78", "lon": "35.21",
-          "tipo_suceso": "enseñanza", "personajes": "Jesús, fariseos",
-          "referencia": "Mateo 21:19–23:39; Marcos 11:20–12:44; Lucas 20:1–21:4", "libro": "MATEO", "capitulo_inicio": "21", "capitulo_fin": "23"
+          "nombre": "Hallada marchita la higuera",
+          "fecha_texto": "33 e. c.",
+          "fecha_anio": 33,
+          "era": "E.C.",
+          "lugar_antiguo": "Jerusalén",
+          "lat": "31.78",
+          "lon": "35.21",
+          "tipo_suceso": "suceso",
+          "personajes": "Jesús",
+          "referencia": "Mt 21:19-22; Mr 11:20-25",
+          "etiqueta_jw": "higuera_marchita",
+          "ministerio_cuando": "11 de nisán",
+          "clave": "higuera_marchita"
         },
         {
-          "clave": "profecia_monte_olivos",
-          "etiqueta_jw": "En el monte de los Olivos predice la caída de Jerusalén",
-          "nombre": "Profecía en el monte de los Olivos",
-          "descripcion": "Jesús predice la destrucción de Jerusalén y da la señal de su futura presencia.",
-          "fecha_texto": "33 E. C.", "fecha_anio": 33, "era": "E.C.",
-          "lugar_antiguo": "Monte de los Olivos", "lat": "31.78", "lon": "35.24",
-          "tipo_suceso": "profecía", "personajes": "Jesús, los apóstoles",
-          "referencia": "Mateo 24:1–25:46; Marcos 13:1-37; Lucas 21:5-38", "libro": "MATEO", "capitulo_inicio": "24", "capitulo_fin": "25"
+          "nombre": "Autoridad de Cristo en tela de juicio",
+          "fecha_texto": "33 e. c.",
+          "fecha_anio": 33,
+          "era": "E.C.",
+          "lugar_antiguo": "Jerusalén",
+          "lat": "31.78",
+          "lon": "35.21",
+          "tipo_suceso": "suceso",
+          "personajes": "Jesús",
+          "referencia": "Mt 21:23-32; Mr 11:27-33; Lu 20:1-8",
+          "etiqueta_jw": "autoridad_templo",
+          "ministerio_cuando": "11 de nisán",
+          "clave": "autoridad_templo"
+        },
+        {
+          "nombre": "Cultivadores inicuos; banquete de bodas",
+          "fecha_texto": "33 e. c.",
+          "fecha_anio": 33,
+          "era": "E.C.",
+          "lugar_antiguo": "Jerusalén",
+          "lat": "31.78",
+          "lon": "35.21",
+          "tipo_suceso": "suceso",
+          "personajes": "Jesús",
+          "referencia": "Mt 21:33–22:14; Mr 12:1-12; Lu 20:9-19",
+          "etiqueta_jw": "cultivadores_inicuos",
+          "ministerio_cuando": "11 de nisán",
+          "clave": "cultivadores_inicuos"
+        },
+        {
+          "nombre": "Preguntas sobre impuesto, resurrección, mandamiento",
+          "fecha_texto": "33 e. c.",
+          "fecha_anio": 33,
+          "era": "E.C.",
+          "lugar_antiguo": "Jerusalén",
+          "lat": "31.78",
+          "lon": "35.21",
+          "tipo_suceso": "suceso",
+          "personajes": "Jesús",
+          "referencia": "Mt 22:15-40; Mr 12:13-34; Lu 20:20-40",
+          "etiqueta_jw": "preguntas_capciosas",
+          "ministerio_cuando": "11 de nisán",
+          "clave": "preguntas_capciosas"
+        },
+        {
+          "nombre": "Pregunta sobre descendencia del Mesías",
+          "fecha_texto": "33 e. c.",
+          "fecha_anio": 33,
+          "era": "E.C.",
+          "lugar_antiguo": "Jerusalén",
+          "lat": "31.78",
+          "lon": "35.21",
+          "tipo_suceso": "suceso",
+          "personajes": "Jesús",
+          "referencia": "Mt 22:41-46; Mr 12:35-37; Lu 20:41-44",
+          "etiqueta_jw": "mesias_descendencia",
+          "ministerio_cuando": "11 de nisán",
+          "clave": "mesias_descendencia"
+        },
+        {
+          "hecho_id": 255,
+          "etiqueta_jw": "ayes_fariseos",
+          "ministerio_cuando": "11 de nisán"
+        },
+        {
+          "nombre": "Monedas de poco valor de la viuda",
+          "fecha_texto": "33 e. c.",
+          "fecha_anio": 33,
+          "era": "E.C.",
+          "lugar_antiguo": "Jerusalén",
+          "lat": "31.78",
+          "lon": "35.21",
+          "tipo_suceso": "suceso",
+          "personajes": "Jesús",
+          "referencia": "Mr 12:41-44; Lu 21:1-4",
+          "etiqueta_jw": "viuda_monedas",
+          "ministerio_cuando": "11 de nisán",
+          "clave": "viuda_monedas"
+        },
+        {
+          "hecho_id": 256,
+          "etiqueta_jw": "profecia_monte_olivos",
+          "ministerio_cuando": "11 de nisán"
+        },
+        {
+          "nombre": "Diez vírgenes, talentos, ovejas y cabras",
+          "fecha_texto": "33 e. c.",
+          "fecha_anio": 33,
+          "era": "E.C.",
+          "lugar_antiguo": "Jerusalén",
+          "lat": "31.78",
+          "lon": "35.21",
+          "tipo_suceso": "suceso",
+          "personajes": "Jesús",
+          "referencia": "Mt 25:1-46",
+          "etiqueta_jw": "parabolas_virgenes",
+          "ministerio_cuando": "11 de nisán",
+          "clave": "parabolas_virgenes"
         }
       ]
     },
@@ -118,31 +173,36 @@
       "seccion": "S3",
       "eventos": [
         {
-          "clave": "judas_traicion_12nis",
-          "etiqueta_jw": "Pasa el día con sus discípulos; Judas prepara su traición",
-          "nombre": "Judas prepara la traición",
-          "descripcion": "Jesús pasa el día con sus discípulos; Judas va a los sacerdotes para entregarlo.",
-          "fecha_texto": "33 E. C.", "fecha_anio": 33, "era": "E.C.",
-          "lugar_antiguo": "Jerusalén / Betania", "lat": "31.78", "lon": "35.21",
-          "tipo_suceso": "conspiración", "personajes": "Jesús, Judas, los apóstoles",
-          "referencia": "Mateo 26:1-5, 14-16; Marcos 14:1-2, 10-11; Lucas 22:1-6", "libro": "MATEO", "capitulo_inicio": "26", "capitulo_fin": "26"
+          "hecho_id": 257,
+          "etiqueta_jw": "traman_matarse",
+          "ministerio_cuando": "12 de nisán"
+        },
+        {
+          "nombre": "Judas regatea para traicionar a Jesús",
+          "fecha_texto": "33 e. c.",
+          "fecha_anio": 33,
+          "era": "E.C.",
+          "lugar_antiguo": "Jerusalén",
+          "lat": "31.78",
+          "lon": "35.21",
+          "tipo_suceso": "suceso",
+          "personajes": "Jesús",
+          "referencia": "Mt 26:14-16; Mr 14:10, 11; Lu 22:3-6",
+          "etiqueta_jw": "judas_traicion",
+          "ministerio_cuando": "12 de nisán",
+          "clave": "judas_traicion"
         }
       ]
     },
     {
       "codigo": "B12",
-      "titulo": "13 de nisán",
+      "titulo": "13 de nisán (jueves tarde)",
       "seccion": "S3",
       "eventos": [
         {
-          "clave": "preparativos_pascua_13nis",
-          "etiqueta_jw": "Pedro y Juan hacen los preparativos para la Pascua",
-          "nombre": "Preparativos de la Pascua",
-          "descripcion": "Pedro y Juan preparan la Pascua; Jesús y los apóstoles llegan al atardecer.",
-          "fecha_texto": "33 E. C.", "fecha_anio": 33, "era": "E.C.",
-          "lugar_antiguo": "Jerusalén", "lat": "31.78", "lon": "35.21",
-          "tipo_suceso": "fiesta religiosa", "personajes": "Jesús, Pedro, Juan, los apóstoles",
-          "referencia": "Mateo 26:17-19; Marcos 14:12-16; Lucas 22:7-13", "libro": "MATEO", "capitulo_inicio": "26", "capitulo_fin": "26"
+          "hecho_id": 258,
+          "etiqueta_jw": "preparativos_pascua_13nis",
+          "ministerio_cuando": "13 de nisán (jueves tarde)"
         }
       ]
     },
@@ -151,30 +211,130 @@
       "titulo": "14 de nisán",
       "seccion": "S3",
       "eventos": [
-        {"hecho_id": 127, "etiqueta_jw": "Celebra la Pascua; instituye la Cena del Señor"},
-        {"hecho_id": 128, "etiqueta_jw": "Les lava los pies a los apóstoles; despide a Judas"},
-        {"hecho_id": 129, "etiqueta_jw": "Es traicionado y arrestado en Getsemaní; Pedro lo niega"},
         {
-          "clave": "sanedrin_caifas",
-          "etiqueta_jw": "Lo juzga el Sanedrín en la casa de Caifás",
-          "nombre": "Juicio ante el Sanedrín",
-          "descripcion": "Jesús es llevado ante el sumo sacerdote Caifás y el Sanedrín durante la noche.",
-          "fecha_texto": "33 E. C.", "fecha_anio": 33, "era": "E.C.",
-          "lugar_antiguo": "Jerusalén / casa de Caifás", "lat": "31.78", "lon": "35.21",
-          "tipo_suceso": "juicio", "personajes": "Jesús, Caifás, el Sanedrín",
-          "referencia": "Mateo 26:57-68; Marcos 14:53-65; Lucas 22:54-71; Juan 18:12-27", "libro": "MATEO", "capitulo_inicio": "26", "capitulo_fin": "26"
+          "hecho_id": 127,
+          "etiqueta_jw": "ultima_cena",
+          "ministerio_cuando": "14 de nisán"
         },
-        {"hecho_id": 130, "etiqueta_jw": "Lo llevan ante Pilato, Herodes y de nuevo ante Pilato; lo sentencian a muerte"},
-        {"hecho_id": 131, "etiqueta_jw": "Lo ejecutan en el Gólgota; muere alrededor de las 3 de la tarde"},
         {
-          "clave": "sepultura_jesus",
-          "etiqueta_jw": "Quitan su cuerpo del madero y lo llevan a una tumba",
-          "nombre": "Sepultura de Jesús",
-          "descripcion": "José de Arimatea y Nicodemo piden el cuerpo y lo depositan en una tumba nueva.",
-          "fecha_texto": "33 E. C.", "fecha_anio": 33, "era": "E.C.",
-          "lugar_antiguo": "Gólgota / tumba", "lat": "31.78", "lon": "35.23",
-          "tipo_suceso": "sepultura", "personajes": "Jesús, José de Arimatea, Nicodemo",
-          "referencia": "Mateo 27:57-61; Marcos 15:42-47; Lucas 23:50-56; Juan 19:38-42", "libro": "MATEO", "capitulo_inicio": "27", "capitulo_fin": "27"
+          "hecho_id": 128,
+          "etiqueta_jw": "lava_pies",
+          "ministerio_cuando": "14 de nisán"
+        },
+        {
+          "nombre": "Identifica y despide a Judas",
+          "fecha_texto": "33 e. c.",
+          "fecha_anio": 33,
+          "era": "E.C.",
+          "lugar_antiguo": "Jerusalén",
+          "lat": "31.78",
+          "lon": "35.21",
+          "tipo_suceso": "suceso",
+          "personajes": "Jesús",
+          "referencia": "Mt 26:21-25; Mr 14:18-21; Lu 22:21-23; Jn 13:21-30",
+          "etiqueta_jw": "identifica_judas",
+          "ministerio_cuando": "14 de nisán",
+          "clave": "identifica_judas"
+        },
+        {
+          "nombre": "Instituye cena conmemorativa",
+          "fecha_texto": "33 e. c.",
+          "fecha_anio": 33,
+          "era": "E.C.",
+          "lugar_antiguo": "Jerusalén",
+          "lat": "31.78",
+          "lon": "35.21",
+          "tipo_suceso": "suceso",
+          "personajes": "Jesús",
+          "referencia": "Mt 26:26-29; Mr 14:22-25; Lu 22:19, 20; 1 Cor. 11:23-25",
+          "etiqueta_jw": "cena_conmemorativa",
+          "ministerio_cuando": "14 de nisán",
+          "clave": "cena_conmemorativa"
+        },
+        {
+          "nombre": "Predice negación de Pedro y dispersión",
+          "fecha_texto": "33 e. c.",
+          "fecha_anio": 33,
+          "era": "E.C.",
+          "lugar_antiguo": "Jerusalén",
+          "lat": "31.78",
+          "lon": "35.21",
+          "tipo_suceso": "suceso",
+          "personajes": "Jesús",
+          "referencia": "Mt 26:31-35; Mr 14:27-31; Lu 22:31-38; Jn 13:31-38",
+          "etiqueta_jw": "predice_pedro",
+          "ministerio_cuando": "14 de nisán",
+          "clave": "predice_pedro"
+        },
+        {
+          "nombre": "Discurso de despedida y oración",
+          "fecha_texto": "33 e. c.",
+          "fecha_anio": 33,
+          "era": "E.C.",
+          "lugar_antiguo": "Jerusalén",
+          "lat": "31.78",
+          "lon": "35.21",
+          "tipo_suceso": "suceso",
+          "personajes": "Jesús",
+          "referencia": "Jn 14:1–17:26",
+          "etiqueta_jw": "discurso_adios",
+          "ministerio_cuando": "14 de nisán",
+          "clave": "discurso_adios"
+        },
+        {
+          "hecho_id": 129,
+          "etiqueta_jw": "getsemani_arresto",
+          "ministerio_cuando": "14 de nisán"
+        },
+        {
+          "hecho_id": 259,
+          "etiqueta_jw": "sanedrin_caifas",
+          "ministerio_cuando": "14 de nisán"
+        },
+        {
+          "nombre": "Judas el traidor se ahorca",
+          "fecha_texto": "33 e. c.",
+          "fecha_anio": 33,
+          "era": "E.C.",
+          "lugar_antiguo": "Jerusalén",
+          "lat": "31.78",
+          "lon": "35.21",
+          "tipo_suceso": "suceso",
+          "personajes": "Jesús",
+          "referencia": "Mt 27:3-10",
+          "etiqueta_jw": "judas_ahorca",
+          "ministerio_cuando": "14 de nisán",
+          "clave": "judas_ahorca"
+        },
+        {
+          "hecho_id": 130,
+          "etiqueta_jw": "pilato_herodes",
+          "ministerio_cuando": "14 de nisán"
+        },
+        {
+          "nombre": "Entregado para morir",
+          "fecha_texto": "33 e. c.",
+          "fecha_anio": 33,
+          "era": "E.C.",
+          "lugar_antiguo": "Jerusalén",
+          "lat": "31.78",
+          "lon": "35.21",
+          "tipo_suceso": "suceso",
+          "personajes": "Jesús",
+          "referencia": "Mt 27:15-30; Mr 15:6-19; Lu 23:13-25; Jn 18:39–19:16",
+          "etiqueta_jw": "sentenciado_muerte",
+          "ministerio_cuando": "14 de nisán",
+          "clave": "sentenciado_muerte"
+        },
+        {
+          "hecho_id": 131,
+          "etiqueta_jw": "muerte_golgota",
+          "ministerio_cuando": "14 de nisán"
+        },
+        {
+          "hecho_id": 260,
+          "etiqueta_jw": "sepultura_jesus",
+          "ministerio_cuando": "14 de nisán"
         }
       ]
     },
@@ -184,14 +344,19 @@
       "seccion": "S3",
       "eventos": [
         {
-          "clave": "guardia_tumba",
-          "etiqueta_jw": "Pilato autoriza guardia de soldados en la tumba",
-          "nombre": "Guardia en la tumba",
-          "descripcion": "Pilato autoriza que una guardia de soldados vigile la tumba de Jesús.",
-          "fecha_texto": "33 E. C.", "fecha_anio": 33, "era": "E.C.",
-          "lugar_antiguo": "Jerusalén", "lat": "31.78", "lon": "35.23",
-          "tipo_suceso": "seguridad", "personajes": "Pilato, soldados",
-          "referencia": "Mateo 27:62-66", "libro": "MATEO", "capitulo_inicio": "27", "capitulo_fin": "27"
+          "nombre": "Guardia para la tumba",
+          "fecha_texto": "33 e. c.",
+          "fecha_anio": 33,
+          "era": "E.C.",
+          "lugar_antiguo": "Jerusalén",
+          "lat": "31.78",
+          "lon": "35.21",
+          "tipo_suceso": "suceso",
+          "personajes": "Jesús",
+          "referencia": "Mt 27:62-66",
+          "etiqueta_jw": "guardia_tumba",
+          "ministerio_cuando": "15 de nisán (sábado)",
+          "clave": "guardia_tumba"
         }
       ]
     },
@@ -201,16 +366,83 @@
       "seccion": "S3",
       "eventos": [
         {
-          "clave": "especias_16nis",
-          "etiqueta_jw": "Se compran especias para ungir el cuerpo de Jesús",
-          "nombre": "Compra de especias",
-          "descripcion": "Mujeres compran especias para ungir el cuerpo de Jesús.",
-          "fecha_texto": "33 E. C.", "fecha_anio": 33, "era": "E.C.",
-          "lugar_antiguo": "Jerusalén", "lat": "31.78", "lon": "35.21",
-          "tipo_suceso": "preparación", "personajes": "María Magdalena, otras mujeres",
-          "referencia": "Marcos 16:1", "libro": "MARCOS", "capitulo_inicio": "16", "capitulo_fin": "16"
+          "hecho_id": 132,
+          "etiqueta_jw": "resurreccion_jesus",
+          "ministerio_cuando": "16 de nisán"
+        }
+      ]
+    },
+    {
+      "codigo": "B12",
+      "titulo": "25 de Iyar",
+      "seccion": "S3",
+      "eventos": [
+        {
+          "nombre": "Ascensión de Jesús",
+          "fecha_texto": "33 e. c.",
+          "fecha_anio": 33,
+          "era": "E.C.",
+          "lugar_antiguo": "Jerusalén",
+          "lat": "31.78",
+          "lon": "35.21",
+          "tipo_suceso": "suceso",
+          "personajes": "Jesús",
+          "referencia": "Hech. 1:9-12; Lu 24:50-53",
+          "etiqueta_jw": "ascension_jesus",
+          "ministerio_cuando": "25 de Iyar",
+          "clave": "ascension_jesus"
+        }
+      ]
+    },
+    {
+      "codigo": "B12",
+      "titulo": "8 de nisán (sábado)",
+      "seccion": "S3",
+      "eventos": [
+        {
+          "hecho_id": 249,
+          "etiqueta_jw": "llegada_betania_8nis",
+          "ministerio_cuando": "8 de nisán (sábado)"
+        }
+      ]
+    },
+    {
+      "codigo": "B12",
+      "titulo": "9 de nisán",
+      "seccion": "S3",
+      "eventos": [
+        {
+          "hecho_id": 250,
+          "etiqueta_jw": "cena_simon_ungimiento",
+          "ministerio_cuando": "9 de nisán"
         },
-        {"hecho_id": 132, "etiqueta_jw": "Jesús es resucitado; se les aparece a los discípulos"}
+        {
+          "hecho_id": 126,
+          "etiqueta_jw": "entrada_triunfal",
+          "ministerio_cuando": "9 de nisán"
+        }
+      ]
+    },
+    {
+      "codigo": "B12",
+      "titulo": "d. 16 de nisán",
+      "seccion": "S3",
+      "eventos": [
+        {
+          "nombre": "Otros aparecimientos de Jesucristo",
+          "fecha_texto": "d. 33 e. c.",
+          "fecha_anio": 33,
+          "era": "E.C.",
+          "lugar_antiguo": "Jerusalén",
+          "lat": "31.78",
+          "lon": "35.21",
+          "tipo_suceso": "suceso",
+          "personajes": "Jesús",
+          "referencia": "Mt 28:16-20; 1 Cor. 15:5-7; Hech. 1:3-8; Jn 20:26–21:25",
+          "etiqueta_jw": "apariciones_posteriores",
+          "ministerio_cuando": "d. 16 de nisán",
+          "clave": "apariciones_posteriores"
+        }
       ]
     }
   ]

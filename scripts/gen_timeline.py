@@ -103,6 +103,9 @@ def temas_de(h):
         t.add('RESTAURACION')
     if li in ('DANIEL', 'EZEQUIEL', 'LAMENTACIONES') or er.startswith('EXILIO'):
         t.add('EXILIO')
+    jw_cod = (h.get('jw_codigo') or '').strip()
+    if jw_cod in ('J0', 'J1', 'J2', 'J3', 'J4', 'B12') or (h.get('ministerio_fase') or '').strip():
+        t.add('SIGLO-PRIMERO')
     if li in ('MATEO', 'MARCOS', 'LUCAS', 'JUAN') and (h['era'] or '').upper().startswith('E.C.'):
         if 'NT-ESCRITURA' not in t:
             t.add('SIGLO-PRIMERO')

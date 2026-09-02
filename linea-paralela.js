@@ -158,7 +158,8 @@ const LEGACY_HASH = {
   juda:['jud'], israel:['isr'], reyes:['jud','isr'],
   'juda-profetas':['jud','pro'], 'israel-profetas':['isr','pro'],
   'reyes-profetas':['jud','isr','pro'], 'a6-1':['jud','isr','pro'], 'a6-2':['jud','isr','pro'],
-  'ministerio-jesus':['jes'], 'ultima-semana':['sem'], jesus:['jes','sem'],
+  'ministerio-jesus':['jes'], 'ultima-semana':['sem'], 'vida-jesus':['jes','sem'],
+  jesus:['jes','sem'],
 };
 
 const BANDS = [

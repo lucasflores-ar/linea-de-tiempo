@@ -11,6 +11,8 @@ STEPS = [
     ('gen_hechos_libros.py', 'Generar hechos para libros sin suceso'),
     ('gen_nt_escritura.py', 'Actualizar redacción NT desde nt_escritura.json'),
     ('merge_jw_slides.py', 'Fusionar líneas de tiempo JW (B2–B13)'),
+    ('gen_jesus_vida_tsv.py', 'Generar catálogo TSV vida de Jesús'),
+    ('merge_jesus_vida.py', 'Fusionar sucesos detallados vida de Jesús (J0–J4, B12)'),
     ('merge_antediluviano.py', 'Fusionar sucesos antediluvianos'),
     ('merge_post_diluviano.py', 'Fusionar sucesos post-diluvianos'),
     ('merge_reyes_profetas.py', 'Fusionar reyes y profetas (A6)'),
