@@ -298,6 +298,15 @@ if os.path.exists(JW_SEM):
     except Exception as e:
         print('[warn] jw_ultima_semana:', e)
 
+# período antediluviano (4026–2370 a. E. C.)
+JW_ANT = repo('curacion', 'jw_antediluviano.json')
+if os.path.exists(JW_ANT):
+    try:
+        with open(JW_ANT, encoding='utf-8') as f:
+            data['antediluviano_lineas'] = build_jw_sections(json.load(f), evts, 'lineas')
+    except Exception as e:
+        print('[warn] jw_antediluviano:', e)
+
 # viajes misioneros de Pablo (P1–P4)
 JW_PAB = repo('curacion', 'jw_viajes_pablo.json')
 if os.path.exists(JW_PAB):

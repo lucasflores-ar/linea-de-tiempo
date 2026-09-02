@@ -469,11 +469,14 @@ html[data-viz="editorial"] .row.is-hovered .span-line{
   background:var(--mk-color,var(--lane-color,var(--acc)));opacity:.9;
 }
 .bar-compact-narrow.bar-short-period .bar-caption__name,
-.bar-compact-narrow.bar-short-period .bar-caption__dates,
-.bar-point-event .bar-caption__name,
-.bar-point-event .bar-caption__dates{
+.bar-compact-narrow.bar-short-period .bar-caption__dates{
   width:auto;max-width:none;min-width:0;
   overflow:visible;text-overflow:clip;
+}
+.bar-point-event .bar-caption__name,
+.bar-point-event .bar-caption__dates{
+  display:block;width:100%;max-width:100%;min-width:0;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
 .bar-compact-narrow.bar-short-period{z-index:4}
 .bar-point-event:hover .bar-point-event__pin,
@@ -1202,6 +1205,6 @@ header {
 
 <script src="linea-tiempo-datos.js?v=10"></script>
 <script src="fichas-personajes.js"></script>
-<script src="linea-paralela.js?v=20260902m"></script>
+<script src="linea-paralela.js?v=20260902p"></script>
 </body>
 </html>

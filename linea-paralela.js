@@ -141,7 +141,8 @@ function captionFonts(){
 }
 
 function captionForPe(pe){
-  return truncateCaption(pe.n);
+  const maxChars = pe.isEvent ? 30 : CAPTION_MAX_CHARS;
+  return truncateCaption(pe.n, maxChars);
 }
 
 function minBarWidthForPe(pe, opts = {}){
@@ -160,7 +161,7 @@ function captionNameHtml(pe, nameStyle = '', opts = {}){
   const cap = opts.fullName
     ? { text: (pe.n || '').trim(), truncated: false }
     : captionForPe(pe);
-  const title = cap.truncated ? ` title="${esc(pe.n)}"` : '';
+  const title = (cap.truncated || pe.isEvent) ? ` title="${esc(pe.n)}"` : '';
   const cls = cap.truncated ? ' bar-caption__name--trunc' : '';
   const style = nameStyle ? ` style="${nameStyle.replace(/^ style="|"$/g, '')}"` : '';
   return `<span class="bar-caption__name${cls}"${title}${style}>${esc(cap.text)}</span>`;
@@ -329,12 +330,21 @@ function renderRowEventMarkers(pe, yMin, yMax, chartW, q){
   return html;
 }
 
-const DEFAULT_LANES = ['jud','isr','pro'];
+const LEGACY_DEFAULT_LANES = ['jud','isr','pro'];
+const DEFAULT_LANES = ['pre','jud','isr','pro','jes','sem'];
 let didInitialScroll = false;
+const storedLanes = JSON.parse(localStorage.getItem('lt-par-lanes') || 'null');
+const lanesInit = storedLanes ?? DEFAULT_LANES;
+const lanesMigrated = storedLanes
+  && storedLanes.length === LEGACY_DEFAULT_LANES.length
+  && LEGACY_DEFAULT_LANES.every(id => storedLanes.includes(id));
 let selLanes = new Set(
-  (JSON.parse(localStorage.getItem('lt-par-lanes') || 'null') ?? DEFAULT_LANES)
-    .filter(id=>LANE_ORDER.includes(id))
+  (lanesMigrated ? DEFAULT_LANES : lanesInit)
+    .filter(id=>LANE_ORDER.includes(id)),
 );
+if(lanesMigrated){
+  try{ localStorage.setItem('lt-par-lanes', JSON.stringify([...selLanes])); }catch(e){}
+}
 
 let hiddenPeople = new Set();
 try{
@@ -761,15 +771,33 @@ function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').repla
 function viewLabel(){
   return LANE_ORDER.filter(id=>selLanes.has(id)).map(id=>LANE_FILTERS.find(f=>f.id===id).label).join(' · ');
 }
+/** Fracción 0–0.45 dentro del año 33 según día de nisán (mcuando o mfase). */
+function nisanDayFraction(text){
+  if(!text) return null;
+  const t = String(text).trim();
+  let idx = NISAN_DAYS.indexOf(t);
+  if(idx >= 0) return idx / 20;
+  const m = norm(t);
+  idx = NISAN_DAYS.findIndex(d=>{
+    const base = norm(d).split('(')[0].trim();
+    const probe = m.split('(')[0].trim();
+    return m.includes(base) || base.includes(probe);
+  });
+  if(idx >= 0) return idx / 20;
+  const dayMatch = t.match(/(\d+)\s*de\s*nis/i);
+  if(dayMatch){
+    const map = {8:0, 9:1, 10:2, 11:3, 12:4, 13:5, 14:6, 15:7, 16:8};
+    const slot = map[parseInt(dayMatch[1], 10)];
+    if(slot != null) return slot / 20;
+  }
+  return null;
+}
 function chartYear(ev){
   if(ev.fa == null) return null;
-  if(ev.fa === 33 && ev.mfase){
-    let idx = NISAN_DAYS.indexOf(ev.mfase);
-    if(idx < 0){
-      const m = norm(ev.mfase);
-      idx = NISAN_DAYS.findIndex(d=>m.includes(norm(d).split('(')[0].trim()));
-    }
-    if(idx >= 0) return 33 + idx / 20;
+  if(ev.fa === 33){
+    const frac = nisanDayFraction(ev.mcuando) ?? nisanDayFraction(ev.mfase);
+    if(frac != null) return 33 + frac;
+    if(ev.mcuando && /iyar/i.test(ev.mcuando)) return 33 + 0.48;
   }
   return ev.fa;
 }
@@ -1168,6 +1196,33 @@ function buildUltimaSemanaBlocks(){
   return blocks;
 }
 
+function buildAntediluvianBlocks(){
+  const lineas = D.antediluviano_lineas || [];
+  const orderedIds = new Set();
+  const events = [];
+  for(const linea of lineas){
+    for(const id of (linea.eventos || [])){
+      if(orderedIds.has(id)) continue;
+      const e = D.eventos.find(x=>x.id === id);
+      if(!e || chartYear(e) == null || e.tipo === 'reinado') continue;
+      orderedIds.add(id);
+      events.push(e);
+    }
+  }
+  for(const e of D.eventos){
+    if(e.jw !== 'ANT' || orderedIds.has(e.id) || chartYear(e) == null || e.tipo === 'reinado') continue;
+    orderedIds.add(e.id);
+    events.push(e);
+  }
+  events.sort((a, b)=>(chartYear(a) - chartYear(b)) || a.n.localeCompare(b.n, 'es'));
+  if(!events.length) return [];
+  return [{
+    lane: 'antediluviano-sucesos',
+    meta: { key:'pre', color:'var(--c-pre)', label: 'Sucesos antediluvianos (a. E. C.)' },
+    people: events.map(ev=>evToRow(ev, 'pre')),
+  }];
+}
+
 function buildThemeBlocks(tema, laneId){
   const meta = THEME_LANE_META[tema];
   if(!meta) return [];
@@ -1213,7 +1268,10 @@ function buildAllLaneData(){
   for(const id of LANE_ORDER){
     if(!selLanes.has(id)) continue;
     const f = LANE_FILTERS.find(x=>x.id===id);
-    if(f.mode === 'personaje') out.push(...rowsForLanes([f.grupo]));
+    if(f.mode === 'personaje'){
+      out.push(...rowsForLanes([f.grupo]));
+      if(id === 'pre') out.push(...buildAntediluvianBlocks());
+    }
     else if(f.mode === 'ministerio') out.push(...buildMinisterioBlocks());
     else if(f.mode === 'ultima_semana') out.push(...buildUltimaSemanaBlocks());
     else if(f.mode === 'tema'){
@@ -1817,7 +1875,7 @@ function buildPhaseAxis(chartW, yMin, yMax, laneData, effectivePx){
 function renderPointEventBar(block, pe, x, w, dataAttr, ini, fin, layoutOpts){
   const cls = ['bar','bar--'+block.meta.key,'bar-compact-narrow','bar-point-event', ...estBarClasses(pe)];
   const cx = x + Math.max(4, w) / 2;
-  const boxW = Math.min(Math.max(minBarWidthForPe(pe, { fullName: true }), 28), CAPTION_MAX_PX);
+  const boxW = Math.min(Math.max(minBarWidthForPe(pe), 28), CAPTION_MAX_PX);
   const left = cx - boxW / 2;
   const laneColor = BAR_COLORS[block.meta.key] || block.meta.color || 'var(--acc)';
   const mkColor = pe.ev ? markerColorFor(pe.ev) : laneColor;
@@ -1828,7 +1886,7 @@ function renderPointEventBar(block, pe, x, w, dataAttr, ini, fin, layoutOpts){
     if(inset) nameStyle = `margin-left:${inset}px`;
   }
   return `<div class="${cls.join(' ')}" style="left:${left}px;width:${boxW}px;max-width:${CAPTION_MAX_PX}px" tabindex="0" role="button" aria-label="${esc(pe.n)}, ${fmtRange(ini,fin)}" ${dataAttr}${peAttr}>`+
-    captionNameHtml(pe, nameStyle, { fullName: true })+
+    captionNameHtml(pe, nameStyle)+
     `<div class="bar-point-event__pin" style="--mk-color:${mkColor};--lane-color:${laneColor}"></div>`+
     `<span class="bar-caption__dates">${esc(fmtRange(ini, fin))}</span>`+
     `</div>`;
