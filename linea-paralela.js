@@ -316,16 +316,19 @@ const LEGACY_HASH = {
 };
 
 const BANDS = [
-  /* ── Épocas (barras verticales de fondo) ── */
+  /* ── Épocas S1 (continuas: Diluvio → jueces) ── */
+  { id:'ep-pre',   cls:'band--ep-pre',   start:-4026, end:-2370, label:'Antes del Diluvio',       fill:'#6b5b8a' },
+  { id:'ep-postd', cls:'band--ep-postd', start:-2370, end:-1450, label:'Después del Diluvio',     fill:'#4a7a55' },
+  { id:'ep-jue',   cls:'band--ep-jue',   start:-1450, end:-1120, label:'Época de los jueces',    fill:'#b5561c', fade:'both' },
+  /* ── Épocas S2 ── */
   { id:'ep-uni',  cls:'band--ep-uni',  start:-1117, end:-997,  label:'Un solo reino',          fill:'#4a7a55' },
   { id:'ep-rdiv', cls:'band--ep-rdiv', start:-997,  end:-607,  label:'Reino dividido',          fill:'#96762c' },
   { id:'ep-bab',  cls:'band--ep-bab',  start:-607,  end:-537,  label:'Destierro en Babilonia',  fill:'#7a7468' },
   { id:'ep-rest', cls:'band--ep-rest', start:-537,  end:-332,  label:'Después del destierro',   fill:'#3f7686' },
-  /* Grecia y Roma no necesitan banda de época: ya se muestran en la franja de POTENCIAS */
+  /* Grecia y Roma: franja de POTENCIAS (sin banda de época duplicada) */
   /* ── Eventos puntuales ── */
   { id:'sam', cls:'band--sam', start:-740, end:-735, label:'Caída de Samaria', fill:'#b23a3a' },
   { id:'jer', cls:'band--jer', start:-607, end:-602, label:'Caída de Jerusalén', fill:'#cc6014' },
-  /* Exilio babilónico absorbido por banda de época ep-bab */
 ];
 
 const POTENCIAS = [
@@ -810,6 +813,19 @@ function bandLabelHtml(text, bandW, slot){
   const top = 6 + (slot % 4) * 12;
   const cls = bandW < 80 ? 'band-label band-label--compact' : 'band-label';
   return `<span class="${cls}" style="top:${top}px" title="${esc(text)}">${esc(label)}</span>`;
+}
+
+/** Estilo inline de banda de época; fade:'both'|'ini'|'fin' suaviza laterales (fechas estimadas). */
+function bandInlineStyle(b, x1, bw, blockH){
+  let style = `left:${x1}px;width:${bw}px;top:0;height:${blockH}px`;
+  if(b.fade === 'both'){
+    style += `;background:linear-gradient(90deg,transparent 0%,${b.fill}22 12%,${b.fill}22 88%,transparent 100%)`;
+  } else if(b.fade === 'ini'){
+    style += `;background:linear-gradient(90deg,transparent 0%,${b.fill}22 18%,${b.fill}22 100%)`;
+  } else if(b.fade === 'fin'){
+    style += `;background:linear-gradient(90deg,${b.fill}22 0%,${b.fill}22 82%,transparent 100%)`;
+  }
+  return style;
 }
 
 function potBandLabel(p, bandW){
@@ -2718,7 +2734,7 @@ function render(){
       const bw = Math.max(2, x2 - x1);
       const showLabel = !bandLabelShown.has(b.id);
       if(showLabel) bandLabelShown.add(b.id);
-      canvasHtml += `<div class="band ${b.cls}" style="left:${x1}px;width:${bw}px;top:0;height:${blockH}px" title="${esc(b.label)}">${showLabel ? bandLabelHtml(b.label, bw, bandLabelSlot++) : ''}</div>`;
+      canvasHtml += `<div class="band ${b.cls}" style="${bandInlineStyle(b, x1, bw, blockH)}" title="${esc(b.label)}">${showLabel ? bandLabelHtml(b.label, bw, bandLabelSlot++) : ''}</div>`;
     }
     for(const p of potBands){
       const x1 = yearToX(Math.max(p.start, yMin), yMin, yMax, chartW);
