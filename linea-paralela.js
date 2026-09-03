@@ -316,6 +316,12 @@ const LEGACY_HASH = {
 };
 
 const BANDS = [
+  /* ── Épocas (barras verticales de fondo) ── */
+  { id:'ep-uni',  cls:'band--ep-uni',  start:-1117, end:-997,  label:'Un solo reino',          fill:'#4a7a55' },
+  { id:'ep-rdiv', cls:'band--ep-rdiv', start:-997,  end:-607,  label:'Reino dividido',          fill:'#96762c' },
+  { id:'ep-bab',  cls:'band--ep-bab',  start:-607,  end:-537,  label:'Destierro en Babilonia',  fill:'#7a7468' },
+  { id:'ep-rest', cls:'band--ep-rest', start:-537,  end:-332,  label:'Después del destierro',   fill:'#3f7686' },
+  /* ── Eventos puntuales ── */
   { id:'sam', cls:'band--sam', start:-740, end:-735, label:'Caída de Samaria', fill:'#b23a3a' },
   { id:'jer', cls:'band--jer', start:-607, end:-602, label:'Caída de Jerusalén', fill:'#cc6014' },
   { id:'exi', cls:'band--exi', start:-607, end:-537, label:'Exilio babilónico', fill:'#8a7f70' },

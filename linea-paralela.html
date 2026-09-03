@@ -18,6 +18,7 @@
   --lane-jud:#96762c; --lane-isr:#9e4a4a; --lane-pro:#6b5b8a; --lane-jue:#b5561c; --lane-uni:#4a7a55;
   --lane-jes:#3d6b7a; --lane-sem:#19819a;
   --band-sam:rgba(178,58,58,.15); --band-jer:rgba(204,96,20,.15); --band-exi:rgba(138,127,112,.15);
+  --band-ep-uni:rgba(74,122,85,.10); --band-ep-rdiv:rgba(150,118,44,.10); --band-ep-bab:rgba(122,116,104,.10); --band-ep-rest:rgba(63,118,134,.10);
   --band-egy:rgba(198,152,18,.15); --band-asi:rgba(214,40,128,.15); --band-bab:rgba(58,104,190,.15);
   --band-med:rgba(22,128,152,.15); --band-gre:rgba(86,158,48,.15); --band-rom:rgba(122,79,192,.15);
   --orb-core:#ebe4d6; --orb-edge:#b8a992; --orb-stem:rgba(44,40,36,.22);
@@ -41,6 +42,7 @@ html[data-viz="waterfall"]{
   --lane-jud:#ec7fd8; --lane-isr:#f27373; --lane-pro:#b795e0; --lane-jue:#ecb254; --lane-uni:#88c4a0;
   --lane-jes:#78b8c8; --lane-sem:#4fd6f0;
   --band-sam:rgba(232,80,80,.10); --band-jer:rgba(242,120,50,.10); --band-exi:rgba(175,165,148,.10);
+  --band-ep-uni:rgba(105,180,120,.08); --band-ep-rdiv:rgba(200,170,60,.08); --band-ep-bab:rgba(175,165,148,.08); --band-ep-rest:rgba(90,175,195,.08);
   --band-egy:rgba(245,185,50,.10); --band-asi:rgba(250,80,175,.10); --band-bab:rgba(80,140,245,.10);
   --band-med:rgba(50,180,220,.10); --band-gre:rgba(105,215,90,.10); --band-rom:rgba(155,120,240,.10);
   --mk-batalla:#d63c3c; --mk-milagro:#1f93c9; --mk-profecia:#9a6ae0;
@@ -57,6 +59,7 @@ html[data-theme="dark"]{
   --lane-jud:#c9a24a; --lane-isr:#c96a6a; --lane-pro:#9a8ab8; --lane-jue:#d4762a; --lane-uni:#6a9a75;
   --lane-jes:#6a9fad; --lane-sem:#3fc9e6;
   --band-sam:rgba(226,100,100,.13); --band-jer:rgba(235,130,58,.13); --band-exi:rgba(172,160,144,.13);
+  --band-ep-uni:rgba(90,160,100,.11); --band-ep-rdiv:rgba(180,150,50,.11); --band-ep-bab:rgba(172,160,144,.11); --band-ep-rest:rgba(80,160,180,.11);
   --band-egy:rgba(230,175,58,.13); --band-asi:rgba(244,90,165,.13); --band-bab:rgba(105,145,240,.13);
   --band-med:rgba(70,178,210,.13); --band-gre:rgba(125,205,105,.13); --band-rom:rgba(160,130,235,.13);
   --c-egi:#cf9d46;
@@ -267,6 +270,10 @@ html[data-theme="dark"] .focus-marquee{background:rgba(106,159,173,.18)}
 .band--sam{background:var(--band-sam)}
 .band--jer{background:var(--band-jer)}
 .band--exi{background:var(--band-exi)}
+.band--ep-uni{background:var(--band-ep-uni)}
+.band--ep-rdiv{background:var(--band-ep-rdiv)}
+.band--ep-bab{background:var(--band-ep-bab)}
+.band--ep-rest{background:var(--band-ep-rest)}
 .band--egy{background:var(--band-egy)}
 .band--asi{background:var(--band-asi)}
 .band--bab{background:var(--band-bab)}
@@ -1232,6 +1239,6 @@ header {
 
 <script src="linea-tiempo-datos.js?v=12"></script>
 <script src="fichas-personajes.js"></script>
-<script src="linea-paralela.js?v=20260903a"></script>
+<script src="linea-paralela.js?v=20260903b"></script>
 </body>
 </html>
