@@ -1553,8 +1553,8 @@ window.LT_FICHAS = [
   {
     id:157, nombre:'Job', alt:'', genero:'M', tribu:'',
     profesion:'Patriarca', profesion_sub:'', profesion_2:'',
-    nac:'', fal:'', edad:'', era:'pat', seccion:'S1', potencia:'Egipto',
-    lugares:['Tierra de Uz'], hitos:['Pruebas de Job (c. 1650 a. E. C.) [Job 1:1-2:13]', 'Job puesto a prueba (a. 1613 a. E. C.) [Job 1:8', 'Job 42:16]', 'Moisés completa el libro de Job (c. 1473 a. E. C.) [Job 42:16, 17]'], rel:['Satán (1)', 'Moisés (1)'],
+    nac:'-1670', fal:'-1473', edad:'197', era:'pat', seccion:'S1', potencia:'Egipto',
+    lugares:['Tierra de Uz'], hitos:['Job probado por Satanás (c. 1613 a. E. C.) [Job 1:8', 'Job 42:16]', 'Moisés completa el libro de Job (c. 1473 a. E. C.) [Job 42:16, 17]'], rel:['Satán (1)', 'Moisés (1)'],
     primera:'-1650', ultima:'-1473',
     versiculo:'Job 1:8', opinion_jehova:'Hombre íntegro, recto, temeroso de Dios y apartado del mal', opinion_ref:'Job 1:8', opinion_cita:'No hay nadie como él en la tierra. Es un hombre íntegro y recto, temeroso de Dios y apartado del mal.',
     cualidades:'Integridad; paciencia; temor de Dios', cualidades_refs:'Job 1; Job 42', defectos:'En su angustia llegó a cuestionar la actuación de Jehová', defectos_refs:'Job 38:1-2', leccion:'Jehová escucha al íntegro y corrige con amor para fortalecer la fe',
