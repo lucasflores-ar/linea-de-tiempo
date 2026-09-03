@@ -106,7 +106,8 @@ function layoutMetrics(){
   const compact = rowLayout === 'compact';
   const periodRows = compact || wf;
   return {
-    rowH: periodRows ? 54 : 48,
+    /* Compacto: nombre + línea + fechas en la barra; 54px provocaba solapes. */
+    rowH: periodRows ? (compact ? 72 : 54) : 48,
     laneGap: wf ? 12 : 14,
     laneHdr: wf ? 28 : 32,
     axisH: wf ? 36 : 40,
@@ -1568,11 +1569,12 @@ function laneFilterHasContent(f){
     return (D.ultima_semana_dias || []).some(x=>(x.eventos || []).length);
   }
   if(f.mode === 'tema'){
-    if(showMarkers && !isNtEscrituraLane(f)) return false;
     const temas = [f.tema, ...(f.extraTemas || [])];
-    return D.eventos.some(e=>
-      temas.some(t=>(e.t||[]).includes(t)) && chartYear(e)!=null && e.tipo !== 'reinado',
-    );
+    const active = activePersonajesForDedup('');
+    return D.eventos.some(e=>{
+      if(!temas.some(t=>(e.t||[]).includes(t)) || chartYear(e)==null || e.tipo === 'reinado') return false;
+      return !shouldOmitLooseEventRow(e, active);
+    });
   }
   return false;
 }
@@ -1594,12 +1596,21 @@ function buildAllLaneData(opts = {}){
   groupRowSeq = 0;
   const query = opts.query ?? '';
   const out = [];
+  const orphanThemesAdded = new Set();
   for(const id of LANE_ORDER){
     const f = LANE_FILTERS.find(x=>x.id===id);
     if(!selLanes.has(id)) continue;
     if(f.mode === 'personaje'){
       out.push(...rowsForLanes([f.grupo]));
       if(id === 'pre') out.push(...buildAntediluvianBlocks(query));
+      /* Con marcadores activos, los chips de tema se deduplican: inyectar aquí
+         los sucesos del periodo que no pertenecen a ningún personaje visible
+         (p. ej. Lamentaciones / Abdías al ver solo Destierro). */
+      const orphan = PERSONAJE_ORPHAN_THEME[id];
+      if(showMarkers && orphan && !selLanes.has(orphan.laneId) && !orphanThemesAdded.has(orphan.tema)){
+        orphanThemesAdded.add(orphan.tema);
+        out.push(...buildThemeBlocks(orphan.tema, orphan.laneId, query));
+      }
     }
     else if(f.mode === 'ministerio'){
       out.push(...buildMinisterioBlocks());
@@ -1608,7 +1619,6 @@ function buildAllLaneData(opts = {}){
       out.push(...buildUltimaSemanaBlocks());
     }
     else if(f.mode === 'tema'){
-      if(showMarkers && !isNtEscrituraLane(f)) continue;
       out.push(...buildThemeBlocks(f.tema, f.id, query, f.extraTemas));
     }
   }
@@ -1732,8 +1742,18 @@ function eventBelongsOnPersonBar(ev, pe){
 
 /** Omitir fila/punto suelto: el suceso irá en la barra del personaje (marcador o extremo). */
 function shouldOmitLooseEventRow(ev, activePeople){
-  return activePeople.some(pe=> eventBelongsOnPersonBar(ev, pe));
+  if(activePeople.some(pe=> eventBelongsOnPersonBar(ev, pe))) return true;
+  /* Con «Sucesos» activos, los hechos de un personaje visible ya van como marcadores. */
+  if(showMarkers && activePeople.some(pe=> eventMatchesPerson(ev, pe))) return true;
+  return false;
 }
+
+/** Tema de sucesos asociado a una fila de personajes (para no perder hechos huérfanos). */
+const PERSONAJE_ORPHAN_THEME = {
+  pro: { tema: 'PROFETAS', laneId: 'tpro' },
+  babil: { tema: 'EXILIO', laneId: 'exi' },
+  rest: { tema: 'RESTAURACION', laneId: 'tres' },
+};
 
 function personajeFieldMatches(pe, qPerRaw){
   const peParts = peNormParts(pe);

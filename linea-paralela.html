@@ -238,12 +238,16 @@ main{flex:1;display:flex;flex-direction:column;min-height:0;position:relative}
   flex:1; overflow:auto; position:relative; cursor:grab;
   touch-action:pan-x pan-y;
   -webkit-overflow-scrolling:touch;
+  display:flex;
+  flex-direction:column;
 }
 .chart-scroll.is-pinching{
   touch-action:none;
   overscroll-behavior:none;
 }
 .chart-scroll.dragging{cursor:grabbing;user-select:none}
+.chart-scroll.fit-width{overflow-x:hidden;cursor:default}
+.chart-scroll.fit-width.dragging{cursor:default}
 .chart-scroll.focus-rect-mode,
 .chart-scroll.focus-rect-mode.dragging{cursor:crosshair}
 .focus-marquee{
@@ -254,7 +258,14 @@ main{flex:1;display:flex;flex-direction:column;min-height:0;position:relative}
 .focus-marquee.is-visible{display:block}
 html[data-theme="dark"] .focus-marquee{background:rgba(106,159,173,.18)}
 .focus-val{font-size:10px;max-width:148px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.chart-inner{position:relative;min-height:100%}
+.chart-inner{
+  position:relative;
+  flex:1 0 auto;
+  min-height:100%;
+  display:flex;
+  flex-direction:column;
+}
+.chart-canvas{position:relative;flex:0 0 auto}
 .lane-hdr{
   height:32px; display:flex; align-items:center; padding:0 12px;
   font:600 calc(10px * var(--tl-font-scale))/1 var(--font-sans); letter-spacing:.14em; text-transform:uppercase;
@@ -319,7 +330,6 @@ html[data-theme="dark"] .focus-marquee{background:rgba(106,159,173,.18)}
 .row-label--click{cursor:default}
 .row.is-hovered{background:rgba(61,107,122,.06)}
 
-.chart-canvas{position:relative}
 .lane-block{position:relative;margin-bottom:var(--lane-gap);overflow:hidden}
 .lane-block:last-child{margin-bottom:0}
 .lane-bg{display:none}
@@ -514,11 +524,13 @@ html[data-theme="dark"] .focus-marquee{background:rgba(106,159,173,.18)}
 }
 .axis-area{
   position:sticky;bottom:0;height:var(--axis-h);
+  margin-top:auto;
   background:var(--bg);
   border-top:1px solid var(--line);
   box-shadow:0 -8px 18px -10px color-mix(in srgb,var(--txt) 22%,transparent);
   z-index:30;
   overflow:visible;
+  flex-shrink:0;
 }
 .labels-col::after{
   content:'';display:block;position:sticky;bottom:0;
@@ -648,7 +660,7 @@ html[data-row-layout="compact"] #hidden-dock{display:none!important}
 html[data-row-layout="compact"] #pe-show-all,
 html[data-row-layout="compact"] #pe-hide-all{display:none}
 /* Sucesos en modo compacto: anillo claro sobre la barra, no mezclado con su color */
-html[data-row-layout="compact"] .row{overflow:visible}
+html[data-row-layout="compact"] .row{overflow:visible;min-height:72px}
 html[data-row-layout="compact"] .evt-marker--in-row,
 html[data-row-layout="compact"] .bar-event-pin{
   position:absolute;top:50%;width:15px;height:15px;
@@ -1408,6 +1420,6 @@ header {
 </aside>
 
 <script src="linea-tiempo-datos.js?v=14"></script>
-<script src="linea-paralela.js?v=20260903w"></script>
+<script src="linea-paralela.js?v=20260903x"></script>
 </body>
 </html>
