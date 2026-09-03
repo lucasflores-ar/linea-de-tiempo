@@ -2419,28 +2419,9 @@ function renderCompactNarrowBar(block, pe, x, w, dataAttr, ini, fin, laneColor, 
 }
 
 function adjustCaptionOverflow(){
-  if(rowLayout === 'compact' || isTouchLayout()) return;
-  if(!chartScroll || !chartCanvas || typeof chartScroll.getBoundingClientRect !== 'function') return;
-  const pad = 8;
-  const scrollRect = chartScroll.getBoundingClientRect();
-  const minLeft = scrollRect.left + pad;
-  const maxRight = scrollRect.right;
-  chartCanvas.querySelectorAll('.bar-compact-narrow, .bar-point-event').forEach(bar=>{
-    bar.style.removeProperty('--caption-shift-viewport');
-    const barRect = bar.getBoundingClientRect();
-    /* Skip bars entirely off-screen — don't pin their captions */
-    if(barRect.right < scrollRect.left || barRect.left > maxRight) return;
-    const nameStack = bar.querySelector('.bar-caption-stack--name');
-    if(!nameStack || typeof nameStack.getBoundingClientRect !== 'function') return;
-    const rect = nameStack.getBoundingClientRect();
-    if(rect.left >= minLeft) return;
-    const shift = Math.ceil(minLeft - rect.left);
-    /* Don't shift more than the bar's visible width to prevent spilling past bar end */
-    const maxShift = Math.max(0, barRect.right - minLeft);
-    if(shift > maxShift) return;
-    const base = parseFloat(getComputedStyle(bar).getPropertyValue('--caption-shift')) || 0;
-    bar.style.setProperty('--caption-shift-viewport', `${base + shift}px`);
-  });
+  /* Desactivado: provocaba que captions se clavaran en el borde y se
+     superpusieran con barras vecinas al hacer zoom extremo.
+     Los captions ahora se desplazan naturalmente con su barra. */
 }
 
 function renderPeriodBar(block, pe, x, w, dataAttr, ini, fin, layoutOpts){
