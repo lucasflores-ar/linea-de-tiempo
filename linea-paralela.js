@@ -494,7 +494,6 @@ if(isFirstVisit){
     try{ localStorage.setItem('lt-par-lanes', JSON.stringify([...selLanes])); }catch(e){}
   }
 }
-if(!selLanes.size) selLanes.add('pre');
 if(selLanes.has('ntesc')){
   selLanes.delete('ntesc');
   selLanes.add('nt-ev');
@@ -1041,8 +1040,8 @@ function parseHashState(h){
     const filas = h.match(/filas=([^&]*)/);
     const ev = h.match(/(?:^|&)ev=(\d+)/);
     if(filas){
-      const ids = filas[1].split(',').filter(id=>LANE_ORDER.includes(id));
-      if(ids.length) out.lanes = new Set(ids);
+      const ids = filas[1].split(',').filter(id=> id && LANE_ORDER.includes(id));
+      out.lanes = new Set(ids);
     }
     if(ev) out.evId = parseInt(ev[1], 10);
     return out;
@@ -1592,7 +1591,6 @@ function pruneSelLanes(){
   for(const id of [...selLanes]){
     if(!avail.has(id)) selLanes.delete(id);
   }
-  if(!selLanes.size) selLanes.add('pre');
   try{ localStorage.setItem('lt-par-lanes', JSON.stringify([...selLanes])); }catch(e){}
 }
 
@@ -1751,7 +1749,10 @@ const LANE_THEME_SCOPE = {
   rest: ['RESTAURACION', 'OTROS'],
   sig: ['SIGLO-PRIMERO', 'HECHOS', 'OTROS'],
 };
-const LOOSE_EVT_STRIP_H = 40;
+const LOOSE_EVT_GAP_PX = 46;
+const LOOSE_EVT_SLOT_H = 52;
+const LOOSE_EVT_LABEL_H = 34;
+const LOOSE_EVT_MIN_H = 168;
 
 function themesInChipScope(){
   const temas = new Set();
@@ -1800,17 +1801,88 @@ function collectLooseEvents(activePeople, yMin, yMax, query){
   }).sort((a, b)=> (chartYear(a) - chartYear(b)) || a.n.localeCompare(b.n, 'es'));
 }
 
-function renderLooseEventStrip(events, yMin, yMax, chartW){
-  if(!events.length) return '';
-  let html = `<div class="loose-evt-strip" style="width:${chartW}px;height:${LOOSE_EVT_STRIP_H}px" aria-label="Sucesos sin personaje en vista">`;
-  html += `<span class="loose-evt-strip__label">Sucesos</span>`;
-  for(const ev of events){
+/**
+ * Sucesos sueltos debajo de personajes: eje cronológico al centro del espacio libre
+ * y, si se amontonan, zig-zag arriba/abajo sin perder el orden izquierda→derecha.
+ */
+function layoutLooseEventLanes(events, yMin, yMax, chartW, availH){
+  const sorted = [...events].sort((a, b)=> (chartYear(a) - chartYear(b)) || a.n.localeCompare(b.n, 'es'));
+  const levelLastX = new Map();
+  const items = [];
+
+  function levelPrefs(maxAbs){
+    const order = [0];
+    for(let i = 1; i <= maxAbs; i++){
+      order.push(i, -i);
+    }
+    return order;
+  }
+
+  for(const ev of sorted){
     const y = chartYear(ev) ?? ev.fa;
     const x = yearToX(y, yMin, yMax, chartW);
-    const mkColor = markerColorFor(ev);
-    const tipoCls = 'evt-marker--' + markerTipoKey(ev.tipo);
-    html += `<button type="button" class="evt-marker evt-marker--loose evt-marker--in-row ${tipoCls}" style="left:${x}px;--mk-color:${mkColor}" data-ev="${ev.id}" aria-label="${esc(ev.n)}">`+
-      `<span class="evt-marker__tip">${esc(ev.n)}</span></button>`;
+    let chosen = null;
+    for(const lv of levelPrefs(14)){
+      const last = levelLastX.has(lv) ? levelLastX.get(lv) : -1e9;
+      if(x - last >= LOOSE_EVT_GAP_PX){
+        chosen = lv;
+        break;
+      }
+    }
+    if(chosen == null){
+      const abs = ([...levelLastX.keys()].reduce((m, k)=> Math.max(m, Math.abs(k)), 0)) + 1;
+      chosen = levelLastX.has(abs) ? -abs : abs;
+    }
+    levelLastX.set(chosen, x);
+    const lean = chosen === 0
+      ? ((items.length % 2) ? 9 : -9)
+      : (chosen > 0 ? -(10 + chosen * 4) : (10 + (-chosen) * 4));
+    items.push({ ev, x, y, level: chosen, lean });
+  }
+
+  const maxAbs = items.length ? Math.max(...items.map(i=> Math.abs(i.level)), 0) : 0;
+  const needHalf = (maxAbs + 1) * LOOSE_EVT_SLOT_H + LOOSE_EVT_LABEL_H;
+  const needH = Math.max(LOOSE_EVT_MIN_H, needHalf * 2 + 16);
+  const height = Math.max(needH, availH || 0);
+  const spineY = height * 0.48;
+
+  for(const it of items){
+    const below = it.level >= 0;
+    it.below = below;
+    it.stemH = Math.max(14, Math.abs(it.level) * LOOSE_EVT_SLOT_H + (it.level === 0 ? 18 : 8));
+    it.markerTop = below
+      ? spineY + it.stemH
+      : spineY - it.stemH;
+  }
+  return { items, height, spineY, needH };
+}
+
+function renderLooseEventFan(layout, chartW, height, opts = {}){
+  if(!layout || !layout.items.length) return '';
+  const h = Math.max(height || 0, layout.height);
+  const spineY = layout.spineY ?? h * 0.48;
+  const withBands = opts.bandsHtml || '';
+  let html = `<div class="loose-evt-fan" style="width:${chartW}px;height:${h}px" aria-label="Sucesos sin personaje en vista">`;
+  html += withBands;
+  html += `<div class="loose-evt-fan__rail" style="top:${spineY}px" aria-hidden="true"></div>`;
+  html += `<span class="loose-evt-fan__label" style="top:${Math.max(6, spineY - 18)}px">Sucesos</span>`;
+  for(const it of layout.items){
+    const mkColor = markerColorFor(it.ev);
+    const tipoCls = 'evt-marker--' + markerTipoKey(it.ev.tipo);
+    const short = it.ev.n.length > 40 ? it.ev.n.slice(0, 38) + '…' : it.ev.n;
+    const side = it.below ? 'below' : 'above';
+    html += `<div class="loose-evt-item loose-evt-item--${side}" style="left:${it.x}px;top:${spineY}px;--lean:${it.lean}deg;--stem-h:${it.stemH}px">`;
+    html += `<div class="loose-evt-item__bar">`;
+    if(it.below){
+      html += `<span class="loose-evt-item__stem" aria-hidden="true"></span>`;
+      html += `<button type="button" class="evt-marker evt-marker--loose evt-marker--fan ${tipoCls}" style="--mk-color:${mkColor}" data-ev="${it.ev.id}" aria-label="${esc(it.ev.n)}"></button>`;
+      html += `<span class="loose-evt-item__name">${esc(short)}</span>`;
+    } else {
+      html += `<span class="loose-evt-item__name">${esc(short)}</span>`;
+      html += `<button type="button" class="evt-marker evt-marker--loose evt-marker--fan ${tipoCls}" style="--mk-color:${mkColor}" data-ev="${it.ev.id}" aria-label="${esc(it.ev.n)}"></button>`;
+      html += `<span class="loose-evt-item__stem" aria-hidden="true"></span>`;
+    }
+    html += `</div></div>`;
   }
   return html + `</div>`;
 }
@@ -1896,7 +1968,6 @@ function normalizeExclusiveLanes(){
   if(selLanes.has(EXCLUSIVE_LANE_ID) && selLanes.size > 1){
     selLanes = new Set([EXCLUSIVE_LANE_ID]);
   }
-  if(!selLanes.size) selLanes.add('pre');
 }
 
 function representativeYearForLane(id){
@@ -1938,60 +2009,6 @@ function syncLaneFilterUi(){
   });
 }
 
-function laneContentSpan(id){
-  const f = LANE_FILTERS.find(x=>x.id===id);
-  if(!f) return null;
-  const years = [];
-  if(f.mode === 'personaje'){
-    for(const p of D.personajes){
-      if(p.grupo !== f.grupo) continue;
-      if(Number.isFinite(p.inicio)) years.push(p.inicio);
-      if(Number.isFinite(p.fin)) years.push(p.fin);
-    }
-  } else if(f.mode === 'ministerio'){
-    years.push(29, 33);
-  } else if(f.mode === 'ultima_semana'){
-    years.push(33, 33.8);
-  } else if(f.mode === 'tema'){
-    const temas = [f.tema, ...(f.extraTemas || [])];
-    for(const e of D.eventos){
-      if(!temas.some(t=>(e.t || []).includes(t))) continue;
-      const y = chartYear(e);
-      if(Number.isFinite(y)) years.push(y);
-    }
-  }
-  if(!years.length){
-    const y = representativeYearForLane(id);
-    if(!Number.isFinite(y)) return null;
-    return { min: y - 40, max: y + 40 };
-  }
-  let min = Math.min(...years);
-  let max = Math.max(...years);
-  if(max - min < 15){
-    const c = (min + max) / 2;
-    min = c - 12;
-    max = c + 12;
-  } else {
-    const pad = (max - min) * 0.12;
-    min -= pad;
-    max += pad;
-  }
-  return { min, max };
-}
-
-function laneNeedsFocus(id){
-  const span = laneContentSpan(id);
-  if(!span) return false;
-  const mid = (span.min + span.max) / 2;
-  if(!lastLayout) return true;
-  const { yMin, yMax } = lastLayout;
-  if(!Number.isFinite(yMin) || !Number.isFinite(yMax)) return true;
-  if(mid < yMin || mid > yMax) return true;
-  const viewSpan = yMax - yMin;
-  const laneSpan = span.max - span.min;
-  return viewSpan > Math.max(80, laneSpan * 8);
-}
-
 function applyLaneChipChange(id, checked){
   if(checked){
     if(id === EXCLUSIVE_LANE_ID){
@@ -2002,32 +2019,15 @@ function applyLaneChipChange(id, checked){
       selLanes.add(id);
     }
     scrollFocusLaneId = id;
-  } else if(selLanes.size <= 1 && selLanes.has(id)){
-    syncLaneFilterUi();
-    return;
   } else {
     selLanes.delete(id);
-    scrollFocusLaneId = LANE_ORDER.find(lid=> selLanes.has(lid)) || 'pre';
+    scrollFocusLaneId = LANE_ORDER.find(lid=> selLanes.has(lid)) || null;
   }
   normalizeExclusiveLanes();
   try{ localStorage.setItem('lt-par-lanes', JSON.stringify([...selLanes])); }catch(e){}
   syncHash();
   syncLaneFilterUi();
-  if(checked && laneNeedsFocus(id)){
-    const span = laneContentSpan(id);
-    if(span){
-      autoFit = false;
-      try{ localStorage.setItem('lt-par-autofit', '0'); }catch(e){}
-      if(fitBtn){
-        fitBtn.classList.remove('on');
-        fitBtn.setAttribute('aria-pressed', 'false');
-      }
-      const raw = buildAllLaneData({ query });
-      const bounds = computeRangeFromLaneData(laneDataForBounds(raw));
-      applyFocusZoom(span.min, span.max, bounds[0], bounds[1]);
-      return;
-    }
-  }
+  /* No desactivar AUTO al cambiar chips: solo re-render y desplazar al foco. */
   render._scrolled = false;
   scheduleRender();
 }
@@ -3120,11 +3120,9 @@ function render(){
     ? `<div class="lane-hdr" style="height:${L.potStrip}px;opacity:.7"><span class="dot" style="background:var(--acc)"></span>Imperios</div>`
     : '';
   if(L.phaseH) labelsHtml += `<div class="lane-hdr" style="height:${L.phaseH}px;opacity:0;border:none"></div>`;
-  if(looseEvents.length){
-    labelsHtml += `<div class="lane-hdr" style="height:${LOOSE_EVT_STRIP_H}px;opacity:.8"><span class="dot" style="background:var(--acc)"></span>Sucesos</div>`;
-  }
   let totalRows = 0, visibleRows = 0, selectedRows = 0, totalTracks = 0;
 
+  let peopleHEstimate = topOffset;
   for(const block of laneData){
     if(!block.tracks.length) continue;
     totalTracks += block.tracks.length;
@@ -3138,6 +3136,17 @@ function render(){
         labelsHtml += labelTrackHtml(track, block, q, yMin, yMax, chartW, layoutOpts, L);
       }
     }
+    peopleHEstimate += block.tracks.reduce((h, t)=> h + trackRowHeight(L, t.people.length), 0) + L.laneGap;
+  }
+
+  const viewH = chartScroll.clientHeight || 0;
+  const freeBelow = Math.max(0, viewH - peopleHEstimate - L.axisH - 12);
+  const looseLayout = looseEvents.length
+    ? layoutLooseEventLanes(looseEvents, yMin, yMax, chartW, freeBelow)
+    : null;
+  const looseFanH = looseLayout ? looseLayout.height : 0;
+  if(looseFanH){
+    labelsHtml += `<div class="lane-hdr lane-hdr--loose" style="height:${looseFanH}px;opacity:.85"><span class="dot" style="background:var(--acc)"></span>Sucesos</div>`;
   }
   if(rowLayout === 'compact'){
     labelsCol.innerHTML = '';
@@ -3168,31 +3177,6 @@ function render(){
   }
 
   const hasLaneTracks = laneData.some(b=>b.tracks.length);
-  if(looseEvents.length){
-    const stripH = LOOSE_EVT_STRIP_H;
-    if(!hasLaneTracks){
-      canvasHtml += `<div class="lane-block" style="min-height:${stripH}px;width:${chartW}px">`;
-      for(const b of bandEls){
-        const x1 = yearToX(Math.max(b.start, yMin), yMin, yMax, chartW);
-        const x2 = yearToX(Math.min(b.end, yMax), yMin, yMax, chartW);
-        const bw = Math.max(2, x2 - x1);
-        const showLabel = !bandLabelShown.has(b.id);
-        if(showLabel) bandLabelShown.add(b.id);
-        canvasHtml += `<div class="band ${b.cls}" style="${bandInlineStyle(b, x1, bw, stripH)}" title="${esc(b.label)}">${showLabel ? bandLabelHtml(b.label, bw, bandLabelSlot++) : ''}</div>`;
-      }
-      for(const p of potBands){
-        const x1 = yearToX(Math.max(p.start, yMin), yMin, yMax, chartW);
-        const x2 = yearToX(Math.min(p.end, yMax), yMin, yMax, chartW);
-        canvasHtml += `<div class="band ${p.cls}" style="left:${x1}px;width:${Math.max(2,x2-x1)}px;top:0;height:${stripH}px;opacity:.55"></div>`;
-      }
-      canvasHtml += renderLooseEventStrip(looseEvents, yMin, yMax, chartW);
-      canvasHtml += `</div>`;
-      yOff += stripH + L.laneGap;
-    } else {
-      canvasHtml += renderLooseEventStrip(looseEvents, yMin, yMax, chartW);
-      yOff += stripH;
-    }
-  }
 
   for(const block of laneData){
     if(!block.tracks.length) continue;
@@ -3220,6 +3204,27 @@ function render(){
     }
     canvasHtml += `</div>`;
     yOff += L.laneGap;
+  }
+
+  if(looseLayout){
+    let bandsHtml = '';
+    if(!hasLaneTracks){
+      for(const b of bandEls){
+        const x1 = yearToX(Math.max(b.start, yMin), yMin, yMax, chartW);
+        const x2 = yearToX(Math.min(b.end, yMax), yMin, yMax, chartW);
+        const bw = Math.max(2, x2 - x1);
+        const showLabel = !bandLabelShown.has(b.id);
+        if(showLabel) bandLabelShown.add(b.id);
+        bandsHtml += `<div class="band ${b.cls}" style="${bandInlineStyle(b, x1, bw, looseFanH)}" title="${esc(b.label)}">${showLabel ? bandLabelHtml(b.label, bw, bandLabelSlot++) : ''}</div>`;
+      }
+      for(const p of potBands){
+        const x1 = yearToX(Math.max(p.start, yMin), yMin, yMax, chartW);
+        const x2 = yearToX(Math.min(p.end, yMax), yMin, yMax, chartW);
+        bandsHtml += `<div class="band ${p.cls}" style="left:${x1}px;width:${Math.max(2,x2-x1)}px;top:0;height:${looseFanH}px;opacity:.55"></div>`;
+      }
+    }
+    canvasHtml += renderLooseEventFan(looseLayout, chartW, looseFanH, { bandsHtml });
+    yOff += looseFanH;
   }
 
   const totalH = yOff;
@@ -3277,7 +3282,9 @@ function render(){
   chartCanvas.innerHTML = gridLines + connSvg + canvasHtml + markersHtml +
     (vizStyle === 'editorial' ? `<div class="axis-line" style="width:${chartW}px"></div>` : '');
   if(showMarkers && rowLayout === 'compact'){
-    markerCount = chartCanvas.querySelectorAll('.evt-marker--in-row, .bar-event-pin').length;
+    markerCount = chartCanvas.querySelectorAll('.evt-marker--in-row, .bar-event-pin, .evt-marker--fan').length;
+  } else if(showMarkers && looseLayout){
+    markerCount += looseLayout.items.length;
   }
   axisArea.style.width = chartW + 'px';
   axisArea.innerHTML = axisLabels;
@@ -3309,8 +3316,9 @@ function render(){
 
   chartCanvas.querySelectorAll('.evt-marker, .bar-event-pin').forEach(m=>{
     const ev = D.eventos.find(e=>String(e.id)===m.dataset.ev);
-    /* Si ya tiene tip CSS (solo título), no abrir el popup #tooltip */
-    if(!m.querySelector('.evt-marker__tip')){
+    /* Tip CSS solo en compact; en fan / filas normales usamos #tooltip fijo. */
+    const useCssTip = m.querySelector('.evt-marker__tip') && !m.classList.contains('evt-marker--fan');
+    if(!useCssTip){
       bindHoverTip(m, e=> showEvTip(e, ev));
     }
     m.addEventListener('click', e=> activateWithTouchTip('e'+ev.id, e, m, ()=> showEvTip(e, ev, m), ()=> openDrawerFromClick(ev, e)));
@@ -3344,6 +3352,10 @@ function render(){
     scrollToYear(scrollFocusYear(yMin, yMax, focusRange), yMin, yMax, chartW);
     didInitialScroll = true;
     scrollFocusLaneId = null;
+  } else if(scrollFocusLaneId){
+    scrollToYear(scrollFocusYear(yMin, yMax, focusRange), yMin, yMax, chartW);
+    scrollFocusLaneId = null;
+    render._scrolled = true;
   } else if(!autoFit && !render._scrolled){
     scrollToYear(scrollFocusYear(yMin, yMax, focusRange), yMin, yMax, chartW);
     scrollFocusLaneId = null;
@@ -3619,10 +3631,22 @@ function exportPng(){
   img.src = url;
 }
 
-let drag = false, sx = 0, sl = 0;
-chartScroll.addEventListener('mousedown', e=>{
-  if(e.target.closest('.bar,.evt-marker,.bar-event-pin')) return;
+let drag = false, sx = 0, sl = 0, dragPtr = null;
+function isChartPanBlocker(t){
+  return !!(t && t.closest && t.closest('.bar,.evt-marker,.bar-event-pin,.axis-important,.pe-pick,button,a,input,select,textarea,.loose-evt-item__name'));
+}
+function endChartPan(){
+  if(drag && dragPtr != null){
+    try{ chartScroll.releasePointerCapture(dragPtr); }catch(e){}
+  }
+  drag = false;
+  dragPtr = null;
+  chartScroll.classList.remove('dragging');
+}
+chartScroll.addEventListener('pointerdown', e=>{
+  if(e.pointerType === 'touch') return;
   if(e.button !== 0) return;
+  if(isChartPanBlocker(e.target)) return;
   if((rectZoomMode || e.shiftKey) && lastLayout){
     const x0 = chartXFromClient(e.clientX);
     focusMarquee = { x0, x1: x0, active: true };
@@ -3630,18 +3654,31 @@ chartScroll.addEventListener('mousedown', e=>{
     e.preventDefault();
     return;
   }
-  drag = true; sx = e.clientX; sl = chartScroll.scrollLeft;
+  drag = true;
+  sx = e.clientX;
+  sl = chartScroll.scrollLeft;
+  dragPtr = e.pointerId;
   chartScroll.classList.add('dragging');
+  try{ chartScroll.setPointerCapture(e.pointerId); }catch(err){}
+  e.preventDefault();
 });
-window.addEventListener('mousemove', e=>{
+chartScroll.addEventListener('pointermove', e=>{
   if(focusMarquee?.active){
     focusMarquee.x1 = chartXFromClient(e.clientX);
     updateFocusMarqueeDom(focusMarquee.x0, focusMarquee.x1);
     return;
   }
-  if(drag) chartScroll.scrollLeft = sl - (e.clientX - sx);
+  if(!drag || (dragPtr != null && e.pointerId !== dragPtr)) return;
+  chartScroll.scrollLeft = sl - (e.clientX - sx);
 });
-window.addEventListener('mouseup', ()=>{
+window.addEventListener('pointermove', e=>{
+  if(focusMarquee?.active){
+    focusMarquee.x1 = chartXFromClient(e.clientX);
+    updateFocusMarqueeDom(focusMarquee.x0, focusMarquee.x1);
+  }
+});
+chartScroll.addEventListener('pointerup', e=>{
+  if(dragPtr != null && e.pointerId !== dragPtr && !focusMarquee?.active) return;
   if(focusMarquee?.active){
     const xMin = Math.min(focusMarquee.x0, focusMarquee.x1);
     const xMax = Math.max(focusMarquee.x0, focusMarquee.x1);
@@ -3653,8 +3690,22 @@ window.addEventListener('mouseup', ()=>{
     }
     return;
   }
-  drag = false;
-  chartScroll.classList.remove('dragging');
+  endChartPan();
+});
+chartScroll.addEventListener('pointercancel', endChartPan);
+window.addEventListener('pointerup', e=>{
+  if(focusMarquee?.active){
+    const xMin = Math.min(focusMarquee.x0, focusMarquee.x1);
+    const xMax = Math.max(focusMarquee.x0, focusMarquee.x1);
+    hideFocusMarquee();
+    if(Math.abs(xMax - xMin) > 24 && lastLayout){
+      const y1 = xToYear(xMin, lastLayout.yMin, lastLayout.yMax, lastLayout.chartW);
+      const y2 = xToYear(xMax, lastLayout.yMin, lastLayout.yMax, lastLayout.chartW);
+      applyFocusZoom(Math.min(y1, y2), Math.max(y1, y2), lastLayout.dataMin, lastLayout.dataMax);
+    }
+    return;
+  }
+  if(drag) endChartPan();
 });
 chartScroll.addEventListener('wheel', e=>{
   if(!lastLayout) return;
