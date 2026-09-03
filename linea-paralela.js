@@ -1749,10 +1749,11 @@ const LANE_THEME_SCOPE = {
   rest: ['RESTAURACION', 'OTROS'],
   sig: ['SIGLO-PRIMERO', 'HECHOS', 'OTROS'],
 };
-const LOOSE_EVT_GAP_PX = 46;
-const LOOSE_EVT_SLOT_H = 52;
-const LOOSE_EVT_LABEL_H = 34;
-const LOOSE_EVT_MIN_H = 168;
+const LOOSE_EVT_GAP_PX = 20;
+const LOOSE_EVT_SLOT_H = 20;
+const LOOSE_EVT_BASE_PAD = 18;
+const LOOSE_EVT_TOP_PAD = 14;
+const LOOSE_EVT_MIN_H = 56;
 
 function themesInChipScope(){
   const temas = new Set();
@@ -1802,8 +1803,9 @@ function collectLooseEvents(activePeople, yMin, yMax, query){
 }
 
 /**
- * Sucesos sueltos debajo de personajes: eje cronológico al centro del espacio libre
- * y, si se amontonan, zig-zag arriba/abajo sin perder el orden izquierda→derecha.
+ * Sucesos sueltos debajo de personajes, anclados a una base cerca del eje de años.
+ * Misma idea que los puntos de antes: si se amontonan en X, escalonan en Y
+ * (primero hacia abajo, luego arriba, etc.) usando el espacio libre.
  */
 function layoutLooseEventLanes(events, yMin, yMax, chartW, availH){
   const sorted = [...events].sort((a, b)=> (chartYear(a) - chartYear(b)) || a.n.localeCompare(b.n, 'es'));
@@ -1813,7 +1815,7 @@ function layoutLooseEventLanes(events, yMin, yMax, chartW, availH){
   function levelPrefs(maxAbs){
     const order = [0];
     for(let i = 1; i <= maxAbs; i++){
-      order.push(i, -i);
+      order.push(i, -i); /* + = abajo (hacia el eje), - = arriba (espacio libre) */
     }
     return order;
   }
@@ -1822,7 +1824,7 @@ function layoutLooseEventLanes(events, yMin, yMax, chartW, availH){
     const y = chartYear(ev) ?? ev.fa;
     const x = yearToX(y, yMin, yMax, chartW);
     let chosen = null;
-    for(const lv of levelPrefs(14)){
+    for(const lv of levelPrefs(16)){
       const last = levelLastX.has(lv) ? levelLastX.get(lv) : -1e9;
       if(x - last >= LOOSE_EVT_GAP_PX){
         chosen = lv;
@@ -1834,55 +1836,42 @@ function layoutLooseEventLanes(events, yMin, yMax, chartW, availH){
       chosen = levelLastX.has(abs) ? -abs : abs;
     }
     levelLastX.set(chosen, x);
-    const lean = chosen === 0
-      ? ((items.length % 2) ? 9 : -9)
-      : (chosen > 0 ? -(10 + chosen * 4) : (10 + (-chosen) * 4));
-    items.push({ ev, x, y, level: chosen, lean });
+    items.push({ ev, x, y, level: chosen });
   }
 
-  const maxAbs = items.length ? Math.max(...items.map(i=> Math.abs(i.level)), 0) : 0;
-  const needHalf = (maxAbs + 1) * LOOSE_EVT_SLOT_H + LOOSE_EVT_LABEL_H;
-  const needH = Math.max(LOOSE_EVT_MIN_H, needHalf * 2 + 16);
-  const height = Math.max(needH, availH || 0);
-  const spineY = height * 0.48;
+  const maxDown = items.length ? Math.max(0, ...items.map(i=> i.level)) : 0;
+  const maxUp = items.length ? Math.max(0, ...items.map(i=> -i.level)) : 0;
+  const needH = LOOSE_EVT_TOP_PAD + LOOSE_EVT_BASE_PAD
+    + (maxDown + maxUp) * LOOSE_EVT_SLOT_H + 12;
+  const height = Math.max(LOOSE_EVT_MIN_H, needH, availH || 0);
+  /* Base cerca del borde inferior (eje de años); deja sitio para niveles + abajo. */
+  const baseY = height - LOOSE_EVT_BASE_PAD - maxDown * LOOSE_EVT_SLOT_H;
 
   for(const it of items){
-    const below = it.level >= 0;
-    it.below = below;
-    it.stemH = Math.max(14, Math.abs(it.level) * LOOSE_EVT_SLOT_H + (it.level === 0 ? 18 : 8));
-    it.markerTop = below
-      ? spineY + it.stemH
-      : spineY - it.stemH;
+    it.baseY = baseY;
+    it.top = baseY + it.level * LOOSE_EVT_SLOT_H;
   }
-  return { items, height, spineY, needH };
+  return { items, height, baseY, needH };
 }
 
 function renderLooseEventFan(layout, chartW, height, opts = {}){
   if(!layout || !layout.items.length) return '';
   const h = Math.max(height || 0, layout.height);
-  const spineY = layout.spineY ?? h * 0.48;
+  const baseY = layout.baseY ?? (h - LOOSE_EVT_BASE_PAD);
   const withBands = opts.bandsHtml || '';
-  let html = `<div class="loose-evt-fan" style="width:${chartW}px;height:${h}px" aria-label="Sucesos sin personaje en vista">`;
+  let html = `<div class="loose-evt-zone" style="width:${chartW}px;height:${h}px" aria-label="Sucesos sin personaje en vista">`;
   html += withBands;
-  html += `<div class="loose-evt-fan__rail" style="top:${spineY}px" aria-hidden="true"></div>`;
-  html += `<span class="loose-evt-fan__label" style="top:${Math.max(6, spineY - 18)}px">Sucesos</span>`;
+  html += `<div class="loose-evt-zone__rail" style="top:${baseY}px" aria-hidden="true"></div>`;
+  html += `<span class="loose-evt-zone__label" style="top:${Math.max(4, baseY - 16)}px">Sucesos</span>`;
   for(const it of layout.items){
     const mkColor = markerColorFor(it.ev);
     const tipoCls = 'evt-marker--' + markerTipoKey(it.ev.tipo);
-    const short = it.ev.n.length > 40 ? it.ev.n.slice(0, 38) + '…' : it.ev.n;
-    const side = it.below ? 'below' : 'above';
-    html += `<div class="loose-evt-item loose-evt-item--${side}" style="left:${it.x}px;top:${spineY}px;--lean:${it.lean}deg;--stem-h:${it.stemH}px">`;
-    html += `<div class="loose-evt-item__bar">`;
-    if(it.below){
-      html += `<span class="loose-evt-item__stem" aria-hidden="true"></span>`;
-      html += `<button type="button" class="evt-marker evt-marker--loose evt-marker--fan ${tipoCls}" style="--mk-color:${mkColor}" data-ev="${it.ev.id}" aria-label="${esc(it.ev.n)}"></button>`;
-      html += `<span class="loose-evt-item__name">${esc(short)}</span>`;
-    } else {
-      html += `<span class="loose-evt-item__name">${esc(short)}</span>`;
-      html += `<button type="button" class="evt-marker evt-marker--loose evt-marker--fan ${tipoCls}" style="--mk-color:${mkColor}" data-ev="${it.ev.id}" aria-label="${esc(it.ev.n)}"></button>`;
-      html += `<span class="loose-evt-item__stem" aria-hidden="true"></span>`;
+    if(it.level !== 0){
+      const stemTop = Math.min(it.top, baseY);
+      const stemH = Math.abs(it.top - baseY);
+      html += `<span class="loose-evt-zone__stem" style="left:${it.x}px;top:${stemTop}px;height:${stemH}px" aria-hidden="true"></span>`;
     }
-    html += `</div></div>`;
+    html += `<button type="button" class="evt-marker evt-marker--loose evt-marker--zone ${tipoCls}" style="left:${it.x}px;top:${it.top}px;--mk-color:${mkColor}" data-ev="${it.ev.id}" aria-label="${esc(it.ev.n)}"></button>`;
   }
   return html + `</div>`;
 }
@@ -3282,7 +3271,7 @@ function render(){
   chartCanvas.innerHTML = gridLines + connSvg + canvasHtml + markersHtml +
     (vizStyle === 'editorial' ? `<div class="axis-line" style="width:${chartW}px"></div>` : '');
   if(showMarkers && rowLayout === 'compact'){
-    markerCount = chartCanvas.querySelectorAll('.evt-marker--in-row, .bar-event-pin, .evt-marker--fan').length;
+    markerCount = chartCanvas.querySelectorAll('.evt-marker--in-row, .bar-event-pin, .evt-marker--zone').length;
   } else if(showMarkers && looseLayout){
     markerCount += looseLayout.items.length;
   }
@@ -3317,7 +3306,7 @@ function render(){
   chartCanvas.querySelectorAll('.evt-marker, .bar-event-pin').forEach(m=>{
     const ev = D.eventos.find(e=>String(e.id)===m.dataset.ev);
     /* Tip CSS solo en compact; en fan / filas normales usamos #tooltip fijo. */
-    const useCssTip = m.querySelector('.evt-marker__tip') && !m.classList.contains('evt-marker--fan');
+    const useCssTip = m.querySelector('.evt-marker__tip') && !m.classList.contains('evt-marker--zone');
     if(!useCssTip){
       bindHoverTip(m, e=> showEvTip(e, ev));
     }
