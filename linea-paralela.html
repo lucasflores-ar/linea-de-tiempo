@@ -130,6 +130,35 @@ input[type=search]:focus,select:focus{border-color:var(--acc)}
   display:inline-flex;align-items:center;justify-content:center;
   color:var(--mut);cursor:pointer}
 .iconbtn:hover{color:var(--txt);border-color:var(--acc)}
+.search-open-btn{display:none;position:relative}
+.search-open-btn.has-query{color:var(--txt);border-color:var(--acc);background:var(--field-2)}
+.search-open-btn.has-query::after{
+  content:'';position:absolute;top:5px;right:5px;width:7px;height:7px;border-radius:50%;
+  background:var(--acc);box-shadow:0 0 0 2px var(--field);
+}
+.search-pop{
+  position:fixed;inset:0;z-index:165;display:flex;align-items:flex-start;justify-content:center;
+  padding:max(12px, env(safe-area-inset-top)) 16px 16px;
+  background:rgba(26,24,20,.48);
+}
+.search-pop[hidden]{display:none !important}
+.search-pop__panel{
+  width:100%;max-width:440px;margin-top:10vh;
+  background:var(--panel);border:1px solid var(--line);border-radius:16px;
+  box-shadow:0 16px 48px var(--shadow);padding:16px 16px 14px;
+}
+.search-pop__hdr{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.search-pop__title{font:700 15px/1.2 var(--font-serif);color:var(--txt)}
+.search-pop__field{display:block}
+.search-pop__field input{
+  width:100%;background:var(--field);border:1px solid var(--line);color:var(--txt);
+  border-radius:10px;padding:12px 14px;font-size:16px;font-family:inherit;outline:none;
+}
+.search-pop__field input:focus{border-color:var(--acc)}
+.search-pop__hint{font-size:12px;color:var(--mut);margin:10px 0 14px;min-height:1.2em}
+.search-pop__actions{display:flex;justify-content:flex-end;gap:8px}
+.search-pop__go{background:var(--txt);border-color:var(--txt);color:var(--bg)}
+.search-pop__go:hover{opacity:.92;border-color:var(--txt)}
 
 .toolbar{
   display:flex; align-items:center; gap:8px; flex-wrap:wrap;
@@ -1123,16 +1152,18 @@ header {
     gap: 5px;
   }
   .result-count { display: none; }
-  input[type=search] {
-    flex: 1 1 auto;
-    min-width: 0;
-    max-width: none;
-    padding: 6px 8px;
-    font-size: 11px;
+  #search { display: none; }
+  .search-open-btn { display: inline-flex; flex-shrink: 0; }
+  .search-pop { align-items: stretch; padding: 0; }
+  .search-pop__panel {
+    margin-top: auto; max-width: none;
+    border-radius: 16px 16px 0 0;
+    padding: 18px 16px calc(16px + env(safe-area-inset-bottom));
   }
   .site-nav { padding: 2px; flex-shrink: 0; }
   .site-nav__link { padding: 4px 7px; font-size: 10px; }
   header .iconbtn { width: 28px; height: 28px; font-size: 13px; flex-shrink: 0; }
+  header .search-open-btn { width: 36px; height: 36px; }
 }
 </style>
 </head>
@@ -1148,6 +1179,11 @@ header {
   <div class="controls">
     <input type="search" id="search" placeholder="Buscar suceso, personaje o libro…" autocomplete="off" aria-label="Buscar suceso, personaje o libro" />
     <span class="result-count" id="result-count" aria-live="polite"></span>
+    <button class="iconbtn search-open-btn" id="search-open" type="button"
+            title="Buscar" aria-label="Buscar suceso o personaje"
+            aria-haspopup="dialog" aria-controls="search-pop" aria-expanded="false">
+      <svg class="ui-ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16.2 16.2L21 21"/></svg>
+    </button>
     <nav class="site-nav" aria-label="Navegación principal">
       <a class="site-nav__link site-nav__link--on" href="linea-paralela.html" aria-current="page">Cronología</a>
       <a class="site-nav__link" href="fichas.html">Personajes</a>
@@ -1259,6 +1295,23 @@ header {
 <div id="tooltip" role="tooltip"></div>
 
 <div id="overlay"></div>
+<div id="search-pop" class="search-pop" hidden>
+  <div class="search-pop__panel" role="dialog" aria-modal="true" aria-labelledby="search-pop-title">
+    <div class="search-pop__hdr">
+      <h2 class="search-pop__title" id="search-pop-title">Buscar en la cronología</h2>
+      <button type="button" class="iconbtn" id="search-pop-close" aria-label="Cerrar búsqueda">✕</button>
+    </div>
+    <label class="search-pop__field">
+      <span class="u-visually-hidden">Suceso, personaje o libro</span>
+      <input type="search" id="search-pop-input" placeholder="Suceso, personaje o libro…" autocomplete="off" enterkeyhint="search" />
+    </label>
+    <p class="search-pop__hint" id="search-pop-count">Escribí un nombre para resaltar coincidencias.</p>
+    <div class="search-pop__actions">
+      <button type="button" class="export-btn" id="search-pop-clear">Limpiar</button>
+      <button type="button" class="export-btn search-pop__go" id="search-pop-go">Buscar</button>
+    </div>
+  </div>
+</div>
 <div id="onboard-root" class="onboard-root" hidden aria-hidden="true">
   <div class="onboard-backdrop" id="onboard-backdrop"></div>
   <div class="onboard-hole" id="onboard-hole" hidden></div>
@@ -1322,6 +1375,6 @@ header {
 </aside>
 
 <script src="linea-tiempo-datos.js?v=14"></script>
-<script src="linea-paralela.js?v=20260903u"></script>
+<script src="linea-paralela.js?v=20260903v"></script>
 </body>
 </html>

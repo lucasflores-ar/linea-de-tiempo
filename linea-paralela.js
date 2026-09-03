@@ -525,6 +525,13 @@ const chartCanvas = document.getElementById('chart-canvas');
 const axisArea = document.getElementById('axis-area');
 const laneFiltersEl = document.getElementById('lane-filters');
 const searchEl = document.getElementById('search');
+const searchOpenBtn = document.getElementById('search-open');
+const searchPop = document.getElementById('search-pop');
+const searchPopInput = document.getElementById('search-pop-input');
+const searchPopClose = document.getElementById('search-pop-close');
+const searchPopClear = document.getElementById('search-pop-clear');
+const searchPopGo = document.getElementById('search-pop-go');
+const searchPopCount = document.getElementById('search-pop-count');
 const resultCount = document.getElementById('result-count');
 const tooltip = document.getElementById('tooltip');
 const zoomEl = document.getElementById('zoom');
@@ -1990,6 +1997,15 @@ function safeRender(){
   }
 }
 
+function setResultCount(text){
+  if(resultCount) resultCount.textContent = text;
+  if(searchPopCount){
+    searchPopCount.textContent = query
+      ? text
+      : 'Escribí un nombre para resaltar coincidencias.';
+  }
+}
+
 let rafPending = false;
 function scheduleRender(){
   if(rafPending) return;
@@ -2919,7 +2935,7 @@ function render(){
     chartCanvas.innerHTML = '<div class="empty-msg" style="padding:24px;color:var(--mut)">'+emptyMsg+'</div>';
     axisArea.innerHTML = '';
     renderHiddenDock([]);
-    resultCount.textContent = '0 personajes';
+    setResultCount('0 personajes');
     hideMinimap();
     return;
   }
@@ -2961,7 +2977,7 @@ function render(){
     chartCanvas.innerHTML = '<div class="empty-msg" style="padding:24px;color:var(--mut)">'+emptyMsg+'</div>';
     axisArea.innerHTML = '';
     renderHiddenDock([]);
-    resultCount.textContent = '0 personajes';
+    setResultCount('0 personajes');
     hideMinimap();
     return;
   }
@@ -3133,9 +3149,9 @@ function render(){
 
   const hiddenNote = hiddenList.length ? ` · ${hiddenList.length} ocultos` : '';
   const trackNote = rowLayout === 'compact' ? ` · ${totalTracks} pistas` : '';
-  resultCount.textContent = q
+  setResultCount(q
     ? `${selectedRows} visibles${trackNote}${hiddenNote}${markerCount ? ' · '+markerCount+' marcadores' : ''}`
-    : `${selectedRows} personajes${trackNote}${hiddenNote}${markerCount ? ' · '+markerCount+' marcadores' : ''}`;
+    : `${selectedRows} personajes${trackNote}${hiddenNote}${markerCount ? ' · '+markerCount+' marcadores' : ''}`);
 
   chartCanvas.querySelectorAll('.evt-marker, .bar-event-pin').forEach(m=>{
     const ev = D.eventos.find(e=>String(e.id)===m.dataset.ev);
@@ -3506,18 +3522,90 @@ chartScroll.addEventListener('scroll', ()=>{
 labelsCol.addEventListener('scroll', ()=>{ chartScroll.scrollTop = labelsCol.scrollTop; });
 
 let searchT;
-searchEl.addEventListener('input', ()=>{
-  clearTimeout(searchT);
-  searchT = setTimeout(()=>{
-    query = searchEl.value.trim();
-    scheduleRender();
-  }, 140);
+function syncSearchFields(val){
+  if(searchEl) searchEl.value = val;
+  if(searchPopInput) searchPopInput.value = val;
+  if(searchOpenBtn){
+    if(val) searchOpenBtn.classList.add('has-query');
+    else searchOpenBtn.classList.remove('has-query');
+  }
+}
+function applySearchQuery(val){
+  query = (val || '').trim();
+  syncSearchFields(query);
+  scheduleRender();
+}
+function isSearchPopOpen(){
+  return !!(searchPop && searchPop.hidden === false);
+}
+function closeSearchPop(){
+  if(!isSearchPopOpen()) return;
+  searchPop.hidden = true;
+  searchPop.classList.remove('on');
+  searchOpenBtn?.setAttribute('aria-expanded', 'false');
+  searchOpenBtn?.focus?.();
+}
+function openSearchPop(){
+  if(!searchPop) return;
+  document.getElementById('filtros-sheet')?.classList.remove('on');
+  document.getElementById('filtros-backdrop')?.classList.remove('on');
+  document.getElementById('filtros-btn')?.setAttribute('aria-expanded', 'false');
+  searchPop.hidden = false;
+  searchPop.classList.add('on');
+  searchOpenBtn?.setAttribute('aria-expanded', 'true');
+  if(searchPopInput){
+    searchPopInput.value = query;
+    setTimeout(()=>{ searchPopInput.focus?.(); searchPopInput.select?.(); }, 40);
+  }
+}
+if(searchEl){
+  searchEl.addEventListener('input', ()=>{
+    clearTimeout(searchT);
+    searchT = setTimeout(()=> applySearchQuery(searchEl.value), 140);
+  });
+  searchEl.addEventListener('keydown', e=>{
+    if(e.key === 'Escape'){
+      applySearchQuery('');
+    }
+  });
+}
+if(searchOpenBtn){
+  searchOpenBtn.addEventListener('click', ()=>{
+    if(isSearchPopOpen()) closeSearchPop();
+    else openSearchPop();
+  });
+}
+if(searchPop){
+  searchPop.addEventListener('click', e=>{
+    if(e.target === searchPop) closeSearchPop();
+  });
+}
+searchPopClose?.addEventListener('click', closeSearchPop);
+searchPopGo?.addEventListener('click', ()=>{
+  applySearchQuery(searchPopInput ? searchPopInput.value : query);
+  closeSearchPop();
 });
-searchEl.addEventListener('keydown', e=>{
-  if(e.key === 'Escape'){
-    searchEl.value = '';
-    query = '';
-    scheduleRender();
+searchPopClear?.addEventListener('click', ()=>{
+  applySearchQuery('');
+  searchPopInput?.focus?.();
+});
+if(searchPopInput){
+  searchPopInput.addEventListener('input', ()=>{
+    clearTimeout(searchT);
+    searchT = setTimeout(()=> applySearchQuery(searchPopInput.value), 140);
+  });
+  searchPopInput.addEventListener('keydown', e=>{
+    if(e.key === 'Enter'){
+      e.preventDefault();
+      applySearchQuery(searchPopInput.value);
+      closeSearchPop();
+    }
+  });
+}
+document.addEventListener('keydown', e=>{
+  if(e.key === 'Escape' && isSearchPopOpen()){
+    e.preventDefault();
+    closeSearchPop();
   }
 });
 optMarkers.addEventListener('change', ()=>{
@@ -3648,7 +3736,7 @@ if(isFirstVisit){
   fitBtn.setAttribute('aria-pressed', 'true');
 }
 const qs = new URLSearchParams(location.search);
-if(qs.get('q')){ query = qs.get('q'); searchEl.value = query; }
+if(qs.get('q')){ query = qs.get('q'); syncSearchFields(query); }
 const deepEvId = qs.get('ev');
 
 buildLaneFilters();
@@ -3716,8 +3804,9 @@ window.addEventListener('resize', ()=>{ if(autoFit) render._scrolled = false; sc
     },
     {
       target: '#search',
+      mobileTarget: '#search-open',
       title: 'Buscar',
-      body: 'Escribí un suceso, personaje o libro para resaltar coincidencias. Escape limpia la búsqueda. Podés ocultar personajes con el checkbox junto a cada fila.',
+      body: 'En el teléfono, tocá la lupa para buscar un suceso, personaje o libro. En computadora, escribí en la barra. Escape limpia la búsqueda.',
     },
     {
       target: '#filtros-btn',
@@ -3783,7 +3872,8 @@ window.addEventListener('resize', ()=>{ if(autoFit) render._scrolled = false; sc
     btnPrev.hidden = idx === 0;
     btnNext.textContent = idx === STEPS.length - 1 ? 'Listo' : 'Siguiente';
 
-    const el = step.target ? document.querySelector(step.target) : null;
+    const sel = (mqMobile?.matches && step.mobileTarget) ? step.mobileTarget : step.target;
+    const el = sel ? document.querySelector(sel) : null;
     if(el && !step.center){
       if(backdrop) backdrop.style.opacity = '0';
       el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
@@ -3895,6 +3985,9 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && sheet?.classList.contains('on')) setSheet(false);
 });
 
-mqMobile?.addEventListener('change', () => setSheet(false));
+mqMobile?.addEventListener('change', () => {
+  setSheet(false);
+  closeSearchPop();
+});
 
 })();
