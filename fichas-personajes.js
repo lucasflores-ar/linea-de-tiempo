@@ -901,7 +901,7 @@ window.LT_FICHAS = [
     nq:84, nh:0, fuente:'personajes_biblicos,preguntas,curacion_manual'
   },
   {
-    id:92, nombre:'Juan el apóstol', alt:'juan', genero:'M', tribu:'',
+    id:92, nombre:'Apóstol Juan', alt:'juan; juan el apóstol', genero:'M', tribu:'',
     profesion:'Apóstol', profesion_sub:'Ficha de Personaje: Apóstol', profesion_2:'',
     nac:'1', fal:'100', edad:'99', era:'ec', seccion:'S3', potencia:'Roma',
     lugares:['Galilea', 'Jerusalén', 'Patmos', 'Éfeso, o cerca (?)'], hitos:['Primeros discípulos (29 E. C.) [Mateo 4:18-22', 'Marcos 1:16-20]', 'Curación del cojo (33 E. C.) [Hechos 3:1-26]', 'Preparativos de la Pascua (33 E. C.) [Mateo 26:17-19', 'Marcos 14:12-16', 'Lucas 22:7-13]', 'Visión de Juan en Patmos (c. 96 E. C.) [Apocalipsis 1:1-22:21]', 'Juan, en Patmos, escribe Revelación (c. 96 e. c.) [Rev. 1:9]', 'Primera carta de Juan (c. 98 e.c.) [1 Juan 1:1]', 'Segunda carta de Juan (c. 98 e.c.) [2 Juan 1:1]', 'Tercera carta de Juan (c. 98 e.c.) [3 Juan 1:1]', 'Evangelio según Juan (c. 98 e.c.) [Juan 20:31]', "Juan escribe el Evangelio llamado 'Juan' y sus cartas 1, 2 y 3 Juan", 'se completa la escritura de la Biblia (c. 98 e. c.) [Juan 21:22, 23]', 'Muere Juan, el último de los apóstoles (c. 100 e. c.) [2 Tes. 2:7]'], rel:['Pedro (3)', 'Jesús (2)', 'Andrés (1)', 'Santiago (1)'],

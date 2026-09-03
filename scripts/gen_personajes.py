@@ -152,15 +152,22 @@ P = [
  dict(nombre='Ester',           inicio=-515,  fin=-415,  seccion='S2', grupo='Después del destierro', ini_est=1, fin_est=1, nota='aprox. (tabla Después del destierro)'),
  dict(nombre='Nehemías',        inicio=-485,  fin=-385,  seccion='S2', grupo='Después del destierro', ini_est=1, fin_est=1, nota='aprox. (tabla Después del destierro)'),
  # ---- Seccion 3: Siglo primero ----
- dict(nombre='Juan el Bautista',inicio=-2,    fin=32,    seccion='S3', grupo='Siglo primero', nota='6 meses mayor que Jesús'),
+ dict(nombre='Zacarías',        inicio=-70,   fin=-2,    seccion='S3', grupo='Siglo primero', ini_est=1, nota='sacerdote, padre de Juan el Bautista; aprox. (tabla Siglo primero)'),
+ dict(nombre='Elisabet',        inicio=-70,   fin=-2,    seccion='S3', grupo='Siglo primero', ini_est=1, nota='madre de Juan el Bautista; aprox. (tabla Siglo primero)'),
+ dict(nombre='María (la madre de Jesús)', inicio=-20, fin=33, seccion='S3', grupo='Siglo primero', ini_est=1, fin_est=1, nota='aprox. (tabla Siglo primero)'),
+ dict(nombre='José',            inicio=-25,   fin=11,    seccion='S3', grupo='Siglo primero', ini_est=1, fin_est=1, nota='padre adoptivo de Jesús; aprox. (tabla Siglo primero)'),
+ dict(nombre='Juan el Bautista',inicio=-2,    fin=32,    seccion='S3', grupo='Siglo primero', fin_est=1, nota='6 meses mayor que Jesús (tabla Siglo primero)'),
  dict(nombre='Jesús',           inicio=-2,    fin=33,    seccion='S3', grupo='Siglo primero', nota='2 a.E.C.-33 E.C.'),
- dict(nombre='Pedro',           inicio=-1,    fin=64,    seccion='S3', grupo='Siglo primero', nota='apóstol, m. c. 64'),
- dict(nombre='Pablo',           inicio=1,     fin=65,    seccion='S3', grupo='Siglo primero', nota='apóstol, m. c. 65'),
- dict(nombre='Esteban',         inicio=1,     fin=33,    seccion='S3', grupo='Siglo primero', nota='mártir, aprox.'),
- dict(nombre='Marcos',          inicio=5,     fin=65,    seccion='S3', grupo='Siglo primero', nota='escritor de evangelio, aprox.'),
+ dict(nombre='Pedro',           inicio=-5,    fin=64,    seccion='S3', grupo='Siglo primero', ini_est=1, nota='apóstol, m. d. 64 (tabla Siglo primero)'),
+ dict(nombre='María Magdalena', inicio=-5,    fin=33,    seccion='S3', grupo='Siglo primero', ini_est=1, fin_est=1, nota='aprox. (tabla Siglo primero)'),
+ dict(nombre='María (la hermana de Lázaro)', inicio=-15, fin=33, seccion='S3', grupo='Siglo primero', ini_est=1, fin_est=1, nota='aprox. (tabla Siglo primero)'),
+ dict(nombre='Esteban',         inicio=-5,    fin=34,    seccion='S3', grupo='Siglo primero', ini_est=1, fin_est=1, nota='mártir; aprox. (tabla Siglo primero)'),
+ dict(nombre='Pablo',           inicio=-3,    fin=65,    seccion='S3', grupo='Siglo primero', ini_est=1, fin_est=1, nota='Saulo de Tarso; aprox. (tabla Siglo primero)'),
+ dict(nombre='Bernabé',         inicio=-5,    fin=55,    seccion='S3', grupo='Siglo primero', ini_est=1, fin_est=1, nota='aprox. (tabla Siglo primero)'),
+ dict(nombre='Marcos',          inicio=-15,   fin=65,    seccion='S3', grupo='Siglo primero', ini_est=1, fin_est=1, nota='escritor de evangelio; aprox. (tabla Siglo primero)'),
  dict(nombre='Felipe el evangelizador', inicio=1, fin=60, seccion='S3', grupo='Siglo primero', nota='aprox.'),
  dict(nombre='Timoteo',         inicio=30,    fin=97,    seccion='S3', grupo='Siglo primero', nota='compañero de Pablo, aprox.'),
- dict(nombre='Juan el apóstol', inicio=1,     fin=100,   seccion='S3', grupo='Siglo primero', nota='m. c. 100'),
+ dict(nombre='Apóstol Juan',    inicio=-5,    fin=100,   seccion='S3', grupo='Siglo primero', ini_est=1, fin_est=1, nota='aprox. (tabla Siglo primero)'),
 ]
 
 
