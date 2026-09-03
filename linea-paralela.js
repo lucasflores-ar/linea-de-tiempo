@@ -2868,9 +2868,12 @@ function render(){
 
   chartCanvas.querySelectorAll('.evt-marker, .bar-event-pin').forEach(m=>{
     const ev = D.eventos.find(e=>String(e.id)===m.dataset.ev);
-    m.addEventListener('mouseenter', e=> showEvTip(e, ev));
-    m.addEventListener('mousemove', moveTip);
-    m.addEventListener('mouseleave', hideTip);
+    /* Si ya tiene tip CSS (solo título), no abrir el popup #tooltip */
+    if(!m.querySelector('.evt-marker__tip')){
+      m.addEventListener('mouseenter', e=> showEvTip(e, ev));
+      m.addEventListener('mousemove', moveTip);
+      m.addEventListener('mouseleave', hideTip);
+    }
     m.addEventListener('click', e=> openDrawerFromClick(ev, e));
     m.addEventListener('keydown', e=>{
       if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); openDrawerFromClick(ev, e); }
