@@ -324,7 +324,7 @@ const BANDS = [
   /* ── Eventos puntuales ── */
   { id:'sam', cls:'band--sam', start:-740, end:-735, label:'Caída de Samaria', fill:'#b23a3a' },
   { id:'jer', cls:'band--jer', start:-607, end:-602, label:'Caída de Jerusalén', fill:'#cc6014' },
-  { id:'exi', cls:'band--exi', start:-607, end:-537, label:'Exilio babilónico', fill:'#8a7f70' },
+  /* Exilio babilónico absorbido por banda de época ep-bab */
 ];
 
 const POTENCIAS = [
@@ -2400,10 +2400,14 @@ function renderCompactNarrowBar(block, pe, x, w, dataAttr, ini, fin, laneColor, 
     const inset = markerNameInset(pe, x, layoutOpts.yMin, layoutOpts.yMax, layoutOpts.chartW);
     if(inset) barExtra = `--caption-shift:${inset}px;`;
   }
+  let maxCapPx = CAPTION_MAX_PX;
+  if(layoutOpts?.gapToNext != null && layoutOpts.gapToNext < CAPTION_MAX_PX + 10){
+    maxCapPx = Math.max(40, Math.floor(layoutOpts.gapToNext - 8));
+  }
   const capStyle = shortPeriod
     ? `width:${capW}px`
-    : `width:${capW}px;max-width:${CAPTION_MAX_PX}px`;
-  return `<div class="${cls.join(' ')}" style="left:${x}px;width:${lineW}px;${barExtra}" tabindex="0" role="button" aria-label="${esc(pe.n)}, ${fmtRange(ini,fin)}" ${dataAttr}${peAttr}>`+
+    : `width:${capW}px;max-width:${maxCapPx}px`;
+  return `<div class="${cls.join(' ')}" style="left:${x}px;width:${lineW}px;${barExtra}${maxCapPx < CAPTION_MAX_PX ? `--caption-max:${maxCapPx}px;` : ''}" tabindex="0" role="button" aria-label="${esc(pe.n)}, ${fmtRange(ini,fin)}" ${dataAttr}${peAttr}>`+
     `<div class="bar-caption-stack bar-caption-stack--name" style="${capStyle}">`+
     captionNameHtml(pe, '', capOpts)+
     `</div>`+
@@ -2490,7 +2494,9 @@ function renderTrackCanvas(block, track, q, yMin, yMax, chartW, layoutOpts, rowM
   let html = `<div class="row" style="width:${chartW}px;height:${trackH}px">`;
   if(vizStyle !== 'waterfall') html += `<div class="row-rail"></div>`;
 
-  for(const pe of track.people){
+  const people = track.people;
+  for(let i = 0; i < people.length; i++){
+    const pe = people[i];
     const match = !q || norm(pe.n).includes(q);
     const draw = match && (layoutOpts.compactLayout || isPeSelected(pe));
     const ini = pe.inicio, fin = pe.fin;
@@ -2500,10 +2506,18 @@ function renderTrackCanvas(block, track, q, yMin, yMax, chartW, layoutOpts, rowM
     if(w < 6 && ini === fin){ x -= 2; w = 6; }
     const dataAttr = pe.isEvent && !pe.isEventGroup ? `data-ev="${pe.ev.id}"` : '';
 
+    /* Gap to next bar on same track — used to cap caption width */
+    let gapToNext = Infinity;
+    if(layoutOpts.compactLayout && i + 1 < people.length){
+      const nextX = yearToX(people[i + 1].inicio, yMin, yMax, chartW);
+      gapToNext = nextX - x;
+    }
+    const opts = gapToNext < Infinity ? Object.assign({}, layoutOpts, { gapToNext }) : layoutOpts;
+
     if(draw){
       rowMap.set(pe.id, { pe, laneKey: block.meta.key, yCenter: yOff + trackH / 2, isEvent: !!pe.isEvent });
     }
-    html += renderPersonBar(block, pe, draw, x, w, dataAttr, ini, fin, layoutOpts);
+    html += renderPersonBar(block, pe, draw, x, w, dataAttr, ini, fin, opts);
     if(draw && layoutOpts.compactLayout){
       html += renderRowEventMarkers(pe, yMin, yMax, chartW, q);
     }
@@ -2687,6 +2701,7 @@ function render(){
   const bandEls = BANDS.filter(b=>b.end >= yMin && b.start <= yMax);
   const potBands = showPotencias ? POTENCIAS.filter(p=>selPots.has(p.id) && p.end >= yMin && p.start <= yMax) : [];
   let bandLabelSlot = 0;
+  const bandLabelShown = new Set();
 
   if(showPotencias){
     canvasHtml += `<div class="pot-strip" style="width:${chartW}px"><span class="pot-strip__label">Potencias mundiales</span>`;
@@ -2709,7 +2724,9 @@ function render(){
       const x1 = yearToX(Math.max(b.start, yMin), yMin, yMax, chartW);
       const x2 = yearToX(Math.min(b.end, yMax), yMin, yMax, chartW);
       const bw = Math.max(2, x2 - x1);
-      canvasHtml += `<div class="band ${b.cls}" style="left:${x1}px;width:${bw}px;top:0;height:${blockH}px" title="${esc(b.label)}">${bandLabelHtml(b.label, bw, bandLabelSlot++)}</div>`;
+      const showLabel = !bandLabelShown.has(b.id);
+      if(showLabel) bandLabelShown.add(b.id);
+      canvasHtml += `<div class="band ${b.cls}" style="left:${x1}px;width:${bw}px;top:0;height:${blockH}px" title="${esc(b.label)}">${showLabel ? bandLabelHtml(b.label, bw, bandLabelSlot++) : ''}</div>`;
     }
     for(const p of potBands){
       const x1 = yearToX(Math.max(p.start, yMin), yMin, yMax, chartW);
