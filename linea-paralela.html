@@ -231,6 +231,19 @@ html[data-theme="dark"] .focus-marquee{background:rgba(106,159,173,.18)}
   position:sticky; left:0;
 }
 .lane-hdr .dot{width:6px;height:6px;border-radius:50%;margin-right:8px;flex-shrink:0;opacity:.85}
+.lane-hdr--overlay{
+  position:absolute; inset:0; height:auto; width:100%; max-width:none;
+  padding:0; margin:0; border:none; overflow:visible;
+  z-index:4; pointer-events:none; background:none;
+  display:flex; align-items:center; justify-content:flex-start;
+}
+.lane-hdr--overlay .lane-hdr__text{
+  position:sticky; left:0;
+  display:block; height:auto;
+  padding:0 12px;
+  white-space:nowrap;
+  text-shadow:0 0 10px var(--bg), 0 0 18px var(--bg);
+}
 .row-label{
   height:var(--row-h); display:flex; flex-direction:row; align-items:center;
   padding:0 10px 0 8px; gap:8px;
@@ -682,6 +695,7 @@ html[data-viz="waterfall"] .row-label.row-label--tag .row-label__dates{display:n
 html[data-viz="waterfall"] .lane-hdr{
   font-weight:700;letter-spacing:.14em;color:var(--txt);border-bottom:none;height:28px;
 }
+html[data-viz="waterfall"] .lane-hdr--overlay{height:auto}
 html[data-viz="waterfall"] .row-rail,
 html[data-viz="waterfall"] .orb-stem,
 html[data-viz="waterfall"] .span-line:not(.bar-compact-narrow__line){display:none}
@@ -1325,6 +1339,6 @@ header {
 </aside>
 
 <script src="linea-tiempo-datos.js?v=14"></script>
-<script src="linea-paralela.js?v=20260903q"></script>
+<script src="linea-paralela.js?v=20260903s"></script>
 </body>
 </html>

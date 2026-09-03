@@ -2950,8 +2950,7 @@ function render(){
 
   for(const block of laneData){
     if(!block.tracks.length) continue;
-    const hdrH = blockShowsHeader(block) ? L.laneHdr : 0;
-    const blockH = hdrH + block.tracks.reduce((h, t)=> h + trackRowHeight(L, t.people.length), 0);
+    const blockH = block.tracks.reduce((h, t)=> h + trackRowHeight(L, t.people.length), 0);
     canvasHtml += `<div class="lane-block" style="min-height:${blockH}px;width:${chartW}px">`;
 
     for(const b of bandEls){
@@ -2969,8 +2968,8 @@ function render(){
     }
 
     if(blockShowsHeader(block)){
-      canvasHtml += `<div class="lane-hdr" style="width:${chartW}px">${vizStyle === 'waterfall' ? block.meta.label.toUpperCase() : block.meta.label}</div>`;
-      yOff += L.laneHdr;
+      const label = vizStyle === 'waterfall' ? block.meta.label.toUpperCase() : block.meta.label;
+      canvasHtml += `<div class="lane-hdr lane-hdr--overlay"><span class="lane-hdr__text">${esc(label)}</span></div>`;
     }
 
     for(const track of block.tracks){
@@ -3321,7 +3320,11 @@ function exportPng(){
   let yOff = L.potOffset;
   for(const block of L.laneData){
     if(!block.tracks.length) continue;
-    yOff += M.laneHdr;
+    const tracksH = block.tracks.reduce((h, t)=> h + trackRowHeight(M, t.people.length), 0);
+    if(blockShowsHeader(block)){
+      const label = wf ? block.meta.label.toUpperCase() : block.meta.label;
+      svg += `<text x="12" y="${yOff + tracksH / 2 + 4}" fill="${mut}" font-family="${wf?'Inter,Segoe UI,sans-serif':'Karla,Segoe UI,sans-serif'}" font-size="10" font-weight="700" letter-spacing="1.4">${esc(label)}</text>`;
+    }
     for(const track of block.tracks){
       const trackH = trackRowHeight(M, track.people.length);
       for(const pe of track.people){
