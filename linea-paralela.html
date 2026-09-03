@@ -341,15 +341,36 @@ html[data-theme="dark"] .focus-marquee{background:rgba(106,159,173,.18)}
   background:var(--acc);box-shadow:0 0 0 1px color-mix(in srgb,var(--txt) 35%,transparent);
   cursor:pointer;z-index:4;pointer-events:auto;
   transition:transform .12s ease, box-shadow .12s ease;
+  overflow:visible;
 }
+.axis-important::before,
+.axis-important::after{
+  content:'';position:absolute;left:50%;top:50%;
+  width:10px;height:10px;margin:-5px 0 0 -5px;
+  border-radius:50%;border:1.5px solid var(--acc);
+  pointer-events:none;
+  animation:axis-radar 2.6s ease-out infinite;
+}
+.axis-important::after{animation-delay:1.3s}
 .axis-important:hover,
 .axis-important:focus-visible{
   transform:translateX(-50%) scale(1.25);
   box-shadow:0 0 0 2px color-mix(in srgb,var(--acc) 55%,transparent);
   outline:none;
 }
+.axis-important:hover::before,
+.axis-important:hover::after,
+.axis-important:focus-visible::before,
+.axis-important:focus-visible::after{
+  animation-play-state:paused;
+}
 .axis-important--est{
   background:color-mix(in srgb,var(--acc) 70%,var(--bg));
+}
+@keyframes axis-radar{
+  0%{transform:scale(1);opacity:.55}
+  70%{opacity:.12}
+  100%{transform:scale(3.4);opacity:0}
 }
 .band{
   position:absolute;top:0;bottom:var(--axis-h);pointer-events:none;
@@ -492,8 +513,19 @@ html[data-theme="dark"] .focus-marquee{background:rgba(106,159,173,.18)}
   background:var(--txt);opacity:.35;
 }
 .axis-area{
-  position:sticky;bottom:0;height:var(--axis-h);background:var(--bg);
-  border-top:1px solid var(--line);z-index:2;
+  position:sticky;bottom:0;height:var(--axis-h);
+  background:var(--bg);
+  border-top:1px solid var(--line);
+  box-shadow:0 -8px 18px -10px color-mix(in srgb,var(--txt) 22%,transparent);
+  z-index:30;
+  overflow:visible;
+}
+.labels-col::after{
+  content:'';display:block;position:sticky;bottom:0;
+  height:var(--axis-h);margin-top:calc(var(--axis-h) * -1);
+  background:var(--bg);border-top:1px solid var(--line);
+  box-shadow:0 -8px 18px -10px color-mix(in srgb,var(--txt) 22%,transparent);
+  z-index:12;pointer-events:none;
 }
 
 #tooltip{
@@ -938,6 +970,7 @@ html[data-viz="waterfall"] #d-title{font-family:var(--font-sans)}
 .onboard-pop__dont input{accent-color:var(--acc);margin:0}
 @media(prefers-reduced-motion:reduce){
   .onboard-backdrop,.onboard-hole,.onboard-pop{transition:none!important}
+  .axis-important::before,.axis-important::after{animation:none;opacity:0}
 }
 @media(max-width:760px){
   .onboard-pop{max-width:calc(100vw - 24px)}
@@ -1375,6 +1408,6 @@ header {
 </aside>
 
 <script src="linea-tiempo-datos.js?v=14"></script>
-<script src="linea-paralela.js?v=20260903v"></script>
+<script src="linea-paralela.js?v=20260903w"></script>
 </body>
 </html>
