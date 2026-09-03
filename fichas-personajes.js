@@ -1554,18 +1554,18 @@ window.LT_FICHAS = [
     id:157, nombre:'Job', alt:'', genero:'M', tribu:'',
     profesion:'Patriarca', profesion_sub:'', profesion_2:'',
     nac:'-1670', fal:'-1473', edad:'197', era:'pat', seccion:'S1', potencia:'Egipto',
-    lugares:['Tierra de Uz'], hitos:['Job probado por Satanás (c. 1613 a. E. C.) [Job 1:8', 'Job 42:16]', 'Moisés completa el libro de Job (c. 1473 a. E. C.) [Job 42:16, 17]'], rel:['Satán (1)', 'Moisés (1)'],
-    primera:'-1650', ultima:'-1473',
+    lugares:['Tierra de Uz'], hitos:['Job probado por Satanás (c. 1613 a. E. C.) [Job 1:1-2:13; Job 42:16]', 'Moisés completa el libro de Job (c. 1473 a. E. C.) [Job 42:16, 17]'], rel:['Satán (1)', 'Moisés (1)'],
+    primera:'-1613', ultima:'-1473',
     versiculo:'Job 1:8', opinion_jehova:'Hombre íntegro, recto, temeroso de Dios y apartado del mal', opinion_ref:'Job 1:8', opinion_cita:'No hay nadie como él en la tierra. Es un hombre íntegro y recto, temeroso de Dios y apartado del mal.',
     cualidades:'Integridad; paciencia; temor de Dios', cualidades_refs:'Job 1; Job 42', defectos:'En su angustia llegó a cuestionar la actuación de Jehová', defectos_refs:'Job 38:1-2', leccion:'Jehová escucha al íntegro y corrige con amor para fortalecer la fe',
-    nq:73, nh:3, fuente:'hechos_biblicos,preguntas,curacion_manual'
+    nq:73, nh:2, fuente:'hechos_biblicos,preguntas,curacion_manual'
   },
   {
     id:158, nombre:'Satán', alt:'', genero:'M', tribu:'',
     profesion:'Adversario', profesion_sub:'', profesion_2:'',
     nac:'', fal:'', edad:'', era:'pat', seccion:'S1', potencia:'Sin potencia (anterior a Egipto)',
-    lugares:['Tierra de Uz'], hitos:['Pruebas de Job (c. 1650 a. E. C.) [Job 1:1-2:13]'], rel:['Job (1)'],
-    primera:'-1650', ultima:'-1650',
+    lugares:['Tierra de Uz'], hitos:['Job probado por Satanás (c. 1613 a. E. C.) [Job 1:1-2:13]'], rel:['Job (1)'],
+    primera:'-1613', ultima:'-1613',
     versiculo:'Job 1:12', opinion_jehova:'Acusador que puso a prueba la integridad de Job', opinion_ref:'Job 1:6-12; Job 2:4-7', opinion_cita:'',
     cualidades:'Ninguna fiel destacada en las Escrituras', cualidades_refs:'', defectos:'Acusación; provocación; engaño', defectos_refs:'Job 1-2', leccion:'Jehová limita las pruebas y vindica a los íntegros',
     nq:0, nh:1, fuente:'hechos_biblicos,curacion_manual'
