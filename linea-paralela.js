@@ -321,6 +321,8 @@ const BANDS = [
   { id:'ep-rdiv', cls:'band--ep-rdiv', start:-997,  end:-607,  label:'Reino dividido',          fill:'#96762c' },
   { id:'ep-bab',  cls:'band--ep-bab',  start:-607,  end:-537,  label:'Destierro en Babilonia',  fill:'#7a7468' },
   { id:'ep-rest', cls:'band--ep-rest', start:-537,  end:-332,  label:'Después del destierro',   fill:'#3f7686' },
+  { id:'ep-gre',  cls:'band--ep-gre',  start:-332,  end:-63,   label:'Grecia',                  fill:'#569e30' },
+  { id:'ep-rom',  cls:'band--ep-rom',  start:-63,   end:100,   label:'Roma',                    fill:'#7a4fc0' },
   /* ── Eventos puntuales ── */
   { id:'sam', cls:'band--sam', start:-740, end:-735, label:'Caída de Samaria', fill:'#b23a3a' },
   { id:'jer', cls:'band--jer', start:-607, end:-602, label:'Caída de Jerusalén', fill:'#cc6014' },
