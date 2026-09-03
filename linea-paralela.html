@@ -404,9 +404,17 @@ html[data-theme="dark"] .focus-marquee{background:rgba(106,159,173,.18)}
 .band--med{background:var(--band-med)}
 .band--gre{background:var(--band-gre)}
 .band--rom{background:var(--band-rom)}
-.pot-strip{
-  position:relative;height:var(--pot-strip);border-bottom:1px dotted var(--rail);
-  background:transparent;margin-bottom:4px;
+.loose-evt-strip{
+  position:relative;height:var(--loose-evt-h,40px);flex-shrink:0;
+  border-bottom:1px dotted var(--rail);margin-bottom:2px;
+}
+.loose-evt-strip__label{
+  position:absolute;left:8px;top:50%;transform:translateY(-50%);
+  font-size:9px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;
+  color:var(--mut);z-index:2;pointer-events:none;
+}
+.loose-evt-strip .evt-marker--loose{
+  top:50%;
 }
 .pot-strip__label{
   position:absolute;left:8px;top:50%;transform:translateY(-50%);
@@ -1420,6 +1428,6 @@ header {
 </aside>
 
 <script src="linea-tiempo-datos.js?v=14"></script>
-<script src="linea-paralela.js?v=20260903x"></script>
+<script src="linea-paralela.js?v=20260903y"></script>
 </body>
 </html>

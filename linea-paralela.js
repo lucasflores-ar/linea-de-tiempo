@@ -1569,12 +1569,12 @@ function laneFilterHasContent(f){
     return (D.ultima_semana_dias || []).some(x=>(x.eventos || []).length);
   }
   if(f.mode === 'tema'){
+    /* Filas de sucesos temáticos (no NT): solo tienen sentido con «Sucesos» activos. */
+    if(!isNtEscrituraLane(f) && !showMarkers) return false;
     const temas = [f.tema, ...(f.extraTemas || [])];
-    const active = activePersonajesForDedup('');
-    return D.eventos.some(e=>{
-      if(!temas.some(t=>(e.t||[]).includes(t)) || chartYear(e)==null || e.tipo === 'reinado') return false;
-      return !shouldOmitLooseEventRow(e, active);
-    });
+    return D.eventos.some(e=>
+      temas.some(t=>(e.t||[]).includes(t)) && chartYear(e)!=null && e.tipo !== 'reinado',
+    );
   }
   return false;
 }
@@ -1596,21 +1596,11 @@ function buildAllLaneData(opts = {}){
   groupRowSeq = 0;
   const query = opts.query ?? '';
   const out = [];
-  const orphanThemesAdded = new Set();
   for(const id of LANE_ORDER){
     const f = LANE_FILTERS.find(x=>x.id===id);
     if(!selLanes.has(id)) continue;
     if(f.mode === 'personaje'){
       out.push(...rowsForLanes([f.grupo]));
-      if(id === 'pre') out.push(...buildAntediluvianBlocks(query));
-      /* Con marcadores activos, los chips de tema se deduplican: inyectar aquí
-         los sucesos del periodo que no pertenecen a ningún personaje visible
-         (p. ej. Lamentaciones / Abdías al ver solo Destierro). */
-      const orphan = PERSONAJE_ORPHAN_THEME[id];
-      if(showMarkers && orphan && !selLanes.has(orphan.laneId) && !orphanThemesAdded.has(orphan.tema)){
-        orphanThemesAdded.add(orphan.tema);
-        out.push(...buildThemeBlocks(orphan.tema, orphan.laneId, query));
-      }
     }
     else if(f.mode === 'ministerio'){
       out.push(...buildMinisterioBlocks());
@@ -1619,7 +1609,11 @@ function buildAllLaneData(opts = {}){
       out.push(...buildUltimaSemanaBlocks());
     }
     else if(f.mode === 'tema'){
-      out.push(...buildThemeBlocks(f.tema, f.id, query, f.extraTemas));
+      /* Escritura NT: barras de periodo (libros). El resto de temas aporta
+         puntos sueltos vía collectLooseEvents según los chips activos. */
+      if(isNtEscrituraLane(f)){
+        out.push(...buildThemeBlocks(f.tema, f.id, query, f.extraTemas));
+      }
     }
   }
   return out;
@@ -1740,20 +1734,87 @@ function eventBelongsOnPersonBar(ev, pe){
   return eventSubjectMatchesPerson(ev, pe, atStart);
 }
 
-/** Omitir fila/punto suelto: el suceso irá en la barra del personaje (marcador o extremo). */
-function shouldOmitLooseEventRow(ev, activePeople){
-  if(activePeople.some(pe=> eventBelongsOnPersonBar(ev, pe))) return true;
-  /* Con «Sucesos» activos, los hechos de un personaje visible ya van como marcadores. */
-  if(showMarkers && activePeople.some(pe=> eventMatchesPerson(ev, pe))) return true;
+/** Temas de sucesos ligados a cada chip de personajes. */
+const LANE_THEME_SCOPE = {
+  pre: ['GENESIS'],
+  postd: ['GENESIS'],
+  jue: ['JUECES'],
+  uni: ['REYES'],
+  jud: ['REYES'],
+  isr: ['REYES'],
+  pro: ['PROFETAS'],
+  babil: ['EXILIO'],
+  rest: ['RESTAURACION'],
+  sig: ['SIGLO-PRIMERO', 'HECHOS'],
+};
+const LOOSE_EVT_STRIP_H = 40;
+
+function themesInChipScope(){
+  const temas = new Set();
+  for(const id of selLanes){
+    const f = LANE_FILTERS.find(x=>x.id===id);
+    if(!f) continue;
+    if(f.mode === 'tema'){
+      temas.add(f.tema);
+      (f.extraTemas || []).forEach(t=> temas.add(t));
+    } else if(f.mode === 'personaje'){
+      (LANE_THEME_SCOPE[id] || []).forEach(t=> temas.add(t));
+    }
+  }
+  return temas;
+}
+
+function eventInAntediluvianScope(ev){
+  if(!selLanes.has('pre') || !ev) return false;
+  if(ev.jw === 'ANT') return true;
+  const lineas = D.antediluviano_lineas || [];
+  for(const linea of lineas){
+    if((linea.eventos || []).includes(ev.id)) return true;
+  }
   return false;
 }
 
-/** Tema de sucesos asociado a una fila de personajes (para no perder hechos huérfanos). */
-const PERSONAJE_ORPHAN_THEME = {
-  pro: { tema: 'PROFETAS', laneId: 'tpro' },
-  babil: { tema: 'EXILIO', laneId: 'exi' },
-  rest: { tema: 'RESTAURACION', laneId: 'tres' },
-};
+function eventInChipScope(ev){
+  if(!ev || ev.tipo === 'reinado' || chartYear(ev) == null) return false;
+  if(eventInAntediluvianScope(ev)) return true;
+  const temas = themesInChipScope();
+  if(!temas.size) return false;
+  return (ev.t || []).some(t=> temas.has(t));
+}
+
+/** Sucesos del alcance actual que no van en la barra de ningún personaje visible. */
+function collectLooseEvents(activePeople, yMin, yMax, query){
+  const nq = norm(query || '');
+  const people = activePeople || [];
+  return D.eventos.filter(ev=>{
+    if(!eventInChipScope(ev)) return false;
+    const y = chartYear(ev) ?? ev.fa;
+    if(y == null || y < yMin || y > yMax) return false;
+    if(nq && !norm(ev.n).includes(nq) && !norm(ev.ref || '').includes(nq)) return false;
+    if(people.some(pe=> eventMatchesPerson(ev, pe))) return false;
+    return true;
+  }).sort((a, b)=> (chartYear(a) - chartYear(b)) || a.n.localeCompare(b.n, 'es'));
+}
+
+function renderLooseEventStrip(events, yMin, yMax, chartW){
+  if(!events.length) return '';
+  let html = `<div class="loose-evt-strip" style="width:${chartW}px;height:${LOOSE_EVT_STRIP_H}px" aria-label="Sucesos sin personaje en vista">`;
+  html += `<span class="loose-evt-strip__label">Sucesos</span>`;
+  for(const ev of events){
+    const y = chartYear(ev) ?? ev.fa;
+    const x = yearToX(y, yMin, yMax, chartW);
+    const mkColor = markerColorFor(ev);
+    const tipoCls = 'evt-marker--' + markerTipoKey(ev.tipo);
+    html += `<button type="button" class="evt-marker evt-marker--loose evt-marker--in-row ${tipoCls}" style="left:${x}px;--mk-color:${mkColor}" data-ev="${ev.id}" aria-label="${esc(ev.n)}">`+
+      `<span class="evt-marker__tip">${esc(ev.n)}</span></button>`;
+  }
+  return html + `</div>`;
+}
+
+/** Omitir de filas NT/libros: solo nacimientos/muertes ya cubiertos por la barra. */
+function shouldOmitLooseEventRow(ev, activePeople){
+  return activePeople.some(pe=> eventBelongsOnPersonBar(ev, pe));
+}
 
 function personajeFieldMatches(pe, qPerRaw){
   const peParts = peNormParts(pe);
@@ -1794,11 +1855,14 @@ function questionsForPerson(pe, evs){
 
 function eventsForPerson(pe, yMin, yMax){
   if(pe.isEvent) return [];
+  const scoped = themesInChipScope().size > 0 || selLanes.has('pre');
   return D.eventos.filter(ev=>{
     if(ev.tipo === 'reinado') return false;
     const fa = ev.fa;
     if(fa == null || fa < yMin || fa > yMax) return false;
-    return eventMatchesPerson(ev, pe);
+    if(!eventMatchesPerson(ev, pe)) return false;
+    if(scoped && !eventInChipScope(ev)) return false;
+    return true;
   });
 }
 
@@ -2946,8 +3010,10 @@ function render(){
   const q = norm(query);
   const potOffset = showPotencias ? L.potStrip : 0;
   const topOffset = L.phaseH + potOffset;
+  const hasPeople = rawLaneData.some(b=>b.people.length);
+  const hasScopedEvents = showMarkers && D.eventos.some(eventInChipScope);
 
-  if(!rawLaneData.some(b=>b.people.length) && !hiddenList.length){
+  if(!hasPeople && !hiddenList.length && !hasScopedEvents){
     labelsCol.innerHTML = '';
     const emptyMsg = !selLanes.size
       ? 'Ninguna fila activa. Marcá una o más filas arriba para ver la cronología.'
@@ -2960,7 +3026,21 @@ function render(){
     return;
   }
 
-  let [dataMin, dataMax] = computeRangeFromLaneData(laneDataForBounds(rawLaneData));
+  let [dataMin, dataMax] = hasPeople
+    ? computeRangeFromLaneData(laneDataForBounds(rawLaneData))
+    : [Infinity, -Infinity];
+  if(showMarkers){
+    for(const ev of D.eventos){
+      if(!eventInChipScope(ev)) continue;
+      const y = chartYear(ev);
+      if(y == null) continue;
+      if(y < dataMin) dataMin = y;
+      if(y > dataMax) dataMax = y;
+    }
+  }
+  if(!Number.isFinite(dataMin) || !Number.isFinite(dataMax)){
+    dataMin = -607; dataMax = -400;
+  }
   if(dataMin > dataMax) [dataMin, dataMax] = [dataMax, dataMin];
   if(viewWindow){
     if(viewWindow.min >= dataMax || viewWindow.max <= dataMin){
@@ -2989,7 +3069,18 @@ function render(){
   updateFocusUi(dataMin, dataMax);
   const chartLayout = { yMin, yMax, chartW };
   const laneData = enrichLaneData(rawLaneData, query, chartLayout);
-  if(!laneData.some(b=>b.tracks.length) && !hiddenList.length){
+  const activePeople = [];
+  for(const block of laneData){
+    for(const track of block.tracks){
+      for(const pe of track.people){
+        if(!pe.isEvent) activePeople.push(pe);
+      }
+    }
+  }
+  const looseEvents = showMarkers
+    ? collectLooseEvents(activePeople, yMin, yMax, query)
+    : [];
+  if(!laneData.some(b=>b.tracks.length) && !hiddenList.length && !looseEvents.length){
     labelsCol.innerHTML = '';
     const emptyMsg = !selLanes.size
       ? 'Ninguna fila activa. Marcá una o más filas arriba para ver la cronología.'
@@ -3009,13 +3100,25 @@ function render(){
     yMax,
     chartW,
   };
-  const focusRange = computeRangeFromLaneData(laneData);
+  const focusRange = laneData.some(b=>b.tracks?.length)
+    ? computeRangeFromLaneData(laneData)
+    : [dataMin, dataMax];
+  if(looseEvents.length){
+    const ys = looseEvents.map(ev=> chartYear(ev)).filter(Number.isFinite);
+    if(ys.length){
+      focusRange[0] = Math.min(focusRange[0], ...ys);
+      focusRange[1] = Math.max(focusRange[1], ...ys);
+    }
+  }
 
   const rowMap = new Map();
   let labelsHtml = showPotencias
     ? `<div class="lane-hdr" style="height:${L.potStrip}px;opacity:.7"><span class="dot" style="background:var(--acc)"></span>Imperios</div>`
     : '';
   if(L.phaseH) labelsHtml += `<div class="lane-hdr" style="height:${L.phaseH}px;opacity:0;border:none"></div>`;
+  if(looseEvents.length){
+    labelsHtml += `<div class="lane-hdr" style="height:${LOOSE_EVT_STRIP_H}px;opacity:.8"><span class="dot" style="background:var(--acc)"></span>Sucesos</div>`;
+  }
   let totalRows = 0, visibleRows = 0, selectedRows = 0, totalTracks = 0;
 
   for(const block of laneData){
@@ -3058,6 +3161,33 @@ function render(){
       canvasHtml += `<div class="band ${p.cls}" style="left:${x1}px;width:${bw}px;top:0;height:${L.potStrip}px">${potBandLabel(p, bw)}</div>`;
     }
     canvasHtml += `</div>`;
+  }
+
+  const hasLaneTracks = laneData.some(b=>b.tracks.length);
+  if(looseEvents.length){
+    const stripH = LOOSE_EVT_STRIP_H;
+    if(!hasLaneTracks){
+      canvasHtml += `<div class="lane-block" style="min-height:${stripH}px;width:${chartW}px">`;
+      for(const b of bandEls){
+        const x1 = yearToX(Math.max(b.start, yMin), yMin, yMax, chartW);
+        const x2 = yearToX(Math.min(b.end, yMax), yMin, yMax, chartW);
+        const bw = Math.max(2, x2 - x1);
+        const showLabel = !bandLabelShown.has(b.id);
+        if(showLabel) bandLabelShown.add(b.id);
+        canvasHtml += `<div class="band ${b.cls}" style="${bandInlineStyle(b, x1, bw, stripH)}" title="${esc(b.label)}">${showLabel ? bandLabelHtml(b.label, bw, bandLabelSlot++) : ''}</div>`;
+      }
+      for(const p of potBands){
+        const x1 = yearToX(Math.max(p.start, yMin), yMin, yMax, chartW);
+        const x2 = yearToX(Math.min(p.end, yMax), yMin, yMax, chartW);
+        canvasHtml += `<div class="band ${p.cls}" style="left:${x1}px;width:${Math.max(2,x2-x1)}px;top:0;height:${stripH}px;opacity:.55"></div>`;
+      }
+      canvasHtml += renderLooseEventStrip(looseEvents, yMin, yMax, chartW);
+      canvasHtml += `</div>`;
+      yOff += stripH + L.laneGap;
+    } else {
+      canvasHtml += renderLooseEventStrip(looseEvents, yMin, yMax, chartW);
+      yOff += stripH;
+    }
   }
 
   for(const block of laneData){
