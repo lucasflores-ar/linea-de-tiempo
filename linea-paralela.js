@@ -1735,18 +1735,31 @@ function eventBelongsOnPersonBar(ev, pe){
   return eventSubjectMatchesPerson(ev, pe, atStart);
 }
 
-/** Temas de sucesos ligados a cada chip de época/personajes. */
+/** Temas de sucesos ligados a cada chip de época/personajes (sin solapes amplios). */
 const LANE_THEME_SCOPE = {
   pre: ['GENESIS', 'AT-PENTATEUCO'],
-  postd: ['GENESIS', 'EXODO', 'CONQUISTA', 'AT-PENTATEUCO', 'AT-HISTORICOS'],
+  postd: ['GENESIS', 'EXODO', 'AT-PENTATEUCO'],
   jue: ['JUECES', 'CONQUISTA', 'AT-HISTORICOS'],
   uni: ['REYES', 'AT-HISTORICOS', 'AT-POETICOS'],
   jud: ['REYES', 'AT-HISTORICOS', 'AT-POETICOS'],
   isr: ['REYES', 'AT-HISTORICOS'],
   pro: ['PROFETAS', 'AT-PROF-MAYORES', 'AT-PROF-MENORES'],
   babil: ['EXILIO'],
-  rest: ['RESTAURACION', 'OTROS'],
-  sig: ['SIGLO-PRIMERO', 'HECHOS', 'OTROS'],
+  rest: ['RESTAURACION'],
+  sig: ['SIGLO-PRIMERO', 'HECHOS'],
+};
+/** Ventana cronológica por chip (alineada a BANDS; límites exclusivos en las juntas). */
+const LANE_YEAR_SCOPE = {
+  pre:   { min: -5000, max: -2370 },
+  postd: { min: -2369, max: -1474 },
+  jue:   { min: -1473, max: -1117 },
+  uni:   { min: -1117, max: -997 },
+  jud:   { min: -997,  max: -607 },
+  isr:   { min: -997,  max: -740 },
+  pro:   { min: -1117, max: 70 },
+  babil: { min: -620,  max: -537 },
+  rest:  { min: -537,  max: -3 },
+  sig:   { min: -3,    max: 100 },
 };
 const LOOSE_EVT_TITLE_CHARS = 30;
 const LOOSE_EVT_GAP_PX = 92;
@@ -1770,22 +1783,45 @@ function themesInChipScope(){
   return temas;
 }
 
-function eventInAntediluvianScope(ev){
-  if(!selLanes.has('pre') || !ev) return false;
+function yearInLaneScope(y, laneId){
+  const r = LANE_YEAR_SCOPE[laneId];
+  if(!r || !Number.isFinite(y)) return false;
+  return y >= r.min && y <= r.max;
+}
+
+function eventIsAntediluvian(ev){
+  if(!ev) return false;
   if(ev.jw === 'ANT') return true;
   const lineas = D.antediluviano_lineas || [];
-  for(const linea of lineas){
-    if((linea.eventos || []).includes(ev.id)) return true;
+  return lineas.some(linea=> (linea.eventos || []).includes(ev.id));
+}
+
+/** ¿El suceso pertenece a este chip de época (tema + ventana de años)? */
+function eventMatchesPersonajeLane(ev, laneId){
+  const y = chartYear(ev) ?? ev.fa;
+  if(y == null) return false;
+  if(laneId === 'pre'){
+    if(eventIsAntediluvian(ev)) return true;
   }
-  return false;
+  if(!yearInLaneScope(y, laneId)) return false;
+  const themes = LANE_THEME_SCOPE[laneId] || [];
+  if(!themes.length) return false;
+  return (ev.t || []).some(t=> themes.includes(t));
 }
 
 function eventInChipScope(ev){
   if(!ev || ev.tipo === 'reinado' || chartYear(ev) == null) return false;
-  if(eventInAntediluvianScope(ev)) return true;
-  const temas = themesInChipScope();
-  if(!temas.size) return false;
-  return (ev.t || []).some(t=> temas.has(t));
+  for(const id of selLanes){
+    const f = LANE_FILTERS.find(x=>x.id===id);
+    if(!f) continue;
+    if(f.mode === 'tema'){
+      const temas = [f.tema, ...(f.extraTemas || [])];
+      if((ev.t || []).some(t=> temas.includes(t))) return true;
+    } else if(f.mode === 'personaje'){
+      if(eventMatchesPersonajeLane(ev, id)) return true;
+    }
+  }
+  return false;
 }
 
 /** Sucesos del alcance actual que no van en la barra de ningún personaje visible. */
