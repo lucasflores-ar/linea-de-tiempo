@@ -1785,7 +1785,9 @@ function eventsForPersonDrawer(pe){
 }
 
 function scrollToYear(year, yMin, yMax, chartW){
+  if(!Number.isFinite(year) || !Number.isFinite(yMin) || !Number.isFinite(yMax) || !Number.isFinite(chartW)) return;
   const x = yearToX(year, yMin, yMax, chartW);
+  if(!Number.isFinite(x)) return;
   chartScroll.scrollLeft = Math.max(0, x - chartScroll.clientWidth * 0.38);
 }
 
@@ -1806,7 +1808,7 @@ function representativeYearForLane(id){
   const f = LANE_FILTERS.find(x=>x.id===id);
   if(!f) return null;
   if(f.mode === 'personaje'){
-    const people = D.personajes.filter(p=>p.grupo === f.grupo && p.inicio != null);
+    const people = D.personajes.filter(p=>p.grupo === f.grupo && Number.isFinite(p.inicio));
     if(people.length){
       return people.reduce((sum, p)=> sum + p.inicio, 0) / people.length;
     }
@@ -1841,6 +1843,60 @@ function syncLaneFilterUi(){
   });
 }
 
+function laneContentSpan(id){
+  const f = LANE_FILTERS.find(x=>x.id===id);
+  if(!f) return null;
+  const years = [];
+  if(f.mode === 'personaje'){
+    for(const p of D.personajes){
+      if(p.grupo !== f.grupo) continue;
+      if(Number.isFinite(p.inicio)) years.push(p.inicio);
+      if(Number.isFinite(p.fin)) years.push(p.fin);
+    }
+  } else if(f.mode === 'ministerio'){
+    years.push(29, 33);
+  } else if(f.mode === 'ultima_semana'){
+    years.push(33, 33.8);
+  } else if(f.mode === 'tema'){
+    const temas = [f.tema, ...(f.extraTemas || [])];
+    for(const e of D.eventos){
+      if(!temas.some(t=>(e.t || []).includes(t))) continue;
+      const y = chartYear(e);
+      if(Number.isFinite(y)) years.push(y);
+    }
+  }
+  if(!years.length){
+    const y = representativeYearForLane(id);
+    if(!Number.isFinite(y)) return null;
+    return { min: y - 40, max: y + 40 };
+  }
+  let min = Math.min(...years);
+  let max = Math.max(...years);
+  if(max - min < 15){
+    const c = (min + max) / 2;
+    min = c - 12;
+    max = c + 12;
+  } else {
+    const pad = (max - min) * 0.12;
+    min -= pad;
+    max += pad;
+  }
+  return { min, max };
+}
+
+function laneNeedsFocus(id){
+  const span = laneContentSpan(id);
+  if(!span) return false;
+  const mid = (span.min + span.max) / 2;
+  if(!lastLayout) return true;
+  const { yMin, yMax } = lastLayout;
+  if(!Number.isFinite(yMin) || !Number.isFinite(yMax)) return true;
+  if(mid < yMin || mid > yMax) return true;
+  const viewSpan = yMax - yMin;
+  const laneSpan = span.max - span.min;
+  return viewSpan > Math.max(80, laneSpan * 8);
+}
+
 function applyLaneChipChange(id, checked){
   if(checked){
     if(id === EXCLUSIVE_LANE_ID){
@@ -1861,19 +1917,46 @@ function applyLaneChipChange(id, checked){
   normalizeExclusiveLanes();
   try{ localStorage.setItem('lt-par-lanes', JSON.stringify([...selLanes])); }catch(e){}
   syncHash();
-  render._scrolled = false;
   syncLaneFilterUi();
-  safeRender();
+  if(checked && laneNeedsFocus(id)){
+    const span = laneContentSpan(id);
+    if(span){
+      autoFit = false;
+      try{ localStorage.setItem('lt-par-autofit', '0'); }catch(e){}
+      if(fitBtn){
+        fitBtn.classList.remove('on');
+        fitBtn.setAttribute('aria-pressed', 'false');
+      }
+      const raw = buildAllLaneData({ query });
+      const bounds = computeRangeFromLaneData(laneDataForBounds(raw));
+      applyFocusZoom(span.min, span.max, bounds[0], bounds[1]);
+      return;
+    }
+  }
+  render._scrolled = false;
+  scheduleRender();
 }
 
 let laneFiltersBound = false;
+let laneChipLock = false;
 function bindLaneFilterEvents(){
   if(laneFiltersBound || !laneFiltersEl) return;
   laneFiltersBound = true;
   laneFiltersEl.addEventListener('change', e=>{
     const input = e.target.closest('input[type="checkbox"][data-id]');
     if(!input || !laneFiltersEl.contains(input)) return;
-    applyLaneChipChange(input.dataset.id, input.checked);
+    if(laneChipLock){
+      e.preventDefault();
+      syncLaneFilterUi();
+      return;
+    }
+    laneChipLock = true;
+    try{
+      applyLaneChipChange(input.dataset.id, input.checked);
+    } finally {
+      if(typeof input.blur === 'function') input.blur();
+      setTimeout(()=>{ laneChipLock = false; }, 320);
+    }
   });
 }
 
