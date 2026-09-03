@@ -2827,7 +2827,7 @@ function render(){
     const y = chartYear(ev) ?? ev.fa;
     const x = yearToX(y, yMin, yMax, chartW);
     const est = (ev.fest || ev.ini_est || ev.fin_est) ? ' axis-important--est' : '';
-    axisLabels += `<button type="button" class="axis-important${est}" style="left:${x}px" data-ev="${ev.id}" aria-label="${esc(ev.n)}" title="${esc(ev.n)}"></button>`;
+    axisLabels += `<button type="button" class="axis-important${est}" style="left:${x}px" data-ev="${ev.id}" aria-label="${esc(ev.n)}"></button>`;
   }
 
   const connSvg = buildConnections(rowMap, yMin, yMax, chartW, totalH);
