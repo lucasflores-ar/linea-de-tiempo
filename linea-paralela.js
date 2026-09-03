@@ -340,6 +340,31 @@ const POTENCIAS = [
   { id:'ROMA', label:'Roma', icon:'🦅', cls:'band--rom', fill:'#7a4fc0', start:-63, end:100 },
 ];
 
+/**
+ * Sucesos importantes (láminas JW / tablas curadas) — puntos en el eje inferior.
+ * Incluye potencias mundiales + hitos históricos destacados.
+ */
+const IMPORTANT_MILESTONE_IDS = new Set([
+  62,   // 1027 — Se completa el templo en Jerusalén
+  65,   // 997 — División del reino
+  74,   // 740 — Asiria subyuga a Israel / Samaria
+  77,   // 607 — Jerusalén destruida
+  85,   // 537 — Decreto de Ciro / liberación
+  86,   // 515 — Zorobabel completa el segundo templo
+  88,   // 455 — Nehemías reedifica los muros
+  134,  // 33 — Pentecostés
+  140,  // 36 — Primeros gentiles (Cornelio)
+  153,  // 70 — Romanos destruyen Jerusalén
+  377,  // 41 — Mateo escribe el primer Evangelio
+  380,  // 98 — Se completa la escritura de la Biblia
+]);
+
+function isImportantEvent(ev){
+  if(!ev) return false;
+  if(/^POTENCIA MUNDIAL:/i.test(ev.n || '')) return true;
+  return IMPORTANT_MILESTONE_IDS.has(ev.id);
+}
+
 const BAR_COLORS = {
   jud:'#96762c', isr:'#9e4a4a', pro:'#6b5b8a', jue:'#b5561c', uni:'#4a7a55',
   pre:'#6b5b8a', postd:'#4a7a55', babil:'#7a7468', rest:'#3f7686', sig:'#3d6b7a',
@@ -2792,6 +2817,19 @@ function render(){
     tickN++;
   }
 
+  /* Sucesos importantes en el eje inferior (punto 2× el de los años) */
+  const importantAxis = D.eventos.filter(e=>{
+    if(!isImportantEvent(e)) return false;
+    const y = chartYear(e) ?? e.fa;
+    return y != null && y >= yMin && y <= yMax;
+  });
+  for(const ev of importantAxis){
+    const y = chartYear(ev) ?? ev.fa;
+    const x = yearToX(y, yMin, yMax, chartW);
+    const est = (ev.fest || ev.ini_est || ev.fin_est) ? ' axis-important--est' : '';
+    axisLabels += `<button type="button" class="axis-important${est}" style="left:${x}px" data-ev="${ev.id}" aria-label="${esc(ev.n)}" title="${esc(ev.n)}"></button>`;
+  }
+
   const connSvg = buildConnections(rowMap, yMin, yMax, chartW, totalH);
   chartCanvas.style.width = chartW + 'px';
   chartCanvas.style.height = totalH + 'px';
@@ -2834,6 +2872,22 @@ function render(){
     m.addEventListener('mousemove', moveTip);
     m.addEventListener('mouseleave', hideTip);
     m.addEventListener('click', e=> openDrawerFromClick(ev, e));
+    m.addEventListener('keydown', e=>{
+      if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); openDrawerFromClick(ev, e); }
+    });
+  });
+
+  axisArea.querySelectorAll('.axis-important').forEach(m=>{
+    const ev = D.eventos.find(e=>String(e.id)===m.dataset.ev);
+    if(!ev) return;
+    m.addEventListener('mouseenter', e=> showEvTip(e, ev));
+    m.addEventListener('mousemove', moveTip);
+    m.addEventListener('mouseleave', hideTip);
+    m.addEventListener('click', e=>{
+      e.preventDefault();
+      e.stopPropagation();
+      openDrawerFromClick(ev, e);
+    });
     m.addEventListener('keydown', e=>{
       if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); openDrawerFromClick(ev, e); }
     });

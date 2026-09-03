@@ -270,6 +270,24 @@ html[data-theme="dark"] .focus-marquee{background:rgba(106,159,173,.18)}
   content:'';position:absolute;left:50%;top:-11px;transform:translateX(-50%);
   width:5px;height:5px;border-radius:50%;background:var(--txt);opacity:.55;
 }
+/* Sucesos importantes en el eje: 2× el punto de año (5px → 10px) */
+.axis-important{
+  position:absolute;bottom:24px;transform:translateX(-50%);
+  width:10px;height:10px;padding:0;margin:0;
+  border-radius:50%;border:2px solid var(--bg);
+  background:var(--acc);box-shadow:0 0 0 1px color-mix(in srgb,var(--txt) 35%,transparent);
+  cursor:pointer;z-index:4;pointer-events:auto;
+  transition:transform .12s ease, box-shadow .12s ease;
+}
+.axis-important:hover,
+.axis-important:focus-visible{
+  transform:translateX(-50%) scale(1.25);
+  box-shadow:0 0 0 2px color-mix(in srgb,var(--acc) 55%,transparent);
+  outline:none;
+}
+.axis-important--est{
+  background:color-mix(in srgb,var(--acc) 70%,var(--bg));
+}
 .band{
   position:absolute;top:0;bottom:var(--axis-h);pointer-events:none;
 }
@@ -1251,6 +1269,6 @@ header {
 
 <script src="linea-tiempo-datos.js?v=12"></script>
 <script src="fichas-personajes.js"></script>
-<script src="linea-paralela.js?v=20260903j"></script>
+<script src="linea-paralela.js?v=20260903k"></script>
 </body>
 </html>
