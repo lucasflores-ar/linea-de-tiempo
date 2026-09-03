@@ -3622,7 +3622,7 @@ function exportPng(){
 
 let drag = false, sx = 0, sl = 0, dragPtr = null;
 function isChartPanBlocker(t){
-  return !!(t && t.closest && t.closest('.bar,.evt-marker,.bar-event-pin,.axis-important,.pe-pick,button,a,input,select,textarea,.loose-evt-item__name'));
+  return !!(t && t.closest && t.closest('.bar,.evt-marker,.bar-event-pin,.axis-important,.pe-pick,button,a,input,select,textarea'));
 }
 function endChartPan(){
   if(drag && dragPtr != null){
