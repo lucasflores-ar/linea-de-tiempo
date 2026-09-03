@@ -374,10 +374,12 @@ function markerNameInset(pe, barX, yMin, yMax, chartW){
   const nameW = textWidth(pe.n, nameFont);
   const half = 9;
   const gap = 5;
+  const maxInset = CAPTION_MAX_PX;
   let inset = 0;
   for(const ev of eventsForPerson(pe, yMin, yMax)){
     const mx = yearToX(chartYear(ev) ?? ev.fa, yMin, yMax, chartW);
     const rel = mx - barX;
+    if(rel > maxInset) continue;
     const mLeft = rel - half;
     const mRight = rel + half;
     if(mRight <= 0) continue;
@@ -385,7 +387,7 @@ function markerNameInset(pe, barX, yMin, yMax, chartW){
       inset = Math.max(inset, Math.ceil(mRight + gap));
     }
   }
-  return inset;
+  return Math.min(inset, maxInset);
 }
 
 function renderRowEventMarkers(pe, yMin, yMax, chartW, q){
