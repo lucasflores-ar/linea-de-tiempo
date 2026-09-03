@@ -34,7 +34,7 @@ const byId={};
 ['labels-col','chart-scroll','chart-canvas','axis-area','lane-filters','search','result-count','theme-btn',
  'zoom','zoom-val','opt-markers','opt-connections','opt-potencias','pot-chips','export-btn','fit-btn',
  'focus-reset-btn','focus-rect-btn','focus-val','focus-marquee','font-scale',
- 'viz-style','row-layout','hidden-dock'].forEach(id=>{
+ 'viz-style','row-layout','hidden-dock','minimap','minimap-canvas'].forEach(id=>{
   const el = makeEl('div');
   if(id.startsWith('opt-')){ el.checked = true; el.type = 'checkbox'; }
   if(id==='zoom'){ el.value = '2.4'; el.type = 'range'; }
@@ -51,7 +51,7 @@ byId['chart-scroll'].classList = { toggle(){}, add(){}, remove(){} };
 const ctx={
   document:{
     getElementById(id){ return byId[id]||makeEl('div'); },
-    documentElement:{ _t:'dark', style:{ setProperty(){} }, setAttribute(k,v){this._t=v;}, getAttribute(k){return this._t;} },
+    documentElement:{ _t:'dark', style:{ setProperty(){} }, setAttribute(k,v){this._t=v;}, getAttribute(k){return this._t;}, removeAttribute(){ this._t=''; } },
     querySelector(){ return makeEl('div'); },
     querySelectorAll(){ return []; },
     createElement(tag){
@@ -76,6 +76,7 @@ const ctx={
     },
     setItem(){},
   },
+  matchMedia(q){ return { matches: false, addEventListener(){}, media: q }; },
   URLSearchParams: global.URLSearchParams,
   Image: class{ set src(v){ if(this.onload) setTimeout(()=>this.onload(),0); } },
   URL: global.URL,
@@ -126,7 +127,7 @@ const byIdNt = {};
 ['labels-col','chart-scroll','chart-canvas','axis-area','lane-filters','search','result-count','theme-btn',
  'zoom','zoom-val','opt-markers','opt-connections','opt-potencias','pot-chips','export-btn','fit-btn',
  'focus-reset-btn','focus-rect-btn','focus-val','focus-marquee','font-scale',
- 'viz-style','row-layout','hidden-dock'].forEach(id=>{
+ 'viz-style','row-layout','hidden-dock','minimap','minimap-canvas'].forEach(id=>{
   const el = makeEl('div');
   if(id.startsWith('opt-')){ el.checked = true; el.type = 'checkbox'; }
   if(id==='zoom'){ el.value = '2.4'; el.type = 'range'; }
@@ -142,7 +143,7 @@ byIdNt['chart-scroll'].classList = { toggle(){}, add(){}, remove(){} };
 const ctxNt={
   document:{
     getElementById(id){ return byIdNt[id]||makeEl('div'); },
-    documentElement:{ _t:'dark', style:{ setProperty(){} }, setAttribute(k,v){this._t=v;}, getAttribute(k){return this._t;} },
+    documentElement:{ _t:'dark', style:{ setProperty(){} }, setAttribute(k,v){this._t=v;}, getAttribute(k){return this._t;}, removeAttribute(){ this._t=''; } },
     querySelector(){ return makeEl('div'); },
     querySelectorAll(){ return []; },
     createElement(tag){
@@ -195,7 +196,7 @@ const byIdNtCompact = {};
 ['labels-col','chart-scroll','chart-canvas','axis-area','lane-filters','search','result-count','theme-btn',
  'zoom','zoom-val','opt-markers','opt-connections','opt-potencias','pot-chips','export-btn','fit-btn',
  'focus-reset-btn','focus-rect-btn','focus-val','focus-marquee','font-scale',
- 'viz-style','row-layout','hidden-dock'].forEach(id=>{
+ 'viz-style','row-layout','hidden-dock','minimap','minimap-canvas'].forEach(id=>{
   const el = makeEl('div');
   if(id.startsWith('opt-')){ el.checked = true; el.type = 'checkbox'; }
   if(id==='zoom'){ el.value = '2.4'; el.type = 'range'; }
@@ -211,7 +212,7 @@ byIdNtCompact['chart-scroll'].classList = { toggle(){}, add(){}, remove(){} };
 const ctxNtCompact={
   document:{
     getElementById(id){ return byIdNtCompact[id]||makeEl('div'); },
-    documentElement:{ _t:'dark', style:{ setProperty(){} }, setAttribute(k,v){this._t=v;}, getAttribute(k){return this._t;} },
+    documentElement:{ _t:'dark', style:{ setProperty(){} }, setAttribute(k,v){this._t=v;}, getAttribute(k){return this._t;}, removeAttribute(){ this._t=''; } },
     querySelector(){ return makeEl('div'); },
     querySelectorAll(){ return []; },
     createElement(tag){
@@ -260,7 +261,7 @@ const byIdPre = {};
 ['labels-col','chart-scroll','chart-canvas','axis-area','lane-filters','search','result-count',
  'zoom','zoom-val','opt-markers','opt-connections','opt-potencias','pot-chips','export-btn','fit-btn',
  'focus-reset-btn','focus-rect-btn','focus-val','focus-marquee','font-scale',
- 'viz-style','row-layout','hidden-dock'].forEach(id=>{
+ 'viz-style','row-layout','hidden-dock','minimap','minimap-canvas'].forEach(id=>{
   const el = makeEl('div');
   if(id.startsWith('opt-')){ el.checked = true; el.type = 'checkbox'; }
   if(id==='zoom'){ el.value = '2.4'; el.type = 'range'; }
@@ -276,7 +277,7 @@ byIdPre['lane-filters'].parentElement = { classList: { contains(c){ return c ===
 const ctxPre={
   document:{
     getElementById(id){ return byIdPre[id]||makeEl('div'); },
-    documentElement:{ style:{ setProperty(){} }, setAttribute(){}, getAttribute(){ return null; } },
+    documentElement:{ style:{ setProperty(){} }, setAttribute(){}, getAttribute(){ return null; }, removeAttribute(){} },
     querySelector(){ return makeEl('div'); },
     querySelectorAll(){ return []; },
     createElement(tag){

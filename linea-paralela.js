@@ -29,6 +29,27 @@ function ensureDetailLoaded(){
   }
   return detailPromise;
 }
+
+let fichasPromise = null;
+function ensureFichasLoaded(){
+  if(typeof window !== 'undefined' && window.LT_FICHAS && window.LT_FICHAS.length){
+    return Promise.resolve();
+  }
+  if(fichasPromise) return fichasPromise;
+  fichasPromise = new Promise(resolve=>{
+    if(typeof document === 'undefined' || !document.createElement){ resolve(); return; }
+    const s = document.createElement('script');
+    s.src = 'fichas-personajes.js';
+    s.async = true;
+    s.onload = ()=> resolve();
+    s.onerror = ()=>{
+      console.warn('[linea-paralela] No se pudieron cargar las fichas de personajes');
+      resolve();
+    };
+    (document.head || document.body || document.documentElement).appendChild(s);
+  });
+  return fichasPromise;
+}
 let pxPerYear = parseFloat(localStorage.getItem('lt-par-zoom')) || 2.4;
 const PREFS_INIT_KEY = 'lt-par-init-v';
 const PREFS_INIT_VERSION = '2';
@@ -331,13 +352,24 @@ const BANDS = [
   { id:'jer', cls:'band--jer', start:-607, end:-602, label:'Caída de Jerusalén', fill:'#cc6014' },
 ];
 
+function uiIco(inner){
+  return `<svg class="ui-ico" viewBox="0 0 24 24" aria-hidden="true">${inner}</svg>`;
+}
+const POT_ICO = {
+  EGIPTO: uiIco('<polygon points="12 3 21 20 3 20"/>'),
+  ASIRIA: uiIco('<path d="M5 17c.5-4 3.2-7 7-7s6.5 3 7 7"/><path d="M8 11 5 6"/><path d="M16 11l3-5"/><circle cx="9.5" cy="15" r=".8" fill="currentColor" stroke="none"/><circle cx="14.5" cy="15" r=".8" fill="currentColor" stroke="none"/>'),
+  BABILONIA: uiIco('<path d="M4 19 8 9l4 4 4-6 4 12z"/><path d="M8 10V6l3 2"/>'),
+  MEDOPERSIA: uiIco('<ellipse cx="12" cy="14" rx="7" ry="5"/><path d="M8 10 6 6"/><path d="M16 10l2-4"/>'),
+  GRECIA: uiIco('<path d="M5 17c1-5 3.8-8 7-8s6 3 7 8"/><circle cx="9" cy="13" r="1" fill="currentColor" stroke="none"/><circle cx="13" cy="11" r="1" fill="currentColor" stroke="none"/><circle cx="16" cy="14" r="1" fill="currentColor" stroke="none"/>'),
+  ROMA: uiIco('<path d="M12 4l2 6h6l-5 3.5 2 6.5-5-3.5-5 3.5 2-6.5-5-3.5h6z"/>'),
+};
 const POTENCIAS = [
-  { id:'EGIPTO', label:'Egipto', icon:'🏛️', cls:'band--egy', fill:'#c69812', start:-1600, end:-874 },
-  { id:'ASIRIA', label:'Asiria', icon:'🐂', cls:'band--asi', fill:'#d62880', start:-874, end:-625 },
-  { id:'BABILONIA', label:'Babilonia', icon:'🦁', cls:'band--bab', fill:'#3a68be', start:-625, end:-539 },
-  { id:'MEDOPERSIA', label:'Medopersia', icon:'🐻', cls:'band--med', fill:'#168098', start:-539, end:-332 },
-  { id:'GRECIA', label:'Grecia', icon:'🐆', cls:'band--gre', fill:'#569e30', start:-332, end:-63 },
-  { id:'ROMA', label:'Roma', icon:'🦅', cls:'band--rom', fill:'#7a4fc0', start:-63, end:100 },
+  { id:'EGIPTO', label:'Egipto', icon:POT_ICO.EGIPTO, cls:'band--egy', fill:'#c69812', start:-1600, end:-874 },
+  { id:'ASIRIA', label:'Asiria', icon:POT_ICO.ASIRIA, cls:'band--asi', fill:'#d62880', start:-874, end:-625 },
+  { id:'BABILONIA', label:'Babilonia', icon:POT_ICO.BABILONIA, cls:'band--bab', fill:'#3a68be', start:-625, end:-539 },
+  { id:'MEDOPERSIA', label:'Medopersia', icon:POT_ICO.MEDOPERSIA, cls:'band--med', fill:'#168098', start:-539, end:-332 },
+  { id:'GRECIA', label:'Grecia', icon:POT_ICO.GRECIA, cls:'band--gre', fill:'#569e30', start:-332, end:-63 },
+  { id:'ROMA', label:'Roma', icon:POT_ICO.ROMA, cls:'band--rom', fill:'#7a4fc0', start:-63, end:100 },
 ];
 
 /**
@@ -366,9 +398,9 @@ function isImportantEvent(ev){
 }
 
 const BAR_COLORS = {
-  jud:'#96762c', isr:'#9e4a4a', pro:'#6b5b8a', jue:'#b5561c', uni:'#4a7a55',
+  jud:'#7a6420', isr:'#9e4a4a', pro:'#6b5b8a', jue:'#b5561c', uni:'#4a7a55',
   pre:'#6b5b8a', postd:'#4a7a55', babil:'#7a7468', rest:'#3f7686', sig:'#3d6b7a',
-  jes:'#3d6b7a', sem:'#19819a',
+  jes:'#3d6b7a', sem:'#15758c',
   gen:'#6b5b8a', exo:'#7a5c1a', con:'#4a7a55', tjue:'#b5561c', tre:'#96762c', tpro:'#6b5b8a',
   exi:'#7a7468', tres:'#3f7686', tsig:'#3d6b7a', hec:'#4a7a55',
   'nt-ev':'#5a6a8a', 'nt-hec':'#4a7a62', 'nt-car':'#7a5a72',
@@ -591,6 +623,9 @@ function touchCenterClientX(touches){
 function isTouchLayout(){
   return typeof matchMedia === 'function' &&
     (matchMedia('(max-width: 1024px)').matches || matchMedia('(pointer: coarse)').matches);
+}
+function isCoarsePointer(){
+  return typeof matchMedia === 'function' && matchMedia('(pointer: coarse)').matches;
 }
 function prefersScalePinch(){
   return isTouchLayout();
@@ -855,8 +890,12 @@ function bandInlineStyle(b, x1, bw, blockH){
 
 function potBandLabel(p, bandW){
   if(bandW < 36) return '';
-  if(bandW < 64) return `<span class="band-label band-label--compact" title="${esc(p.label)}">${p.icon}</span>`;
+  if(bandW < 64) return `<span class="band-label band-label--compact" title="${esc(p.label)}">${p.icon}<span class="visually-hidden"> ${esc(p.label)}</span></span>`;
   return `<span class="band-label" title="${esc(p.label)}">${p.icon} ${esc(p.label)}</span>`;
+}
+function potIconHtml(id){
+  const p = POTENCIAS.find(x=>x.id===id);
+  return p ? p.icon : '';
 }
 function fmtYear(y){
   if(y == null || isNaN(y)) return '—';
@@ -864,7 +903,7 @@ function fmtYear(y){
     const idx = Math.round((y - 33) * 20);
     if(NISAN_DAYS[idx]) return NISAN_DAYS[idx];
   }
-  if(y < 0) return Math.abs(y) + ' a.e.c.';
+  if(y < 0) return Math.round(Math.abs(y)) + ' a.e.c.';
   if(y === 0) return '0';
   return Math.round(y) + ' e.c.';
 }
@@ -977,13 +1016,35 @@ function computeRangeFromLaneData(laneData){
 }
 function syncHash(){
   const ids = LANE_ORDER.filter(id=>selLanes.has(id));
-  history.replaceState(null, '', '#' + ids.join(','));
+  const parts = ['filas=' + ids.join(',')];
+  if(openDrawerId && String(openDrawerId).startsWith('e')){
+    parts.push('ev=' + String(openDrawerId).slice(1));
+  }
+  history.replaceState(null, '', '#' + parts.join('&'));
+}
+function parseHashState(h){
+  const out = { lanes: null, evId: null };
+  if(!h) return out;
+  if(/filas=/.test(h) || /(?:^|&)ev=/.test(h)){
+    const filas = h.match(/filas=([^&]*)/);
+    const ev = h.match(/(?:^|&)ev=(\d+)/);
+    if(filas){
+      const ids = filas[1].split(',').filter(id=>LANE_ORDER.includes(id));
+      if(ids.length) out.lanes = new Set(ids);
+    }
+    if(ev) out.evId = parseInt(ev[1], 10);
+    return out;
+  }
+  if(LEGACY_HASH[h]){
+    out.lanes = new Set(LEGACY_HASH[h]);
+    return out;
+  }
+  const ids = h.split(',').filter(id=>LANE_ORDER.includes(id));
+  out.lanes = ids.length ? new Set(ids) : null;
+  return out;
 }
 function parseHash(h){
-  if(!h) return null;
-  if(LEGACY_HASH[h]) return new Set(LEGACY_HASH[h]);
-  const ids = h.split(',').filter(id=>LANE_ORDER.includes(id));
-  return ids.length ? new Set(ids) : null;
+  return parseHashState(h).lanes;
 }
 function overlaps(a1,a2,b1,b2){ return a1 <= b2 && b1 <= a2; }
 
@@ -1809,13 +1870,10 @@ let laneFiltersBound = false;
 function bindLaneFilterEvents(){
   if(laneFiltersBound || !laneFiltersEl) return;
   laneFiltersBound = true;
-  laneFiltersEl.addEventListener('click', e=>{
-    const label = e.target.closest('.lane-check');
-    if(!label || !laneFiltersEl.contains(label)) return;
-    e.preventDefault();
-    const id = label.dataset.laneId;
-    if(!id) return;
-    applyLaneChipChange(id, !selLanes.has(id));
+  laneFiltersEl.addEventListener('change', e=>{
+    const input = e.target.closest('input[type="checkbox"][data-id]');
+    if(!input || !laneFiltersEl.contains(input)) return;
+    applyLaneChipChange(input.dataset.id, input.checked);
   });
 }
 
@@ -1828,7 +1886,7 @@ function buildLaneFilters(){
   laneFiltersEl.innerHTML = availableLaneFilters().map(f=>{
     const on = selLanes.has(f.id);
     return `<label class="lane-check${on?' on':''}" data-lane-id="${f.id}">`+
-      `<input type="checkbox" data-id="${f.id}" tabindex="-1" aria-hidden="true"${on?' checked':''} />`+
+      `<input type="checkbox" data-id="${f.id}"${on?' checked':''} />`+
       `<span class="filter-dot" style="background:${f.color}"></span>`+
       `<span>${f.label}</span></label>`;
   }).join('');
@@ -1849,6 +1907,53 @@ function safeRender(){
   }
 }
 
+let rafPending = false;
+function scheduleRender(){
+  if(rafPending) return;
+  rafPending = true;
+  requestAnimationFrame(()=>{
+    rafPending = false;
+    safeRender();
+  });
+}
+
+const chartWrapEl = document.getElementById('chart-wrap');
+let lastDrawerTrigger = null;
+let drawerTrapBound = false;
+function drawerFocusables(){
+  if(!drawer) return [];
+  return [...drawer.querySelectorAll('button, a[href], input, select, textarea, [tabindex="0"]')]
+    .filter(el=> !el.disabled && el.offsetParent !== null && !el.hidden);
+}
+function eventTwins(ev){
+  if(!ev) return [];
+  const n = norm(ev.n);
+  const y = ev.fa;
+  if(!n || y == null) return [];
+  return D.eventos.filter(o=> o.id !== ev.id && norm(o.n) === n && o.fa != null && Math.abs(o.fa - y) <= 5);
+}
+
+function afterDrawerOpen(wasOpen){
+  if(!wasOpen) lastDrawerTrigger = document.activeElement;
+  if(chartWrapEl) chartWrapEl.setAttribute('inert', '');
+  const closeBtn = document.getElementById('d-close');
+  if(closeBtn && !wasOpen) closeBtn.focus();
+  if(!drawerTrapBound && drawer){
+    drawerTrapBound = true;
+    drawer.addEventListener('keydown', e=>{
+      if(e.key !== 'Tab' || !drawer.classList.contains('on')) return;
+      const focusables = drawerFocusables();
+      if(!focusables.length) return;
+      const first = focusables[0], last = focusables[focusables.length - 1];
+      if(e.shiftKey && document.activeElement === first){
+        e.preventDefault(); last.focus();
+      } else if(!e.shiftKey && document.activeElement === last){
+        e.preventDefault(); first.focus();
+      }
+    });
+  }
+}
+
 function buildPotChips(){
   if(!potChipsEl) return;
   potChipsEl.innerHTML = POTENCIAS.map(p=>
@@ -1860,23 +1965,25 @@ function buildPotChips(){
       if(selPots.has(id)) selPots.delete(id); else selPots.add(id);
       localStorage.setItem('lt-par-pots', JSON.stringify([...selPots]));
       buildPotChips();
-      render();
+      scheduleRender();
     });
   });
 }
 
-function showTipHtml(html, ev){
+function showTipHtml(html, ev, anchorEl){
+  if(!tooltip) return;
   tooltip.style.display = 'block';
-  tooltip.innerHTML = html;
-  moveTip(ev);
+  tooltip.innerHTML = html + (isCoarsePointer() ? '<div class="t-hint">Tocar de nuevo para ver el detalle</div>' : '');
+  if(anchorEl && isCoarsePointer()) anchorTipTo(anchorEl);
+  else if(ev) moveTip(ev);
 }
-function showPeTip(ev, pe){
+function showPeTip(ev, pe, anchorEl){
   const est = (pe.ie||pe.fe) ? '<div class="t-est">Fechas estimadas (lámina JW)</div>' : '';
   showTipHtml(
     `<div class="t-name">${esc(pe.n)}</div><div class="t-dates">${fmtRange(pe.inicio, pe.fin)}</div>`+
-    (pe.nota ? `<div class="t-note">${esc(pe.nota)}</div>` : '') + est, ev);
+    (pe.nota ? `<div class="t-note">${esc(pe.nota)}</div>` : '') + est, ev, anchorEl);
 }
-function showEvTip(ev, e){
+function showEvTip(ev, e, anchorEl){
   const when = e.mcuando ? `<div class="t-note">${esc(e.mcuando)}</div>` : '';
   let dates = fmtYear(chartYear(e) ?? e.fa);
   if(e.fa_fin != null && e.fa_fin !== e.fa){
@@ -1885,9 +1992,10 @@ function showEvTip(ev, e){
   const est = (e.fest || e.ini_est || e.fin_est) ? '<div class="t-est">Fechas estimadas</div>' : '';
   showTipHtml(
     `<div class="t-name">${esc(e.n)}</div><div class="t-dates">${dates} · ${esc(e.tipo||'')}</div>`+
-    (e.d ? `<div class="t-note">${esc(e.d)}</div>` : '') + when + est, ev);
+    (e.d ? `<div class="t-note">${esc(e.d)}</div>` : '') + when + est, ev, anchorEl);
 }
 function moveTip(ev){
+  if(!tooltip || !ev) return;
   const pad = 14;
   let x = ev.clientX + pad, y = ev.clientY + pad;
   const r = tooltip.getBoundingClientRect();
@@ -1896,7 +2004,51 @@ function moveTip(ev){
   tooltip.style.left = x + 'px';
   tooltip.style.top = y + 'px';
 }
-function hideTip(){ tooltip.style.display = 'none'; }
+function anchorTipTo(el){
+  if(!tooltip || !el || !el.getBoundingClientRect) return;
+  const r = el.getBoundingClientRect();
+  const t = tooltip.getBoundingClientRect();
+  let x = r.left + r.width / 2 - t.width / 2;
+  let y = r.top - t.height - 8;
+  if(y < 8) y = r.bottom + 8;
+  x = Math.max(8, Math.min(x, innerWidth - t.width - 8));
+  tooltip.style.left = x + 'px';
+  tooltip.style.top = y + 'px';
+}
+let touchTipKey = null;
+function hideTip(){
+  if(tooltip) tooltip.style.display = 'none';
+  touchTipKey = null;
+}
+function bindHoverTip(el, showFn){
+  el.addEventListener('mouseenter', e=>{
+    if(isCoarsePointer()) return;
+    showFn(e);
+  });
+  el.addEventListener('mousemove', e=>{
+    if(isCoarsePointer()) return;
+    moveTip(e);
+  });
+  el.addEventListener('mouseleave', ()=>{
+    if(isCoarsePointer()) return;
+    hideTip();
+  });
+}
+function activateWithTouchTip(key, e, el, showTipFn, openFn){
+  if(isCoarsePointer()){
+    if(e){ e.preventDefault(); e.stopPropagation(); }
+    if(touchTipKey === key){
+      hideTip();
+      openFn();
+      return;
+    }
+    touchTipKey = key;
+    showTipFn();
+    if(el) anchorTipTo(el);
+    return;
+  }
+  openFn();
+}
 
 // ---------- drawer (detalle de suceso) ----------
 const drawer = document.getElementById('drawer');
@@ -1924,8 +2076,8 @@ const DRAWER_ERAS = [
 const drawerEraCol = {};
 DRAWER_ERAS.forEach(c=>c.keys.forEach(k=>{ drawerEraCol[k]=c; }));
 const DRAWER_POTS = [
-  ['EGIPTO','Egipto','🏛️',-1600,-874],['ASIRIA','Asiria','🐂',-874,-625],['BABILONIA','Babilonia','🦁',-625,-539],
-  ['MEDOPERSIA','Medopersia','🐻',-539,-332],['GRECIA','Grecia','🐆',-332,-63],['ROMA','Roma','🦅',-63,100],
+  ['EGIPTO','Egipto','',-1600,-874],['ASIRIA','Asiria','',-874,-625],['BABILONIA','Babilonia','',-625,-539],
+  ['MEDOPERSIA','Medopersia','',-539,-332],['GRECIA','Grecia','',-332,-63],['ROMA','Roma','',-63,100],
 ];
 const DRAWER_RELS = D.relaciones || [];
 const DRAWER_REL_LABEL = {causa:'Causa', paralelo:'Paralelo'};
@@ -2023,7 +2175,10 @@ function formatPersonRef(ref){
 function openDrawer(ev){
   if(!ev || !drawer) return;
   hideTip();
-  ensureDetailLoaded().then(()=> openDrawerFill(ev));
+  openDrawerFill(ev);
+  ensureDetailLoaded().then(()=>{
+    if(openDrawerId === 'e' + ev.id) openDrawerFill(ev);
+  });
 }
 
 function openDrawerFill(ev){
@@ -2058,12 +2213,17 @@ function openDrawerFill(ev){
     return '<span class="chip t">'+esc(tm ? tm[1] : t)+'</span>';
   }).join('') || '<span class="ph">—</span>';
   const rels = drawerRelacionesDe(ev.id);
+  const relIds = new Set(rels.map(r=>r.otro));
+  const twinEdges = eventTwins(ev).filter(t=>!relIds.has(t.id)).map(t=>({
+    otro: t.id, dir: '↔', tipo: 'paralelo', nota: 'Mismo suceso en otro registro'
+  }));
+  const allRels = rels.concat(twinEdges);
   const relSec = document.getElementById('d-rel-sec');
   const relEl = document.getElementById('d-rel');
   relSec.querySelector('h3').textContent = 'Relaciones con otros sucesos';
-  if(rels.length){
+  if(allRels.length){
     relSec.style.display = 'block';
-    relEl.innerHTML = rels.map(r=>`
+    relEl.innerHTML = allRels.map(r=>`
       <div class="rel-edge rt-${r.tipo}" data-jump="${r.otro}">
         <span class="rt">${DRAWER_REL_LABEL[r.tipo]||r.tipo} ${r.dir}</span>
         <div><span class="rn">${esc(drawerRelNombre(r.otro))}</span>${r.nota?'<div class="rnota">'+esc(r.nota)+'</div>':''}</div>
@@ -2080,14 +2240,14 @@ function openDrawerFill(ev){
   }
   const pot = drawerPotenciaOf(ev.fa);
   document.getElementById('d-par').innerHTML = pot
-    ? '<span class="pw">Potencia mundial: '+pot[2]+' '+pot[1]+'</span> <span style="color:var(--mut)">('+fmtFechaDrawer(pot[3])+' a '+fmtFechaDrawer(pot[4])+')</span>'
+    ? '<span class="pw">Potencia mundial: '+potIconHtml(pot[0])+' '+pot[1]+'</span> <span style="color:var(--mut)">('+fmtFechaDrawer(pot[3])+' a '+fmtFechaDrawer(pot[4])+')</span>'
     : '<span style="color:var(--mut)">Antes de las potencias mundiales de la cronología JW (Egipto desde 1600 a. E. C.).</span>';
   const qs = (D.preguntas || []).filter(p=>p.hid === ev.id);
   const listEl = document.getElementById('d-qlist');
   const moreEl = document.getElementById('d-more');
   document.getElementById('d-qcount').textContent = 'Preguntas vinculadas: ' + qs.length;
   listEl.innerHTML = renderQuestionList(qs, 8) ||
-    '<span class="ph">Este suceso aún no tiene preguntas vinculadas.</span>';
+    '<p class="ph">Sin preguntas vinculadas aún — la curación sigue en proceso.</p>';
   moreEl.style.display = qs.length > 8 ? 'block' : 'none';
   moreEl.onclick = ()=>{
     listEl.innerHTML = renderQuestionList(qs);
@@ -2095,15 +2255,23 @@ function openDrawerFill(ev){
   };
   const linkApp = document.getElementById('link-app');
   if(linkApp) linkApp.style.display = 'none';
+  const wasOpen = drawer.classList.contains('on');
   drawer.classList.add('on');
   overlay.classList.add('on');
   openDrawerId = 'e' + ev.id;
+  const copyBtn = document.getElementById('d-copy-link');
+  if(copyBtn) copyBtn.hidden = false;
+  syncHash();
+  afterDrawerOpen(wasOpen);
 }
 
 function openEventGroupDrawer(pe){
   if(!pe?.isEventGroup || !drawer) return;
   hideTip();
-  ensureDetailLoaded().then(()=> openEventGroupDrawerFill(pe));
+  openEventGroupDrawerFill(pe);
+  ensureDetailLoaded().then(()=>{
+    if(openDrawerId === 'g' + pe.id) openEventGroupDrawerFill(pe);
+  });
 }
 
 function openEventGroupDrawerFill(pe){
@@ -2139,7 +2307,7 @@ function openEventGroupDrawerFill(pe){
   });
   const pot = drawerPotenciaOf(pe.inicio);
   document.getElementById('d-par').innerHTML = pot
-    ? '<span class="pw">Potencia mundial: '+pot[2]+' '+pot[1]+'</span>'
+    ? '<span class="pw">Potencia mundial: '+potIconHtml(pot[0])+' '+pot[1]+'</span>'
     : '<span style="color:var(--mut)">Contexto histórico según la cronología bíblica.</span>';
   const seen = new Set();
   const qs = [];
@@ -2152,21 +2320,28 @@ function openEventGroupDrawerFill(pe){
   const moreEl = document.getElementById('d-more');
   document.getElementById('d-qcount').textContent = 'Preguntas vinculadas: ' + qs.length;
   listEl.innerHTML = renderQuestionList(qs, 8) ||
-    '<span class="ph">Sin preguntas vinculadas a estos sucesos.</span>';
+    '<p class="ph">Sin preguntas vinculadas aún — la curación sigue en proceso.</p>';
   moreEl.style.display = qs.length > 8 ? 'block' : 'none';
   moreEl.onclick = ()=>{
     listEl.innerHTML = renderQuestionList(qs);
     moreEl.style.display = 'none';
   };
+  const wasOpen = drawer.classList.contains('on');
   drawer.classList.add('on');
   overlay.classList.add('on');
   openDrawerId = 'g' + pe.id;
+  const copyBtn = document.getElementById('d-copy-link');
+  if(copyBtn) copyBtn.hidden = true;
+  afterDrawerOpen(wasOpen);
 }
 
 function openPersonDrawer(pe){
   if(!pe || pe.isEvent || !drawer) return;
   hideTip();
-  ensureDetailLoaded().then(()=> openPersonDrawerFill(pe));
+  openPersonDrawerFill(pe);
+  Promise.all([ensureDetailLoaded(), ensureFichasLoaded()]).then(()=>{
+    if(openDrawerId === 'p' + pe.id) openPersonDrawerFill(pe);
+  });
 }
 
 function openPersonDrawerFill(pe){
@@ -2214,28 +2389,38 @@ function openPersonDrawerFill(pe){
   }
   const pot = drawerPotenciaOf(pe.inicio);
   document.getElementById('d-par').innerHTML = pot
-    ? '<span class="pw">Potencia mundial al inicio: '+pot[2]+' '+pot[1]+'</span>'
+    ? '<span class="pw">Potencia mundial al inicio: '+potIconHtml(pot[0])+' '+pot[1]+'</span>'
     : '<span style="color:var(--mut)">Contexto histórico según la cronología bíblica.</span>';
   const qs = questionsForPerson(pe, evs);
   const listEl = document.getElementById('d-qlist');
   const moreEl = document.getElementById('d-more');
   document.getElementById('d-qcount').textContent = 'Preguntas vinculadas: ' + qs.length;
   listEl.innerHTML = renderQuestionList(qs, 8) ||
-    '<span class="ph">Sin preguntas vinculadas a los sucesos de este personaje.</span>';
+    '<p class="ph">Sin preguntas vinculadas aún — la curación sigue en proceso.</p>';
   moreEl.style.display = qs.length > 8 ? 'block' : 'none';
   moreEl.onclick = ()=>{
     listEl.innerHTML = renderQuestionList(qs);
     moreEl.style.display = 'none';
   };
+  const wasOpen = drawer.classList.contains('on');
   drawer.classList.add('on');
   overlay.classList.add('on');
   openDrawerId = 'p' + pe.id;
+  const copyBtn = document.getElementById('d-copy-link');
+  if(copyBtn) copyBtn.hidden = true;
+  afterDrawerOpen(wasOpen);
 }
 function closeDrawer(){
   if(!drawer) return;
+  const wasOpen = drawer.classList.contains('on');
   drawer.classList.remove('on');
   overlay.classList.remove('on');
   openDrawerId = null;
+  if(chartWrapEl) chartWrapEl.removeAttribute('inert');
+  if(wasOpen) syncHash();
+  if(wasOpen && lastDrawerTrigger && typeof lastDrawerTrigger.focus === 'function'){
+    try{ lastDrawerTrigger.focus(); }catch(e){}
+  }
 }
 function openDrawerFromClick(ev, e){
   if(e) e.stopPropagation();
@@ -2252,10 +2437,8 @@ function bindDrawerTargets(root){
   root.querySelectorAll('.bar').forEach(bar=>{
     if(bar.dataset.ev){
       const ev = D.eventos.find(e=>String(e.id)===bar.dataset.ev);
-      bar.addEventListener('mouseenter', e=> showEvTip(e, ev));
-      bar.addEventListener('mousemove', moveTip);
-      bar.addEventListener('mouseleave', hideTip);
-      bar.addEventListener('click', e=> openDrawerFromClick(ev, e));
+      bindHoverTip(bar, e=> showEvTip(e, ev));
+      bar.addEventListener('click', e=> activateWithTouchTip('e'+ev.id, e, bar, ()=> showEvTip(e, ev, bar), ()=> openDrawerFromClick(ev, e)));
       bar.addEventListener('keydown', e=>{
         if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); openDrawerFromClick(ev, e); }
       });
@@ -2269,20 +2452,16 @@ function bindDrawerTargets(root){
       return;
     }
     if(pe.isEventGroup){
-      bar.addEventListener('mouseenter', e=> showPeTip(e, pe));
-      bar.addEventListener('mousemove', moveTip);
-      bar.addEventListener('mouseleave', hideTip);
-      bar.addEventListener('click', e=> openPersonFromClick(pe, e));
+      bindHoverTip(bar, e=> showPeTip(e, pe));
+      bar.addEventListener('click', e=> activateWithTouchTip('g'+pe.id, e, bar, ()=> showPeTip(e, pe, bar), ()=> openPersonFromClick(pe, e)));
       bar.addEventListener('keydown', e=>{
         if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); openPersonFromClick(pe, e); }
       });
       return;
     }
     if(pe.isEvent){
-      bar.addEventListener('mouseenter', e=> showEvTip(e, pe.ev));
-      bar.addEventListener('mousemove', moveTip);
-      bar.addEventListener('mouseleave', hideTip);
-      bar.addEventListener('click', e=> openDrawerFromClick(pe.ev, e));
+      bindHoverTip(bar, e=> showEvTip(e, pe.ev));
+      bar.addEventListener('click', e=> activateWithTouchTip('e'+pe.ev.id, e, bar, ()=> showEvTip(e, pe.ev, bar), ()=> openDrawerFromClick(pe.ev, e)));
       bar.addEventListener('keydown', e=>{
         if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); openDrawerFromClick(pe.ev, e); }
       });
@@ -2311,18 +2490,16 @@ function bindDrawerTargets(root){
 
 function bindPersonBar(bar, pe){
   if(bar.classList.contains('bar-compact-narrow')){
-    bar.addEventListener('click', e=> openPersonFromClick(pe, e));
+    bar.addEventListener('click', e=> activateWithTouchTip('p'+pe.id, e, bar, ()=> showPeTip(e, pe, bar), ()=> openPersonFromClick(pe, e)));
     bar.addEventListener('keydown', e=>{
       if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); openPersonFromClick(pe, e); }
     });
     return;
   }
-  bar.addEventListener('mouseenter', e=> showPeTip(e, pe));
-  bar.addEventListener('mousemove', moveTip);
-  bar.addEventListener('mouseleave', hideTip);
-  bar.addEventListener('focus', e=> showPeTip(e, pe));
-  bar.addEventListener('blur', hideTip);
-  bar.addEventListener('click', e=> openPersonFromClick(pe, e));
+  bindHoverTip(bar, e=> showPeTip(e, pe));
+  bar.addEventListener('focus', e=>{ if(!isCoarsePointer()) showPeTip(e, pe); });
+  bar.addEventListener('blur', ()=>{ if(!isCoarsePointer()) hideTip(); });
+  bar.addEventListener('click', e=> activateWithTouchTip('p'+pe.id, e, bar, ()=> showPeTip(e, pe, bar), ()=> openPersonFromClick(pe, e)));
   bar.addEventListener('keydown', e=>{
     if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); openPersonFromClick(pe, e); }
   });
@@ -2331,8 +2508,30 @@ function bindPersonBar(bar, pe){
 if(drawer){
   document.getElementById('d-close').onclick = closeDrawer;
   overlay.onclick = closeDrawer;
-  document.addEventListener('keydown', e=>{ if(e.key === 'Escape') closeDrawer(); });
+  document.addEventListener('keydown', e=>{
+    if(e.key === 'Escape' && drawer.classList.contains('on')) closeDrawer();
+    else if(e.key === 'Escape') hideTip();
+  });
+  const copyBtn = document.getElementById('d-copy-link');
+  if(copyBtn){
+    copyBtn.addEventListener('click', ()=>{
+      const url = location.origin + location.pathname + location.search + location.hash;
+      const done = ()=>{ copyBtn.title = 'Enlace copiado'; setTimeout(()=>{ copyBtn.title = 'Copiar enlace'; }, 1600); };
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(url).then(done).catch(done);
+      } else {
+        done();
+      }
+    });
+  }
 }
+
+document.addEventListener('pointerdown', e=>{
+  if(!isCoarsePointer() || !touchTipKey) return;
+  const t = e.target;
+  if(t && t.closest && t.closest('.bar, .evt-marker, .axis-important, .bar-event-pin, #tooltip')) return;
+  hideTip();
+}, true);
 
 function bindPePickers(){
   if(rowLayout === 'compact') return;
@@ -2343,7 +2542,7 @@ function bindPePickers(){
       else hiddenPeople.add(key);
       saveHiddenPeople();
       render._scrolled = true;
-      render();
+      scheduleRender();
     });
     box.addEventListener('click', e=> e.stopPropagation());
   });
@@ -2642,6 +2841,7 @@ function render(){
     axisArea.innerHTML = '';
     renderHiddenDock([]);
     resultCount.textContent = '0 personajes';
+    hideMinimap();
     return;
   }
 
@@ -2683,6 +2883,7 @@ function render(){
     axisArea.innerHTML = '';
     renderHiddenDock([]);
     resultCount.textContent = '0 personajes';
+    hideMinimap();
     return;
   }
   const layoutOpts = {
@@ -2870,11 +3071,9 @@ function render(){
     const ev = D.eventos.find(e=>String(e.id)===m.dataset.ev);
     /* Si ya tiene tip CSS (solo título), no abrir el popup #tooltip */
     if(!m.querySelector('.evt-marker__tip')){
-      m.addEventListener('mouseenter', e=> showEvTip(e, ev));
-      m.addEventListener('mousemove', moveTip);
-      m.addEventListener('mouseleave', hideTip);
+      bindHoverTip(m, e=> showEvTip(e, ev));
     }
-    m.addEventListener('click', e=> openDrawerFromClick(ev, e));
+    m.addEventListener('click', e=> activateWithTouchTip('e'+ev.id, e, m, ()=> showEvTip(e, ev, m), ()=> openDrawerFromClick(ev, e)));
     m.addEventListener('keydown', e=>{
       if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); openDrawerFromClick(ev, e); }
     });
@@ -2883,13 +3082,13 @@ function render(){
   axisArea.querySelectorAll('.axis-important').forEach(m=>{
     const ev = D.eventos.find(e=>String(e.id)===m.dataset.ev);
     if(!ev) return;
-    m.addEventListener('mouseenter', e=> showEvTip(e, ev));
-    m.addEventListener('mousemove', moveTip);
-    m.addEventListener('mouseleave', hideTip);
+    m.addEventListener('mouseenter', e=>{ if(!isCoarsePointer()) showEvTip(e, ev); });
+    m.addEventListener('mousemove', e=>{ if(!isCoarsePointer()) moveTip(e); });
+    m.addEventListener('mouseleave', ()=>{ if(!isCoarsePointer()) hideTip(); });
     m.addEventListener('click', e=>{
       e.preventDefault();
       e.stopPropagation();
-      openDrawerFromClick(ev, e);
+      activateWithTouchTip('e'+ev.id, e, m, ()=> showEvTip(e, ev, m), ()=> openDrawerFromClick(ev, e));
     });
     m.addEventListener('keydown', e=>{
       if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); openDrawerFromClick(ev, e); }
@@ -2917,8 +3116,153 @@ function render(){
     ? requestAnimationFrame
     : (fn)=> fn();
   scheduleCaptionOverflow(adjustCaptionOverflow);
+  drawMinimap();
 }
 render._scrolled = false;
+
+function hideMinimap(){
+  const wrap = document.getElementById('minimap');
+  if(wrap) wrap.hidden = true;
+}
+function minimapYearAt(clientX){
+  const canvas = document.getElementById('minimap-canvas');
+  if(!canvas || !lastLayout) return 0;
+  const r = canvas.getBoundingClientRect();
+  const w = r.width || 1;
+  const t = Math.max(0, Math.min(1, (clientX - r.left) / w));
+  return lastLayout.dataMin + t * (lastLayout.dataMax - lastLayout.dataMin);
+}
+function drawMinimap(){
+  const wrap = document.getElementById('minimap');
+  const canvas = document.getElementById('minimap-canvas');
+  if(!wrap || !canvas || !lastLayout){
+    if(wrap) wrap.hidden = true;
+    return;
+  }
+  if(typeof canvas.getContext !== 'function'){
+    wrap.hidden = true;
+    return;
+  }
+  const { dataMin, dataMax, yMin, yMax } = lastLayout;
+  const span = dataMax - dataMin;
+  if(!Number.isFinite(span) || span <= 0){
+    wrap.hidden = true;
+    return;
+  }
+  wrap.hidden = false;
+  const cssW = Math.max(1, wrap.clientWidth || canvas.clientWidth || 800);
+  const cssH = 56;
+  const dpr = (typeof devicePixelRatio === 'number' && devicePixelRatio > 0) ? devicePixelRatio : 1;
+  canvas.width = Math.round(cssW * dpr);
+  canvas.height = Math.round(cssH * dpr);
+  canvas.style.width = cssW + 'px';
+  canvas.style.height = cssH + 'px';
+  const ctx = canvas.getContext('2d');
+  if(!ctx) return;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const bg = cssVar('--panel') || '#faf8f3';
+  const acc = cssVar('--acc') || '#35606f';
+  const mut = cssVar('--mut') || '#635e50';
+  const line = cssVar('--line') || '#d8d2c6';
+  ctx.fillStyle = bg;
+  ctx.fillRect(0, 0, cssW, cssH);
+  const xOf = y => ((y - dataMin) / span) * cssW;
+  for(const b of BANDS){
+    if(!b.id || b.id.indexOf('ep-') !== 0) continue;
+    const x1 = xOf(Math.max(b.start, dataMin));
+    const x2 = xOf(Math.min(b.end, dataMax));
+    if(x2 <= x1) continue;
+    ctx.fillStyle = b.fill || acc;
+    ctx.globalAlpha = 0.16;
+    ctx.fillRect(x1, 0, x2 - x1, cssH);
+    ctx.globalAlpha = 1;
+  }
+  const bins = Math.max(40, Math.min(120, Math.floor(cssW / 8)));
+  const counts = new Array(bins).fill(0);
+  let maxC = 1;
+  for(const ev of (D.eventos || [])){
+    const y = chartYear(ev) ?? ev.fa;
+    if(y == null || y < dataMin || y > dataMax) continue;
+    const i = Math.min(bins - 1, Math.max(0, Math.floor(((y - dataMin) / span) * bins)));
+    counts[i]++;
+    if(counts[i] > maxC) maxC = counts[i];
+  }
+  const barH = cssH - 10;
+  ctx.fillStyle = acc;
+  ctx.globalAlpha = 0.55;
+  const bw = cssW / bins;
+  for(let i = 0; i < bins; i++){
+    if(!counts[i]) continue;
+    const h = Math.max(2, (counts[i] / maxC) * barH);
+    ctx.fillRect(i * bw, cssH - h, Math.max(1, bw - 0.5), h);
+  }
+  ctx.globalAlpha = 1;
+  const vx1 = xOf(yMin);
+  const vx2 = xOf(yMax);
+  ctx.fillStyle = acc;
+  ctx.globalAlpha = 0.12;
+  ctx.fillRect(vx1, 1, Math.max(2, vx2 - vx1), cssH - 2);
+  ctx.globalAlpha = 1;
+  ctx.strokeStyle = acc;
+  ctx.lineWidth = 2;
+  ctx.strokeRect(vx1 + 0.5, 1.5, Math.max(2, vx2 - vx1 - 1), cssH - 3);
+  if(dataMin < 0 && dataMax > 0){
+    const zx = xOf(0);
+    ctx.strokeStyle = mut;
+    ctx.globalAlpha = 0.45;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(zx, 0);
+    ctx.lineTo(zx, cssH);
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+  }
+  ctx.fillStyle = mut;
+  ctx.font = '600 9px Karla, Segoe UI, sans-serif';
+  ctx.textBaseline = 'top';
+  ctx.fillText(fmtYear(dataMin), 6, 4);
+  ctx.textAlign = 'right';
+  ctx.fillText(fmtYear(dataMax), cssW - 6, 4);
+  ctx.textAlign = 'left';
+  ctx.strokeStyle = line;
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(0, 0.5);
+  ctx.lineTo(cssW, 0.5);
+  ctx.stroke();
+}
+function bindMinimap(){
+  const canvas = document.getElementById('minimap-canvas');
+  if(!canvas || canvas.dataset.bound === '1') return;
+  canvas.dataset.bound = '1';
+  let drag = null;
+  canvas.addEventListener('pointerdown', e=>{
+    if(!lastLayout) return;
+    e.preventDefault();
+    if(canvas.setPointerCapture) canvas.setPointerCapture(e.pointerId);
+    drag = { y0: minimapYearAt(e.clientX), moved: false };
+  });
+  canvas.addEventListener('pointermove', e=>{
+    if(!drag) return;
+    const y = minimapYearAt(e.clientX);
+    if(Math.abs(y - drag.y0) > (lastLayout.dataMax - lastLayout.dataMin) * 0.008) drag.moved = true;
+  });
+  canvas.addEventListener('pointerup', e=>{
+    if(!drag || !lastLayout){ drag = null; return; }
+    const y1 = minimapYearAt(e.clientX);
+    const full = lastLayout.dataMax - lastLayout.dataMin;
+    if(!drag.moved){
+      const curSpan = viewWindow
+        ? (lastLayout.yMax - lastLayout.yMin)
+        : Math.max(MIN_FOCUS_SPAN, full * 0.12);
+      applyFocusZoom(y1 - curSpan / 2, y1 + curSpan / 2, lastLayout.dataMin, lastLayout.dataMax);
+    } else {
+      applyFocusZoom(Math.min(drag.y0, y1), Math.max(drag.y0, y1), lastLayout.dataMin, lastLayout.dataMax);
+    }
+    drag = null;
+  });
+  canvas.addEventListener('pointercancel', ()=>{ drag = null; });
+}
 
 function exportPng(){
   if(!lastLayout) return;
@@ -3075,6 +3419,11 @@ window.addEventListener('mouseup', ()=>{
 });
 chartScroll.addEventListener('wheel', e=>{
   if(!lastLayout) return;
+  if(!e.ctrlKey && !e.metaKey){
+    e.preventDefault();
+    chartScroll.scrollLeft += e.deltaY;
+    return;
+  }
   e.preventDefault();
   const year = xToYear(chartXFromClient(e.clientX), lastLayout.yMin, lastLayout.yMax, lastLayout.chartW);
   const factor = e.deltaY < 0 ? 1.12 : 1 / 1.12;
@@ -3087,28 +3436,42 @@ chartScroll.addEventListener('scroll', ()=>{
 });
 labelsCol.addEventListener('scroll', ()=>{ chartScroll.scrollTop = labelsCol.scrollTop; });
 
-searchEl.addEventListener('input', ()=>{ query = searchEl.value.trim(); render(); });
+let searchT;
+searchEl.addEventListener('input', ()=>{
+  clearTimeout(searchT);
+  searchT = setTimeout(()=>{
+    query = searchEl.value.trim();
+    scheduleRender();
+  }, 140);
+});
+searchEl.addEventListener('keydown', e=>{
+  if(e.key === 'Escape'){
+    searchEl.value = '';
+    query = '';
+    scheduleRender();
+  }
+});
 optMarkers.addEventListener('change', ()=>{
   showMarkers = optMarkers.checked;
   localStorage.setItem('lt-par-markers', showMarkers?'1':'0');
   buildLaneFilters();
-  render();
+  scheduleRender();
 });
-optConnections.addEventListener('change', ()=>{ showConnections = optConnections.checked; localStorage.setItem('lt-par-conn', showConnections?'1':'0'); render(); });
-optPotencias.addEventListener('change', ()=>{ showPotencias = optPotencias.checked; localStorage.setItem('lt-par-pot', showPotencias?'1':'0'); render(); });
+optConnections.addEventListener('change', ()=>{ showConnections = optConnections.checked; localStorage.setItem('lt-par-conn', showConnections?'1':'0'); scheduleRender(); });
+optPotencias.addEventListener('change', ()=>{ showPotencias = optPotencias.checked; localStorage.setItem('lt-par-pot', showPotencias?'1':'0'); scheduleRender(); });
 zoomEl.addEventListener('input', ()=>{
   autoFit = false;
   localStorage.setItem('lt-par-autofit', '0');
   pxPerYear = parseFloat(zoomEl.value);
   localStorage.setItem('lt-par-zoom', String(pxPerYear));
   render._scrolled = false;
-  render();
+  scheduleRender();
 });
 fitBtn.addEventListener('click', ()=>{
   autoFit = true;
   localStorage.setItem('lt-par-autofit', '1');
   render._scrolled = false;
-  render();
+  scheduleRender();
 });
 if(focusResetBtn){
   focusResetBtn.addEventListener('click', resetFocusZoom);
@@ -3123,7 +3486,7 @@ if(fontScaleEl){
     saveFontScale();
     applyFontScale();
     render._scrolled = true;
-    render();
+    scheduleRender();
   });
 }
 exportBtn.addEventListener('click', exportPng);
@@ -3134,7 +3497,7 @@ if(peShowAllBtn){
     peKeysInView(enrichLaneData(buildAllLaneData(), query)).forEach(k=> hiddenPeople.delete(k));
     saveHiddenPeople();
     render._scrolled = true;
-    render();
+    scheduleRender();
   });
 }
 if(peHideAllBtn){
@@ -3142,7 +3505,7 @@ if(peHideAllBtn){
     peKeysInView(enrichLaneData(buildAllLaneData(), query)).forEach(k=> hiddenPeople.add(k));
     saveHiddenPeople();
     render._scrolled = true;
-    render();
+    scheduleRender();
   });
 }
 if(vizStyleEl){
@@ -3151,7 +3514,7 @@ if(vizStyleEl){
     localStorage.setItem('lt-par-viz', vizStyle);
     applyVizStyle();
     render._scrolled = false;
-    render();
+    scheduleRender();
   });
 }
 if(rowLayoutEl){
@@ -3163,7 +3526,7 @@ if(rowLayoutEl){
     if(peShowAllBtn) peShowAllBtn.hidden = rowLayout === 'compact';
     if(peHideAllBtn) peHideAllBtn.hidden = rowLayout === 'compact';
     render._scrolled = false;
-    render();
+    scheduleRender();
   });
 }
 if(eventLayoutEl){
@@ -3172,7 +3535,7 @@ if(eventLayoutEl){
     eventLayout = EVENT_LAYOUTS.includes(eventLayoutEl.value) ? eventLayoutEl.value : 'timeline';
     localStorage.setItem('lt-par-event-layout', eventLayout);
     render._scrolled = false;
-    render();
+    scheduleRender();
   });
 }
 if(peShowAllBtn) peShowAllBtn.hidden = rowLayout === 'compact';
@@ -3180,7 +3543,10 @@ if(peHideAllBtn) peHideAllBtn.hidden = rowLayout === 'compact';
 
 const themeBtn = document.getElementById('theme-btn');
 const savedTheme = localStorage.getItem('lt-theme');
-if(savedTheme === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+const prefersDark = typeof matchMedia === 'function' && matchMedia('(prefers-color-scheme: dark)').matches;
+const theme = savedTheme || (prefersDark ? 'dark' : 'light');
+if(theme === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+else document.documentElement.removeAttribute('data-theme');
 themeBtn.addEventListener('click', ()=>{
   const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
   if(isDark){
@@ -3190,9 +3556,12 @@ themeBtn.addEventListener('click', ()=>{
     document.documentElement.setAttribute('data-theme', 'dark');
     localStorage.setItem('lt-theme', 'dark');
   }
+  drawMinimap();
 });
 
-const fromHash = parseHash(location.hash.replace('#',''));
+const fromHashState = parseHashState(location.hash.replace('#',''));
+const fromHash = fromHashState.lanes;
+let pendingHashEvId = fromHashState.evId;
 if(fromHash){
   selLanes = fromHash;
 }else if(isFirstVisit){
@@ -3215,6 +3584,7 @@ const deepEvId = qs.get('ev');
 
 buildLaneFilters();
 buildPotChips();
+bindMinimap();
 syncHash();
 
 const mqMobile = typeof matchMedia === 'function' ? matchMedia('(max-width: 760px)') : null;
@@ -3239,11 +3609,12 @@ if(!(D._detailDeferred || (D.preguntas || []).some(p => answerText(p)))){
   });
 }
 safeRender();
-if(deepEvId){
-  const deepEv = D.eventos.find(e=>String(e.id)===deepEvId);
+const openEvId = deepEvId || pendingHashEvId;
+if(openEvId){
+  const deepEv = D.eventos.find(e=>String(e.id)===String(openEvId));
   if(deepEv) openDrawer(deepEv);
 }
-window.addEventListener('resize', ()=>{ if(autoFit) render._scrolled = false; render(); });
+window.addEventListener('resize', ()=>{ if(autoFit) render._scrolled = false; scheduleRender(); });
 
 // ---------- onboarding tour (MVP) ----------
 (function initOnboarding(){
@@ -3267,7 +3638,7 @@ window.addEventListener('resize', ()=>{ if(autoFit) render._scrolled = false; re
       target: '.chart-wrap',
       center: true,
       title: 'Cronología en filas paralelas',
-      body: 'Cada fila agrupa un periodo o tema (reyes, profetas, ministerio de Jesús…). Las barras muestran vidas o reinados; los puntos, sucesos puntuales. Arrastrá con un dedo; pellizcá con dos sobre el gráfico para ampliar.',
+      body: 'Cada fila agrupa un periodo o tema (reyes, profetas, ministerio de Jesús…). Las barras muestran vidas o reinados; los puntos, sucesos puntuales. Arrastrá con un dedo; pellizcá con dos sobre el gráfico para ampliar. En computadora, la rueda desplaza y Ctrl+rueda acerca. El minimapa de abajo muestra dónde estás en los 4.000 años: clic para saltar, arrastre para elegir un rango.',
     },
     {
       target: '#lane-filters',
@@ -3276,8 +3647,8 @@ window.addEventListener('resize', ()=>{ if(autoFit) render._scrolled = false; re
     },
     {
       target: '#search',
-      title: 'Buscar personajes',
-      body: 'Escribí un nombre para resaltar coincidencias. Podés ocultar personajes con el checkbox junto a cada fila; los ocultos aparecen abajo para restaurarlos.',
+      title: 'Buscar',
+      body: 'Escribí un suceso, personaje o libro para resaltar coincidencias. Escape limpia la búsqueda. Podés ocultar personajes con el checkbox junto a cada fila.',
     },
     {
       target: '#filtros-btn',
