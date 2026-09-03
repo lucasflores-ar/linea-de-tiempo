@@ -425,10 +425,39 @@ html[data-theme="dark"] .focus-marquee{background:rgba(106,159,173,.18)}
   transform:translateX(-50%);
   background:color-mix(in srgb, var(--txt) 28%, transparent);
 }
-.loose-evt-zone .evt-marker--loose,
-.loose-evt-zone .evt-marker--zone{
-  /* mismos puntos que antes: left/top absolutos sobre la base cronológica */
+/* Mismo punto que en la barra del personaje (15px + anillo). */
+.loose-evt-zone .evt-marker--zone.evt-marker--in-row{
+  width:15px;height:15px;
+  background:var(--bg);
+  border:3px solid var(--mk-color,var(--acc));
+  box-shadow:0 0 0 1px color-mix(in srgb,var(--txt) 45%,transparent),0 2px 8px var(--shadow);
   z-index:4;
+}
+.loose-evt-zone .evt-marker--zone.evt-marker--in-row::after{
+  content:'';position:absolute;inset:4px;border-radius:50%;
+  background:var(--mk-color,var(--acc));opacity:.9;pointer-events:none;
+}
+.loose-evt-zone .evt-marker--zone.evt-marker--in-row:hover,
+.loose-evt-zone .evt-marker--zone.evt-marker--in-row:focus-visible{
+  transform:translate(-50%,-50%) scale(1.22);z-index:8;
+  border-color:var(--txt);
+  box-shadow:0 0 0 2px var(--bg),0 0 0 5px var(--mk-color,var(--acc)),0 6px 18px var(--shadow);
+  outline:none;
+}
+.loose-evt-zone__title{
+  position:absolute;left:50%;
+  max-width:108px;padding:1px 0;
+  font:600 10px/1.2 var(--font-sans);color:var(--txt);
+  text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  pointer-events:none;z-index:3;
+}
+.loose-evt-zone__title.is-above{
+  bottom:calc(100% + 4px);
+  transform:translateX(-50%);
+}
+.loose-evt-zone__title.is-below{
+  top:calc(100% + 4px);
+  transform:translateX(-50%);
 }
 .pot-strip__label{
   position:absolute;left:8px;top:50%;transform:translateY(-50%);
@@ -1442,6 +1471,6 @@ header {
 </aside>
 
 <script src="linea-tiempo-datos.js?v=14"></script>
-<script src="linea-paralela.js?v=20260903ae"></script>
+<script src="linea-paralela.js?v=20260903af"></script>
 </body>
 </html>

@@ -1749,11 +1749,12 @@ const LANE_THEME_SCOPE = {
   rest: ['RESTAURACION', 'OTROS'],
   sig: ['SIGLO-PRIMERO', 'HECHOS', 'OTROS'],
 };
-const LOOSE_EVT_GAP_PX = 20;
-const LOOSE_EVT_SLOT_H = 20;
-const LOOSE_EVT_BASE_PAD = 18;
-const LOOSE_EVT_TOP_PAD = 14;
-const LOOSE_EVT_MIN_H = 56;
+const LOOSE_EVT_TITLE_CHARS = 30;
+const LOOSE_EVT_GAP_PX = 92;
+const LOOSE_EVT_SLOT_H = 38;
+const LOOSE_EVT_BASE_PAD = 22;
+const LOOSE_EVT_TOP_PAD = 20;
+const LOOSE_EVT_MIN_H = 72;
 
 function themesInChipScope(){
   const temas = new Set();
@@ -1865,13 +1866,17 @@ function renderLooseEventFan(layout, chartW, height, opts = {}){
   html += `<span class="loose-evt-zone__label" style="top:${Math.max(4, baseY - 16)}px">Sucesos</span>`;
   for(const it of layout.items){
     const mkColor = markerColorFor(it.ev);
-    const tipoCls = 'evt-marker--' + markerTipoKey(it.ev.tipo);
+    const cap = truncateCaption(it.ev.n, LOOSE_EVT_TITLE_CHARS);
+    const titleCls = it.level > 0 ? 'is-below' : 'is-above';
     if(it.level !== 0){
       const stemTop = Math.min(it.top, baseY);
       const stemH = Math.abs(it.top - baseY);
       html += `<span class="loose-evt-zone__stem" style="left:${it.x}px;top:${stemTop}px;height:${stemH}px" aria-hidden="true"></span>`;
     }
-    html += `<button type="button" class="evt-marker evt-marker--loose evt-marker--zone ${tipoCls}" style="left:${it.x}px;top:${it.top}px;--mk-color:${mkColor}" data-ev="${it.ev.id}" aria-label="${esc(it.ev.n)}"></button>`;
+    /* Mismo tamaño/estilo que los puntos sobre la barra del personaje (compact). */
+    html += `<button type="button" class="evt-marker evt-marker--loose evt-marker--zone evt-marker--in-row" style="left:${it.x}px;top:${it.top}px;--mk-color:${mkColor}" data-ev="${it.ev.id}" aria-label="${esc(it.ev.n)}"${cap.truncated ? ` title="${esc(it.ev.n)}"` : ''}>`;
+    html += `<span class="loose-evt-zone__title ${titleCls}">${esc(cap.text)}</span>`;
+    html += `</button>`;
   }
   return html + `</div>`;
 }
