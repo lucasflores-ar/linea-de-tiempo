@@ -126,9 +126,12 @@ P = [
           'Parece que alrededor del año 748 Hosea es reconocido plenamente como rey o quizás '
           'consigue el apoyo del monarca asirio Tiglat-Piléser III. Reinó 9 años (c. 748-740 a.e.c.); '
           'bajo su reinado Samaria fue sitiada y cayó. (2 Reyes 17:1-6.)')),
+ # ---- Seccion 2: Personajes del reino dividido (tabla S2) ----
+ dict(nombre='Jehoiadá',        inicio=-1005, fin=-875,  seccion='S2', grupo='Profetas', ini_est=1, fin_est=1, nota='sumo sacerdote, aprox. (tabla Reino dividido)'),
+ dict(nombre='Eliás y la viuda de Sarepta', inicio=-970, fin=-900, seccion='S2', grupo='Profetas', ini_est=1, fin_est=1, nota='vidas fusionadas; aprox. (tabla Reino dividido)'),
+ dict(nombre='Eliseo',          inicio=-950,  fin=-850,  seccion='S2', grupo='Profetas', ini_est=1, fin_est=1, nota='aprox. (tabla Reino dividido)'),
+ dict(nombre='La niña israelita', inicio=-925, fin=-825, seccion='S2', grupo='Profetas', ini_est=1, fin_est=1, nota='sierva de Naamán; aprox. (tabla Reino dividido)'),
  # ---- Seccion 2: Profetas del reino dividido (A6) ----
- dict(nombre='Eliás',           inicio=-940,  fin=-917,  seccion='S2', grupo='Profetas', ini_est=1, fin_est=1, nota='ministerio c.940-917 (lámina A6, estimado)'),
- dict(nombre='Eliseo',          inicio=-917,  fin=-850,  seccion='S2', grupo='Profetas', ini_est=1, fin_est=1, nota='ministerio c.917-850 (lámina A6, estimado)'),
  dict(nombre='Jonás',           inicio=-844,  fin=-844,  seccion='S2', grupo='Profetas', ini_est=1, fin_est=1, nota='días de Jeroboán II; año del viaje no fechado'),
  dict(nombre='Joel',            inicio=-830,  fin=-820,  seccion='S2', grupo='Profetas', ini_est=1, fin_est=1, nota='ministerio c.830-820 (lámina A6, estimado)'),
  dict(nombre='Amós',            inicio=-820,  fin=-810,  seccion='S2', grupo='Profetas', ini_est=1, fin_est=1, nota='ministerio c.820-810 (lámina A6, estimado)'),
@@ -141,15 +144,13 @@ P = [
  dict(nombre='Habacuc',         inicio=-628,  fin=-618,  seccion='S2', grupo='Profetas', ini_est=1, fin_est=1, nota='ministerio c.628-618 (lámina A6b, estimado)'),
  dict(nombre='Abdías',          inicio=-618,  fin=-610,  seccion='S2', grupo='Profetas', ini_est=1, fin_est=1, nota='ministerio c.618-610 (lámina A6b, estimado)'),
  # ---- Seccion 2: Destierro en Babilonia ----
- dict(nombre='Daniel',          inicio=-617,  fin=-532,  seccion='S2', grupo='Destierro en Babilonia',
+ dict(nombre='Daniel, Hananías, Misael y Azarías', inicio=-635, fin=-535, seccion='S2', grupo='Destierro en Babilonia',
       ini_est=1, fin_est=1,
-      nota='Deportado c.617; última visión datada 536 (3.º de Ciro); muerte estimada c.532'),
+      nota='vidas fusionadas; aprox. (tabla Destierro en Babilonia). Incluye datos y preguntas de Daniel.'),
  dict(nombre='Ezequiel',        inicio=-617,  fin=-600,  seccion='S2', grupo='Destierro en Babilonia', ini_est=1, fin_est=1, nota='ministerio c.617-600+ (lámina A6b, estimado)'),
- dict(nombre='Hananiás, Misael y Azariás', inicio=-627, fin=-535, seccion='S2', grupo='Destierro en Babilonia', nota='vidas fusionadas, aprox.'),
  # ---- Seccion 2: Despues del destierro ----
- dict(nombre='Ester',           inicio=-484,  fin=-450,  seccion='S2', grupo='Después del destierro', nota='reina ~478-?', ),
- dict(nombre='Esdras',          inicio=-480,  fin=-420,  seccion='S2', grupo='Después del destierro', nota='escriba, aprox.'),
- dict(nombre='Nehemías',        inicio=-470,  fin=-410,  seccion='S2', grupo='Después del destierro', nota='gobernador 455-443'),
+ dict(nombre='Ester',           inicio=-515,  fin=-415,  seccion='S2', grupo='Después del destierro', ini_est=1, fin_est=1, nota='aprox. (tabla Después del destierro)'),
+ dict(nombre='Nehemías',        inicio=-485,  fin=-385,  seccion='S2', grupo='Después del destierro', ini_est=1, fin_est=1, nota='aprox. (tabla Después del destierro)'),
  # ---- Seccion 3: Siglo primero ----
  dict(nombre='Juan el Bautista',inicio=-2,    fin=32,    seccion='S3', grupo='Siglo primero', nota='6 meses mayor que Jesús'),
  dict(nombre='Jesús',           inicio=-2,    fin=33,    seccion='S3', grupo='Siglo primero', nota='2 a.E.C.-33 E.C.'),

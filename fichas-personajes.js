@@ -770,14 +770,14 @@ window.LT_FICHAS = [
     nq:42, nh:1, fuente:'personajes_biblicos,hechos_biblicos,preguntas'
   },
   {
-    id:78, nombre:'Daniel', alt:'', genero:'M', tribu:'Judá',
-    profesion:'Profeta', profesion_sub:'Ficha de Personaje: Reyes', profesion_2:'',
-    nac:'-617', fal:'-532', edad:'85', era:'exi', seccion:'S2', potencia:'Babilonia; Medopersia',
-    lugares:['Babilonia'], hitos:['Nabucodonosor se lleva a los primeros cautivos judíos a Babilonia', 'se hace rey de Judá a Sedequías (617 a. E. C.) [Dan. 1:1-4', '2 Rey. 24:12-18]', 'Sueño de Nabucodonosor (c. 616-536 a. E. C.) [Daniel 2:1-49]', 'Daniel en el foso de los leones (c. 616-536 a. E. C.) [Daniel 6:1-28]', 'Daniel completa el libro de Daniel (c. 536 a. E. C.) [Dan. 10:1]'], rel:['Nabucodonosor (2)', 'Sedequías (1)', 'Darío (1)'],
+    id:78, nombre:'Daniel, Hananías, Misael y Azarías', alt:'daniel; abednego; hananias; mesac; misael y azarias; sadrac', genero:'M', tribu:'Judá',
+    profesion:'Profeta / Jóvenes fieles', profesion_sub:'Ficha de Personaje: Reyes', profesion_2:'',
+    nac:'-635', fal:'-535', edad:'100', era:'exi', seccion:'S2', potencia:'Asiria; Babilonia; Medopersia',
+    lugares:['Babilonia', 'Llanura de Dura'], hitos:['Nabucodonosor se lleva a los primeros cautivos judíos a Babilonia', 'se hace rey de Judá a Sedequías (617 a. E. C.) [Dan. 1:1-4', '2 Rey. 24:12-18]', 'Sueño de Nabucodonosor (c. 616-536 a. E. C.) [Daniel 2:1-49]', 'Horno ardiente (c. 616-536 a. E. C.) [Daniel 3:1-30]', 'Daniel en el foso de los leones (c. 616-536 a. E. C.) [Daniel 6:1-28]', 'Daniel completa el libro de Daniel (c. 536 a. E. C.) [Dan. 10:1]'], rel:['Nabucodonosor (3)', 'Sedequías (1)', 'Darío (1)'],
     primera:'-617', ultima:'-536',
-    versiculo:'Daniel 6:10', opinion_jehova:'Hombre muy amado; recibió visiones proféticas', opinion_ref:'Daniel 9:23; Daniel 10:11', opinion_cita:'',
-    cualidades:'Lealtad; oración constante; valentía; pureza', cualidades_refs:'Daniel 1; Daniel 6', defectos:'', defectos_refs:'', leccion:'La fidelidad diaria a Jehová sostiene al siervo bajo presión de un mundo hostil',
-    nq:107, nh:4, fuente:'personajes_biblicos,hechos_biblicos,fichas_xlsx,preguntas,curacion_manual'
+    versiculo:'Daniel 6:10', opinion_jehova:'Hombre muy amado; recibió visiones proféticas. Compañeros que no adoraron la imagen de oro.', opinion_ref:'Daniel 9:23; Daniel 10:11; Daniel 3:16-30', opinion_cita:'Nuestro Dios a quien servimos puede librarnos. Pero, aunque no lo haga, no serviremos a tu dios.',
+    cualidades:'Lealtad; oración constante; valentía; pureza; fe inquebrantable; unidad', cualidades_refs:'Daniel 1; Daniel 3; Daniel 6', defectos:'', defectos_refs:'', leccion:'La fidelidad diaria a Jehová sostiene al siervo bajo presión de un mundo hostil. Obedecer a Jehová aunque cueste la vida.',
+    nq:107, nh:5, fuente:'personajes_biblicos,hechos_biblicos,fichas_xlsx,preguntas,curacion_manual'
   },
   {
     id:79, nombre:'Ezequiel', alt:'', genero:'M', tribu:'Sacerdote (familia levítica)',
@@ -789,20 +789,11 @@ window.LT_FICHAS = [
     cualidades:'Valentía; obediencia; visión profética', cualidades_refs:'Ezequiel 1-3; Ezequiel 37', defectos:'', defectos_refs:'', leccion:'El siervo de Jehová debe advertir con fidelidad aunque otros no escuchen',
     nq:62, nh:2, fuente:'personajes_biblicos,hechos_biblicos,preguntas,curacion_manual'
   },
-  {
-    id:80, nombre:'Hananiás, Misael y Azariás', alt:'abednego; hananias; mesac; misael y azarias; sadrac', genero:'M', tribu:'',
-    profesion:'Jóvenes fieles', profesion_sub:'', profesion_2:'',
-    nac:'-627', fal:'-535', edad:'92', era:'exi', seccion:'S2', potencia:'Asiria; Babilonia; Medopersia',
-    lugares:['Llanura de Dura'], hitos:['Horno ardiente (c. 616-536 a. E. C.) [Daniel 3:1-30]'], rel:['Nabucodonosor (3)'],
-    primera:'-616', ultima:'-616',
-    versiculo:'Daniel 3:17-18', opinion_jehova:'Compañeros de Daniel que no adoraron la imagen de oro', opinion_ref:'Daniel 3:16-30', opinion_cita:'Nuestro Dios a quien servimos puede librarnos. Pero, aunque no lo haga, no serviremos a tu dios.',
-    cualidades:'Fe inquebrantable; valentía; unidad', cualidades_refs:'Daniel 3', defectos:'', defectos_refs:'', leccion:'Obedecer a Jehová aunque cueste la vida',
-    nq:0, nh:1, fuente:'personajes_biblicos,hechos_biblicos,curacion_manual'
-  },
+  /* Hananiás, Misael y Azariás fusionados con Daniel → id:78 */
   {
     id:81, nombre:'Ester', alt:'', genero:'F', tribu:'',
     profesion:'Reina', profesion_sub:'Ficha de Personaje: Reyes', profesion_2:'',
-    nac:'-484', fal:'-450', edad:'34', era:'res', seccion:'S2', potencia:'Medopersia',
+    nac:'-515', fal:'-415', edad:'100', era:'res', seccion:'S2', potencia:'Medopersia',
     lugares:['Susa'], hitos:['Mardoqueo completa el libro de Ester (c. 475 a. E. C.) [Est. 3:7', '9:32]', 'Conspiración de Hamán (c. 474 a. E. C.) [Ester 3:1-5:14]', 'Triunfo de Ester (c. 473 a. E. C.) [Ester 6:1-10:3]'], rel:['Mardoqueo (3)', 'Hamán (1)', 'Asuero (1)'],
     primera:'-475', ultima:'-473',
     versiculo:'Ester 4:14', opinion_jehova:'Usada para salvar a su pueblo en un momento crítico', opinion_ref:'Ester 4:14-16; Ester 8', opinion_cita:'',
@@ -822,7 +813,7 @@ window.LT_FICHAS = [
   {
     id:83, nombre:'Nehemías', alt:'', genero:'M', tribu:'',
     profesion:'Funcionario', profesion_sub:'Ficha de Personaje: Profetas', profesion_2:'Gobernador',
-    nac:'-470', fal:'-410', edad:'60', era:'res', seccion:'S2', potencia:'Medopersia',
+    nac:'-485', fal:'-385', edad:'100', era:'res', seccion:'S2', potencia:'Medopersia',
     lugares:['Jerusalén'], hitos:['Nehemías reedifica los muros de Jerusalén', 'empieza a cumplirse la profecía de las 70 semanas (455 a. E. C.) [Neh. 1:1', '2:1', 'Ne 2:11', 'Ne 6:15', 'Dan. 9:24]', 'Lectura pública de la Ley (455 a. E. C.) [Nehemías 8:1-10:39]', 'Nehemías completa el libro de Nehemías (d. 443 a. E. C.) [Neh. 5:14]'], rel:['Esdras (1)'],
     primera:'-455', ultima:'-443',
     versiculo:'Nehemías 2:20', opinion_jehova:'Siervo fiel que reconstruyó los muros de Jerusalén con determinación y oración', opinion_ref:'Nehemías 2:20; Nehemías 6:15-16', opinion_cita:'',
@@ -923,7 +914,7 @@ window.LT_FICHAS = [
     id:93, nombre:'Nabucodonosor', alt:'', genero:'M', tribu:'',
     profesion:'Rey', profesion_sub:'Ficha de Personaje: Reyes', profesion_2:'',
     nac:'', fal:'', edad:'', era:'exi', seccion:'S2', potencia:'Asiria; Babilonia',
-    lugares:['Jerusalén', 'Babilonia', 'Llanura de Dura'], hitos:['POTENCIA MUNDIAL: Babilonia (c. 625 a. E. C.) [Contexto histórico (JW: línea de tiempo sección 2)]', 'Nabucodonosor (II) sube al trono de Babilonia (625 a. E. C.) [Jer. 25:1]', 'Nabucodonosor hace rey tributario a Jehoiaquim (620 a. E. C.) [2 Rey. 24:1]', 'Nabucodonosor se lleva a los primeros cautivos judíos a Babilonia', 'se hace rey de Judá a Sedequías (617 a. E. C.) [Dan. 1:1-4', '2 Rey. 24:12-18]', 'Sueño de Nabucodonosor (c. 616-536 a. E. C.) [Daniel 2:1-49]', 'Horno ardiente (c. 616-536 a. E. C.) [Daniel 3:1-30]', 'Locura de Nabucodonosor (c. 616-536 a. E. C.) [Daniel 4:1-37]', 'Nabucodonosor viene contra Judá por tercera vez', 'empieza el sitio de Jerusalén (609 a. E. C.) [2 Rey. 25:1', '2 Reyes  25:2]', 'Quinto mes (Ab), el templo es arrasado y Jerusalén destruida (607 a. E. C.) [2 Rey. 25:8-10', 'Jer. 52:12-14]'], rel:['Hananiás, Misael y Azariás (3)', 'Daniel (2)', 'Sedequías (1)', 'Jehoiaquim (1)'],
+    lugares:['Jerusalén', 'Babilonia', 'Llanura de Dura'], hitos:['POTENCIA MUNDIAL: Babilonia (c. 625 a. E. C.) [Contexto histórico (JW: línea de tiempo sección 2)]', 'Nabucodonosor (II) sube al trono de Babilonia (625 a. E. C.) [Jer. 25:1]', 'Nabucodonosor hace rey tributario a Jehoiaquim (620 a. E. C.) [2 Rey. 24:1]', 'Nabucodonosor se lleva a los primeros cautivos judíos a Babilonia', 'se hace rey de Judá a Sedequías (617 a. E. C.) [Dan. 1:1-4', '2 Rey. 24:12-18]', 'Sueño de Nabucodonosor (c. 616-536 a. E. C.) [Daniel 2:1-49]', 'Horno ardiente (c. 616-536 a. E. C.) [Daniel 3:1-30]', 'Locura de Nabucodonosor (c. 616-536 a. E. C.) [Daniel 4:1-37]', 'Nabucodonosor viene contra Judá por tercera vez', 'empieza el sitio de Jerusalén (609 a. E. C.) [2 Rey. 25:1', '2 Reyes  25:2]', 'Quinto mes (Ab), el templo es arrasado y Jerusalén destruida (607 a. E. C.) [2 Rey. 25:8-10', 'Jer. 52:12-14]'], rel:['Daniel, Hananías, Misael y Azarías (5)', 'Sedequías (1)', 'Jehoiaquim (1)'],
     primera:'-625', ultima:'-607',
     versiculo:'Daniel 4:34-35', opinion_jehova:'Rey orgulloso humillado; reconoció finalmente la soberanía de Jehová', opinion_ref:'Daniel 4:34-37', opinion_cita:'',
     cualidades:'Reconocimiento final de la soberanía de Dios', cualidades_refs:'Daniel 4', defectos:'Arrogancia extrema; exigió adoración como si fuera un dios', defectos_refs:'Daniel 3; Daniel 4:30', leccion:'Nadie puede oponerse permanentemente al propósito de Jehová',
