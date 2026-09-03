@@ -106,8 +106,7 @@ function layoutMetrics(){
   const compact = rowLayout === 'compact';
   const periodRows = compact || wf;
   return {
-    /* Compacto: nombre + línea + fechas en la barra; 54px provocaba solapes. */
-    rowH: periodRows ? (compact ? 72 : 54) : 48,
+    rowH: periodRows ? 54 : 48,
     laneGap: wf ? 12 : 14,
     laneHdr: wf ? 28 : 32,
     axisH: wf ? 36 : 40,
