@@ -68,13 +68,12 @@ P = [
           'Sansón | Dan\n\n'
           '“(?)” significa que no se sabe su tribu con certeza.')),
  # ---- Seccion 2: Un solo reino ----
- dict(nombre='Samuel',          inicio=-1150, fin=-1080, seccion='S2', grupo='Un solo reino', nota='aprox.'),
+ dict(nombre='Samuel',          inicio=-1180, fin=-1080, seccion='S2', grupo='Un solo reino', ini_est=1, fin_est=1, nota='aprox. (tabla Un solo reino)'),
  dict(nombre='Saúl',            inicio=-1117, fin=-1077, seccion='S2', grupo='Un solo reino', nota='rey 1117-1077'),
- dict(nombre='Jonatán',         inicio=-1110, fin=-1077, seccion='S2', grupo='Un solo reino', nota='hijo de Saúl'),
+ dict(nombre='Jonatán',         inicio=-1138, fin=-1078, seccion='S2', grupo='Un solo reino', ini_est=1, fin_est=1, nota='hijo de Saúl; aprox. (tabla Un solo reino)'),
  dict(nombre='David',           inicio=-1107, fin=-1037, seccion='S2', grupo='Un solo reino', nota='70 años; rey 1077-1037'),
- dict(nombre='Abigaíl',         inicio=-1080, fin=-1000, seccion='S2', grupo='Un solo reino', nota='aprox.'),
- dict(nombre='Natán',           inicio=-1060, fin=-990,  seccion='S2', grupo='Un solo reino', nota='profeta, aprox.'),
- dict(nombre='Mefibóset',       inicio=-1075, fin=-1000, seccion='S2', grupo='Un solo reino', nota='hijo de Jonatán, aprox.'),
+ dict(nombre='Abigaíl y Natán', inicio=-1100, fin=-1000, seccion='S2', grupo='Un solo reino', ini_est=1, fin_est=1, nota='vidas fusionadas; aprox. (tabla Un solo reino)'),
+ dict(nombre='Mefibóset',       inicio=-1083, fin=-1000, seccion='S2', grupo='Un solo reino', ini_est=1, fin_est=1, nota='hijo de Jonatán, aprox. (tabla Un solo reino)'),
  dict(nombre='Salomón',         inicio=-1037, fin=-997,  seccion='S2', grupo='Un solo reino', nota='rey 1037-997'),
  # ---- Seccion 2: Reino dividido — reyes de Judá (A6) ----
  dict(nombre='Rehoboam',        inicio=-997,  fin=-980,  seccion='S2', grupo='Reyes de Judá', nota='rey 997-980'),

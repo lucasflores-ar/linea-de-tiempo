@@ -312,4 +312,25 @@ if(preBars < 3 || preEmpty || preLaneStore !== JSON.stringify(['pre'])){
   process.exit(1);
 }
 
+// Un solo reino: tabla curada con fila fusionada Abigaíl y Natán
+const unSoloReino = DATA.personajes.filter(p => p.grupo === 'Un solo reino');
+const usrNames = unSoloReino.map(p => p.n);
+const samuel = unSoloReino.find(p => p.n === 'Samuel');
+const jonatan = unSoloReino.find(p => p.n === 'Jonatán');
+const david = unSoloReino.find(p => p.n === 'David');
+const abigailNathan = unSoloReino.find(p => p.n === 'Abigaíl y Natán');
+const mefiboset = unSoloReino.find(p => p.n === 'Mefibóset');
+console.log('un solo reino:', usrNames.join(' | '));
+if(
+  !samuel || samuel.inicio !== -1180 || samuel.fin !== -1080 ||
+  !jonatan || jonatan.inicio !== -1138 || jonatan.fin !== -1078 ||
+  !david || david.inicio !== -1107 || david.fin !== -1037 ||
+  !abigailNathan || abigailNathan.inicio !== -1100 || abigailNathan.fin !== -1000 ||
+  !mefiboset || mefiboset.inicio !== -1083 || mefiboset.fin !== -1000 ||
+  usrNames.includes('Abigaíl') || usrNames.includes('Natán')
+){
+  console.log('FAIL un solo reino');
+  process.exit(1);
+}
+
 console.log('PASS');
