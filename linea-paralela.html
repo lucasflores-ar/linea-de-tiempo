@@ -483,12 +483,17 @@ html[data-theme="dark"] .focus-marquee{background:rgba(106,159,173,.18)}
 .evt-marker--reforma{background:var(--mk-reforma)}
 .evt-marker--destrucción,.evt-marker--destruccion{background:var(--mk-destruccion)}
 .evt-marker--otro{background:var(--mk-otro)}
+.band-label-zone{
+  position:relative;flex-shrink:0;
+  overflow:visible;
+}
 .band-label{
   position:absolute;top:8px;left:50%;transform:translateX(-50%);
   font:600 11px/1.15 var(--font-sans);letter-spacing:.08em;text-transform:uppercase;
   color:var(--mut);opacity:.9;white-space:nowrap;pointer-events:none;
   max-width:calc(100% - 6px);overflow:hidden;text-overflow:ellipsis;text-align:center;
   display:inline-flex;align-items:center;justify-content:center;gap:4px;
+  z-index:2;
 }
 .band-label--compact{font-size:8px;letter-spacing:.04em;line-height:1.1}
 .row{

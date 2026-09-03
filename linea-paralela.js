@@ -873,16 +873,20 @@ function updateFocusMarqueeDom(x0, x1){
   focusMarqueeEl.classList.add('is-visible');
 }
 
-function bandLabelHtml(text, bandW, slot){
+function bandLabelHtml(text, bandW, slot, opts = {}){
   if(bandW < 44) return '';
   let label = text;
   if(bandW < 72 && label.length > 14){
     label = label.replace(/^Caída de /i, '').replace(/^Exilio /i, '');
   }
   if(bandW < 56 && label.length > 10) label = label.split(/\s+/)[0];
-  const top = 6 + (slot % 4) * 12;
+  const stagger = (slot % 3) * 18;
+  /* En la zona libre inferior: anclar abajo para no pisar barras de personajes. */
+  const pos = opts.anchorBottom
+    ? `bottom:${10 + stagger}px;top:auto`
+    : `top:${6 + stagger}px`;
   const cls = bandW < 80 ? 'band-label band-label--compact' : 'band-label';
-  return `<span class="${cls}" style="top:${top}px" title="${esc(text)}">${esc(label)}</span>`;
+  return `<span class="${cls}" style="${pos}" title="${esc(text)}">${esc(label)}</span>`;
 }
 
 /** Estilo inline de banda de época; fade:'both'|'ini'|'fin' suaviza laterales (fechas estimadas). */
@@ -3191,8 +3195,6 @@ function render(){
   let canvasHtml = buildPhaseAxis(chartW, yMin, yMax, laneData, effectivePx);
   const bandEls = BANDS.filter(b=>b.end >= yMin && b.start <= yMax);
   const potBands = showPotencias ? POTENCIAS.filter(p=>selPots.has(p.id) && p.end >= yMin && p.start <= yMax) : [];
-  let bandLabelSlot = 0;
-  const bandLabelShown = new Set();
 
   if(showPotencias){
     canvasHtml += `<div class="pot-strip" style="width:${chartW}px"><span class="pot-strip__label">Potencias mundiales</span>`;
@@ -3205,20 +3207,17 @@ function render(){
     canvasHtml += `</div>`;
   }
 
-  const hasLaneTracks = laneData.some(b=>b.tracks.length);
-
   for(const block of laneData){
     if(!block.tracks.length) continue;
     const blockH = block.tracks.reduce((h, t)=> h + trackRowHeight(L, t.people.length), 0);
     canvasHtml += `<div class="lane-block" style="min-height:${blockH}px;width:${chartW}px">`;
 
+    /* Fondos de época sin título: los títulos van en la zona libre de debajo. */
     for(const b of bandEls){
       const x1 = yearToX(Math.max(b.start, yMin), yMin, yMax, chartW);
       const x2 = yearToX(Math.min(b.end, yMax), yMin, yMax, chartW);
       const bw = Math.max(2, x2 - x1);
-      const showLabel = !bandLabelShown.has(b.id);
-      if(showLabel) bandLabelShown.add(b.id);
-      canvasHtml += `<div class="band ${b.cls}" style="${bandInlineStyle(b, x1, bw, blockH)}" title="${esc(b.label)}">${showLabel ? bandLabelHtml(b.label, bw, bandLabelSlot++) : ''}</div>`;
+      canvasHtml += `<div class="band ${b.cls}" style="${bandInlineStyle(b, x1, bw, blockH)}" title="${esc(b.label)}"></div>`;
     }
     for(const p of potBands){
       const x1 = yearToX(Math.max(p.start, yMin), yMin, yMax, chartW);
@@ -3235,25 +3234,32 @@ function render(){
     yOff += L.laneGap;
   }
 
-  if(looseLayout){
+  let labelZoneH = looseFanH;
+  if(!looseLayout && freeBelow > 48){
+    labelZoneH = freeBelow;
+  }
+
+  if(looseLayout || labelZoneH > 0){
     let bandsHtml = '';
-    if(!hasLaneTracks){
-      for(const b of bandEls){
-        const x1 = yearToX(Math.max(b.start, yMin), yMin, yMax, chartW);
-        const x2 = yearToX(Math.min(b.end, yMax), yMin, yMax, chartW);
-        const bw = Math.max(2, x2 - x1);
-        const showLabel = !bandLabelShown.has(b.id);
-        if(showLabel) bandLabelShown.add(b.id);
-        bandsHtml += `<div class="band ${b.cls}" style="${bandInlineStyle(b, x1, bw, looseFanH)}" title="${esc(b.label)}">${showLabel ? bandLabelHtml(b.label, bw, bandLabelSlot++) : ''}</div>`;
-      }
-      for(const p of potBands){
-        const x1 = yearToX(Math.max(p.start, yMin), yMin, yMax, chartW);
-        const x2 = yearToX(Math.min(p.end, yMax), yMin, yMax, chartW);
-        bandsHtml += `<div class="band ${p.cls}" style="left:${x1}px;width:${Math.max(2,x2-x1)}px;top:0;height:${looseFanH}px;opacity:.55"></div>`;
-      }
+    let slot = 0;
+    for(const b of bandEls){
+      const x1 = yearToX(Math.max(b.start, yMin), yMin, yMax, chartW);
+      const x2 = yearToX(Math.min(b.end, yMax), yMin, yMax, chartW);
+      const bw = Math.max(2, x2 - x1);
+      bandsHtml += `<div class="band ${b.cls}" style="${bandInlineStyle(b, x1, bw, labelZoneH || looseFanH)}" title="${esc(b.label)}">${bandLabelHtml(b.label, bw, slot++, { anchorBottom: true })}</div>`;
     }
-    canvasHtml += renderLooseEventFan(looseLayout, chartW, looseFanH, { bandsHtml });
-    yOff += looseFanH;
+    for(const p of potBands){
+      const x1 = yearToX(Math.max(p.start, yMin), yMin, yMax, chartW);
+      const x2 = yearToX(Math.min(p.end, yMax), yMin, yMax, chartW);
+      bandsHtml += `<div class="band ${p.cls}" style="left:${x1}px;width:${Math.max(2,x2-x1)}px;top:0;height:${labelZoneH || looseFanH}px;opacity:.55"></div>`;
+    }
+    if(looseLayout){
+      canvasHtml += renderLooseEventFan(looseLayout, chartW, looseFanH, { bandsHtml });
+      yOff += looseFanH;
+    } else {
+      canvasHtml += `<div class="band-label-zone" style="width:${chartW}px;height:${labelZoneH}px">${bandsHtml}</div>`;
+      yOff += labelZoneH;
+    }
   }
 
   const totalH = yOff;
