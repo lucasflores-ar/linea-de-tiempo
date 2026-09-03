@@ -268,22 +268,22 @@ const LANE_META = {
 };
 
 const THEME_LANE_META = {
-  GENESIS: { key:'gen', color:'var(--c-pre)', label:'Sucesos · Génesis' },
-  EXODO: { key:'exo', color:'var(--c-egi)', label:'Sucesos · Éxodo' },
-  CONQUISTA: { key:'con', color:'var(--c-con)', label:'Sucesos · Conquista' },
-  JUECES: { key:'tjue', color:'var(--c-jue)', label:'Sucesos · Jueces' },
-  REYES: { key:'tre', color:'var(--c-mon)', label:'Sucesos · Reyes' },
-  PROFETAS: { key:'tpro', color:'var(--c-div)', label:'Sucesos · Profetas' },
-  EXILIO: { key:'exi', color:'var(--c-exi)', label:'Sucesos · Exilio' },
-  RESTAURACION: { key:'tres', color:'var(--c-res)', label:'Sucesos · Restauración' },
-  'SIGLO-PRIMERO': { key:'tsig', color:'var(--c-ec)', label:'Sucesos · Siglo primero' },
-  HECHOS: { key:'hec', color:'var(--c-pat)', label:'Sucesos · Hechos' },
+  GENESIS: { key:'pre', color:'var(--c-pre)', label:'Sucesos · Génesis' },
+  EXODO: { key:'postd', color:'var(--c-egi)', label:'Sucesos · Éxodo' },
+  CONQUISTA: { key:'jue', color:'var(--c-con)', label:'Sucesos · Conquista' },
+  JUECES: { key:'jue', color:'var(--c-jue)', label:'Sucesos · Jueces' },
+  REYES: { key:'jud', color:'var(--c-mon)', label:'Sucesos · Reyes' },
+  PROFETAS: { key:'pro', color:'var(--c-div)', label:'Sucesos · Profetas' },
+  EXILIO: { key:'babil', color:'var(--c-exi)', label:'Sucesos · Exilio' },
+  RESTAURACION: { key:'rest', color:'var(--c-res)', label:'Sucesos · Restauración' },
+  'SIGLO-PRIMERO': { key:'sig', color:'var(--c-ec)', label:'Sucesos · Siglo primero' },
+  HECHOS: { key:'sig', color:'var(--c-pat)', label:'Sucesos · Hechos' },
 };
 
 /** Subdivisiones de Escritura NT (ver curacion/escritura_categorias.json). */
 const NT_ESCRITURA_CATEGORIES = [
   { id:'nt-ev',  tema:'NT-EVANGELIOS',   label:'Evangelios',    desc:'Vida, ministerio y enseñanzas de Jesús',           color:'var(--c-nt-ev)',  cron:36   },
-  { id:'nt-hec', tema:'NT-HECHOS',       label:'Hechos',        desc:'Nacimiento y expansión de la iglesia primitiva',    color:'var(--c-nt-hec)', cron:36.1 },
+  { id:'nt-hec', tema:'NT-HECHOS',       label:'Hechos (NT)',   desc:'Nacimiento y expansión de la iglesia primitiva',    color:'var(--c-nt-hec)', cron:36.1 },
   { id:'nt-car', tema:'NT-CARTAS',       label:'Cartas',        desc:'Epístolas y Apocalipsis',                           color:'var(--c-nt-car)', cron:36.2, extraTemas:['NT-APOCALIPSIS'] },
 ];
 NT_ESCRITURA_CATEGORIES.forEach(c=>{
@@ -292,33 +292,32 @@ NT_ESCRITURA_CATEGORIES.forEach(c=>{
 
 const LANE_FILTERS = [
   { id:'pre',   cron:-5000, mode:'personaje', grupo:'Antes del Diluvio', label:'Antes del Diluvio', color:'var(--c-pre)' },
-  { id:'gen',   cron:-4000, mode:'tema', tema:'GENESIS', label:'Génesis', color:'var(--c-pre)', extraTemas:['AT-PENTATEUCO'] },
   { id:'postd', cron:-3500, mode:'personaje', grupo:'Después del Diluvio', label:'Post-diluvio', color:'var(--c-pat)' },
-  { id:'exo',   cron:-1513, mode:'tema', tema:'EXODO', label:'Éxodo', color:'var(--c-egi)', extraTemas:['AT-PENTATEUCO'] },
-  { id:'con',   cron:-1473, mode:'tema', tema:'CONQUISTA', label:'Conquista', color:'var(--c-con)', extraTemas:['AT-HISTORICOS'] },
   { id:'jue',   cron:-1380, mode:'personaje', grupo:'Época de los jueces', label:'Jueces', color:'var(--lane-jue)' },
-  { id:'tjue',  cron:-1370, mode:'tema', tema:'JUECES', label:'Jueces (sucesos)', color:'var(--c-jue)', extraTemas:['AT-HISTORICOS'] },
   { id:'uni',   cron:-1050, mode:'personaje', grupo:'Un solo reino', label:'Un solo reino', color:'var(--lane-uni)' },
   { id:'jud',   cron:-996,  mode:'personaje', grupo:'Reyes de Judá', label:'Reyes de Judá', color:'var(--lane-jud)' },
   { id:'isr',   cron:-995,  mode:'personaje', grupo:'Reyes de Israel', label:'Reyes de Israel', color:'var(--lane-isr)' },
-  { id:'tre',   cron:-994,  mode:'tema', tema:'REYES', label:'Reyes (sucesos)', color:'var(--c-mon)', extraTemas:['AT-HISTORICOS', 'AT-POETICOS'] },
   { id:'pro',   cron:-900,  mode:'personaje', grupo:'Profetas', label:'Profetas', color:'var(--lane-pro)' },
-  { id:'tpro',  cron:-890,  mode:'tema', tema:'PROFETAS', label:'Profetas (sucesos)', color:'var(--c-div)', extraTemas:['AT-PROF-MAYORES', 'AT-PROF-MENORES'] },
   { id:'babil', cron:-607,  mode:'personaje', grupo:'Destierro en Babilonia', label:'Destierro', color:'var(--c-exi)' },
-  { id:'exi',   cron:-606,  mode:'tema', tema:'EXILIO', label:'Exilio', color:'var(--c-exi)' },
   { id:'rest',  cron:-537,  mode:'personaje', grupo:'Después del destierro', label:'Postexilio', color:'var(--c-res)' },
-  { id:'tres',  cron:-536,  mode:'tema', tema:'RESTAURACION', label:'Restauración', color:'var(--c-res)', extraTemas:['OTROS'] },
   { id:'sig',   cron:-100,  mode:'personaje', grupo:'Siglo primero', label:'Siglo primero', color:'var(--c-ec)' },
   { id:'jes',   cron:30,    mode:'ministerio', label:'Ministerio de Jesús', color:'var(--lane-jes)' },
   { id:'sem',   cron:33,    mode:'ultima_semana', label:'Última semana', color:'var(--lane-sem)' },
-  { id:'tsig',  cron:34,    mode:'tema', tema:'SIGLO-PRIMERO', label:'Siglo primero (sucesos)', color:'var(--c-ec)', extraTemas:['OTROS'] },
-  { id:'hec',   cron:35,    mode:'tema', tema:'HECHOS', label:'Hechos', color:'var(--c-pat)' },
   { id:'nt-ev', cron:36,    mode:'tema', tema:'NT-EVANGELIOS', label:'Evangelios', color:'var(--c-nt-ev)' },
   { id:'nt-hec', cron:36.1, mode:'tema', tema:'NT-HECHOS', label:'Hechos (NT)', color:'var(--c-nt-hec)' },
   { id:'nt-car', cron:36.2, mode:'tema', tema:'NT-CARTAS', label:'Cartas', color:'var(--c-nt-car)', extraTemas:['NT-APOCALIPSIS'] },
 ];
 const LANE_ORDER = [...LANE_FILTERS].sort((a, b)=>a.cron - b.cron).map(f=>f.id);
 const NT_LANE_IDS = new Set(['nt-ev', 'nt-hec', 'nt-car']);
+/** Chips de sucesos temáticos eliminados: migrar localStorage. */
+const REMOVED_TEMA_LANES = new Set([
+  'gen','exo','con','tjue','tre','tpro','exi','tres','tsig','hec',
+]);
+const REMOVED_TEMA_FALLBACK = {
+  gen: 'pre', exo: 'postd', con: 'jue', tjue: 'jue',
+  tre: 'jud', tpro: 'pro', exi: 'babil', tres: 'rest',
+  tsig: 'sig', hec: 'sig',
+};
 
 function isNtEscrituraLane(f){
   return f && NT_LANE_IDS.has(f.id);
@@ -484,9 +483,14 @@ if(isFirstVisit){
     && PREV_DEFAULT_LANES.every(id => storedLanes.includes(id));
   selLanes = new Set(
     (lanesMigratedLegacy || lanesMigratedPrev ? DEFAULT_LANES : lanesInit)
+      .flatMap(id=>{
+        if(REMOVED_TEMA_LANES.has(id)) return REMOVED_TEMA_FALLBACK[id] ? [REMOVED_TEMA_FALLBACK[id]] : [];
+        return [id];
+      })
       .filter(id=>LANE_ORDER.includes(id)),
   );
-  if(lanesMigratedLegacy || lanesMigratedPrev){
+  const hadRemovedTema = Array.isArray(lanesInit) && lanesInit.some(id=> REMOVED_TEMA_LANES.has(id));
+  if(lanesMigratedLegacy || lanesMigratedPrev || hadRemovedTema){
     try{ localStorage.setItem('lt-par-lanes', JSON.stringify([...selLanes])); }catch(e){}
   }
 }
@@ -1569,8 +1573,8 @@ function laneFilterHasContent(f){
     return (D.ultima_semana_dias || []).some(x=>(x.eventos || []).length);
   }
   if(f.mode === 'tema'){
-    /* Filas de sucesos temáticos (no NT): solo tienen sentido con «Sucesos» activos. */
-    if(!isNtEscrituraLane(f) && !showMarkers) return false;
+    /* Solo quedan chips NT (Evangelios / Hechos / Cartas) como filas de escritura. */
+    if(!isNtEscrituraLane(f)) return false;
     const temas = [f.tema, ...(f.extraTemas || [])];
     return D.eventos.some(e=>
       temas.some(t=>(e.t||[]).includes(t)) && chartYear(e)!=null && e.tipo !== 'reinado',
@@ -1734,14 +1738,14 @@ function eventBelongsOnPersonBar(ev, pe){
   return eventSubjectMatchesPerson(ev, pe, atStart);
 }
 
-/** Temas de sucesos ligados a cada chip de personajes. */
+/** Temas de sucesos ligados a cada chip de época/personajes. */
 const LANE_THEME_SCOPE = {
-  pre: ['GENESIS'],
-  postd: ['GENESIS'],
-  jue: ['JUECES'],
-  uni: ['REYES'],
-  jud: ['REYES'],
-  isr: ['REYES'],
+  pre: ['GENESIS', 'AT-PENTATEUCO'],
+  postd: ['GENESIS', 'EXODO', 'CONQUISTA', 'AT-PENTATEUCO', 'AT-HISTORICOS'],
+  jue: ['JUECES', 'CONQUISTA', 'AT-HISTORICOS'],
+  uni: ['REYES', 'AT-HISTORICOS', 'AT-POETICOS'],
+  jud: ['REYES', 'AT-HISTORICOS', 'AT-POETICOS'],
+  isr: ['REYES', 'AT-HISTORICOS'],
   pro: ['PROFETAS', 'AT-PROF-MAYORES', 'AT-PROF-MENORES'],
   babil: ['EXILIO'],
   rest: ['RESTAURACION', 'OTROS'],
@@ -3950,7 +3954,7 @@ window.addEventListener('resize', ()=>{ if(autoFit) render._scrolled = false; sc
     {
       target: '#lane-filters',
       title: 'Filtrar filas',
-      body: 'Activá solo las épocas que te interesan: Génesis, Reyes, Hechos, Escritura del NT, etc. Los colores de la leyenda indican Judá, Israel, profetas y más.',
+      body: 'Activá las épocas que te interesan (Destierro, Reyes, Siglo primero…). Con «Sucesos» en opciones aparecen los hechos de esa época: en la barra del personaje si le pertenecen, o como puntos sueltos si no.',
     },
     {
       target: '#search',
