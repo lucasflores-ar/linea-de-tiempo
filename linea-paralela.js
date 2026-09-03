@@ -2718,10 +2718,6 @@ function renderPersonBar(block, pe, draw, x, w, dataAttr, ini, fin, layoutOpts){
   return html;
 }
 
-function blockShowsHeader(block){
-  return !block.meta?.hideHeader;
-}
-
 function renderTrackCanvas(block, track, q, yMin, yMax, chartW, layoutOpts, rowMap, yOff, trackH){
   let html = `<div class="row" style="width:${chartW}px;height:${trackH}px">`;
   if(vizStyle !== 'waterfall') html += `<div class="row-rail"></div>`;
@@ -2905,9 +2901,6 @@ function render(){
 
   for(const block of laneData){
     if(!block.tracks.length) continue;
-    if(rowLayout !== 'compact' && blockShowsHeader(block)){
-      labelsHtml += `<div class="lane-hdr"><span class="dot" style="background:${block.meta.color}"></span>${block.meta.label}</div>`;
-    }
     totalTracks += block.tracks.length;
     for(const track of block.tracks){
       for(const pe of track.people){
@@ -2965,11 +2958,6 @@ function render(){
       const x1 = yearToX(Math.max(p.start, yMin), yMin, yMax, chartW);
       const x2 = yearToX(Math.min(p.end, yMax), yMin, yMax, chartW);
       canvasHtml += `<div class="band ${p.cls}" style="left:${x1}px;width:${Math.max(2,x2-x1)}px;top:0;height:${blockH}px;opacity:.55"></div>`;
-    }
-
-    if(blockShowsHeader(block)){
-      const label = vizStyle === 'waterfall' ? block.meta.label.toUpperCase() : block.meta.label;
-      canvasHtml += `<div class="lane-hdr lane-hdr--overlay"><span class="lane-hdr__text">${esc(label)}</span></div>`;
     }
 
     for(const track of block.tracks){
@@ -3320,11 +3308,6 @@ function exportPng(){
   let yOff = L.potOffset;
   for(const block of L.laneData){
     if(!block.tracks.length) continue;
-    const tracksH = block.tracks.reduce((h, t)=> h + trackRowHeight(M, t.people.length), 0);
-    if(blockShowsHeader(block)){
-      const label = wf ? block.meta.label.toUpperCase() : block.meta.label;
-      svg += `<text x="12" y="${yOff + tracksH / 2 + 4}" fill="${mut}" font-family="${wf?'Inter,Segoe UI,sans-serif':'Karla,Segoe UI,sans-serif'}" font-size="10" font-weight="700" letter-spacing="1.4">${esc(label)}</text>`;
-    }
     for(const track of block.tracks){
       const trackH = trackRowHeight(M, track.people.length);
       for(const pe of track.people){
