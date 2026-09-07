@@ -64,6 +64,7 @@ linea-de-tiempo/
 ├── docs/
 │   ├── AUDITORIA-UI-UX-Y-PLAN.md
 │   ├── LEGIBILIDAD-TIMELINE.md  # bitácora UI/UX: cada decisión visual y su razón
+│   ├── REVISION-DATOS.md    # todo cambio de datos, con casillas para revisar a mano
 │   └── mejora-exploracion/  # baseline + perf + entrega Paso 7
 ├── index.html               # legado vis-timeline
 └── vendor/                  # vis-timeline local (legado)
