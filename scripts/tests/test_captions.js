@@ -109,8 +109,19 @@ ok(/const caja = shouldRenderAsPoint\(pe, spanW\)/.test(JS),
 ok(/const ba = visualBarBoundsCached\(a, yMin, yMax, chartW\)/.test(JS),
   'periodVisualClash debería usar la versión cacheada');
 ok(/const textWidthMemo = new Map\(\)/.test(JS), 'falta la memoria de medidas de texto');
-ok(/document\.fonts\.ready\.then\(\(\)=>textWidthMemo\.clear\(\)\)/.test(JS),
-  'la memoria de medidas debería vaciarse al terminar de cargar las fuentes');
+
+/* Vaciar la caché no alcanzaba: el primer layout se calcula con las métricas
+   de la fuente de reserva, y si al llegar la real no se vuelve a dibujar, el
+   gráfico queda con anchos de caption que ya no corresponden. */
+ok(/document\.fonts\.ready\.then\(invalidarMedidas\)/.test(JS),
+  'la carga de fuentes debería disparar invalidarMedidas');
+const inval = (JS.match(/function invalidarMedidas\(\)\{[\s\S]*?\n\}/) || [''])[0];
+ok(/textWidthMemo\.clear\(\)/.test(inval),
+  'invalidarMedidas debería vaciar la memoria de medidas de texto');
+ok(/boundsCache\.clear\(\)/.test(inval),
+  'invalidarMedidas debería vaciar la caché de geometría de barras');
+ok(/scheduleRender\(\)/.test(inval),
+  'invalidarMedidas debería volver a dibujar, no solo vaciar cachés');
 
 if(fails.length){
   console.error('FAIL scripts/tests/test_captions.js');

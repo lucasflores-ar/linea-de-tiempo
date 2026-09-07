@@ -1,0 +1,561 @@
+{
+  "ministerio movil 1.2": {
+    "cajas": 12,
+    "cruces": [
+      {
+        "a": "5 sucesos",
+        "b": "30 E.C.",
+        "filaA": 1,
+        "filaB": 2,
+        "solapeY": 7.73,
+        "solapeX": 51.73
+      },
+      {
+        "a": "14 sucesos",
+        "b": "31 E.C.",
+        "filaA": 2,
+        "filaB": 3,
+        "solapeY": 7.73,
+        "solapeX": 51.72
+      },
+      {
+        "a": "22 sucesos",
+        "b": "32 E.C.",
+        "filaA": 3,
+        "filaB": 4,
+        "solapeY": 7.73,
+        "solapeX": 51.73
+      }
+    ],
+    "recortes": [
+      {
+        "txt": "29 E.C.",
+        "fuera": 3.86
+      },
+      {
+        "txt": "41 sucesos",
+        "fuera": 3.88
+      }
+    ],
+    "alturas": [
+      54
+    ],
+    "escalaEfectiva": "1.2"
+  },
+  "ministerio movil 1": {
+    "cajas": 12,
+    "cruces": [
+      {
+        "a": "5 sucesos",
+        "b": "30 E.C.",
+        "filaA": 1,
+        "filaB": 2,
+        "solapeY": 2.44,
+        "solapeX": 51.73
+      },
+      {
+        "a": "14 sucesos",
+        "b": "31 E.C.",
+        "filaA": 2,
+        "filaB": 3,
+        "solapeY": 2.44,
+        "solapeX": 51.72
+      },
+      {
+        "a": "22 sucesos",
+        "b": "32 E.C.",
+        "filaA": 3,
+        "filaB": 4,
+        "solapeY": 2.44,
+        "solapeX": 51.73
+      }
+    ],
+    "recortes": [
+      {
+        "txt": "29 E.C.",
+        "fuera": 1.22
+      },
+      {
+        "txt": "41 sucesos",
+        "fuera": 1.22
+      }
+    ],
+    "alturas": [
+      54
+    ],
+    "escalaEfectiva": "1"
+  },
+  "ministerio movil 2": {
+    "cajas": 12,
+    "cruces": [
+      {
+        "a": "5 sucesos",
+        "b": "30 E.C.",
+        "filaA": 1,
+        "filaB": 2,
+        "solapeY": 24,
+        "solapeX": 80.23
+      },
+      {
+        "a": "14 sucesos",
+        "b": "31 E.C.",
+        "filaA": 2,
+        "filaB": 3,
+        "solapeY": 24,
+        "solapeX": 78.72
+      },
+      {
+        "a": "22 sucesos",
+        "b": "32 E.C.",
+        "filaA": 3,
+        "filaB": 4,
+        "solapeY": 24,
+        "solapeX": 78.23
+      }
+    ],
+    "recortes": [
+      {
+        "txt": "Antes de bautizarse",
+        "fuera": 5.44
+      },
+      {
+        "txt": "3 a.E.C. – 12 E.C.",
+        "fuera": 5.45
+      },
+      {
+        "txt": "29 E.C.",
+        "fuera": 14.44
+      },
+      {
+        "txt": "33 E.C.",
+        "fuera": 5.44
+      },
+      {
+        "txt": "41 sucesos",
+        "fuera": 14.45
+      }
+    ],
+    "alturas": [
+      54
+    ],
+    "escalaEfectiva": "2"
+  },
+  "ultima semana 1440 1.4": {
+    "cajas": 20,
+    "cruces": [
+      {
+        "a": "33 E.C.",
+        "b": "2 sucesos próximos",
+        "filaA": 0,
+        "filaB": 1,
+        "solapeY": 7.02,
+        "solapeX": 97.2
+      },
+      {
+        "a": "3 en proximidad visual",
+        "b": "2 sucesos próximos",
+        "filaA": 0,
+        "filaB": 1,
+        "solapeY": 13.02,
+        "solapeX": 36.92
+      },
+      {
+        "a": "3 en proximidad visual",
+        "b": "9 sucesos próximos",
+        "filaA": 0,
+        "filaB": 1,
+        "solapeY": 13.02,
+        "solapeX": 36.92
+      },
+      {
+        "a": "2 en proximidad visual",
+        "b": "9 sucesos próximos",
+        "filaA": 0,
+        "filaB": 1,
+        "solapeY": 13.02,
+        "solapeX": 36.92
+      },
+      {
+        "a": "2 en proximidad visual",
+        "b": "Arreglos para la Pascua",
+        "filaA": 0,
+        "filaB": 1,
+        "solapeY": 7.02,
+        "solapeX": 49.42
+      },
+      {
+        "a": "13 en proximidad visual",
+        "b": "Arreglos para la Pascua",
+        "filaA": 0,
+        "filaB": 1,
+        "solapeY": 7.02,
+        "solapeX": 52.92
+      },
+      {
+        "a": "13 en proximidad visual",
+        "b": "Guardia para la tumba",
+        "filaA": 0,
+        "filaB": 1,
+        "solapeY": 7.02,
+        "solapeX": 52.42
+      },
+      {
+        "a": "2 en proximidad visual",
+        "b": "Guardia para la tumba",
+        "filaA": 0,
+        "filaB": 1,
+        "solapeY": 7.02,
+        "solapeX": 48.92
+      }
+    ],
+    "recortes": [
+      {
+        "txt": "3 sucesos próximos",
+        "fuera": 6.5
+      },
+      {
+        "txt": "2 sucesos próximos",
+        "fuera": 6.5
+      },
+      {
+        "txt": "13 sucesos próximos",
+        "fuera": 6.5
+      },
+      {
+        "txt": "2 sucesos próximos",
+        "fuera": 6.5
+      },
+      {
+        "txt": "2 en proximidad visual",
+        "fuera": 6.52
+      },
+      {
+        "txt": "9 en proximidad visual",
+        "fuera": 6.52
+      },
+      {
+        "txt": "13 de nisán",
+        "fuera": 0.52
+      },
+      {
+        "txt": "15 de nisán (sábado)",
+        "fuera": 0.52
+      }
+    ],
+    "alturas": [
+      54
+    ],
+    "escalaEfectiva": "1.4"
+  },
+  "ultima semana 1440 2": {
+    "cajas": 20,
+    "cruces": [
+      {
+        "a": "33 E.C.",
+        "b": "2 sucesos próximos",
+        "filaA": 0,
+        "filaB": 1,
+        "solapeY": 22.89,
+        "solapeX": 109.7
+      },
+      {
+        "a": "3 en proximidad visual",
+        "b": "2 sucesos próximos",
+        "filaA": 0,
+        "filaB": 1,
+        "solapeY": 24,
+        "solapeX": 61.92
+      },
+      {
+        "a": "3 en proximidad visual",
+        "b": "9 sucesos próximos",
+        "filaA": 0,
+        "filaB": 1,
+        "solapeY": 24,
+        "solapeX": 61.92
+      },
+      {
+        "a": "2 en proximidad visual",
+        "b": "9 sucesos próximos",
+        "filaA": 0,
+        "filaB": 1,
+        "solapeY": 24,
+        "solapeX": 61.92
+      },
+      {
+        "a": "2 en proximidad visual",
+        "b": "Arreglos para la Pascua",
+        "filaA": 0,
+        "filaB": 1,
+        "solapeY": 22.89,
+        "solapeX": 61.92
+      },
+      {
+        "a": "13 en proximidad visual",
+        "b": "Arreglos para la Pascua",
+        "filaA": 0,
+        "filaB": 1,
+        "solapeY": 22.89,
+        "solapeX": 61.92
+      },
+      {
+        "a": "13 en proximidad visual",
+        "b": "Guardia para la tumba",
+        "filaA": 0,
+        "filaB": 1,
+        "solapeY": 22.89,
+        "solapeX": 61.92
+      },
+      {
+        "a": "2 en proximidad visual",
+        "b": "Guardia para la tumba",
+        "filaA": 0,
+        "filaB": 1,
+        "solapeY": 22.89,
+        "solapeX": 61.92
+      },
+      {
+        "a": "2 en proximidad visual",
+        "b": "Ascensión de Jesús",
+        "filaA": 0,
+        "filaB": 1,
+        "solapeY": 22.89,
+        "solapeX": 28.84
+      }
+    ],
+    "recortes": [
+      {
+        "txt": "Llega a Betania seis días…",
+        "fuera": 8.44
+      },
+      {
+        "txt": "3 sucesos próximos",
+        "fuera": 14.44
+      },
+      {
+        "txt": "2 sucesos próximos",
+        "fuera": 14.44
+      },
+      {
+        "txt": "13 sucesos próximos",
+        "fuera": 14.44
+      },
+      {
+        "txt": "2 sucesos próximos",
+        "fuera": 14.44
+      },
+      {
+        "txt": "2 en proximidad visual",
+        "fuera": 14.45
+      },
+      {
+        "txt": "9 en proximidad visual",
+        "fuera": 14.45
+      },
+      {
+        "txt": "13 de nisán",
+        "fuera": 8.45
+      },
+      {
+        "txt": "15 de nisán (sábado)",
+        "fuera": 8.45
+      },
+      {
+        "txt": "33 E.C.",
+        "fuera": 8.45
+      }
+    ],
+    "alturas": [
+      54
+    ],
+    "escalaEfectiva": "2"
+  },
+  "reyes 1920 1.4": {
+    "cajas": 108,
+    "cruces": [
+      {
+        "a": "628 a.E.C.",
+        "b": "Amón",
+        "filaA": 0,
+        "filaB": 1,
+        "solapeY": 1.02,
+        "solapeX": 32.09
+      },
+      {
+        "a": "913 a.E.C. – 905 a.E.C.",
+        "b": "Ocozías (Judá)",
+        "filaA": 3,
+        "filaB": 4,
+        "solapeY": 1.02,
+        "solapeX": 133.72
+      },
+      {
+        "a": "628 a.E.C. – 618 a.E.C.",
+        "b": "Joaquín",
+        "filaA": 3,
+        "filaB": 4,
+        "solapeY": 1.02,
+        "solapeX": 61.97
+      },
+      {
+        "a": "618 a.E.C. – 617 a.E.C.",
+        "b": "Sedequías",
+        "filaA": 4,
+        "filaB": 5,
+        "solapeY": 1.02,
+        "solapeX": 54.45
+      },
+      {
+        "a": "780 a.E.C. – 770 a.E.C.",
+        "b": "Salum",
+        "filaA": 6,
+        "filaB": 7,
+        "solapeY": 1.02,
+        "solapeX": 65.53
+      },
+      {
+        "a": "780 a.E.C. – 770 a.E.C.",
+        "b": "Hosea",
+        "filaA": 6,
+        "filaB": 7,
+        "solapeY": 1.02,
+        "solapeX": 58.67
+      },
+      {
+        "a": "952 a.E.C. – 951 a.E.C.",
+        "b": "Zimrí",
+        "filaA": 9,
+        "filaB": 10,
+        "solapeY": 1.02,
+        "solapeX": 73
+      },
+      {
+        "a": "792 a.E.C. – 791 a.E.C.",
+        "b": "Pecahías",
+        "filaA": 9,
+        "filaB": 10,
+        "solapeY": 1.02,
+        "solapeX": 102.14
+      },
+      {
+        "a": "951 a.E.C.",
+        "b": "Omrí",
+        "filaA": 10,
+        "filaB": 11,
+        "solapeY": 1.02,
+        "solapeX": 68.13
+      },
+      {
+        "a": "940 a.E.C. – 932 a.E.C.",
+        "b": "Jehoram (Israel)",
+        "filaA": 11,
+        "filaB": 12,
+        "solapeY": 1.02,
+        "solapeX": 82.23
+      },
+      {
+        "a": "844 a.E.C.",
+        "b": "Joel",
+        "filaA": 13,
+        "filaB": 14,
+        "solapeY": 1.02,
+        "solapeX": 73
+      },
+      {
+        "a": "830 a.E.C. – 820 a.E.C.",
+        "b": "Amós",
+        "filaA": 14,
+        "filaB": 15,
+        "solapeY": 1.02,
+        "solapeX": 113.09
+      },
+      {
+        "a": "628 a.E.C. – 618 a.E.C.",
+        "b": "Abdías",
+        "filaA": 16,
+        "filaB": 17,
+        "solapeY": 1.02,
+        "solapeX": 91.33
+      }
+    ],
+    "recortes": [
+      {
+        "txt": "617 a.E.C. – 607 a.E.C.",
+        "fuera": 0.52
+      },
+      {
+        "txt": "917 a.E.C. – 905 a.E.C.",
+        "fuera": 0.52
+      },
+      {
+        "txt": "618 a.E.C. – 610 a.E.C.",
+        "fuera": 0.52
+      }
+    ],
+    "alturas": [
+      54
+    ],
+    "escalaEfectiva": "1.4"
+  },
+  "jueces 1440 2 waterfall": {
+    "cajas": 2,
+    "cruces": [],
+    "recortes": [
+      {
+        "txt": "Noemí, Rut, Débora, Barac, J",
+        "fuera": 5.94
+      },
+      {
+        "txt": "1450 a.E.C. – 1120 a.E.C.",
+        "fuera": 4.95
+      }
+    ],
+    "alturas": [
+      54
+    ],
+    "escalaEfectiva": "2"
+  },
+  "ministerio 1024 1.4": {
+    "cajas": 12,
+    "cruces": [
+      {
+        "a": "5 sucesos",
+        "b": "30 E.C.",
+        "filaA": 1,
+        "filaB": 2,
+        "solapeY": 13.02,
+        "solapeX": 50
+      },
+      {
+        "a": "14 sucesos",
+        "b": "31 E.C.",
+        "filaA": 2,
+        "filaB": 3,
+        "solapeY": 13.02,
+        "solapeX": 48.98
+      },
+      {
+        "a": "22 sucesos",
+        "b": "32 E.C.",
+        "filaA": 3,
+        "filaB": 4,
+        "solapeY": 13.02,
+        "solapeX": 48.5
+      }
+    ],
+    "recortes": [
+      {
+        "txt": "29 E.C.",
+        "fuera": 6.5
+      },
+      {
+        "txt": "41 sucesos",
+        "fuera": 6.52
+      }
+    ],
+    "alturas": [
+      54
+    ],
+    "escalaEfectiva": "1.4"
+  }
+}

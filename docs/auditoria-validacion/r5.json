@@ -1,0 +1,66 @@
+{
+  "jueces 1440x1080": {
+    "antes": {
+      "free": 781,
+      "totalH": 877,
+      "chartW": 1436,
+      "view": 824
+    },
+    "despues": {
+      "free": 676,
+      "totalH": 772,
+      "chartW": 1436,
+      "view": 824
+    },
+    "estable": false,
+    "tapados": []
+  },
+  "ministerio 390x844": {
+    "antes": {
+      "free": 327,
+      "totalH": 653,
+      "chartW": 780,
+      "view": 649
+    },
+    "despues": {
+      "free": 271,
+      "totalH": 597,
+      "chartW": 780,
+      "view": 649
+    },
+    "estable": false,
+    "tapados": []
+  },
+  "semana 1920x1080": {
+    "antes": {
+      "free": 809,
+      "totalH": 905,
+      "chartW": 1916,
+      "view": 901
+    },
+    "despues": {
+      "free": 753,
+      "totalH": 849,
+      "chartW": 1916,
+      "view": 901
+    },
+    "estable": false,
+    "tapados": []
+  },
+  "reyes 1024x844": {
+    "antes": {
+      "free": 0,
+      "totalH": 1384,
+      "chartW": 1020,
+      "view": 573
+    },
+    "despues": {
+      "free": 0,
+      "totalH": 1384,
+      "chartW": 1020,
+      "view": 573
+    },
+    "estable": true,
+    "tapados": []
+  }
+}

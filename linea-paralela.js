@@ -209,6 +209,55 @@ function layoutMetrics(){
   };
 }
 
+/* ── Alto de fila calculado por contenido ─────────────────────────────────
+   El alto era fijo (54 px) y el contenido de una barra no: crece con la escala
+   de texto, y el pin de un grupo mide el doble que el de un suceso. Con escala
+   1,2 —la que se aplica sola en pantallas táctiles— un grupo ya no entraba, y
+   como .bar-compact-narrow tiene overflow visible, su nombre se metía en la
+   fila de abajo: así se pisaban «5 sucesos» con «30 E.C.».
+
+   Estas constantes reflejan el CSS de .bar-compact-narrow y sus hijos. Si
+   cambia alguna de esas reglas hay que tocarlas acá también, y por eso
+   scripts/tests/test_alturas.js lee el CSS y compara los dos lados. */
+const BAR_PAD_Y = 2;          // .bar-compact-narrow padding:2px 0
+const BAR_STACK_GAP = 3;      // .bar-compact-narrow gap:3px
+const CAP_NAME_PX = 12;       // .bar-caption__name font-size
+const CAP_DATES_PX = 11;      // .bar-caption__dates font-size
+const CAP_LINE_H = 1.15;      // line-height de ambos captions
+const POINT_PIN_PX = 12;      // .bar-point-event__pin
+const GROUP_PIN_PX = 24;      // .bar-point-event--group .bar-point-event__pin
+const PIN_FOCUS_RING_PX = 4;  // box-shadow 0 0 0 4px al hover/foco
+
+/* Alto de una línea de caption a la escala vigente. La escala de JS y la
+   variable CSS --tl-font-scale son la misma, así que medir acá y dibujar allá
+   no pueden discrepar. */
+function capLineHeight(px, scale){
+  const s = Number.isFinite(scale) ? scale : fontScale;
+  return px * s * CAP_LINE_H;
+}
+
+/* Alto del elemento del medio. No depende del zoom a propósito: un mismo pe
+   puede dibujarse como punto (12 px) o como línea de periodo (6 px) según el
+   ancho, y hacer depender el alto de la fila del ancho de la barra ataría el
+   layout a su propio resultado. Se toma el techo de las dos formas. */
+function peMiddleHeight(pe){
+  return pe && pe.isEventGroup ? GROUP_PIN_PX : POINT_PIN_PX;
+}
+
+/* Alto que necesita el stack nombre · pin · fechas de un pe.
+   El anillo de foco sobresale del pin, pero está en el medio del stack: solo
+   hace falta reservar lo que no absorben los gaps. */
+function peStackHeight(pe, scale){
+  const sangriaAnillo = 2 * Math.max(0, PIN_FOCUS_RING_PX - BAR_STACK_GAP);
+  return 2 * BAR_PAD_Y
+    + capLineHeight(CAP_NAME_PX, scale)
+    + BAR_STACK_GAP
+    + peMiddleHeight(pe)
+    + BAR_STACK_GAP
+    + capLineHeight(CAP_DATES_PX, scale)
+    + sangriaAnillo;
+}
+
 function applyRowLayout(){
   document.documentElement.setAttribute('data-row-layout', rowLayout);
 }
@@ -242,10 +291,9 @@ function textWidth(text, font){
   }
   return w;
 }
-if(document.fonts && document.fonts.ready){
-  document.fonts.ready.then(()=>textWidthMemo.clear());
-  document.fonts.addEventListener('loadingdone', ()=>textWidthMemo.clear());
-}
+/* La revalidación por carga de fuentes vive al final del archivo, en
+   invalidarMedidas(): además de vaciar esta caché hay que volver a dibujar, y
+   para eso hacen falta scheduleRender y boundsCache. */
 
 const CAPTION_MAX_CHARS = 44;
 const CAPTION_MAX_PX = 200;
@@ -1783,10 +1831,23 @@ function openFromShareable(state){
   }
 }
 
-function trackRowHeight(L, count){
-  if(rowLayout === 'compact') return L.rowH;
-  if(count <= 1) return L.rowH;
-  return L.rowH + Math.min(count - 1, 5) * 18;
+/* Recibe la lista de pe de la pista, no su cantidad: el alto lo manda el
+   contenido más alto que se va a dibujar, y con solo el conteo no se puede
+   saber si alguno es un grupo ni a qué escala está el texto.
+   El alto calculado es un piso: nunca devuelve menos que el de siempre, así
+   que en escala 1 con filas normales no cambia nada. */
+function trackRowHeight(L, people, scale){
+  const lista = Array.isArray(people) ? people : [];
+  const count = Array.isArray(people) ? people.length : (Number(people) || 0);
+  let necesario = 0;
+  for(const pe of lista){
+    const h = peStackHeight(pe, scale);
+    if(h > necesario) necesario = h;
+  }
+  necesario = Math.ceil(necesario);
+  if(rowLayout === 'compact') return Math.max(L.rowH, necesario);
+  if(count <= 1) return Math.max(L.rowH, necesario);
+  return Math.max(L.rowH + Math.min(count - 1, 5) * 18, necesario);
 }
 
 function countTracks(laneData){
@@ -4246,7 +4307,7 @@ function labelCompactPickHtml(pe, match, rowId){
 }
 
 function labelTrackHtml(track, block, q, yMin, yMax, chartW, layoutOpts, L){
-  const h = trackRowHeight(L, track.people.length);
+  const h = trackRowHeight(L, track.people);
 
   if(rowLayout === 'compact'){
     const picks = track.people.map(pe=>{
@@ -4438,7 +4499,7 @@ function render(){
         labelsHtml += labelTrackHtml(track, block, q, yMin, yMax, chartW, layoutOpts, L);
       }
     }
-    peopleHEstimate += block.tracks.reduce((h, t)=> h + trackRowHeight(L, t.people.length), 0) + L.laneGap;
+    peopleHEstimate += block.tracks.reduce((h, t)=> h + trackRowHeight(L, t.people), 0) + L.laneGap;
   }
 
   const viewH = chartScroll.clientHeight || 0;
@@ -4478,7 +4539,7 @@ function render(){
 
   for(const block of laneData){
     if(!block.tracks.length) continue;
-    const blockH = block.tracks.reduce((h, t)=> h + trackRowHeight(L, t.people.length), 0);
+    const blockH = block.tracks.reduce((h, t)=> h + trackRowHeight(L, t.people), 0);
     canvasHtml += `<div class="lane-block" style="min-height:${blockH}px;width:${chartW}px">`;
 
     /* Fondos de época sin título: los títulos van en la zona libre de debajo. */
@@ -4495,7 +4556,7 @@ function render(){
     }
 
     for(const track of block.tracks){
-      const trackH = trackRowHeight(L, track.people.length);
+      const trackH = trackRowHeight(L, track.people);
       canvasHtml += renderTrackCanvas(block, track, q, yMin, yMax, chartW, layoutOpts, rowMap, yOff, trackH);
       yOff += trackH;
     }
@@ -4881,7 +4942,7 @@ function exportPng(){
   for(const block of L.laneData){
     if(!block.tracks.length) continue;
     for(const track of block.tracks){
-      const trackH = trackRowHeight(M, track.people.length);
+      const trackH = trackRowHeight(M, track.people);
       for(const pe of track.people){
         const x = yearToX(pe.inicio, L.yMin, L.yMax, L.chartW);
         const x2 = yearToX(pe.fin, L.yMin, L.yMax, L.chartW);
@@ -5322,6 +5383,78 @@ window.addEventListener('resize', ()=>{
   scheduleRender();
   refreshExplorePanel();
 });
+
+/* ── Medir el contenedor cuando ya está acomodado ─────────────────────────
+   El presupuesto de alto sale de chartScroll.clientHeight, y el primer render
+   ocurre antes de que la botonera de filtros y opciones termine de acomodarse:
+   medía 929 px cuando el alto real era 824, y esos 105 px se le regalaban a la
+   zona de sucesos. Dos renders seguidos con los mismos datos daban resultados
+   distintos.
+
+   No alcanza con medir antes o después de un elemento concreto: quién se
+   acomoda tarde cambia con el ancho, el estilo y la fuente. Se observa el
+   contenedor y se vuelve a dibujar cuando su tamaño efectivo cambia.
+   window.resize no sirve para esto: el contenedor cambia sin que la ventana
+   se toque. */
+let medidaContenedor = null;
+let relayoutFrame = 0;
+let relayoutSeguidos = 0;
+const RELAYOUT_MAX_SEGUIDOS = 3;
+
+/* Devuelve true solo si el contenedor cambió de tamaño de verdad. Comparar
+   antes de recalcular es lo que corta el bucle medir → dibujar → medir. */
+function contenedorCambio(){
+  if(!chartScroll) return false;
+  const w = chartScroll.clientWidth;
+  const h = chartScroll.clientHeight;
+  if(!w || !h) return false;   // oculto o todavía sin layout: no vale medir
+  const prev = medidaContenedor;
+  if(prev && Math.abs(prev.w - w) < 1 && Math.abs(prev.h - h) < 1) return false;
+  medidaContenedor = { w, h };
+  return true;
+}
+
+function observarContenedor(){
+  if(typeof ResizeObserver !== 'function' || !chartScroll) return;
+  contenedorCambio();   // primera medida, sin dibujar
+  const ro = new ResizeObserver(()=>{
+    if(!contenedorCambio()){
+      relayoutSeguidos = 0;   // se estabilizó
+      return;
+    }
+    /* Una barra de scroll que aparece y desaparece podría hacer oscilar el
+       alto entre dos valores. El tope corta esa oscilación en vez de dibujar
+       para siempre. */
+    if(relayoutSeguidos >= RELAYOUT_MAX_SEGUIDOS) return;
+    relayoutSeguidos++;
+    if(relayoutFrame) return;   // agrupar por frame
+    relayoutFrame = requestAnimationFrame(()=>{
+      relayoutFrame = 0;
+      if(autoFit) render._scrolled = false;
+      safeRender();
+    });
+  });
+  ro.observe(chartScroll);
+}
+observarContenedor();
+
+/* Las fuentes se cargan sin bloquear, así que el primer layout se calcula con
+   las métricas de la fuente de reserva. Al llegar la real se vaciaba la caché
+   de medición pero no se volvía a dibujar: el gráfico quedaba con anchos de
+   caption que ya no correspondían. */
+function invalidarMedidas(){
+  textWidthMemo.clear();
+  boundsCache.clear();
+  bcChartW = undefined;   // forzar recálculo aunque la ventana no haya cambiado
+  if(!lastLayout) return;   // todavía no se dibujó nada
+  scheduleRender();
+}
+if(document.fonts && document.fonts.ready){
+  document.fonts.ready.then(invalidarMedidas);
+  if(typeof document.fonts.addEventListener === 'function'){
+    document.fonts.addEventListener('loadingdone', invalidarMedidas);
+  }
+}
 
 document.getElementById('vista-explorar')?.addEventListener('click', ()=>{
   applyAppVista('explorar', { persist: true, hash: true });

@@ -330,6 +330,10 @@ html[data-vista="explorar"] main{overflow-x:hidden}
   -webkit-overflow-scrolling:touch;
   display:flex;
   flex-direction:column;
+  /* El eje es sticky al fondo con z-index 30, así que tapa lo que quede
+     debajo. Sin esta reserva, enfocar un marcador de la última fila lo
+     dejaba oculto tras el eje: el scroll lo traía justo al borde. */
+  scroll-padding-bottom:calc(var(--axis-h) + 8px);
 }
 .chart-scroll.is-pinching{
   touch-action:none;
@@ -1698,6 +1702,6 @@ header {
 <script src="timeline-selectors.js?v=20260907q"></script>
 <script src="timeline-list.js?v=20260907q"></script>
 <script src="timeline-density.js?v=20260907t"></script>
-<script src="linea-paralela.js?v=20260907t"></script>
+<script src="linea-paralela.js?v=20260907u"></script>
 </body>
 </html>
