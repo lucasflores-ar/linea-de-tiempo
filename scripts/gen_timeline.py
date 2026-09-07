@@ -316,16 +316,24 @@ def build_jw_sections(spec, evts, key='lineas'):
                 )
                 if match:
                     ev_ids.append(match['id'])
-        fes = [id_to_evt[i]['fa'] for i in ev_ids if i in id_to_evt and id_to_evt[i]['fa'] is not None]
-        fes_fin = [id_to_evt[i].get('fa_fin') or id_to_evt[i]['fa']
-                   for i in ev_ids if i in id_to_evt and id_to_evt[i]['fa'] is not None]
+        # En los libros biblicos `fa` es cuando se completo y `fa_fin` el otro
+        # extremo del periodo que abarcan, que suele ser anterior. Tomar `fa`
+        # como minimo y `fa_fin` como maximo daria lineas con fa_max < fa_min.
+        extremos = []
+        for i in ev_ids:
+            e = id_to_evt.get(i)
+            if not e or e.get('fa') is None:
+                continue
+            extremos.append(e['fa'])
+            if e.get('fa_fin') is not None:
+                extremos.append(e['fa_fin'])
         out.append({
             'codigo': linea['codigo'],
             'titulo': linea['titulo'],
             'seccion': linea.get('seccion'),
             'eventos': ev_ids,
-            'fa_min': min(fes) if fes else None,
-            'fa_max': max(fes_fin) if fes_fin else (max(fes) if fes else None),
+            'fa_min': min(extremos) if extremos else None,
+            'fa_max': max(extremos) if extremos else None,
         })
     return out
 

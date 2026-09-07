@@ -16,6 +16,7 @@ compleción, y el año anterior que traía el CSV no viene de esa tabla ni coinc
 con ninguna de las dos fechas conocidas, así que se descarta.
 
   106 Ezequiel  c. 591 / fin 600  ->  613 a c. 591   (periodo que abarca)
+                                      con `fecha_anio` = c. 591, la compleción
   171 Abdías    c. 607 / fin 610  ->  c. 607         (suceso puntual)
   172 Amós      c. 804 / fin 810  ->  c. 804         (suceso puntual)
   187 Nahúm     a. 632 / fin 640  ->  a. 632         (suceso puntual)
@@ -46,8 +47,10 @@ SOLO_VERIFICAR = '--check' in sys.argv
 # Estado final buscado, declarado entero para que el script converja desde
 # cualquier punto y sea idempotente.
 ESPERADO = {
-    '106': {'fecha_anio': '-613', 'fecha_texto': '613 a. E. C.',
-            'fecha_fin': '-591', 'fecha_fin_texto': 'c. 591 a. E. C.'},
+    # La orientación de Ezequiel la fija hoy `fix_csv_periodos_libros.py`:
+    # `fecha_anio` es la compleción y `fecha_fin` el otro extremo del período.
+    '106': {'fecha_anio': '-591', 'fecha_texto': 'c. 591 a. E. C.',
+            'fecha_fin': '-613', 'fecha_fin_texto': '613 a. E. C.'},
     '171': {'fecha_anio': '-607', 'fecha_texto': 'c. 607 a. E. C.',
             'fecha_fin': '', 'fecha_fin_texto': ''},
     '172': {'fecha_anio': '-804', 'fecha_texto': 'c. 804 a. E. C.',

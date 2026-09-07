@@ -191,7 +191,8 @@ LIBROS = [
          tipo_suceso="redacción", match_id="", match_etiqueta="malaquias_completa_libro"),
     # --- Escrituras griegas ---
     dict(clave="mateo", libro="MATEO", nombre="Evangelio según Mateo completado", escritor="Mateo",
-         lugar="Palestina", lugar_incerto=False, prefijo="c", anio=41, prefijo_fin="", anio_fin=-2,
+         # La tabla decía «Palestina»; el dato aportado es «Israel».
+         lugar="Israel", lugar_incerto=False, prefijo="c", anio=41, prefijo_fin="", anio_fin=-2,
          tiempo_abarca="2 a.E.C.–33 E.C.", era="E.C.", referencia="Mat. 28:20",
          tipo_suceso="redacción/evangelio", match_id="403", match_etiqueta="mateo_escribe_evangelio"),
     dict(clave="marcos", libro="MARCOS", nombre="Evangelio según Marcos completado", escritor="Marcos",

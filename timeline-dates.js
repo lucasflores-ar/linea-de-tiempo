@@ -78,15 +78,22 @@ function personIsEstimated(pe){
   return !!(pe.ie || pe.fe);
 }
 
+/* Los dos extremos de un suceso, siempre del más antiguo al más reciente.
+   En los libros bíblicos `fa` es cuándo se completó y `fa_fin` el otro extremo
+   del período que el libro abarca, que suele ser anterior: leerlos en el orden
+   de los campos imprimiría «c. 591 a. E. C. – 613 a. E. C.». */
+function eventDateEnds(ev, opts){
+  const ini = { anio: ev.fa, texto: ev.ft || fmtYear(ev.fa, opts) };
+  if(ev.fa_fin == null || ev.fa_fin === ev.fa) return [ini];
+  const fin = { anio: ev.fa_fin, texto: ev.ft_fin || fmtYear(ev.fa_fin, opts) };
+  if(isFiniteNum(ini.anio) && isFiniteNum(fin.anio) && fin.anio < ini.anio) return [fin, ini];
+  return [ini, fin];
+}
+
 /** Línea de fecha para drawer/lista: texto original + estimado. */
 function fmtEventDateLine(ev, opts){
   if(!ev) return '—';
-  let line = '';
-  if(ev.ft) line = String(ev.ft);
-  else line = fmtYear(ev.fa, opts);
-  if(ev.fa_fin != null && ev.fa_fin !== ev.fa){
-    line += ' – ' + (ev.ft_fin || fmtYear(ev.fa_fin, opts));
-  }
+  let line = eventDateEnds(ev, opts).map(e=> e.texto).join(' – ');
   if(eventIsEstimated(ev)) line += (line ? ' · ' : '') + 'fecha estimada';
   return line || '—';
 }
@@ -126,6 +133,7 @@ global.LTDates = {
   fmtRange,
   eventIsEstimated,
   personIsEstimated,
+  eventDateEnds,
   fmtEventDateLine,
   shouldSkipAxisTick,
   forEachAxisTick,

@@ -3309,13 +3309,20 @@ function showPeTip(ev, pe, anchorEl){
     `<div class="t-name">${esc(pe.n)}</div><div class="t-dates">${fmtRange(pe.inicio, pe.fin)}</div>`+
     (pe.nota ? `<div class="t-note">${esc(pe.nota)}</div>` : '') + est, ev, anchorEl);
 }
+/* Extremos de un suceso ordenados del más antiguo al más reciente. En los
+   libros bíblicos `fa` es cuándo se completó y `fa_fin` el otro extremo del
+   período que abarcan, casi siempre anterior. */
+function evDateEnds(e){
+  const y = chartYear(e) ?? e.fa;
+  const a = { anio: y, texto: fmtYear(y) };
+  if(e.fa_fin == null || e.fa_fin === e.fa) return [a];
+  const b = { anio: e.fa_fin, texto: e.ft_fin || fmtYear(e.fa_fin) };
+  return (a.anio != null && b.anio != null && b.anio < a.anio) ? [b, a] : [a, b];
+}
 /** Contenido del tip de un suceso: el mismo para hover, foco y tap. */
 function evTipHtml(e){
   const when = e.mcuando ? `<div class="t-note">${esc(e.mcuando)}</div>` : '';
-  let dates = fmtYear(chartYear(e) ?? e.fa);
-  if(e.fa_fin != null && e.fa_fin !== e.fa){
-    dates += ' – ' + (e.ft_fin || fmtYear(e.fa_fin));
-  }
+  const dates = evDateEnds(e).map(x=> x.texto).join(' – ');
   const est = (e.fest || e.ini_est || e.fin_est) ? '<div class="t-est">Fechas estimadas</div>' : '';
   return `<div class="t-name">${esc(e.n)}</div><div class="t-dates">${dates} · ${esc(e.tipo||'')}</div>`+
     (e.d ? `<div class="t-note">${esc(e.d)}</div>` : '') + when + est;
@@ -3952,10 +3959,7 @@ function drawerColOf(ev){
 function fmtFechaDrawer(fa){ return fmtYear(fa); }
 function eventDateLine(ev){
   if(window.LTDates && window.LTDates.fmtEventDateLine) return window.LTDates.fmtEventDateLine(ev);
-  let line = ev.ft || fmtFechaDrawer(ev.fa);
-  if(ev.fa_fin != null && ev.fa_fin !== ev.fa){
-    line += ' – ' + (ev.ft_fin || fmtFechaDrawer(ev.fa_fin));
-  }
+  let line = evDateEnds(ev).map(x=> x.texto).join(' – ');
   if(ev.fest || ev.ini_est || ev.fin_est) line += ' · fecha estimada';
   return line || '—';
 }
