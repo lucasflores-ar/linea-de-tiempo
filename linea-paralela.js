@@ -2888,6 +2888,54 @@ let chartInteractionsBound = false;
 function markerUsesCssTip(m){
   return !!(m && m.querySelector && m.querySelector('.evt-marker__tip') && !m.classList.contains('evt-marker--zone'));
 }
+/** Separación entre el marcador y su tip, y margen contra el borde del gráfico. */
+const CSS_TIP_GAP = 5;
+/**
+ * Decide dónde ubicar el tip de un marcador para que entre en el área visible.
+ * El tip cuelga arriba del marcador y centrado en él, así que contra el borde
+ * superior o lateral de .chart-scroll (que recorta) quedaría cortado.
+ * Recibe rectángulos y devuelve la corrección, sin tocar el DOM.
+ */
+function cssTipPlacement(mk, tip, view, gap){
+  const g = gap == null ? CSS_TIP_GAP : gap;
+  const cabeArriba = mk.top - tip.height - g >= view.top;
+  const cabeAbajo = mk.bottom + tip.height + g <= view.bottom;
+  const centro = mk.left + mk.width / 2;
+  const mitad = tip.width / 2;
+  let shift = 0;
+  if(centro - mitad < view.left + g) shift = (view.left + g) - (centro - mitad);
+  else if(centro + mitad > view.right - g) shift = (view.right - g) - (centro + mitad);
+  return { below: !cabeArriba && cabeAbajo, shift: Math.round(shift) };
+}
+/**
+ * Aplica cssTipPlacement() al marcador. Mide en el momento, así que funciona en
+ * cualquier viewport y con cualquier fila al tope después de hacer scroll.
+ */
+function placeCssTip(m){
+  if(!chartScroll || !markerUsesCssTip(m)) return;
+  const tip = m.querySelector('.evt-marker__tip');
+  if(!tip || !tip.getBoundingClientRect) return;
+  m.classList.remove('evt-marker--tip-below');
+  tip.style.setProperty('--tip-shift', '0px');
+
+  /* El tip solo tiene medidas mientras está visible (:hover / :focus-visible). */
+  const oculto = tip.getClientRects && !tip.getClientRects().length;
+  if(oculto) tip.style.display = 'block';
+  const pos = cssTipPlacement(
+    m.getBoundingClientRect(),
+    tip.getBoundingClientRect(),
+    chartScroll.getBoundingClientRect());
+  if(oculto) tip.style.display = '';
+
+  if(pos.below) m.classList.add('evt-marker--tip-below');
+  if(pos.shift) tip.style.setProperty('--tip-shift', pos.shift + 'px');
+}
+function resetCssTip(m){
+  if(!markerUsesCssTip(m)) return;
+  m.classList.remove('evt-marker--tip-below');
+  const tip = m.querySelector('.evt-marker__tip');
+  if(tip) tip.style.setProperty('--tip-shift', '0px');
+}
 function openAggregateFromEl(m){
   const ids = String(m.dataset.aggIds || '').split(',').map(x=> Number(x)).filter(Number.isFinite);
   const events = ids.map(id=> eventById(id)).filter(Boolean);
@@ -2942,10 +2990,22 @@ function ensureChartInteractionDelegation(){
       }
       const m = e.target.closest && e.target.closest('.evt-marker:not([data-agg-ids]), .bar-event-pin');
       if(!m || !chartCanvas.contains(m)) return;
-      if(markerUsesCssTip(m)) return;
+      if(markerUsesCssTip(m)){
+        placeCssTip(m);
+        return;
+      }
       if(e.relatedTarget && m.contains(e.relatedTarget)) return;
       const ev = eventById(m.dataset.ev);
       if(ev) showEvTip(e, ev, m);
+    });
+    /* El tip CSS también aparece al navegar con teclado. */
+    chartCanvas.addEventListener('focusin', e=>{
+      const m = e.target.closest && e.target.closest('.evt-marker, .bar-event-pin');
+      if(m && chartCanvas.contains(m)) placeCssTip(m);
+    });
+    chartCanvas.addEventListener('focusout', e=>{
+      const m = e.target.closest && e.target.closest('.evt-marker, .bar-event-pin');
+      if(m) resetCssTip(m);
     });
     chartCanvas.addEventListener('mousemove', e=>{
       if(isCoarsePointer()) return;
@@ -2956,6 +3016,7 @@ function ensureChartInteractionDelegation(){
       const m = e.target.closest && e.target.closest('.evt-marker, .bar-event-pin');
       if(!m) return;
       if(e.relatedTarget && m.contains(e.relatedTarget)) return;
+      resetCssTip(m);
       hideTip();
     });
   }

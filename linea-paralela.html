@@ -841,7 +841,8 @@ html[data-row-layout="compact"] .bar-compact-narrow .bar-caption-stack--dates{
 }
 html[data-row-layout="compact"] .evt-marker__tip{
   display:none;position:absolute;left:50%;bottom:calc(100% + 5px);
-  transform:translateX(-50%);
+  /* --tip-shift lo ajusta placeCssTip() cuando el borde del gráfico lo cortaría. */
+  transform:translateX(calc(-50% + var(--tip-shift, 0px)));
   padding:3px 8px;max-width:200px;
   background:var(--panel);border:1px solid var(--line);border-radius:6px;
   font:600 10px/1.25 var(--font-sans);color:var(--txt);
@@ -853,6 +854,11 @@ html[data-row-layout="compact"] .evt-marker--in-row:focus-visible .evt-marker__t
 html[data-row-layout="compact"] .bar-event-pin:hover .evt-marker__tip,
 html[data-row-layout="compact"] .bar-event-pin:focus-visible .evt-marker__tip{
   display:block;
+}
+/* Sin espacio arriba (primera fila, o la fila que quede al tope tras hacer
+   scroll): el tip pasa debajo del marcador en vez de quedar cortado. */
+html[data-row-layout="compact"] .evt-marker--tip-below .evt-marker__tip{
+  bottom:auto;top:calc(100% + 5px);
 }
 html[data-row-layout="compact"] .row:has(.evt-marker--in-row:hover) .bar-compact-narrow,
 html[data-row-layout="compact"] .row:has(.evt-marker--in-row:focus-visible) .bar-compact-narrow,
@@ -1687,11 +1693,11 @@ header {
 </aside>
 
 <script src="linea-tiempo-datos.js?v=16"></script>
-<script src="timeline-dates.js?v=20260907j"></script>
-<script src="timeline-state.js?v=20260907j"></script>
-<script src="timeline-selectors.js?v=20260907j"></script>
-<script src="timeline-list.js?v=20260907j"></script>
-<script src="timeline-density.js?v=20260907j"></script>
-<script src="linea-paralela.js?v=20260907j"></script>
+<script src="timeline-dates.js?v=20260907k"></script>
+<script src="timeline-state.js?v=20260907k"></script>
+<script src="timeline-selectors.js?v=20260907k"></script>
+<script src="timeline-list.js?v=20260907k"></script>
+<script src="timeline-density.js?v=20260907k"></script>
+<script src="linea-paralela.js?v=20260907k"></script>
 </body>
 </html>

@@ -232,7 +232,41 @@ sin año cero al lector.
 
 ---
 
-## 9. Historial de decisiones
+## 9. Tips de marcadores que no se recortan
+
+En modo compacto los sucesos dentro de una fila usan un tip CSS
+(`.evt-marker__tip`) en vez del tooltip flotante: cuelga **arriba** del
+marcador y **centrado** en él. Como `.chart-scroll` tiene `overflow`, ese tip
+quedaba cortado en dos situaciones:
+
+- **Por arriba**, en la fila que esté al tope del área visible (la primera al
+  cargar, o cualquier otra después de hacer scroll vertical).
+- **Por los costados**, en marcadores pegados al borde izquierdo o derecho del
+  área visible; se notaba mucho en pantallas angostas.
+
+No se resuelve con `padding` fijo: el borde superior lo puede tocar cualquier
+fila según el scroll, y el recorte lateral depende del ancho disponible. En su
+lugar se mide en el momento del hover/foco:
+
+- `cssTipPlacement(mk, tip, view, gap)` es pura — recibe los rectángulos del
+  marcador, del tip y del área visible, y devuelve `{below, shift}`.
+- `placeCssTip(m)` la aplica: agrega `.evt-marker--tip-below` (el tip pasa
+  debajo del marcador) y setea `--tip-shift`, que el CSS suma dentro del
+  `translateX(-50%)` para correr el tip lo mínimo necesario.
+
+Si no hay espacio arriba **ni** abajo, el tip se queda arriba: voltearlo no
+mejoraría nada. Se dispara desde la delegación de `mouseover` y también de
+`focusin`, así que vale igual navegando con teclado; `mouseout`/`focusout`
+resetean el estado. En pantallas táctiles no interviene: ahí el tap usa el
+tooltip flotante `#tooltip`, que es `position:fixed` y ya se reubica solo.
+
+Verificado midiendo cada marcador visible en 9 posiciones de scroll por
+viewport (escritorio, tablet y teléfono, también con texto al 200 %): 0
+recortados. Cubierto por `scripts/tests/test_tooltips.js`.
+
+---
+
+## 10. Historial de decisiones
 
 | Fecha | Cambio | Razón |
 |---|---|---|
@@ -243,4 +277,5 @@ sin año cero al lector.
 | 2026-09-03 | `bandLabelShown` Set | Etiquetas de banda repetidas en cada bloque |
 | 2026-09-07 | Agregados por densidad + Explorar | Acceso completo sin adivinar gestos |
 | 2026-09-07 | `LTDates` sin año 0 en eje | Consistencia cronológica histórica |
+| 2026-09-07 | `cssTipPlacement` + `--tip-shift` | Tips de la fila superior y de los bordes quedaban cortados por `overflow` |
 | 2026-09-03 | Eliminar banda `exi` | Duplicaba la banda de época `ep-bab` |

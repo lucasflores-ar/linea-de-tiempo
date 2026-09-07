@@ -18,6 +18,7 @@ const tests = [
   'scripts/tests/test_paso7.js',
   'scripts/tests/test_epocas.js',
   'scripts/tests/test_escritura.js',
+  'scripts/tests/test_tooltips.js',
   'scripts/tests/test_par.js',
   'scripts/tests/test_fichas.js',
   'scripts/tests/test_vis.js',
