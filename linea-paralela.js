@@ -2291,7 +2291,9 @@ const LANE_YEAR_SCOPE = {
   uni:   { min: -1117, max: -997 },
   jud:   { min: -997,  max: -607 },
   isr:   { min: -997,  max: -740 },
-  pro:   { min: -1117, max: 70 },
+  /* Los profetas y sus sucesos terminan en el período intertestamental; llegar
+     hasta 70 E.C. dejaba entrar sucesos del siglo I mal etiquetados. */
+  pro:   { min: -1117, max: -300 },
   babil: { min: -620,  max: -537 },
   rest:  { min: -537,  max: -3 },
   sig:   { min: -3,    max: 100 },

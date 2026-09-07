@@ -92,6 +92,27 @@ def libro_redaccion_canonica(h):
         return None
     return li or None
 
+def es_era_ec(h):
+    """¿El suceso ocurre en la era común (siglo I)?
+
+    La era del CSV manda: los sucesos del nacimiento de Jesús están fechados en
+    3–1 a. E. C. pero su era es 'E.C.' y pertenecen al siglo primero.
+    """
+    return (h.get('era') or '').upper().startswith('E.C')
+
+
+def menciona_persona(per, *nombres):
+    """Coincidencia por palabra completa dentro del campo de personajes.
+
+    Evita que 'Natanael' active la regla de 'Natán' (o 'Samuel' dentro de otro
+    nombre compuesto): el bug que metía sucesos del siglo I en el carril Profetas.
+    """
+    for n in nombres:
+        if re.search(r'(?<![0-9A-ZÁÉÍÓÚÜÑ])' + re.escape(n) + r'(?![0-9A-ZÁÉÍÓÚÜÑ])', per):
+            return True
+    return False
+
+
 def temas_de(h):
     er  = (h['era'] or '').upper()
     li  = (h['libro'] or '').upper()
@@ -99,6 +120,13 @@ def temas_de(h):
     nom = (h['nombre'] or '').upper()
     tipo = (h.get('tipo_suceso') or '').strip().lower()
     t = set()
+
+    # El tema de época describe CUÁNDO ocurrió el suceso, no qué libro lo narra.
+    # Hechos cita a Enoc y Abrahán; Daniel profetiza sobre el año 36 E.C.: en esos
+    # casos el libro de la referencia no debe decidir la época.
+    ec = es_era_ec(h)
+    li_at = '' if ec else li          # libro solo aporta temas del AT si la era es del AT
+    li_nt = li if ec else ''          # ...y temas del NT si la era es del siglo I
 
     # capa de ESCRITURA: hechos de redacción de libros canónicos (AT y NT por categoría)
     if tipo.startswith('redacc'):
@@ -108,44 +136,47 @@ def temas_de(h):
             t.add(cat_esc)
             if cat_esc.startswith('NT-'):
                 t.add('NT-ESCRITURA')
-    if li in ('GÉNESIS', 'GÉNESIS', 'GENESIS') or er.startswith('PREHISTORIA') or er.startswith('PATRIARCA') or er in ('DILUVIO', 'POSTDILUVIANO'):
+    if li_at in ('GÉNESIS', 'GENESIS') or er.startswith('PREHISTORIA') or er.startswith('PATRIARCA') or er in ('DILUVIO', 'POSTDILUVIANO'):
         t.add('GENESIS')
-    if li in ('ÉXODO', 'EXODO', 'LEVÍTICO', 'NÚMEROS', 'DEUTERONOMIO') or er.startswith('EXODO') or er.startswith('EGIPTO') or er.startswith('LEY') or er.startswith('DESIERTO'):
+    if li_at in ('ÉXODO', 'EXODO', 'LEVÍTICO', 'NÚMEROS', 'DEUTERONOMIO') or er.startswith('EXODO') or er.startswith('EGIPTO') or er.startswith('LEY') or er.startswith('DESIERTO'):
         t.add('EXODO')
-    if li == 'JOSUÉ' or er.startswith('CONQUISTA'):
+    if li_at == 'JOSUÉ' or er.startswith('CONQUISTA'):
         t.add('CONQUISTA')
-    if li == 'JUECES' or li == 'RUT' or er.startswith('JUECES'):
+    if li_at in ('JUECES', 'RUT') or er.startswith('JUECES'):
         t.add('JUECES')
-    if li in ('1 SAMUEL', '2 SAMUEL', '1 REYES', '2 REYES', '1 CRÓNICAS', '2 CRÓNICAS') or er.startswith('MONARQUÍA') or er.startswith('REINO DIVIDIDO'):
+    if li_at in ('1 SAMUEL', '2 SAMUEL', '1 REYES', '2 REYES', '1 CRÓNICAS', '2 CRÓNICAS') or er.startswith('MONARQUÍA') or er.startswith('REINO DIVIDIDO'):
         t.add('REYES')
-    if li in ('ISAÍAS', 'JEREMÍAS', 'EZEQUIEL', 'DANIEL', 'OSEAS', 'JOEL', 'AMÓS', 'ABDÍAS',
-              'JONÁS', 'MIQUEAS', 'NAHUM', 'HABACUC', 'SOFONÍAS', 'HAGEO', 'ZACARÍAS', 'MALAQUÍAS', 'LAMENTACIONES'):
+    if li_at in ('ISAÍAS', 'JEREMÍAS', 'EZEQUIEL', 'DANIEL', 'OSEAS', 'JOEL', 'AMÓS', 'ABDÍAS',
+                 'JONÁS', 'MIQUEAS', 'NAHUM', 'HABACUC', 'SOFONÍAS', 'HAGEO', 'ZACARÍAS', 'MALAQUÍAS', 'LAMENTACIONES'):
         t.add('PROFETAS')
-    if 'ELÍAS' in per or 'ELIAS' in per or 'ELISEO' in per or 'ELISEO' in per or 'SAMUEL' in per or 'NATÁN' in per or 'NATAN' in per:
+    if not ec and menciona_persona(per, 'ELÍAS', 'ELIAS', 'ELISEO', 'SAMUEL', 'NATÁN', 'NATAN'):
         t.add('PROFETAS')
-    if li in ('ESDRAS', 'NEHEMÍAS', 'ESTER') or er.startswith('RESTAURACIÓN'):
+    if li_at in ('ESDRAS', 'NEHEMÍAS', 'ESTER') or er.startswith('RESTAURACIÓN'):
         t.add('RESTAURACION')
-    if li in ('DANIEL', 'EZEQUIEL', 'LAMENTACIONES') or er.startswith('EXILIO'):
+    if li_at in ('DANIEL', 'EZEQUIEL', 'LAMENTACIONES') or er.startswith('EXILIO'):
         t.add('EXILIO')
     jw_cod = (h.get('jw_codigo') or '').strip()
     if jw_cod in ('J0', 'J1', 'J2', 'J3', 'J4', 'B12') or (h.get('ministerio_fase') or '').strip():
         t.add('SIGLO-PRIMERO')
-    if li in ('MATEO', 'MARCOS', 'LUCAS', 'JUAN') and (h['era'] or '').upper().startswith('E.C.'):
+    if li_nt in ('MATEO', 'MARCOS', 'LUCAS', 'JUAN'):
         if 'NT-ESCRITURA' not in t:
             t.add('SIGLO-PRIMERO')
-    if li == 'HECHOS':
+    if li_nt == 'HECHOS':
         if 'NT-ESCRITURA' not in t:
             t.add('HECHOS')
-    if li in ('ROMANOS', '1 CORINTIOS', '2 CORINTIOS', 'GÁLATAS', 'EFESIOS', 'FILIPENSES',
-              'COLOSENSES', '1 TESALONICENSES', '2 TESALONICENSES', '1 TIMOTEO', '2 TIMOTEO',
-              'TITO', 'FILEMÓN', 'HEBREOS', 'SANTIAGO', '1 PEDRO', '2 PEDRO', '1 JUAN', '2 JUAN',
-              '3 JUAN', 'JUDAS', 'APOCALIPSIS'):
+    if li_nt in ('ROMANOS', '1 CORINTIOS', '2 CORINTIOS', 'GÁLATAS', 'EFESIOS', 'FILIPENSES',
+                 'COLOSENSES', '1 TESALONICENSES', '2 TESALONICENSES', '1 TIMOTEO', '2 TIMOTEO',
+                 'TITO', 'FILEMÓN', 'HEBREOS', 'SANTIAGO', '1 PEDRO', '2 PEDRO', '1 JUAN', '2 JUAN',
+                 '3 JUAN', 'JUDAS', 'APOCALIPSIS'):
         if 'NT-ESCRITURA' not in t:
             t.add('HECHOS')
-    if 'SALMOS' in li or 'PROVERBIOS' in li or 'ECLESIASTÉS' in li or 'CANTAR' in li or 'JOB' in li:
+    if li_at and ('SALMOS' in li_at or 'PROVERBIOS' in li_at or 'ECLESIASTÉS' in li_at or 'CANTAR' in li_at or 'JOB' in li_at):
         t.add('REYES') if er.startswith('MONARQUÍA') else t.add('GENESIS')
     if not t:
-        t.add('OTROS')
+        # Un suceso del siglo I sin libro reconocible sigue siendo del siglo I;
+        # dejarlo en OTROS lo volvía invisible en todos los carriles. Las
+        # potencias mundiales son marcadores de contexto y se dibujan aparte.
+        t.add('SIGLO-PRIMERO' if (ec and tipo != 'contexto') else 'OTROS')
     return sorted(t)
 
 # ---------------- preguntas por hecho ----------------
