@@ -18,32 +18,40 @@ zoom, los textos deben permanecer legibles y **no superponerse** entre sí.
 
 ## 2. Métodos para evitar superposición de texto
 
-### 2.1 `gapToNext` — limitación de ancho por proximidad
+### 2.1 `nextLeft` — limitación de ancho por proximidad
 
-Cada barra de personaje en layout compacto calcula la distancia en píxeles
-al siguiente personaje **del mismo track** (misma fila horizontal). Este
-valor se usa como `max-width` del caption, impidiendo que el texto se
-extienda más allá del espacio disponible antes de la siguiente barra.
+Cada barra de personaje en layout compacto mide el **borde izquierdo real**
+de la siguiente barra **del mismo track** (misma fila horizontal). Con eso se
+calcula el `max-width` del caption, impidiendo que el texto se extienda más
+allá del espacio disponible antes de esa barra.
 
 ```
 Archivo: linea-paralela.js → renderTrackCanvas()
 
 if(layoutOpts.compactLayout && i + 1 < people.length){
-  const nextX = yearToX(people[i + 1].inicio, yMin, yMax, chartW);
-  gapToNext = nextX - x;
+  nextLeft = visualBarBoundsCached(people[i + 1], yMin, yMax, chartW).left;
 }
 ```
 
-El valor se aplica en `renderCompactNarrowBar()`:
+El tope lo calcula `captionMaxPx()`, que recibe **dónde empieza el texto de
+verdad** — o sea, ya con el corrimiento de §2.3 sumado — y no el borde de la
+barra:
 
 ```
-let maxCapPx = CAPTION_MAX_PX;  // 200px por defecto
-if(layoutOpts?.gapToNext != null && layoutOpts.gapToNext < CAPTION_MAX_PX + 10){
-  maxCapPx = Math.max(40, Math.floor(layoutOpts.gapToNext - 8));
+function captionMaxPx(captionLeft, nextLeft){
+  if(nextLeft == null) return CAPTION_MAX_PX;   // 200px por defecto
+  const libre = Math.floor(nextLeft - captionLeft - 8);
+  return libre >= CAPTION_MAX_PX ? CAPTION_MAX_PX : Math.max(40, libre);
 }
 ```
 
-El texto resultante se trunca con `text-overflow: ellipsis` via CSS.
+Lo aplican por igual `renderCompactNarrowBar()` (barras de periodo) y
+`renderPointEventBar()` (cajas de punto). El texto resultante se trunca con
+`text-overflow: ellipsis` via CSS.
+
+**Por qué el borde real y no el año de inicio:** ver §2.9. Medir contra
+`yearToX(siguiente.inicio)` fue justamente la causa de que este método
+fallara durante mucho tiempo.
 
 ### 2.2 `CAPTION_MAX_PX` — tope global de ancho de caption
 
@@ -119,6 +127,64 @@ Personajes con un rango de vida muy corto (< 5 años) reciben la clase
 permitiendo que el nombre completo sea visible ya que la barra es tan
 estrecha que necesita compensar con más espacio para texto.
 
+Como contrapeso, `visualBarBounds()` declara para estos personajes el ancho
+del nombre completo, así el empaquetado en tracks (§2.9) sabe que ocupan más
+que su barra y no mete a nadie al lado.
+
+### 2.9 `visualBarBounds` — una sola fuente para la extensión ocupada
+
+Los métodos de §2.1 y el empaquetado en tracks (`layoutBlockTracks` vía
+`periodVisualClash`) solo funcionan si coinciden con lo que se dibuja. La
+extensión real de una barra la calcula `visualBarBounds()`, y tiene que
+respetar dos cosas que no son obvias:
+
+1. **Las barras cortas no empiezan en su año de inicio.** Un periodo de
+   ≤ `SHORT_PERIOD_MAX_YEARS` (12) cuya barra quede más angosta que
+   `NARROW_BAR_PX` (56) se dibuja con `renderPointEventBar()`, que **centra
+   una caja de ≥ 72 px sobre el periodo**: `left = cx - boxW / 2`. Es decir
+   que arranca hasta ~100 px **antes** de su año.
+2. **El caption puede sobresalir de su propia barra.** El corrimiento de
+   §2.3 (`--caption-shift`, hasta 200 px) empuja el texto a la derecha, más
+   allá del ancho de la barra.
+
+Por eso `visualBarBounds()` usa `shouldRenderAsPoint()` —el mismo predicado
+que `renderPersonBar()`— y suma el corrimiento al ancho declarado:
+
+```
+const caja = shouldRenderAsPoint(pe, spanW)
+  ? pointEventBoxLayout(pe, x, spanW, chartW)
+  : { left: x, width: spanW };
+const inset = markerNameInset(pe, caja.left, yMin, yMax, chartW);
+return { left: caja.left, width: Math.max(caja.width, inset + capW) };
+```
+
+**El bug que esto arregla:** antes `visualBarBounds()` solo centraba la caja
+para sucesos puntuales (`pe.isEvent`), no para reinados cortos, y `gapToNext`
+medía contra `yearToX(siguiente.inicio)`. Las dos cosas creían tener media
+caja más de espacio (34–49 px de más, medidos), así que el empaquetado ponía
+en la misma fila barras que se pisaban y el `max-width` del caption nunca
+llegaba a truncar. Se veía sobre todo con reinados cortos de Judá e Israel
+(Rehoboam/Jehoram, Asá/Atalía, Ezequías/Jehoacaz, Jonás/Oseas).
+
+Medido con los carriles Un solo reino + Reyes de Judá + Reyes de Israel +
+Profetas, en 18 combinaciones de zoom (0,8–8 px/año) × tamaño de texto
+(100 %, 140 %, 200 %) y 2 196 textos: **162 superposiciones antes, 0
+después**, sin costo vertical neto (a zoom bajo suma 1–2 filas; a zoom alto
+usa 1–2 menos, porque ahora detecta que las cajas centradas no chocan).
+
+### 2.10 Cachés de medición
+
+`visualBarBounds()` mide texto y recorre los sucesos del personaje, y
+`periodVisualClash()` la consulta O(n²) veces al empaquetar. Dos cachés
+mantienen el costo del render igual que antes del arreglo:
+
+- `visualBarBoundsCached()` guarda el resultado por personaje (identidad del
+  objeto, sin armar claves de texto) y se vacía cuando cambia el layout
+  (`yMin`, `yMax`, `chartW`, marcadores, escala de texto, estilo).
+- `textWidth()` memoriza por (fuente, texto). Como las fuentes web se cargan
+  sin bloquear y al llegar cambian las medidas, la caché se vacía con
+  `document.fonts.ready` y con el evento `loadingdone`.
+
 ---
 
 ## 3. Bandas de época y etiquetas
@@ -193,7 +259,7 @@ visible.
 | Posición del nombre | Encima de la barra | A la izquierda |
 | Marcadores | Inline con la barra | Separados |
 | `adjustCaptionOverflow` | Desactivada | Desactivada |
-| `gapToNext` | Activo | No aplica |
+| `nextLeft` / `captionMaxPx` | Activo | No aplica |
 | `--caption-shift` | Desde `markerNameInset` | No aplica |
 
 ---
@@ -201,20 +267,24 @@ visible.
 ## 6. Resumen de capas de protección
 
 ```
-┌─────────────────────────────────────────────────┐
-│ 1. gapToNext: limita ancho por vecino en track  │
-│ 2. CAPTION_MAX_PX: tope global 200px            │
-│ 3. markerNameInset ≤ 200px: evita shift gigante │
+┌──────────────────────────────────────────────────┐
+│ 0. visualBarBounds: extensión real de cada barra │
+│ 1. captionMaxPx: limita ancho por vecino en track│
+│ 2. CAPTION_MAX_PX: tope global 200px             │
+│ 3. markerNameInset ≤ 200px: evita shift gigante  │
 │ 4. overflow:hidden en .lane-block: clipea fuera  │
-│ 5. text-overflow:ellipsis: trunca con "…"       │
-│ 6. bandLabelShown: etiqueta de banda solo 1 vez │
-│ 7. adjustCaptionOverflow: DESACTIVADA           │
-└─────────────────────────────────────────────────┘
+│ 5. text-overflow:ellipsis: trunca con "…"        │
+│ 6. bandLabelShown: etiqueta de banda solo 1 vez  │
+│ 7. adjustCaptionOverflow: DESACTIVADA            │
+└──────────────────────────────────────────────────┘
 ```
 
-Cada capa actúa como red de seguridad para las anteriores. El caso más
-extremo (zoom a 2–3 años de rango) se maneja por la combinación de
-`markerNameInset` limitado + `overflow:hidden` en `.lane-block`.
+Cada capa actúa como red de seguridad para las anteriores. La capa 0 es la
+base: si miente sobre dónde empieza o termina una barra, las capas 1 y el
+empaquetado en tracks quedan calibrados con números equivocados y dejan
+pasar superposiciones (§2.9). El caso más extremo (zoom a 2–3 años de rango)
+se maneja por la combinación de `markerNameInset` limitado +
+`overflow:hidden` en `.lane-block`.
 
 ---
 
@@ -278,4 +348,7 @@ recortados. Cubierto por `scripts/tests/test_tooltips.js`.
 | 2026-09-07 | Agregados por densidad + Explorar | Acceso completo sin adivinar gestos |
 | 2026-09-07 | `LTDates` sin año 0 en eje | Consistencia cronológica histórica |
 | 2026-09-07 | `cssTipPlacement` + `--tip-shift` | Tips de la fila superior y de los bordes quedaban cortados por `overflow` |
+| 2026-09-07 | `visualBarBounds` centra las barras cortas y suma el corrimiento | El empaquetado y `gapToNext` creían tener media caja más de espacio, y los nombres se pisaban |
+| 2026-09-07 | `gapToNext` → `nextLeft` + `captionMaxPx` | Medir contra el año de inicio del vecino daba topes 34–49 px demasiado grandes |
+| 2026-09-07 | Memorias en `visualBarBounds` y `textWidth` | Mantener el costo del render tras usar la geometría real en el bucle O(n²) |
 | 2026-09-03 | Eliminar banda `exi` | Duplicaba la banda de época `ep-bab` |

@@ -217,10 +217,29 @@ function measureCtx(){
   }
   return _measureCtx;
 }
+/**
+ * Medir texto obliga a reparsear la fuente en cada llamada y el layout la pide
+ * miles de veces por render, así que memorizamos por (fuente, texto). Las
+ * fuentes web se cargan sin bloquear, y al llegar cambian las medidas: por eso
+ * vaciamos la caché cuando terminan.
+ */
+const textWidthMemo = new Map();
 function textWidth(text, font){
-  const ctx = measureCtx();
-  ctx.font = font;
-  return ctx.measureText(text || '').width;
+  const t = text || '';
+  const k = font + '\u0000' + t;
+  let w = textWidthMemo.get(k);
+  if(w === undefined){
+    const ctx = measureCtx();
+    ctx.font = font;
+    w = ctx.measureText(t).width;
+    if(textWidthMemo.size > 8000) textWidthMemo.clear();
+    textWidthMemo.set(k, w);
+  }
+  return w;
+}
+if(document.fonts && document.fonts.ready){
+  document.fonts.ready.then(()=>textWidthMemo.clear());
+  document.fonts.addEventListener('loadingdone', ()=>textWidthMemo.clear());
 }
 
 const CAPTION_MAX_CHARS = 44;
@@ -1213,16 +1232,57 @@ function pointEventBoxLayout(pe, x, w, chartW){
 /** Extensión horizontal real en pantalla (alineada con renderPointEventBar / renderCompactNarrowBar). */
 function visualBarBounds(pe, yMin, yMax, chartW){
   if(pe.inicio == null || !chartW) return { left: 0, width: captionStackWidth(pe) };
-  const x = yearToX(pe.inicio, yMin, yMax, chartW);
+  let x = yearToX(pe.inicio, yMin, yMax, chartW);
   const fin = pe.fin != null ? pe.fin : pe.inicio;
-  const spanW = Math.max(4, yearToX(fin, yMin, yMax, chartW) - x);
+  let spanW = Math.max(4, yearToX(fin, yMin, yMax, chartW) - x);
+  /* Mismo ajuste que renderTrackCanvas para periodos de duración nula. */
+  if(spanW < 6 && pe.inicio === fin){ x -= 2; spanW = 6; }
   const capOpts = (!pe.isEvent && isShortPeriodPe(pe)) ? { fullName: true } : {};
   const capW = captionStackWidth(pe, capOpts);
 
-  if(pe.isEvent && !eventHasRange(pe)){
-    return pointEventBoxLayout(pe, x, spanW, chartW);
+  /* Mismo criterio que renderPersonBar: lo que se dibuja como punto lleva su
+     caja centrada en el periodo, así que empieza antes del año de inicio. Si
+     acá se asumiera que arranca en x, el empaquetado de tracks y el tope de
+     ancho de los captions creerían tener media caja más de espacio. */
+  const caja = shouldRenderAsPoint(pe, spanW)
+    ? pointEventBoxLayout(pe, x, spanW, chartW)
+    : { left: x, width: spanW };
+  /* El caption puede arrancar corrido para no quedar detrás de un marcador, y
+     entonces sobresale de la barra: cuenta como extensión ocupada. */
+  const inset = markerNameInset(pe, caja.left, yMin, yMax, chartW);
+  return { left: caja.left, width: Math.max(caja.width, inset + capW) };
+}
+
+/**
+ * visualBarBounds() mide texto y recorre los sucesos del personaje, y el
+ * empaquetado de tracks la consulta O(n²) veces. Cacheamos por personaje
+ * (identidad del objeto, sin armar claves) y vaciamos al cambiar el layout.
+ */
+const boundsCache = new Map();
+let bcYMin, bcYMax, bcChartW, bcMarkers, bcFont, bcViz;
+function visualBarBoundsCached(pe, yMin, yMax, chartW){
+  if(yMin !== bcYMin || yMax !== bcYMax || chartW !== bcChartW
+     || showMarkers !== bcMarkers || fontScale !== bcFont || vizStyle !== bcViz){
+    bcYMin = yMin; bcYMax = yMax; bcChartW = chartW;
+    bcMarkers = showMarkers; bcFont = fontScale; bcViz = vizStyle;
+    boundsCache.clear();
   }
-  return { left: x, width: Math.max(spanW, capW) };
+  let v = boundsCache.get(pe);
+  if(v === undefined){
+    v = visualBarBounds(pe, yMin, yMax, chartW);
+    boundsCache.set(pe, v);
+  }
+  return v;
+}
+
+/**
+ * Ancho máximo de un caption para que no invada la barra siguiente del track.
+ * `captionLeft` es donde el texto empieza de verdad (ya con su corrimiento).
+ */
+function captionMaxPx(captionLeft, nextLeft){
+  if(nextLeft == null) return CAPTION_MAX_PX;
+  const libre = Math.floor(nextLeft - captionLeft - 8);
+  return libre >= CAPTION_MAX_PX ? CAPTION_MAX_PX : Math.max(40, libre);
 }
 
 function visualBarWidth(pe, yMin, yMax, chartW){
@@ -1233,8 +1293,8 @@ function visualBarWidth(pe, yMin, yMax, chartW){
 function periodVisualClash(a, b, chartLayout){
   const { yMin, yMax, chartW } = chartLayout || {};
   if(!chartW || a.inicio == null || b.inicio == null) return false;
-  const ba = visualBarBounds(a, yMin, yMax, chartW);
-  const bb = visualBarBounds(b, yMin, yMax, chartW);
+  const ba = visualBarBoundsCached(a, yMin, yMax, chartW);
+  const bb = visualBarBoundsCached(b, yMin, yMax, chartW);
   const gap = 6;
   return ba.left + ba.width + gap > bb.left && bb.left + bb.width + gap > ba.left;
 }
@@ -3898,11 +3958,19 @@ function renderPointEventBar(block, pe, x, w, dataAttr, ini, fin, layoutOpts){
   const mkColor = pe.ev ? markerColorFor(pe.ev) : laneColor;
   const peAttr = ` data-pe="${esc(peKey(pe))}"`;
   let barExtra = '';
+  let capShift = 0;
   if(layoutOpts?.compactLayout && layoutOpts.yMin != null){
     const inset = markerNameInset(pe, left, layoutOpts.yMin, layoutOpts.yMax, layoutOpts.chartW);
-    if(inset) barExtra = `--caption-shift:${inset}px;`;
+    if(inset){
+      capShift = inset;
+      barExtra = `--caption-shift:${inset}px;`;
+    }
   }
-  const capStyle = `width:${boxW}px;max-width:${CAPTION_MAX_PX}px`;
+  /* La caja va centrada en el punto y el caption puede salirse por derecha:
+     igual que en renderCompactNarrowBar, se topea contra la barra siguiente. */
+  const maxCapPx = captionMaxPx(left + capShift, layoutOpts?.nextLeft);
+  if(maxCapPx < CAPTION_MAX_PX) barExtra += `--caption-max:${maxCapPx}px;`;
+  const capStyle = `width:${boxW}px;max-width:${maxCapPx}px`;
   const datesLine = pe.isEventGroup ? (pe.nota || '') : fmtRange(ini, fin);
   const ariaDates = pe.isEventGroup ? (pe.nota || pe.n) : fmtRange(ini, fin);
   return `<div class="${cls.join(' ')}" style="left:${left}px;width:${boxW}px;max-width:${CAPTION_MAX_PX}px;${barExtra}" tabindex="0" role="button" aria-label="${esc(pe.n)}, ${esc(ariaDates)}" ${dataAttr}${peAttr}>`+
@@ -3926,14 +3994,15 @@ function renderCompactNarrowBar(block, pe, x, w, dataAttr, ini, fin, laneColor, 
   const capW = captionStackWidth(pe, capOpts);
   const barBg = estBarBg(laneColor, pe);
   let barExtra = '';
+  let capShift = 0;
   if(layoutOpts?.compactLayout && layoutOpts.yMin != null){
     const inset = markerNameInset(pe, x, layoutOpts.yMin, layoutOpts.yMax, layoutOpts.chartW);
-    if(inset) barExtra = `--caption-shift:${inset}px;`;
+    if(inset){
+      capShift = inset;
+      barExtra = `--caption-shift:${inset}px;`;
+    }
   }
-  let maxCapPx = CAPTION_MAX_PX;
-  if(layoutOpts?.gapToNext != null && layoutOpts.gapToNext < CAPTION_MAX_PX + 10){
-    maxCapPx = Math.max(40, Math.floor(layoutOpts.gapToNext - 8));
-  }
+  const maxCapPx = captionMaxPx(x + capShift, layoutOpts?.nextLeft);
   const capStyle = shortPeriod
     ? `width:${capW}px`
     : `width:${capW}px;max-width:${maxCapPx}px`;
@@ -4021,13 +4090,14 @@ function renderTrackCanvas(block, track, q, yMin, yMax, chartW, layoutOpts, rowM
     if(w < 6 && ini === fin){ x -= 2; w = 6; }
     const dataAttr = pe.isEvent && !pe.isEventGroup ? `data-ev="${pe.ev.id}"` : '';
 
-    /* Gap to next bar on same track — used to cap caption width */
-    let gapToNext = Infinity;
+    /* Borde izquierdo real de la barra siguiente del mismo track, para topear
+       el ancho del caption. No sirve su año de inicio: las barras dibujadas
+       como punto van centradas y empiezan antes de ese año. */
+    let nextLeft = null;
     if(layoutOpts.compactLayout && i + 1 < people.length){
-      const nextX = yearToX(people[i + 1].inicio, yMin, yMax, chartW);
-      gapToNext = nextX - x;
+      nextLeft = visualBarBoundsCached(people[i + 1], yMin, yMax, chartW).left;
     }
-    const opts = gapToNext < Infinity ? Object.assign({}, layoutOpts, { gapToNext }) : layoutOpts;
+    const opts = nextLeft != null ? Object.assign({}, layoutOpts, { nextLeft }) : layoutOpts;
 
     if(draw){
       rowMap.set(pe.id, { pe, laneKey: block.meta.key, yCenter: yOff + trackH / 2, isEvent: !!pe.isEvent });
