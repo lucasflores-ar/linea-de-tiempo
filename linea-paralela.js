@@ -1390,13 +1390,186 @@ function normalizeFocusWindow(min, max){
   return { min: a, max: b };
 }
 
-function applyAppVista(v){
+const VISTA_PREF_KEY = 'lt-par-vista';
+let exploreLocalQ = '';
+let exploreListScroll = 0;
+const EXPLORE_PERIODS = [
+  { id: 'todo', label: 'Todo', min: null, max: null },
+  { id: 'pre', label: 'Antes Diluvio', min: -4026, max: -2370 },
+  { id: 'jue', label: 'Jueces', min: -1450, max: -1120 },
+  { id: 'div', label: 'Reino dividido', min: -997, max: -607 },
+  { id: 'exi', label: 'Destierro', min: -607, max: -537 },
+  { id: 'jes', label: 'Ministerio', min: 29, max: 33 },
+  { id: 'nt', label: 'Siglo I', min: 29, max: 100 },
+];
+
+function isNarrowViewport(){
+  return typeof matchMedia === 'function' && matchMedia('(max-width: 760px)').matches;
+}
+function readStoredVista(){
+  try{
+    const v = localStorage.getItem(VISTA_PREF_KEY);
+    if(v === 'explorar' || v === 'comparar') return v;
+  }catch(e){}
+  return null;
+}
+function saveStoredVista(v){
+  try{ localStorage.setItem(VISTA_PREF_KEY, v); }catch(e){}
+}
+function syncVistaChrome(){
+  const isExplore = appVista === 'explorar';
+  document.documentElement.setAttribute('data-vista', appVista);
+  const panel = document.getElementById('explore-panel');
+  const chart = document.getElementById('chart-wrap');
+  if(panel){
+    panel.hidden = !isExplore;
+    if(isExplore){
+      if(typeof panel.removeAttribute === 'function') panel.removeAttribute('inert');
+    } else if(typeof panel.setAttribute === 'function'){
+      panel.setAttribute('inert', '');
+    }
+  }
+  if(chart){
+    if(isExplore){
+      if(typeof chart.setAttribute === 'function') chart.setAttribute('inert', '');
+    } else if(typeof chart.removeAttribute === 'function'){
+      chart.removeAttribute('inert');
+    }
+  }
+  const btnE = document.getElementById('vista-explorar');
+  const btnC = document.getElementById('vista-comparar');
+  if(btnE && typeof btnE.setAttribute === 'function') btnE.setAttribute('aria-pressed', String(isExplore));
+  if(btnC && typeof btnC.setAttribute === 'function') btnC.setAttribute('aria-pressed', String(!isExplore));
+}
+function applyAppVista(v, opts){
+  const o = opts || {};
   if(window.LTState && typeof LTState.clampVista === 'function'){
     appVista = LTState.clampVista(v);
   } else {
     appVista = v === 'explorar' ? 'explorar' : 'comparar';
   }
-  document.documentElement.setAttribute('data-vista', appVista);
+  syncVistaChrome();
+  if(o.persist) saveStoredVista(appVista);
+  if(o.sync !== false){
+    refreshExplorePanel();
+    if(appVista === 'comparar'){
+      if(autoFit) render._scrolled = false;
+      scheduleRender();
+    } else {
+      drawMinimap();
+    }
+  }
+  if(o.hash) syncHash(typeof o.hash === 'object' ? o.hash : undefined);
+}
+
+function activeExploreRangeLabel(){
+  if(viewWindow){
+    return fmtYear(viewWindow.min) + ' – ' + fmtYear(viewWindow.max);
+  }
+  if(lastLayout && lastLayout.dataMin != null){
+    return fmtYear(lastLayout.dataMin) + ' – ' + fmtYear(lastLayout.dataMax) + ' (completo)';
+  }
+  return 'Periodo completo';
+}
+function paintExplorePeriods(){
+  const host = document.getElementById('explore-periods');
+  if(!host) return;
+  host.innerHTML = EXPLORE_PERIODS.map(p=>{
+    const on = p.min == null
+      ? !viewWindow
+      : !!(viewWindow && Math.abs(viewWindow.min - p.min) < 0.6 && Math.abs(viewWindow.max - p.max) < 0.6);
+    return '<button type="button" class="explore-period'+(on?' on':'')+'" data-period="'+p.id+'" aria-pressed="'+on+'">'+p.label+'</button>';
+  }).join('');
+  host.querySelectorAll('.explore-period').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const p = EXPLORE_PERIODS.find(x=> x.id === btn.dataset.period);
+      if(!p) return;
+      if(p.id === 'jes'){ selLanes.add('jes'); }
+      if(p.id === 'nt'){ ['jes','sem','sig','nt-ev','nt-hec','nt-car'].forEach(id=>{ if(LANE_ORDER.includes(id)) selLanes.add(id); }); }
+      if(p.id === 'jue'){ selLanes.add('jue'); }
+      if(p.id === 'div'){ ['jud','isr','pro'].forEach(id=> selLanes.add(id)); }
+      if(p.id === 'exi'){ selLanes.add('babil'); }
+      if(p.id === 'pre'){ selLanes.add('pre'); }
+      if(p.id !== 'todo'){
+        try{ localStorage.setItem('lt-par-lanes', JSON.stringify([...selLanes])); }catch(e){}
+        buildLaneFilters();
+      }
+      if(p.min == null){
+        viewWindow = null;
+      } else {
+        const dataMin = lastLayout ? lastLayout.dataMin : p.min;
+        const dataMax = lastLayout ? lastLayout.dataMax : p.max;
+        const win = normalizeFocusWindow(p.min, p.max);
+        viewWindow = win;
+        if(lastLayout && win){
+          viewWindow = {
+            min: Math.max(dataMin, win.min),
+            max: Math.min(dataMax, win.max),
+          };
+        }
+      }
+      saveViewWindow();
+      syncHash();
+      scheduleRender();
+      refreshExplorePanel();
+    });
+  });
+}
+function refreshExplorePanel(){
+  if(appVista !== 'explorar') return;
+  const rangeEl = document.getElementById('explore-range');
+  const listEl = document.getElementById('explore-main-list');
+  if(rangeEl){
+    rangeEl.innerHTML = 'Periodo activo: <span>'+esc(activeExploreRangeLabel())+'</span>';
+  }
+  paintExplorePeriods();
+  if(!listEl) return;
+  const events = selectCanonicalEvents({
+    q: query,
+    qscope: searchScope,
+    ymin: viewWindow ? viewWindow.min : null,
+    ymax: viewWindow ? viewWindow.max : null,
+    inChipScope: typeof eventInChipScope === 'function' ? eventInChipScope : null,
+  });
+  if(window.LTList && typeof LTList.renderExplorer === 'function'){
+    LTList.renderExplorer(listEl, {
+      events,
+      query: exploreLocalQ,
+      esc,
+      fmtYear,
+      onQuery: (q)=>{
+        exploreLocalQ = q;
+        exploreListScroll = listEl.scrollTop || 0;
+        refreshExplorePanel();
+      },
+      onOpen: (id)=>{
+        exploreListScroll = listEl.scrollTop || 0;
+        const ev = eventById(id);
+        if(ev) openDrawer(ev);
+      },
+      onShowOnChart: (id)=>{
+        const ev = eventById(id);
+        if(!ev) return;
+        applyAppVista('comparar', { persist: true, hash: true, sync: true });
+        showEventOnChart(ev);
+      },
+    });
+    if(exploreListScroll) listEl.scrollTop = exploreListScroll;
+  } else {
+    listEl.innerHTML = '<p class="tl-list__empty">'+events.length+' sucesos en el periodo.</p>';
+  }
+  const countEl = document.getElementById('result-count');
+  if(countEl && appVista === 'explorar'){
+    countEl.textContent = events.length + ' sucesos';
+  }
+}
+
+function resolveInitialVista(fromHashVista){
+  if(fromHashVista) return fromHashVista;
+  const stored = readStoredVista();
+  if(stored) return stored;
+  if(isNarrowViewport()) return 'explorar';
+  return 'comparar';
 }
 
 function applyShareableState(state, opts){
@@ -1417,7 +1590,7 @@ function applyShareableState(state, opts){
         ? LTState.clampQscope(state.qscope)
         : (state.qscope === 'todo' ? 'todo' : 'intervalo');
     }
-    if(state.vista) applyAppVista(state.vista);
+    if(state.vista) applyAppVista(state.vista, { sync: false });
     if(o.fromHistory){
       const win = normalizeFocusWindow(state.ymin, state.ymax);
       viewWindow = win;
@@ -2075,6 +2248,19 @@ function eventInChipScope(ev){
       if((ev.t || []).some(t=> temas.includes(t))) return true;
     } else if(f.mode === 'personaje'){
       if(eventMatchesPersonajeLane(ev, id)) return true;
+    } else if(f.mode === 'ministerio'){
+      const y = chartYear(ev) ?? ev.fa;
+      if(y != null && y >= -6 && y <= 34){
+        if((ev.t || []).some(t=> t === 'SIGLO-PRIMERO' || t === 'HECHOS' || String(t).startsWith('NT-'))) return true;
+        if(typeof isAntesDeBautizarseEvent === 'function' && isAntesDeBautizarseEvent(ev) && y < 29) return true;
+        /* Sucesos curados del ministerio (fases / años 29–33). */
+        if(y >= 29 && y <= 33) return true;
+      }
+    } else if(f.mode === 'ultima_semana'){
+      const y = chartYear(ev) ?? ev.fa;
+      if(y != null && y >= 32.5 && y <= 33.5) return true;
+      const dias = D.ultima_semana_dias || [];
+      if(dias.some(d=> (d.eventos || []).includes(ev.id))) return true;
     }
   }
   return false;
@@ -3130,7 +3316,10 @@ function closeDrawer(){
   openDrawerId = null;
   clearDrawerNav();
   setDrawerMode('detail');
-  if(chartWrapEl) chartWrapEl.removeAttribute('inert');
+  if(chartWrapEl){
+    if(appVista === 'explorar') chartWrapEl.setAttribute('inert', '');
+    else chartWrapEl.removeAttribute('inert');
+  }
   if(wasOpen) syncHash();
   if(wasOpen && lastDrawerTrigger && typeof lastDrawerTrigger.focus === 'function'){
     try{ lastDrawerTrigger.focus(); }catch(e){}
@@ -3927,6 +4116,7 @@ function render(){
     : (fn)=> fn();
   scheduleCaptionOverflow(adjustCaptionOverflow);
   drawMinimap();
+  refreshExplorePanel();
 }
 render._scrolled = false;
 
@@ -4298,6 +4488,7 @@ function applySearchQuery(val){
   query = (val || '').trim();
   syncSearchFields(query);
   scheduleRender();
+  refreshExplorePanel();
   syncHash();
 }
 function isSearchPopOpen(){
@@ -4491,8 +4682,10 @@ if(fromHash){
   selLanes = new Set(DEFAULT_LANES);
 }
 normalizeExclusiveLanes();
-if(fromHashState.vista) applyAppVista(fromHashState.vista);
-else applyAppVista(appVista);
+{
+  const initialVista = resolveInitialVista(fromHashState.vista);
+  applyAppVista(initialVista, { sync: false });
+}
 if(fromHashState.qscope){
   searchScope = (window.LTState && LTState.clampQscope)
     ? LTState.clampQscope(fromHashState.qscope)
@@ -4547,6 +4740,7 @@ if(!(D._detailDeferred || (D.preguntas || []).some(p => answerText(p)))){
   });
 }
 safeRender();
+refreshExplorePanel();
 const openEvId = deepEvId || pendingHashEvId;
 if(openEvId){
   const deepEv = eventById(openEvId);
@@ -4562,9 +4756,21 @@ window.addEventListener('popstate', ()=>{
   applyShareableState(st, { fromHistory: true });
   buildLaneFilters();
   scheduleRender();
+  refreshExplorePanel();
   openFromShareable(st);
 });
-window.addEventListener('resize', ()=>{ if(autoFit) render._scrolled = false; scheduleRender(); });
+window.addEventListener('resize', ()=>{
+  if(autoFit) render._scrolled = false;
+  scheduleRender();
+  refreshExplorePanel();
+});
+
+document.getElementById('vista-explorar')?.addEventListener('click', ()=>{
+  applyAppVista('explorar', { persist: true, hash: true });
+});
+document.getElementById('vista-comparar')?.addEventListener('click', ()=>{
+  applyAppVista('comparar', { persist: true, hash: true });
+});
 
 // ---------- onboarding tour (MVP) ----------
 (function initOnboarding(){
@@ -4786,6 +4992,16 @@ document.addEventListener('keydown', e => {
 mqMobile?.addEventListener('change', () => {
   setSheet(false);
   closeSearchPop();
+  const hashHasVista = /(?:^|[&#])vista=/.test(location.hash || '');
+  if(!readStoredVista() && !hashHasVista){
+    applyAppVista(isNarrowViewport() ? 'explorar' : 'comparar', { sync: true });
+  } else {
+    syncVistaChrome();
+    refreshExplorePanel();
+  }
+  if(drawer?.classList.contains('on') && chartWrapEl){
+    chartWrapEl.setAttribute('inert', '');
+  }
 });
 
 })();

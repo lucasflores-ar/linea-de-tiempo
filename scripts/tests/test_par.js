@@ -39,6 +39,7 @@ function makeEl(tag){
     },
     addEventListener(evt,fn){ this.listeners[evt]=fn; },
     setAttribute(){},
+    removeAttribute(){},
     getAttribute(){ return null; },
   };
 }
