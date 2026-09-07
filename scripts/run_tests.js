@@ -23,6 +23,7 @@ const tests = [
   'scripts/tests/test_captions.js',
   'scripts/tests/test_alturas.js',
   'scripts/tests/test_despliegue.js',
+  'scripts/tests/test_marcadores.js',
   'scripts/tests/test_en_linea.js',
   'scripts/tests/test_par.js',
   'scripts/tests/test_fichas.js',

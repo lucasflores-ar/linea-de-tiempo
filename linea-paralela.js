@@ -623,6 +623,10 @@ const MARKER_MIN_GAP_PX = 3;
 /* Un agregado lleva su insignia con el número de miembros, así que es más
    ancho que un marcador suelto. Medido en el navegador: 28px. */
 const MARKER_AGG_PX = 28;
+/* Ancho de barra por debajo del cual el halo táctil de un marcador taparía
+   también el nombre del personaje. Un agregado de 28px más 18px de halo por
+   lado ocupa 64px: cualquier barra más angosta se queda sin zona propia. */
+const MARKER_HALO_SAFE_W = MARKER_AGG_PX + MARKER_TOUCH_INSET * 2;
 
 function markerHitWidth(){
   const grueso = typeof isCoarsePointer === 'function' && isCoarsePointer();
@@ -665,21 +669,27 @@ function groupRowMarkers(evs, yMin, yMax, chartW){
   return grupos;
 }
 
-function renderRowEventMarkers(pe, yMin, yMax, chartW, q){
+function renderRowEventMarkers(pe, yMin, yMax, chartW, q, barW){
   if(!showMarkers || pe.isEvent) return '';
   if(q && !norm(pe.n).includes(q)) return '';
+  /* En puntero grueso cada marcador arrastra un halo táctil invisible de 18px
+     por lado. Sobre una barra angosta ese halo tapa también el nombre, que es
+     el control del personaje: Josías (barra de 32px) quedaba sin un solo punto
+     donde el clic le llegara. El halo se recorta hacia arriba, que es donde
+     vive el nombre; a lo ancho y hacia abajo se conserva entero. */
+  const halo = barW != null && barW < MARKER_HALO_SAFE_W ? ' evt-marker--halo-bajo' : '';
   let html = '';
   for(const g of groupRowMarkers(eventsForPerson(pe, yMin, yMax), yMin, yMax, chartW)){
     if(g.miembros.length === 1){
       const ev = g.miembros[0];
       const mkColor = markerColorFor(ev);
-      html += `<div class="evt-marker evt-marker--in-row" style="left:${g.x}px;--mk-color:${mkColor}" data-ev="${ev.id}" tabindex="0" role="button" aria-label="${esc(ev.n)}"></div>`;
+      html += `<div class="evt-marker evt-marker--in-row${halo}" style="left:${g.x}px;--mk-color:${mkColor}" data-ev="${ev.id}" tabindex="0" role="button" aria-label="${esc(ev.n)}"></div>`;
       continue;
     }
     /* Comparten lugar: un único control, identificado como agregado. */
     const ids = g.miembros.map(e=> e.id).join(',');
     const label = g.miembros.length + ' sucesos próximos';
-    html += `<div class="evt-marker evt-marker--in-row evt-marker--agg" style="left:${g.x}px;--mk-color:var(--acc)" data-agg-ids="${esc(ids)}" tabindex="0" role="button" aria-label="${esc(label)}">`+
+    html += `<div class="evt-marker evt-marker--in-row evt-marker--agg${halo}" style="left:${g.x}px;--mk-color:var(--acc)" data-agg-ids="${esc(ids)}" tabindex="0" role="button" aria-label="${esc(label)}">`+
       `<span class="evt-marker__agg-badge">${g.miembros.length}</span></div>`;
   }
   return html;
@@ -4771,7 +4781,7 @@ function renderTrackCanvas(block, track, q, yMin, yMax, chartW, layoutOpts, rowM
     }
     html += renderPersonBar(block, pe, draw, x, w, dataAttr, ini, fin, opts);
     if(draw && layoutOpts.compactLayout){
-      html += renderRowEventMarkers(pe, yMin, yMax, chartW, q);
+      html += renderRowEventMarkers(pe, yMin, yMax, chartW, q, w);
     }
   }
   html += `</div>`;

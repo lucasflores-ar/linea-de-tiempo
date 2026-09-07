@@ -1,0 +1,165 @@
+{
+  "markerClick": {
+    "control": {
+      "label": "2 sucesos próximos",
+      "agregado": true,
+      "ids": "75,354",
+      "rect": {
+        "x": 1020.4375,
+        "y": 243.78125,
+        "width": 28,
+        "height": 28
+      }
+    },
+    "titulo": "2 sucesos próximos",
+    "llegaAl75": true
+  },
+  "relayout": {
+    "before": {
+      "free": 781,
+      "h": 877,
+      "view": 824
+    },
+    "after": {
+      "free": 676,
+      "h": 772,
+      "view": 824
+    }
+  },
+  "duplicates": {
+    "free": 744,
+    "groups": [
+      {
+        "n": "2 sucesos próximos",
+        "ids": [
+          126,
+          250
+        ]
+      },
+      {
+        "n": "3 sucesos próximos",
+        "ids": [
+          254,
+          420,
+          421
+        ]
+      },
+      {
+        "n": "9 sucesos próximos",
+        "ids": [
+          255,
+          256,
+          422,
+          423,
+          424,
+          425,
+          426,
+          427,
+          428
+        ]
+      },
+      {
+        "n": "2 sucesos próximos",
+        "ids": [
+          257,
+          429
+        ]
+      },
+      {
+        "n": "13 sucesos próximos",
+        "ids": [
+          127,
+          128,
+          129,
+          130,
+          131,
+          259,
+          260,
+          430,
+          431,
+          432,
+          433,
+          434,
+          435
+        ]
+      },
+      {
+        "n": "2 sucesos próximos",
+        "ids": [
+          132,
+          437
+        ]
+      }
+    ],
+    "repeated": []
+  },
+  "synthetic": {
+    "nodes": 8,
+    "levels": [
+      0,
+      1,
+      -1,
+      2,
+      -2,
+      3,
+      -3,
+      4
+    ],
+    "maxCoincident": 1,
+    "coverage": 351,
+    "needH": 320
+  },
+  "tooltips": [
+    {
+      "label": "Débora y Barac",
+      "visible": true,
+      "tip": "Débora y Barac\n1200 a.E.C. · batalla",
+      "rect": {
+        "x": 1026,
+        "y": 148,
+        "width": 138.5,
+        "height": 64.6875,
+        "top": 148,
+        "right": 1164.5,
+        "bottom": 212.6875,
+        "left": 1026
+      },
+      "truncated": false,
+      "clips": []
+    },
+    {
+      "label": "Gedeón y los 300",
+      "visible": true,
+      "tip": "Gedeón y los 300\n1180 a.E.C. · batalla",
+      "rect": {
+        "x": 1097,
+        "y": 148,
+        "width": 153.953125,
+        "height": 64.6875,
+        "top": 148,
+        "right": 1250.953125,
+        "bottom": 212.6875,
+        "left": 1097
+      },
+      "truncated": false,
+      "clips": []
+    },
+    {
+      "label": "3 sucesos próximos",
+      "visible": true,
+      "tip": "3 sucesos próximos\nAbrir para ver la lista completa",
+      "rect": {
+        "x": 1203,
+        "y": 142,
+        "width": 179.59375,
+        "height": 64.6875,
+        "top": 142,
+        "right": 1382.59375,
+        "bottom": 206.6875,
+        "left": 1203
+      },
+      "truncated": false,
+      "clips": []
+    }
+  ]
+}

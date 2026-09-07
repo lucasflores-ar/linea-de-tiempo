@@ -1,0 +1,36 @@
+{
+  "id75": {
+    "existe": 0,
+    "enAgregado": true
+  },
+  "reyes 1920 raton": {
+    "total": 21,
+    "malos": [],
+    "solapes": []
+  },
+  "reyes 1440 raton": {
+    "total": 21,
+    "malos": [],
+    "solapes": []
+  },
+  "reyes 390 tactil": {
+    "total": 14,
+    "malos": [],
+    "solapes": []
+  },
+  "jueces 1440 raton": {
+    "total": 11,
+    "malos": [],
+    "solapes": []
+  },
+  "jueces 390 tactil": {
+    "total": 9,
+    "malos": [],
+    "solapes": []
+  },
+  "ministerio 1920": {
+    "total": 15,
+    "malos": [],
+    "solapes": []
+  }
+}

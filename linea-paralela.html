@@ -1341,6 +1341,11 @@ header {
   .evt-marker--in-row::before {
     content: ''; position: absolute; inset: -18px; border-radius: 50%;
   }
+  /* Sobre una barra angosta el halo tapaba el nombre del personaje, que es su
+     único control: no crece hacia arriba, donde vive el nombre. */
+  .evt-marker--in-row.evt-marker--halo-bajo::before {
+    inset: 0 -18px -18px -18px;
+  }
   button, .site-nav__link, .lane-check, .opt-toggle, .hidden-pe-chip {
     touch-action: manipulation;
   }
@@ -1735,6 +1740,6 @@ header {
 <script src="timeline-selectors.js?v=20260907q"></script>
 <script src="timeline-list.js?v=20260907q"></script>
 <script src="timeline-density.js?v=20260907v"></script>
-<script src="linea-paralela.js?v=20260907z"></script>
+<script src="linea-paralela.js?v=20260907za"></script>
 </body>
 </html>
