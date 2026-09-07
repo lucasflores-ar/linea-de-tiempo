@@ -1,0 +1,58 @@
+{
+  "desde un grupo en el panel": {
+    "drawerAbierto": false,
+    "chartInert": false,
+    "vista": "comparar",
+    "foco": "evt-marker evt-marker--in-row evt-marker--agg evt-marker--revelado",
+    "focoEnMarca": true,
+    "focoId": "75,354",
+    "esAgregado": true,
+    "revelado": true,
+    "visible": true,
+    "dentro": true,
+    "anuncio": "«Ezequías y Senaquerib» está en un grupo de 2 sucesos próximos, ya enfocado en la línea.",
+    "regreso": "← Volver a 2 sucesos próximos",
+    "regresoTapa": {
+      "eje": false,
+      "años": 0
+    },
+    "mal": []
+  },
+  "regresoGrupo": {
+    "abierto": true,
+    "lista": true,
+    "oculto": true
+  },
+  "grupoIds": [
+    "75",
+    "354"
+  ],
+  "desde Explorar": {
+    "drawerAbierto": false,
+    "chartInert": false,
+    "vista": "comparar",
+    "foco": "evt-marker evt-marker--loose evt-marker--zone evt-marker--in-row evt-marker--revelado",
+    "focoEnMarca": true,
+    "focoId": "35",
+    "esAgregado": false,
+    "revelado": true,
+    "visible": true,
+    "dentro": true,
+    "anuncio": "«Caída de Jericó» mostrado en la línea.",
+    "regreso": "← Volver a Explorar",
+    "regresoTapa": {
+      "eje": false,
+      "años": 0
+    },
+    "mal": []
+  },
+  "explorarVista": {
+    "enComparar": true,
+    "vista": "comparar"
+  },
+  "agrupado": {
+    "id": "84",
+    "miembros": 2,
+    "via": "agregado"
+  }
+}

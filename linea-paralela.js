@@ -1815,8 +1815,7 @@ function refreshExplorePanel(){
       onShowOnChart: (id)=>{
         const ev = eventById(id);
         if(!ev) return;
-        applyAppVista('comparar', { persist: true, hash: true, sync: true });
-        showEventOnChart(ev);
+        showEventOnChart(ev, { volverA: { etiqueta: 'Explorar', vista: 'explorar' } });
       },
     });
     if(exploreListScroll) listEl.scrollTop = exploreListScroll;
@@ -3182,6 +3181,10 @@ function eventTwins(ev){
 function afterDrawerOpen(wasOpen){
   if(!wasOpen) lastDrawerTrigger = document.activeElement;
   if(chartWrapEl) chartWrapEl.setAttribute('inert', '');
+  /* Con un panel abierto el regreso es su propia pila, no el botón flotante,
+     y un tip flotante no debe quedar encima del panel. */
+  setChartReturn(null);
+  hideTip();
   const closeBtn = document.getElementById('d-close');
   if(closeBtn && !wasOpen) closeBtn.focus();
   if(!drawerTrapBound && drawer){
@@ -3546,18 +3549,154 @@ function clearDrawerNav(){
   explorerListScroll = 0;
   syncDrawerBackBtn();
 }
-function showEventOnChart(ev){
-  if(!ev || !lastLayout) return;
-  const y = chartYear(ev);
-  if(y == null) return;
-  const pad = Math.max(MIN_FOCUS_SPAN / 2, 2.5);
-  applyFocusZoom(y - pad, y + pad, lastLayout.dataMin, lastLayout.dataMax);
-  requestAnimationFrame(()=>{
-    const el = chartCanvas && chartCanvas.querySelector(`[data-ev="${ev.id}"]`);
-    if(!el || !chartScroll) return;
-    const r = el.getBoundingClientRect();
-    const cr = chartScroll.getBoundingClientRect();
-    chartScroll.scrollLeft += (r.left + r.width / 2) - (cr.left + cr.width / 2);
+/* ── «En línea»: revelar un suceso en el gráfico ─────────────────────────
+   Antes esta acción solo movía el zoom. Si la lista venía de un grupo abierto
+   en el panel, el panel seguía tapando el gráfico y chart-wrap quedaba inert:
+   el usuario no veía el resultado de su propia acción. Y buscaba [data-ev] sin
+   contemplar que el suceso podía estar dentro de un agregado, así que en zonas
+   densas no encontraba nada y no revelaba ni enfocaba. */
+
+const chartReturnBtn = document.getElementById('chart-return');
+const chartLiveEl = document.getElementById('chart-live');
+let chartReturnState = null;
+
+/** Anuncio para lectores de pantalla: la acción también tiene que ser audible. */
+function anunciarEnLinea(msg){
+  if(chartLiveEl) chartLiveEl.textContent = msg;
+}
+
+/**
+ * Sube el regreso por encima del eje. El eje es sticky al pie del scroller y
+ * debajo puede haber minimapa, así que medir desde el pie del viewport dejaba
+ * el botón encima de las etiquetas de año.
+ */
+function colocarChartReturn(){
+  if(!chartReturnBtn || chartReturnBtn.hidden) return;
+  const ax = axisArea && axisArea.getBoundingClientRect();
+  if(!ax || !ax.height) return;
+  chartReturnBtn.style.setProperty(
+    '--return-bottom', Math.round(Math.max(8, innerHeight - ax.top + 12)) + 'px');
+}
+
+/** Muestra u oculta el camino de vuelta a la lista de la que se salió. */
+function setChartReturn(state){
+  chartReturnState = state || null;
+  if(!chartReturnBtn) return;
+  chartReturnBtn.hidden = !chartReturnState;
+  if(chartReturnState){
+    chartReturnBtn.textContent = '← Volver a ' + (chartReturnState.etiqueta || 'la lista');
+    colocarChartReturn();
+  }
+}
+if(chartReturnBtn){
+  chartReturnBtn.addEventListener('click', ()=>{
+    const st = chartReturnState;
+    setChartReturn(null);
+    if(!st) return;
+    if(st.level){
+      explorerListQuery = st.level.query || '';
+      explorerListScroll = st.level.scroll || 0;
+      openExplorerList(st.level);
+    } else if(st.vista){
+      applyAppVista(st.vista, { persist: true, hash: true, sync: true });
+    }
+  });
+}
+
+/**
+ * El control que representa un id en el gráfico: su propio marcador o el
+ * agregado que lo contiene. Se compara la lista de ids por token exacto,
+ * porque un selector *="75" también engancharía 175 o 755.
+ */
+function controlDeSuceso(id){
+  if(!chartCanvas) return null;
+  const propio = chartCanvas.querySelector(`[data-ev="${id}"]`);
+  if(propio) return { el: propio, agregado: false, miembros: 1 };
+  const clave = String(id);
+  for(const agg of chartCanvas.querySelectorAll('[data-agg-ids]')){
+    const ids = String(agg.dataset.aggIds || '').split(',');
+    if(ids.includes(clave)) return { el: agg, agregado: true, miembros: ids.length };
+  }
+  return null;
+}
+
+/** Reintenta por frames hasta que la condición se cumpla o se agoten. */
+function esperarFrames(cond, frames, listo){
+  const hallado = cond();
+  if(hallado || frames <= 0){ listo(hallado); return; }
+  requestAnimationFrame(()=> esperarFrames(cond, frames - 1, listo));
+}
+
+/**
+ * Espera el layout definitivo: que renderSeq deje de moverse.
+ *
+ * render() reescribe el gráfico entero, así que revelar en cuanto aparece el
+ * control no alcanza. Cerrar el panel, cambiar de vista y aplicar el zoom
+ * encadenan varios renders (y el ResizeObserver puede sumar otro): el que
+ * llegue después reemplaza el control y se lleva el foco y la marca, dejando
+ * el foco en <body>. Se espera a que pasen `quietos` frames sin renders.
+ */
+function cuandoLayoutQuieto(quietos, maxFrames, listo){
+  let ultimo = renderSeq, sin = 0, gastados = 0;
+  const paso = ()=>{
+    if(renderSeq !== ultimo){ ultimo = renderSeq; sin = 0; } else sin++;
+    if(sin >= quietos || ++gastados >= maxFrames){ listo(); return; }
+    requestAnimationFrame(paso);
+  };
+  requestAnimationFrame(paso);
+}
+
+/** Trae el control a la vista, le da el foco y anuncia qué se reveló. */
+function revelarControl(ev, hallado){
+  if(!hallado || !chartScroll){
+    anunciarEnLinea(`«${ev.n}» no se puede mostrar en la línea con los filtros activos.`);
+    return;
+  }
+  const el = hallado.el;
+  const r = el.getBoundingClientRect();
+  const cr = chartScroll.getBoundingClientRect();
+  chartScroll.scrollLeft += (r.left + r.width / 2) - (cr.left + cr.width / 2);
+  if(el.scrollIntoView) el.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+
+  const marca = el.classList.contains('bar-event-pin')
+    ? 'bar-event-pin--revelado' : 'evt-marker--revelado';
+  el.classList.add(marca);
+  setTimeout(()=>{ el.classList.remove(marca); }, 4000);
+  try{ el.focus({ preventScroll: true }); }catch(e){}
+
+  anunciarEnLinea(hallado.agregado
+    ? `«${ev.n}» está en un grupo de ${hallado.miembros} sucesos próximos, ya enfocado en la línea.`
+    : `«${ev.n}» mostrado en la línea.`);
+}
+
+function showEventOnChart(ev, opts){
+  if(!ev) return;
+  const o = opts || {};
+  /* 1. Dejar el gráfico visible, conservando el regreso a la lista. */
+  setChartReturn(o.volverA);
+  if(drawer && drawer.classList.contains('on')){
+    /* El foco va al control revelado, no al disparador que abrió el panel. */
+    lastDrawerTrigger = null;
+    closeDrawer();
+  }
+  /* 2. Comparar es la vista que dibuja las filas y sus marcadores. */
+  if(appVista !== 'comparar'){
+    applyAppVista('comparar', { persist: true, hash: true, sync: true });
+  }
+  /* 3. Enfocar el rango, en cuanto haya un layout con el que calcularlo. */
+  esperarFrames(()=> !!lastLayout, 30, ()=>{
+    const y = chartYear(ev);
+    if(y != null && lastLayout){
+      const pad = Math.max(MIN_FOCUS_SPAN / 2, 2.5);
+      applyFocusZoom(y - pad, y + pad, lastLayout.dataMin, lastLayout.dataMax);
+    }
+    /* 4. Recién con el layout quieto se revela: si no, el render siguiente se
+          lleva el foco y la marca. Y el eje ya está donde va a quedar, así que
+          el regreso se recoloca ahora (al guardarlo, la vista era otra). */
+    cuandoLayoutQuieto(3, 90, ()=>{
+      colocarChartReturn();
+      revelarControl(ev, controlDeSuceso(ev.id));
+    });
   });
 }
 function openExplorerList(level){
@@ -3598,7 +3737,17 @@ function openExplorerList(level){
         },
         onShowOnChart: (id)=>{
           const ev = eventById(id);
-          if(ev) showEventOnChart(ev);
+          if(!ev) return;
+          /* Se guarda la lista tal como está para poder volver a ella. */
+          showEventOnChart(ev, {
+            volverA: {
+              etiqueta: level.title || 'la lista',
+              level: Object.assign({}, level, {
+                query: explorerListQuery,
+                scroll: explorerRoot ? (explorerRoot.scrollTop || 0) : 0,
+              }),
+            },
+          });
         },
       });
     } else {
@@ -4537,6 +4686,9 @@ function buildConnections(rowMap, yMin, yMax, chartW, totalH){
   return paths ? `<svg class="conn-layer" width="${chartW}" height="${totalH}" aria-hidden="true">${paths}</svg>` : '';
 }
 
+/* Se declara antes de render() para que no quede en zona muerta si algún
+   camino de inicialización dibuja de forma sincrónica. */
+let renderSeq = 0;
 function render(){
   const L = layoutMetrics();
   const rawLaneData = buildAllLaneData({ query });
@@ -4927,6 +5079,9 @@ function render(){
   scheduleCaptionOverflow(adjustCaptionOverflow);
   drawMinimap();
   refreshExplorePanel();
+  /* Cada render reescribe el gráfico: quien necesite el layout definitivo
+     («En línea») espera a que este contador deje de moverse. */
+  renderSeq++;
 }
 render._scrolled = false;
 
@@ -5579,6 +5734,7 @@ window.addEventListener('resize', ()=>{
   scheduleRender();
   refreshExplorePanel();
   repositionTip();
+  colocarChartReturn();
 });
 
 /* ── Medir el contenedor cuando ya está acomodado ─────────────────────────

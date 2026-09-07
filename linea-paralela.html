@@ -690,6 +690,36 @@ html[data-theme="dark"] .focus-marquee{background:rgba(106,159,173,.18)}
   z-index:12;pointer-events:none;
 }
 
+/* Regreso a la lista tras «En línea»: el panel se cierra para que el gráfico
+   quede visible, así que el camino de vuelta tiene que seguir a mano. */
+.chart-return{
+  position:fixed;z-index:120;left:50%;transform:translateX(-50%);
+  /* colocarChartReturn() lo sube por encima del eje medido: un offset fijo
+     desde el pie del viewport no sabe si abajo hay minimapa. */
+  bottom:var(--return-bottom, 68px);
+  display:inline-flex;align-items:center;gap:6px;
+  padding:8px 14px;border-radius:999px;cursor:pointer;
+  background:var(--panel);border:1px solid var(--line);color:var(--txt);
+  font:600 12px/1 var(--font-sans);box-shadow:0 8px 28px var(--shadow);
+}
+.chart-return:hover{border-color:var(--acc);color:var(--acc)}
+.chart-return[hidden]{display:none}
+
+/* Control revelado por «En línea»: un halo temporal para no perderlo de vista
+   en una pantalla con decenas de marcadores iguales. */
+.evt-marker--revelado,.bar-event-pin--revelado{
+  animation:revelado 1.8s ease-out 2;
+}
+@keyframes revelado{
+  0%{box-shadow:0 0 0 0 color-mix(in srgb, var(--acc) 70%, transparent)}
+  100%{box-shadow:0 0 0 14px color-mix(in srgb, var(--acc) 0%, transparent)}
+}
+@media (prefers-reduced-motion: reduce){
+  .evt-marker--revelado,.bar-event-pin--revelado{
+    animation:none;outline:2px solid var(--acc);outline-offset:3px;
+  }
+}
+
 /* Capa flotante única para todos los tips. Es position:fixed, así que no la
    recorta el overflow:hidden de .lane-block ni el del scroller; el alto se
    acota para que un suceso con descripción larga no tape media pantalla. */
@@ -1593,6 +1623,10 @@ header {
   <div class="hidden-dock" id="hidden-dock" hidden aria-label="Personajes ocultos"></div>
 </main>
 <div id="tooltip" role="tooltip"></div>
+<!-- «En línea» cierra el panel para dejar ver el gráfico; este control es el
+     regreso a la lista de la que se salió, y el anuncio dice qué se reveló. -->
+<button type="button" id="chart-return" class="chart-return" hidden></button>
+<span id="chart-live" class="u-visually-hidden" aria-live="polite"></span>
 <div id="ctx-help-tip" class="ctx-help-tip" role="tooltip" hidden>
   <p class="ctx-help-tip__title" id="ctx-help-title"></p>
   <p class="ctx-help-tip__body" id="ctx-help-body"></p>
@@ -1686,6 +1720,6 @@ header {
 <script src="timeline-selectors.js?v=20260907q"></script>
 <script src="timeline-list.js?v=20260907q"></script>
 <script src="timeline-density.js?v=20260907v"></script>
-<script src="linea-paralela.js?v=20260907x"></script>
+<script src="linea-paralela.js?v=20260907y"></script>
 </body>
 </html>
