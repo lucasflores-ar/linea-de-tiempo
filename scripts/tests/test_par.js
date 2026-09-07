@@ -10,9 +10,11 @@ const STATE_JS = fs.readFileSync(path.join(REPO, 'timeline-state.js'), 'utf-8');
 const SEL_JS = fs.readFileSync(path.join(REPO, 'timeline-selectors.js'), 'utf-8');
 const LIST_JS = fs.readFileSync(path.join(REPO, 'timeline-list.js'), 'utf-8');
 const DENS_JS = fs.readFileSync(path.join(REPO, 'timeline-density.js'), 'utf-8');
+const DATES_JS = fs.readFileSync(path.join(REPO, 'timeline-dates.js'), 'utf-8');
 
 function loadParalela(ctx){
   vm.runInContext('window.LT_DATA='+JSON.stringify(DATA)+';', ctx);
+  vm.runInContext(DATES_JS, ctx);
   vm.runInContext(STATE_JS, ctx);
   vm.runInContext(SEL_JS, ctx);
   vm.runInContext(LIST_JS, ctx);

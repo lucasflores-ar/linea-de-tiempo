@@ -134,7 +134,7 @@ let autoFit = isFirstVisit
   ? true
   : (localStorage.getItem('lt-par-autofit') === null ? true : localStorage.getItem('lt-par-autofit') === '1');
 const MIN_FOCUS_SPAN = 5;
-const FONT_SCALE_OPTIONS = [1, 1.2, 1.4];
+const FONT_SCALE_OPTIONS = [1, 1.2, 1.4, 2];
 let viewWindow = loadViewWindow();
 let fontScale = loadFontScale();
 let rectZoomMode = false;
@@ -165,6 +165,9 @@ function saveFontScale(){
 function applyFontScale(){
   if(document.documentElement && document.documentElement.style){
     document.documentElement.style.setProperty('--tl-font-scale', String(fontScale));
+  }
+  if(document.documentElement && document.documentElement.dataset){
+    document.documentElement.dataset.fontScale = String(fontScale);
   }
   if(fontScaleEl) fontScaleEl.value = String(fontScale);
 }
@@ -398,7 +401,7 @@ function isNtEscrituraLane(f){
   return f && NT_LANE_IDS.has(f.id);
 }
 const DEFAULT_FOCUS_YEAR = 30;
-const NISAN_DAYS = [
+const NISAN_DAYS = (window.LTDates && window.LTDates.NISAN_DAYS) || [
   '8 de nisán (sábado)', '9 de nisán', '10 de nisán', '11 de nisán', '12 de nisán',
   '13 de nisán', '14 de nisán', '15 de nisán (sábado)', '16 de nisán',
 ];
@@ -994,16 +997,19 @@ function potIconHtml(id){
   return p ? p.icon : '';
 }
 function fmtYear(y){
+  if(window.LTDates) return window.LTDates.fmtYear(y, { empty: '—' });
   if(y == null || isNaN(y)) return '—';
   if(y >= 33 && y < 34 && y % 1 > 0.001){
     const idx = Math.round((y - 33) * 20);
     if(NISAN_DAYS[idx]) return NISAN_DAYS[idx];
   }
-  if(y < 0) return Math.round(Math.abs(y)) + ' a.e.c.';
-  if(y === 0) return '0';
-  return Math.round(y) + ' e.c.';
+  const r = Math.round(y);
+  if(r === 0) return '—';
+  if(r < 0) return Math.abs(r) + ' a.E.C.';
+  return r + ' E.C.';
 }
 function fmtRange(ini, fin){
+  if(window.LTDates) return window.LTDates.fmtRange(ini, fin, { empty: '—' });
   if(ini === fin) return fmtYear(ini);
   return fmtYear(ini) + ' – ' + fmtYear(fin);
 }
@@ -3109,6 +3115,15 @@ function drawerColOf(ev){
   return drawerEraCol[drawerEraKey(ev.era)] || DRAWER_ERAS[DRAWER_ERAS.length - 1];
 }
 function fmtFechaDrawer(fa){ return fmtYear(fa); }
+function eventDateLine(ev){
+  if(window.LTDates && window.LTDates.fmtEventDateLine) return window.LTDates.fmtEventDateLine(ev);
+  let line = ev.ft || fmtFechaDrawer(ev.fa);
+  if(ev.fa_fin != null && ev.fa_fin !== ev.fa){
+    line += ' – ' + (ev.ft_fin || fmtFechaDrawer(ev.fa_fin));
+  }
+  if(ev.fest || ev.ini_est || ev.fin_est) line += ' · fecha estimada';
+  return line || '—';
+}
 
 function answerText(q){
   const raw = q.a ?? q.respuesta ?? '';
@@ -3223,10 +3238,7 @@ function openDrawerFill(ev, opts = {}){
   document.getElementById('d-badge').textContent = drawerEraKey(ev.era);
   document.getElementById('d-badge').style.background = col.color;
   document.getElementById('d-title').textContent = ev.n;
-  let dateLine = ev.ft || fmtFechaDrawer(ev.fa);
-  if(ev.fa_fin != null && ev.fa_fin !== ev.fa){
-    dateLine += ' – ' + (ev.ft_fin || fmtFechaDrawer(ev.fa_fin));
-  }
+  let dateLine = eventDateLine(ev);
   document.getElementById('d-date').textContent = dateLine + (ev.lug ? ' · ' + ev.lug : '');
   const refEl = document.getElementById('d-ref');
   refEl.textContent = ev.ref ? ('“' + ev.ref + '”') : 'Sin referencia registrada.';
@@ -3250,8 +3262,9 @@ function openDrawerFill(ev, opts = {}){
   }
   document.getElementById('d-char').innerHTML = (ev.per || '—').split(/[,/]/).filter(Boolean)
     .map(c=>'<span class="chip">'+esc(c.trim())+'</span>').join('');
+  const yearMeta = fmtFechaDrawer(ev.fa) + ((ev.fest || ev.ini_est || ev.fin_est) ? ' · estimada' : '');
   document.getElementById('d-meta').innerHTML =
-    '<span class="k">Año</span><span>'+fmtFechaDrawer(ev.fa)+'</span>'+
+    '<span class="k">Año</span><span>'+yearMeta+'</span>'+
     '<span class="k">Lugar</span><span>'+esc(ev.lug||'—')+(ev.lat!=null?' <small style="color:var(--mut)">('+ev.lat+', '+ev.lon+')</small>':'')+'</span>'+
     '<span class="k">Tipo</span><span>'+(DRAWER_TIPO_ICON[drawerTipoBucket(ev.tipo)]||'')+' '+esc(ev.tipo||'—')+'</span>'+
     '<span class="k">Era</span><span>'+esc(drawerEraKey(ev.era))+'</span>';
@@ -4168,18 +4181,28 @@ function render(){
   }
 
   const step = tickStep(span2, yMin, yMax);
-  const startTick = Math.ceil(yMin / step) * step;
   let gridLines = '', axisLabels = '';
-  let tickN = 0;
-  for(let y = startTick; y <= yMax; y += step){
+  const paintTick = (y, tickN)=>{
     const x = yearToX(y, yMin, yMax, chartW);
     const major = y % (step * 2) === 0 || step >= 50;
     const showLabel = major || effectivePx >= 0.35;
     gridLines += `<div class="grid-line${major?' major':''}" style="left:${x}px;height:${totalH}px"></div>`;
-    if(showLabel || tickN % 2 === 0){
+    const skipZero = window.LTDates
+      ? window.LTDates.shouldSkipAxisTick(y)
+      : (Math.round(y) === 0);
+    if(!skipZero && (showLabel || tickN % 2 === 0)){
       axisLabels += `<div class="grid-label" style="left:${x}px">${fmtYear(y)}</div>`;
     }
-    tickN++;
+  };
+  if(window.LTDates && window.LTDates.forEachAxisTick){
+    window.LTDates.forEachAxisTick(yMin, yMax, step, t=> paintTick(t.y, t.index));
+  } else {
+    const startTick = Math.ceil(yMin / step) * step;
+    let tickN = 0;
+    for(let y = startTick; y <= yMax; y += step){
+      paintTick(y, tickN);
+      tickN++;
+    }
   }
 
   /* Sucesos importantes en el eje inferior (punto 2× el de los años) */

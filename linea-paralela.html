@@ -1091,14 +1091,48 @@ button.rel-edge{appearance:none;-webkit-appearance:none;margin:0}
 .d-retry:hover{border-color:var(--acc)}
 .d-retry:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
 .qa{border-top:1px solid var(--line);padding-top:12px}
+.qa__summary{
+  cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px;
+  font-size:12px;color:var(--mut);font-weight:600;user-select:none;
+}
+.qa__summary::-webkit-details-marker{display:none}
+.qa__summary::before{
+  content:'▸';display:inline-block;color:var(--acc);transition:transform .15s;
+  font-size:11px;line-height:1;
+}
+.qa[open] .qa__summary::before{transform:rotate(90deg)}
 .qa .q{font-size:12px;margin:6px 0;padding:9px 10px;background:var(--field);border-radius:8px}
 .qa .q small{display:block;color:var(--acc);margin-top:5px;font-size:12px;line-height:1.45;font-weight:500}
-.qa .more{color:var(--acc);cursor:pointer;font-size:12px}
+.qa .more{color:var(--acc);cursor:pointer;font-size:12px;margin-top:6px}
 .qa .more:hover{text-decoration:underline}
 .ph{color:var(--mut);font-size:12px}
 .link-back{margin-top:4px;display:inline-block;font-size:11px;color:var(--acc);text-decoration:none}
 .link-back:hover{text-decoration:underline}
 .evt-marker{cursor:pointer}
+
+/* Texto 200 %: controles esenciales siguen accesibles (wrap, sin overflow oculto) */
+html[data-font-scale="2"] header{
+  flex-wrap:wrap;align-items:flex-start;row-gap:8px;
+}
+html[data-font-scale="2"] header .controls{
+  margin-left:0;width:100%;flex-wrap:wrap;row-gap:8px;
+}
+html[data-font-scale="2"] .toolbar,
+html[data-font-scale="2"] .toolbar--quick{
+  flex-wrap:wrap;row-gap:8px;overflow:visible;
+}
+html[data-font-scale="2"] .vista-switch,
+html[data-font-scale="2"] .site-nav,
+html[data-font-scale="2"] #search-open,
+html[data-font-scale="2"] #filtros-open,
+html[data-font-scale="2"] #export-btn,
+html[data-font-scale="2"] #font-scale{
+  flex-shrink:0;
+}
+html[data-font-scale="2"] .zoom-ctrl,
+html[data-font-scale="2"] .style-ctrl{
+  flex-wrap:wrap;max-width:100%;
+}
 
 @media (pointer: coarse) {
   .lane-hdr { position: relative; left: auto; }
@@ -1522,6 +1556,7 @@ header {
         <option value="1">Normal</option>
         <option value="1.2">Grande (+20%)</option>
         <option value="1.4">Muy grande (+40%)</option>
+        <option value="2">200 %</option>
       </select>
     </div>
     <button type="button" class="export-btn" id="export-btn">Exportar PNG</button>
@@ -1639,19 +1674,20 @@ header {
       <h3>🌍 Mundo contemporáneo</h3>
       <p id="d-par"></p>
     </div>
-    <div class="qa">
-      <b id="d-qcount" style="font-size:12px;color:var(--mut)"></b>
+    <details class="qa" id="d-qa">
+      <summary class="qa__summary"><span id="d-qcount">Preguntas vinculadas</span></summary>
       <div id="d-qlist"></div>
       <div class="more" id="d-more" style="display:none">Mostrar todas</div>
-    </div>
+    </details>
   </div>
 </aside>
 
 <script src="linea-tiempo-datos.js?v=14"></script>
-<script src="timeline-state.js?v=20260907e"></script>
-<script src="timeline-selectors.js?v=20260907e"></script>
-<script src="timeline-list.js?v=20260907e"></script>
-<script src="timeline-density.js?v=20260907e"></script>
-<script src="linea-paralela.js?v=20260907f"></script>
+<script src="timeline-dates.js?v=20260907g"></script>
+<script src="timeline-state.js?v=20260907g"></script>
+<script src="timeline-selectors.js?v=20260907g"></script>
+<script src="timeline-list.js?v=20260907g"></script>
+<script src="timeline-density.js?v=20260907g"></script>
+<script src="linea-paralela.js?v=20260907g"></script>
 </body>
 </html>

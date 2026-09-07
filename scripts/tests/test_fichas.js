@@ -5,6 +5,7 @@ const vm=require('vm');
 
 const REPO=path.resolve(__dirname,'../..');
 const _w={}; global.window=_w;
+eval(fs.readFileSync(path.join(REPO,'timeline-dates.js'),'utf-8'));
 eval(fs.readFileSync(path.join(REPO,'fichas-personajes.js'),'utf-8'));
 const FICHAS=_w.LT_FICHAS;
 const HTML=fs.readFileSync(path.join(REPO,'fichas.html'),'utf-8');
@@ -13,30 +14,37 @@ const inline=HTML.match(/<script>\s*\r?\n([\s\S]*?)\r?\n<\/script>/)[1];
 function makeEl(tag){
   return {
     tagName:tag, children:[], style:{}, dataset:{}, className:'', textContent:'', innerHTML:'', id:'',
-    value:'', checked:false, listeners:{}, clientWidth:1200,
+    value:'', checked:false, listeners:{}, clientWidth:1200, attrs:{},
     classList:{_s:new Set(), add(c){this._s.add(c);}, remove(c){this._s.delete(c);}, toggle(c,v){v?this._s.add(c):this._s.delete(c);}, contains(c){return this._s.has(c);}},
     appendChild(c){this.children.push(c);},
     insertAdjacentHTML(p,h){ this.innerHTML+=h; },
     querySelector(){ return makeEl('div'); },
     querySelectorAll(){ return { forEach(){}, }; },
     addEventListener(evt,fn){ this.listeners[evt]=fn; },
+    setAttribute(k,v){ this.attrs[k]=String(v); },
+    removeAttribute(k){ delete this.attrs[k]; },
+    getAttribute(k){ return this.attrs[k] != null ? this.attrs[k] : null; },
+    focus(){},
     getBoundingClientRect(){ return {left:0,top:0,width:300,height:300}; },
     scrollIntoView(){}, scrollBy(){}, remove(){},
     set onclick(f){ this._onclick=f; },
   };
 }
 const byId={};
-const ids=['brand-sub','search','f-era','f-sec','f-prof','sort','t-vida','t-hitos','t-preg','reset','theme-btn','pill-incom','st-total','st-visible','st-vida','st-prof','st-hitos','st-preg','st-incom','grid','empty','overlay','drawer','d-close','d-era','d-title','d-alt','d-profs','d-meta','d-lugares','d-hcount','d-hitos','d-hmore','d-rel','d-cual','d-def','d-op','d-vers','d-lec','d-nq','d-nh','d-fuente','d-open-linea','d-open-app'];
+const ids=['brand-sub','search','f-era','f-sec','f-prof','sort','t-vida','t-hitos','t-preg','reset','theme-btn','pill-incom','st-total','st-visible','st-vida','st-prof','st-hitos','st-preg','st-incom','grid','empty','overlay','drawer','main-fichas','d-close','d-era','d-title','d-alt','d-profs','d-meta','d-lugares','d-hcount','d-hitos','d-hmore','d-rel','d-cual','d-def','d-op','d-vers','d-lec','d-nq','d-nh','d-fuente','d-open-linea','d-open-app'];
 ids.forEach(id=>byId[id]=makeEl('div'));
 const docEl={_t:'dark', setAttribute(k,v){this._t=v;}, getAttribute(k){return this._t;} };
 const ctx={ document:{ getElementById(id){ return byId[id]||makeEl('div'); },
-  documentElement:docEl, querySelector(){ return makeEl('div'); },
+  documentElement:docEl, body:{ style:{} }, querySelector(){ return makeEl('div'); },
   querySelectorAll(){ return []; }, createElement(){ return makeEl('div'); }, addEventListener(){},
-}, innerWidth:1920, innerHeight:1080, console, addEventListener(){}, setTimeout(fn){ fn(); }, clearTimeout(){}, localStorage:{getItem(){return null;},setItem(){}}, location:{search:''} };
+}, innerWidth:1920, innerHeight:1080, console, addEventListener(){}, setTimeout(fn){ fn(); }, clearTimeout(){}, localStorage:{getItem(){return null;},setItem(){}}, location:{search:''}, LTDates:_w.LTDates };
 ctx.window=ctx;
 vm.createContext(ctx);
 try{
-  vm.runInContext('window.LT_FICHAS='+JSON.stringify(FICHAS)+';',ctx);
+  vm.runInContext('window.LT_FICHAS='+JSON.stringify(FICHAS)+';window.LTDates=globalThis.LTDates||window.LTDates;',ctx);
+  // Re-inject LTDates from host into sandbox
+  ctx.LTDates = _w.LTDates;
+  ctx.window.LTDates = _w.LTDates;
   vm.runInContext(inline,ctx,{timeout:5000});
   console.log('RUN OK');
 }catch(e){ console.log('ERROR:',e.message); console.log(e.stack.split('\n').slice(0,5).join('\n')); }
