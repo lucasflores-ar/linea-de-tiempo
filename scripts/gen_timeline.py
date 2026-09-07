@@ -3,7 +3,7 @@
 temas: GENESIS, EXODO, CONQUISTA, JUECES, REYES, PROFETAS, RESTAURACION, EXILIO, SIGLO-PRIMERO, HECHOS
 Un evento puede pertenecer a varios temas (union por AND/OR segun filtro).
 """
-import csv, json, io, re, collections, unicodedata, os, sys
+import csv, json, io, re, collections, unicodedata, os, sys, hashlib
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from paths import db, repo
@@ -430,11 +430,42 @@ data_slim = dict(data)
 data_slim['eventos'] = slim_evts
 data_slim['preguntas'] = []
 data_slim['_detailDeferred'] = True
+
+detail_payload = {'eventosDetail': detail_evts, 'preguntas': qdata}
+detail_js = json.dumps(detail_payload, ensure_ascii=False)
+open(OUT_DETAIL, 'w', encoding='utf-8').write(detail_js)
+
+# Sello de caché derivado del contenido de los dos artefactos. Viaja dentro del
+# bundle como `_v` y el cliente arma con él la URL del detalle: si en cambio se
+# escribiera como constante en linea-paralela.js, ese archivo tiene su propio
+# ?v= y el navegador seguiria corriendo la copia cacheada, que pide el detalle
+# viejo. El detalle estuvo clavado en v=1 justamente por eso.
+sello = hashlib.sha1(
+    (json.dumps(data_slim, ensure_ascii=False, sort_keys=True) + detail_js).encode('utf-8')
+).hexdigest()[:8]
+data_slim['_v'] = sello
 js += 'window.LT_DATA = ' + json.dumps(data_slim, ensure_ascii=False) + ';\n'
 open(OUT, 'w', encoding='utf-8').write(js)
 
-detail_payload = {'eventosDetail': detail_evts, 'preguntas': qdata}
-open(OUT_DETAIL, 'w', encoding='utf-8').write(json.dumps(detail_payload, ensure_ascii=False))
+SELLOS = [
+    (repo('linea-paralela.html'),
+     r'(linea-tiempo-datos\.js\?v=)[^"\']+', r'\g<1>' + sello),
+]
+for ruta, patron, reemplazo in SELLOS:
+    if not os.path.exists(ruta):
+        print('[warn] no encuentro para sellar:', ruta)
+        continue
+    # newline='' en lectura y escritura: si no, los CRLF del archivo se
+    # traducirian a LF y el diff serian todas las lineas en vez de una.
+    with open(ruta, encoding='utf-8', newline='') as f:
+        txt = f.read()
+    nuevo, n = re.subn(patron, reemplazo, txt, count=1)
+    if not n:
+        print('[warn] no pude sellar la version en', os.path.basename(ruta))
+    elif nuevo != txt:
+        with open(ruta, 'w', encoding='utf-8', newline='') as f:
+            f.write(nuevo)
+        print('sello de cache -> %s (%s)' % (sello, os.path.basename(ruta)))
 
 # reporte
 print('eventos:', len(evts))

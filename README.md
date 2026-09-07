@@ -208,6 +208,13 @@ Genera `linea-tiempo-datos.js`:
 - Para cada hecho calcula sus **temas** (multietiqueta) con `temas_de(h)`.
 - Agrupa preguntas por hecho (`nq` = nº de preguntas vinculadas).
 - Emite `window.LT_DATA = {eventos:[…], preguntas:[…], personajes:[…]}`.
+- Emite el detalle diferido en `linea-tiempo-detalle.json`.
+- **Sella la caché**: calcula un sha1 corto del contenido de los dos archivos,
+  lo emite como `LT_DATA._v` y lo estampa en el `?v=` de
+  `linea-tiempo-datos.js` dentro de `linea-paralela.html`. El cliente arma con
+  ese valor la URL del detalle, así que no hay que bumpear nada a mano; sin
+  esto, quien ya cargó el sitio seguía viendo los datos viejos
+  (ver `docs/mejora-exploracion/PASO8-EPOCAS.md`).
 
 Salida actual: 159 eventos, 12,499 preguntas (7,324 con fecha), 54 personajes.
 

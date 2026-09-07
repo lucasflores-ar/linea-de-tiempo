@@ -7,7 +7,12 @@ let detailError = null;
 let detailPromise = null;
 let detailRequestId = 0;
 let drawerSelectId = 0;
-const DETAIL_URL = 'linea-tiempo-detalle.json?v=1';
+/* El sello lo estampa gen_timeline.py dentro del bundle, que ya viaja con su
+   propio ?v=. Derivarlo acá en vez de hardcodearlo evita que al regenerar los
+   datos el navegador siga pidiendo el detalle viejo con la copia cacheada de
+   este archivo. */
+const DETAIL_URL = 'linea-tiempo-detalle.json?v='
+  + ((window.LT_DATA && window.LT_DATA._v) || '1');
 
 /** Índices canónicos (Paso 2); se reconstruyen al cargar detalle diferido. */
 let dataIndexes = { byEventId: new Map(), questionsByHid: new Map() };

@@ -205,9 +205,94 @@ adónde se mueven las preguntas y cómo se actualiza la curación.
 - **198** «Lucas completa el libro de Hechos en Roma» — «Lucas» es el escritor,
   no el libro redactado.
 
+## Los cuatro «X escribe el Evangelio» completados desde su gemela
+
+Al revisar el CSV de origen después del arreglo del perfil de Mateo apareció un
+resto del mismo cruce: la fila **194** tenía `fecha_anio` 57 y `fecha_fin` **41**,
+que es el año de Mateo. El rango quedaba invertido y el suceso se dibujaba como
+un punto de 4 px con la fecha al revés.
+
+Además, tres de las cuatro filas de la serie B repetían su título como
+`descripcion` y no tenían lugar ni referencia, mientras sus gemelas de la serie
+A sí traían el perfil editorial. Por decisión del usuario se copiaron los datos
+de la gemela y, en los años en conflicto, mandó la serie A:
+
+| fila | antes | ahora | de |
+|---|---|---|---|
+| 194 Lucas | c. 57, fin 41, sin lugar | c. 56 – c. 58, Cesarea | 196 |
+| 379 Marcos | c. 62, sin lugar ni referencia | c. 60 – c. 65, Roma, Marcos 1:1 | 195 |
+| 380 Juan | c. 98, sin fin ni lugar | c. 98 – c. 98, Éfeso, o cerca (?) | 197 |
+
+Lo aplica `scripts/fix_csv_evangelios_gemelas.py` (idempotente, con copia de
+seguridad y verificación celda por celda, igual que `fix_csv_evangelios.py`).
+La **377** (Mateo) no se tocó: no tiene gemela, así que su `referencia` y sus
+capítulos siguen vacíos a falta de una cita de origen. Las dos series siguen en
+pie; no se fusionó nada.
+
+Con el CSV corregido ya no hacen falta los parches sobre los archivos
+generados: `python scripts/gen_timeline.py` reproduce el resultado.
+
+### Riesgo pendiente: el pipeline completo puede revertirlo
+
+`run_pipeline.py` incluye `merge_libros_biblia.py`, cuyo `apply_book()`
+sobrescribe `descripcion`, fechas, lugar y referencia de la fila que matchea por
+`match_etiqueta`. Su tabla de libros está **hardcodeada** en
+`scripts/libros_biblia_data.py` (el `curacion/libros_biblia.json` es una
+exportación, no una entrada) y todavía dice Marcos c. 62 y Lucas c. 57.
+Peor: reconstruye la descripción como «Tiempo que abarca: …», así que
+clobbearía los perfiles aunque se corrigieran los años.
+
+No se rediseñó ese merge acá. La red de contención es
+`scripts/tests/test_escritura.js`, que falla si los perfiles desaparecen de los
+datos generados.
+
+## Rangos de fechas invertidos — 4 casos conocidos sin resolver
+
+El test nuevo que detecta `fa_fin < fa` encontró cuatro casos preexistentes y de
+otra naturaleza, todos libros proféticos a.E.C.:
+
+| id | suceso | fa | fa_fin |
+|---|---|---|---|
+| 106 | Ezequiel completa el libro de Ezequiel | −591 | −600 |
+| 171 | Abdías escribe el libro de Abdías | −607 | −610 |
+| 172 | Amós completa el libro de Amós | −804 | −810 |
+| 187 | Nahúm completa el libro de Nahúm | −632 | −640 |
+
+Acá `fecha_fin` no guarda el fin de la escritura sino **el comienzo del período
+que el libro abarca** (Ezequiel se completa c. 591 a.E.C. pero cubre desde 600).
+Es el mismo patrón que `anio_fin` + `tiempo_abarca` en `libros_biblia_data.py`.
+
+Arreglarlos exige decidir qué representa la barra —el momento de redacción o el
+período cubierto— y eso cambia también el año que encabeza el suceso, así que
+quedan anotados como excepción conocida en `INVERSION_CONOCIDA` para que el test
+siga detectando inversiones **nuevas**.
+
+## Sello de caché de los datos generados
+
+`DETAIL_URL` estaba clavado en `linea-tiempo-detalle.json?v=1` desde siempre y
+`linea-tiempo-datos.js?v=16` no se movía al regenerar, así que quien ya hubiera
+cargado el sitio seguía viendo los datos viejos. Se comprobó en vivo: tras
+corregir el CSV, el panel de Lucas seguía mostrando el perfil de Mateo.
+
+Ahora `gen_timeline.py` calcula un sello sha1 corto del contenido de los dos
+artefactos, lo emite dentro del bundle como `LT_DATA._v` y lo estampa en el
+`?v=` de `linea-tiempo-datos.js` en el HTML. El cliente arma la URL del detalle
+con ese valor:
+
+```js
+const DETAIL_URL = 'linea-tiempo-detalle.json?v='
+  + ((window.LT_DATA && window.LT_DATA._v) || '1');
+```
+
+Hacerlo así y no como constante escrita en `linea-paralela.js` es lo que cierra
+el problema: ese archivo tiene su propio `?v=`, y mientras el navegador corra su
+copia cacheada seguirá pidiendo el detalle viejo por más que se regenere.
+
 ## Validación
 
 `scripts/tests/test_escritura.js` (en `run_tests.js`) verifica que el perfil de
-Mateo esté solo en el suceso 377 con su lugar, que 194 no lo conserve, que el
-perfil propio de Lucas siga en 196, que el parche sea idempotente y que la
-auditoría no encuentre descripciones cruzadas.
+Mateo esté solo en el suceso 377 con su lugar, que 194 no conserve el lugar de
+Mateo, que el perfil propio de Lucas siga en 196, que el parche sea idempotente
+y que la auditoría no encuentre descripciones cruzadas. Se le agregó que las
+cuatro filas «X escribe el Evangelio» lleven el perfil de su propio evangelio y
+no la repetición de su título, y que no aparezcan rangos invertidos nuevos.
