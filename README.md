@@ -78,6 +78,14 @@ Si `linea-tiempo-datos.js` ya tiene `_detailDeferred: true`, el script **aborta*
 (exit 2). Volver a dividir vaciaría preguntas del slim. Solo usar tras regenerar
 un paquete *completo* con el pipeline, o `--force` (no recomendado).
 
+### `merge_libros_biblia.py` — escribe la base externa
+
+Reescribe `hechos_biblicos.csv`. Tiene `--check` para ver qué haría sin escribir
+y hoy **converge en 0 cambios**, así que correrlo es inocuo. Por defecto ya no
+borra filas (`--borrar-huerfanos`) ni crea las que faltan (`--crear-faltantes`),
+y rechaza escribir en una fila que no sea el suceso de redacción del libro. El
+detalle de por qué, en `docs/mejora-exploracion/PASO8-EPOCAS.md`.
+
 ---
 
 ## 2b. Estructura legada (referencia)

@@ -294,9 +294,10 @@ ya coinciden y el dry-run no propone cambios de fecha en los cuatro.
 
 ## Blindaje del merge de libros
 
-`merge_libros_biblia.py` es destructivo: reescribe la base externa y puede
-borrar filas. Se le agregaron tres protecciones y un modo `--check` que muestra
-qué haría sin escribir.
+`merge_libros_biblia.py` era destructivo: reescribe la base externa y podía
+borrar filas. Se le agregó un modo `--check` que muestra qué haría sin
+escribir, y varias protecciones. Las tres primeras, para no perder la curación
+de los Evangelios:
 
 1. **No borra las filas curadas.** El dry-run avisaba `ELIMINARIA la fila 194`:
    `dedupe_redaccion_rows()` iba a fusionar Lucas contra su gemela 196, que es
@@ -309,18 +310,98 @@ qué haría sin escribir.
    período de redacción (c. 60 a c. 65), así que las filas de `CURADAS` quedan
    fuera de la escritura de fechas, lugar y referencia.
 
-### Divergencia pendiente: 63 cambios más
+### Los 63 cambios pendientes, resueltos
 
-Con el blindaje puesto, `python scripts/merge_libros_biblia.py --check` sigue
-reportando **63 cambios y 1 fila nueva** en el resto de los libros: renombraría
-los sucesos al estilo «X completado», reemplazaría referencias (`Amós 1:1` →
-`Amós 9:15`), cambiaría lugares (Nahúm de Nínive a Judá) y vaciaría `fecha_fin`
-en varias cartas. Esa tabla quedó desincronizada de la curación posterior del
-CSV.
+Aquellos 63 cambios que el `--check` seguía reportando no eran una sola cosa.
+Al abrirlos uno por uno se partieron en dos grupos con causas distintas.
 
-**No corras `run_pipeline.py` sin revisar antes ese `--check`.** Reconciliar los
-63 casos es un trabajo aparte: hay que decidir, libro por libro, si manda la
-tabla o la curación del CSV.
+**23 eran un bug de mapeo, no una decisión editorial.** Los `match_id` del
+catálogo están corridos y `find_primary()` los usaba sin verificar nada, así que
+el merge iba a pisar sucesos que no tenían relación con el libro:
+
+| Fila | Decía | Habría quedado |
+|---|---|---|
+| 386 | Nace Jesús en Belén | Evangelio según Marcos completado |
+| 399 | Sana a un paralítico | Éxodo completado |
+| 353 | Isaías empieza a profetizar | Cantar de los Cantares completado |
+| 395 | Llama a Simón, Andrés, Santiago y Juan | Esdras completado |
+
+Se detectan porque además cambiaban la época y los personajes (`era
+E.C.→EXODO / LEY`, `personajes Jesús→Moisés`). Tres eran más sutiles: apuntaban
+a un suceso de redacción, pero **de otro libro** —Génesis a la fila de Job,
+Levítico a la de Números, Zacarías a la de Nehemías—, así que mirar solo el
+`tipo_suceso` no alcanzaba.
+
+**Los otros 40 eran un modelo editorial alternativo.** La tabla modela cada
+fila como «el libro quedó *completado*» y el CSV como «alguien *escribió* el
+libro, y esto es lo que tardó». Todo lo demás se derivaba de esa diferencia, de
+forma coherente: la referencia pasaba del primer versículo al último (`Amós 1:1`
+→ `Amós 9:15`) porque es la prueba de que el libro terminó, el lugar pasaba de
+*a quién apunta la profecía* a *dónde escribió el escritor*, y `fecha_fin` se
+vaciaba en las cartas porque una carta no es un período. La misma tensión que ya
+se había resuelto para Ezequiel y los Evangelios.
+
+#### Las tres decisiones
+
+1. **Manda el CSV.** Se conserva «Pablo escribe 1 Corintios desde Éfeso» y
+   `Amós 1:1`. `nombre`, `referencia`, `era`, `tipo_suceso`, `personajes` y
+   `libro` pasaron a rellenarse **solo si están vacíos**; las fechas, solo si la
+   fila todavía no tiene `fecha_anio`. La referencia de las filas `CURADAS` no
+   se toca ni para rellenar: la de Mateo (377) va vacía a propósito.
+2. **`lugar_antiguo` es el lugar de escritura**, no el destinatario del
+   contenido. Acá manda la tabla, y es lo que corrige **Nahúm de «Nínive» a
+   «Judá»** —profetiza contra Nínive pero escribe en Judá— y **Amós de «Israel»
+   a «Judá»**. Con una excepción: si el valor del CSV ya *contiene* al de la
+   tabla es más específico y se queda, así «Tel-abib, Babilonia» no se degrada a
+   «Babilonia» y no se pierde el «(?)» de «Éfeso, o cerca (?)».
+3. **El script rechaza el destino en vez de escribirlo.** `destino_valido()`
+   exige las dos condiciones —que sea un suceso de redacción *y* que hable del
+   mismo libro— y las dos hacen falta, porque Génesis y Job son las dos de
+   redacción. Los 8 libros que quedan sin destino válido se reportan y se dejan
+   sin fusionar, para arreglar el `match_id` a mano.
+
+#### Dos landmines que aparecieron en el camino
+
+**`ORPHAN_IDS` borraba 20 sucesos reales en silencio.** La lista se filtraba de
+`rows` antes de `save_rows()`, y el contador «a eliminar» del `--check` solo
+mira `dedupe_redaccion_rows()`, así que no aparecía por ningún lado. Hoy las 20
+filas existen y ninguna es basura: están las gemelas 195 y 197 que se decidió
+conservar, las redacciones de Job, Números y 2 Samuel (341, 342, 349) —que
+además son el destino correcto de esos libros— y 15 sucesos de la vida de Jesús
+(401, 402 y 424-436: la cena conmemorativa, las diez vírgenes, Judas). Ahora
+hay que pedirlo con `--borrar-huerfanos`.
+
+**Inventar filas duplicaba lo que ya existía.** Levítico ya está en la fila 340
+(«Moisés completa Éxodo y Levítico»), pero el catálogo lo apunta a la 342 y esa
+cayó en `ORPHAN_IDS`, así que el merge creaba un «Levítico completado» aparte.
+Crear filas ahora se pide con `--crear-faltantes`.
+
+#### Una etiqueta duplicada se comía la fila curada
+
+Al aplicar los cambios, `test_escritura.js` falló: la fila 194 había perdido el
+perfil de Lucas. La causa no estaba en el CSV —su descripción seguía intacta—
+sino en que el merge le escribió `etiqueta_jw='lucas_evangelio'` a la 196,
+etiqueta que la 194 ya tenía. Con dos filas iguales, el deduplicador de
+`gen_timeline.py` descartaba una, justo la curada.
+
+Se corrigió por dos lados: `find_primary()` ahora busca **por etiqueta canónica
+antes que por `match_id`**, porque una fila ya etiquetada es una decisión tomada
+y los ids están corridos; y `apply_book()` no escribe una etiqueta que otra fila
+ya tenga.
+
+#### Estado final
+
+`python scripts/merge_libros_biblia.py --check` reporta **0 cambios, 0 nuevos,
+0 a eliminar**: el pipeline converge y correrlo es inocuo. Los 56 cambios que
+se aplicaron tocaron 4 columnas y ninguna editorial —`etiqueta_jw` (55,
+normalización de plomería), `jw_linea` (56) y `jw_codigo` (7) rellenando
+vacíos, y `lugar_antiguo` (21: 15 vacíos más los 6 de la decisión 2)—. Se
+verificó celda por celda contra un backup: 433 filas antes y después, ningún id
+perdido ni agregado, ninguna celda vaciada.
+
+`scripts/tests/test_merge_libros.js` fija todo esto con 20 aserciones, entre
+ellas que el `--check` siga dando 0 y que no vuelva a proponer pisar «Nace
+Jesús en Belén».
 
 ## Sello de caché de los datos generados
 

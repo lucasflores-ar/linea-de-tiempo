@@ -10,7 +10,9 @@ Uso: python scripts/merge_libros_biblia.py
 import io
 import json
 import os
+import re
 import sys
+import unicodedata
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from paths import db, repo
@@ -35,7 +37,15 @@ TRACK_FIELDS = [
 # —29 a 33 E.C.—, que es lo que traen estas tablas, así que acá no se les toca.
 CURADAS = {'194', '377', '379', '380'}
 
-# filas duplicadas/erróneas de ejecuciones previas
+# Filas que una ejecución vieja marcó como duplicadas/erróneas. La lista no
+# envejeció bien: hoy las 20 existen y ninguna es basura. Están las gemelas 195
+# y 197 («Evangelio según Marcos» y «según Juan»), que se decidió conservar;
+# las redacciones de Job, Números y 2 Samuel (341, 342, 349), que además son el
+# destino correcto de esos libros; y 15 sucesos de la vida de Jesús (401, 402 y
+# 424-436: la cena conmemorativa, las diez vírgenes, Judas). Se filtraban de
+# `rows` antes de `save_rows`, así que una corrida sin `--check` las borraba del
+# CSV sin decir nada: el contador «a eliminar» solo mira dedupe_redaccion_rows.
+# Ahora hay que pedirlo con --borrar-huerfanos.
 ORPHAN_IDS = {'341', '349', '197', '342', '401', '402', '195'} | {str(i) for i in range(424, 437)}
 
 LIBRO_CLAVES = {b['clave'] for b in LIBROS}
@@ -73,34 +83,65 @@ def es_descripcion_generada(texto):
     return 'Escritor:' in t and 'Lugar de escritura:' in t
 
 
-def apply_book(row, book):
+def apply_book(row, book, duenio_etiqueta=None):
     prefijo = book.get('prefijo') or ''
     anio = int(book['anio'])
     ref = book.get('referencia') or ''
     _, ci, cf = parse_referencia(ref)
     curada = str(row.get('id', '')).strip() in CURADAS
 
-    row['nombre'] = book['nombre']
+    # Manda el CSV, no la tabla. La tabla modela cada fila como «X completado»,
+    # con la referencia al último versículo del libro como prueba de que
+    # terminó; el CSV la modela como «X escribe/completa el libro», con la
+    # referencia al primero. Se eligió el modelo del CSV, así que estos campos
+    # solo se rellenan cuando están vacíos: nunca se pisa un valor curado.
+    # Sin esto el merge renombraba «Pablo escribe 1 Corintios desde Éfeso» a
+    # «1 Corintios completado» y cambiaba `Amós 1:1` por `Amós 9:15`.
+    for campo, valor in (('nombre', book['nombre']),
+                         ('referencia', ref),
+                         ('era', book['era']),
+                         ('tipo_suceso', book.get('tipo_suceso') or 'redacción'),
+                         ('personajes', book['escritor']),
+                         ('libro', book['libro'])):
+        # En las curadas la referencia se decidió a mano: la de Mateo (377) va
+        # vacía a propósito, así que ni siquiera se rellena.
+        if curada and campo == 'referencia':
+            continue
+        if valor and not (row.get(campo) or '').strip():
+            row[campo] = valor
+
     if es_descripcion_generada(row.get('descripcion')):
         row['descripcion'] = build_descripcion(book)
-    row['era'] = book['era']
-    row['tipo_suceso'] = book.get('tipo_suceso') or 'redacción'
-    row['personajes'] = book['escritor']
+
+    # `lugar_antiguo` es la excepción: acá sí manda la tabla, porque es el lugar
+    # donde el escritor escribió y el CSV venía guardando a veces el destino del
+    # contenido (Nahúm decía «Nínive», que es contra quién profetiza, no dónde
+    # lo escribió; Amós decía «Israel» y escribió en Judá).
     if not curada:
         lugar = book.get('lugar') or ''
         if book.get('lugar_incerto') and lugar and '(?)' not in lugar:
             lugar = f'{lugar} (?)'
-        row['lugar_antiguo'] = lugar
-        if ref:
-            row['referencia'] = ref
-    row['libro'] = book['libro']
-    if ci and not curada:
+        actual = (row.get('lugar_antiguo') or '').strip()
+        # Si lo que ya hay contiene al lugar de la tabla, es más específico y se
+        # queda: «Tel-abib, Babilonia» no se degrada a «Babilonia», y no se
+        # pierde el «(?)» de «Éfeso, o cerca (?)», que la tabla no trae porque
+        # tiene lugar_incerto en False. Cuando no hay esa relación gana la
+        # tabla, que es lo que corrige Nahúm («Nínive» -> «Judá») y Amós.
+        if lugar and _norm(lugar) not in _norm(actual):
+            row['lugar_antiguo'] = lugar
+
+    if ci and not curada and not (row.get('capitulo_inicio') or '').strip():
         row['capitulo_inicio'] = ci
         row['capitulo_fin'] = cf or ci
 
     anio_fin = book.get('anio_fin')
     prefijo_fin = book.get('prefijo_fin') or ''
-    if curada:
+    # Las fechas del CSV ya se curaron (los cuatro proféticos con el período que
+    # abarcan, los Evangelios con su período de redacción). La tabla trae otro
+    # criterio y quería, por ejemplo, vaciar el `fecha_fin` de 1 Pedro. Solo se
+    # escriben cuando la fila todavía no tiene año.
+    ya_tiene_fecha = bool((row.get('fecha_anio') or '').strip())
+    if curada or ya_tiene_fecha:
         pass
     elif anio_fin is None:
         row['fecha_anio'] = str(anio)
@@ -122,7 +163,13 @@ def apply_book(row, book):
     codigo, linea = ERA_JW.get(book['era'], ('', ''))
     row['jw_codigo'] = codigo or row.get('jw_codigo', '')
     row['jw_linea'] = linea or row.get('jw_linea', '')
-    row['etiqueta_jw'] = book['clave']
+    # `etiqueta_jw` es plomería interna —es por donde el merge reencuentra la
+    # fila la próxima vez—, así que se normaliza a la clave del catálogo. Pero
+    # nunca si otra fila ya la tiene: dos filas con la misma etiqueta hacen que
+    # el deduplicador de gen_timeline.py descarte una.
+    duenio = (duenio_etiqueta or {}).get(book['clave'])
+    if duenio is None or str(duenio) == str(row.get('id', '')).strip():
+        row['etiqueta_jw'] = book['clave']
     row['fecha_estimada'] = '1' if prefijo in ('a', 'c', 'd') else ''
 
 
@@ -134,30 +181,88 @@ def diff_rows(before, after):
     return [(k, before.get(k, ''), after.get(k, '')) for k in TRACK_FIELDS if before.get(k, '') != after.get(k, '')]
 
 
-def find_primary(rows, book, by_id, claimed):
+def _norm(s):
+    s = unicodedata.normalize('NFKD', (s or '').lower())
+    s = ''.join(c for c in s if not unicodedata.combining(c))
+    return re.sub(r'[^a-z0-9]+', ' ', s).strip()
+
+
+def destino_valido(row, book):
+    """¿La fila destino es de verdad el suceso de redacción de ESTE libro?
+
+    Los `match_id` del catálogo están corridos y `find_primary` los usaba sin
+    comprobar nada, así que el merge pisaba sucesos ajenos: «Nace Jesús en
+    Belén» se convertía en «Evangelio según Marcos completado» (id 386), y
+    «Sana a un paralítico» en «Éxodo completado» (id 399). Peor todavía, tres
+    apuntaban a la redacción de otro libro (Génesis a la de Job).
+
+    Dos condiciones, y las dos hacen falta: que sea un suceso de redacción y
+    que hable del mismo libro. La primera sola no alcanza —Génesis y Job son
+    las dos de redacción—, y la segunda sola tampoco.
+    """
+    if not _norm(row.get('tipo_suceso')).startswith('redacc'):
+        return False, 'no es un suceso de redacción (tipo=%s)' % (
+            (row.get('tipo_suceso') or '—'))
+
+    libro_cat = _norm(book.get('libro'))
+    nombre = _norm(row.get('nombre'))
+    if libro_cat and _norm(row.get('libro')) == libro_cat:
+        return True, None
+    if libro_cat and libro_cat in nombre:
+        return True, None
+    clave_txt = _norm(book['clave'].replace('_', ' '))
+    if clave_txt and clave_txt in nombre:
+        return True, None
+    return False, 'es redacción pero de otro libro (%s)' % (
+        (row.get('nombre') or '—')[:52])
+
+
+def find_primary(rows, book, by_id, claimed, rechazos=None):
     clave = book['clave']
     etiqueta = (book.get('match_etiqueta') or '').strip()
+
+    # La etiqueta canónica va primero, antes que match_id. Una fila que ya la
+    # lleva es una decisión tomada; los match_id, en cambio, están corridos.
+    # Con el orden viejo el libro `lucas_evangelio` se iba a su match_id 196 y
+    # le escribía la etiqueta que la 194 ya tenía: quedaban dos filas con
+    # `lucas_evangelio` y el deduplicador de gen_timeline.py se comía una,
+    # justo la curada.
+    if clave:
+        for r in rows:
+            if int(r['id']) in claimed:
+                continue
+            if r.get('etiqueta_jw') != clave:
+                continue
+            ok, motivo = destino_valido(r, book)
+            if ok:
+                return r, 'etiqueta_jw'
+            if rechazos is not None:
+                rechazos.append((book['clave'], int(r['id']), motivo))
 
     mid = (book.get('match_id') or '').strip()
     if mid:
         hid = int(mid)
         if hid in by_id and hid not in claimed:
-            return by_id[hid], 'match_id'
+            row = by_id[hid]
+            ok, motivo = destino_valido(row, book)
+            if ok:
+                return row, 'match_id'
+            if rechazos is not None:
+                rechazos.append((book['clave'], hid, motivo))
 
-    for r in rows:
-        rid = int(r['id'])
-        if rid in claimed:
-            continue
-        if r.get('etiqueta_jw') == clave:
-            return r, 'etiqueta_jw'
-
+    # También pasa por el guard: una etiqueta mal puesta llega igual de lejos
+    # que un id corrido.
     if etiqueta:
         for r in rows:
-            rid = int(r['id'])
-            if rid in claimed:
+            if int(r['id']) in claimed:
                 continue
-            if r.get('etiqueta_jw') == etiqueta:
+            if r.get('etiqueta_jw') != etiqueta:
+                continue
+            ok, motivo = destino_valido(r, book)
+            if ok:
                 return r, 'match_etiqueta'
+            if rechazos is not None:
+                rechazos.append((book['clave'], int(r['id']), motivo))
 
     return None, None
 
@@ -266,8 +371,14 @@ def main():
     export_json()
     print(f'[info] catálogo -> {JSON_PATH} ({len(LIBROS)} libros)')
 
+    borrar_huerfanos = '--borrar-huerfanos' in sys.argv
+    crear_faltantes = '--crear-faltantes' in sys.argv
+
     rows = load_rows()
-    rows = [r for r in rows if r.get('id') not in ORPHAN_IDS]
+    huerfanos_vivos = sorted(
+        (r['id'] for r in rows if r.get('id') in ORPHAN_IDS), key=int)
+    if borrar_huerfanos:
+        rows = [r for r in rows if r.get('id') not in ORPHAN_IDS]
     fieldnames = list(rows[0].keys())
     for c in EXTRA_COLS:
         if c not in fieldnames:
@@ -276,19 +387,46 @@ def main():
                 r.setdefault(c, '')
 
     by_id = {int(r['id']): r for r in rows}
+    # Quién es dueño de cada etiqueta hoy, para no duplicarla al normalizar.
+    duenio_etiqueta = {}
+    for r in rows:
+        e = (r.get('etiqueta_jw') or '').strip()
+        if e:
+            duenio_etiqueta.setdefault(e, r['id'])
     claimed = set()
     ya_teniamos = []
     agregados = []
     cambios = []
+    rechazados = []
+    faltantes = []
 
     for book in LIBROS:
         clave = book['clave']
-        primary, how = find_primary(rows, book, by_id, claimed)
+        rechazos = []
+        primary, how = find_primary(rows, book, by_id, claimed, rechazos)
+        if not primary and rechazos:
+            # Había un candidato y el guard lo rechazó. Crear una fila nueva acá
+            # sería peor que no hacer nada: quedaría un suceso de redacción
+            # duplicado además del que ya existe mal apuntado. Se reporta y se
+            # deja el libro sin tocar, para arreglar el `match_id` a mano.
+            rechazados.append((clave, rechazos))
+            for _, hid, motivo in rechazos:
+                print(f'  RECHAZO {clave} -> id {hid}: {motivo}')
+            continue
         if not primary:
+            # Sin fila que fusionar, inventar una suele duplicar lo que ya
+            # existe con otro nombre: Levítico ya está en la fila 340 («Moisés
+            # completa Éxodo y Levítico»), pero el catálogo lo apunta a la 342 y
+            # esa cayó en ORPHAN_IDS, así que el merge creaba un «Levítico
+            # completado» aparte. Crear filas ahora se pide explícitamente.
+            if not crear_faltantes:
+                faltantes.append(clave)
+                print(f'  FALTA   {clave}: sin suceso de redacción que fusionar')
+                continue
             hid = next_id(rows)
             row = {c: '' for c in fieldnames}
             row['id'] = str(hid)
-            apply_book(row, book)
+            apply_book(row, book, duenio_etiqueta)
             rows.append(row)
             by_id[hid] = row
             claimed.add(hid)
@@ -298,7 +436,7 @@ def main():
 
         rid = int(primary['id'])
         before = snapshot_row(primary)
-        apply_book(primary, book)
+        apply_book(primary, book, duenio_etiqueta)
         after = snapshot_row(primary)
         diffs = diff_rows(before, after)
         claimed.add(rid)
@@ -317,13 +455,28 @@ def main():
     # borrar filas duplicadas, así que conviene poder ver qué haría antes.
     if '--check' in sys.argv:
         print(f'\n[check] no se escribe nada. {len(cambios)} cambio(s),'
-              f' {len(agregados)} nuevo(s), {len(eliminados)} a eliminar.')
+              f' {len(agregados)} nuevo(s), {len(eliminados)} a eliminar,'
+              f' {len(rechazados)} sin destino válido, {len(faltantes)} sin fila.')
         for c in cambios:
             print(f"  fila {c['id']} ({c['clave']}):")
             for col, antes, ahora in c['diffs']:
                 print(f'      {col}: {antes!r} -> {ahora!r}')
         for rid in sorted(eliminados):
             print(f'  ELIMINARIA la fila {rid}')
+        if rechazados:
+            print('\n[check] match_id corridos en curacion/libros_biblia.json'
+                  ' (el libro queda sin fusionar):')
+            for clave, motivos in rechazados:
+                for _, hid, motivo in motivos:
+                    print(f'  {clave:<16} id {hid}: {motivo}')
+        if faltantes:
+            print('\n[check] sin suceso de redacción que fusionar'
+                  ' (con --crear-faltantes se crearían):')
+            print('  ' + ', '.join(faltantes))
+        if huerfanos_vivos:
+            print(f'\n[check] ORPHAN_IDS: {len(huerfanos_vivos)} fila(s) que'
+                  ' existen y hoy NO se borran (hace falta --borrar-huerfanos):')
+            print('  ' + ', '.join(huerfanos_vivos))
         return 1 if (cambios or agregados or eliminados) else 0
 
     save_rows(rows, fieldnames)
