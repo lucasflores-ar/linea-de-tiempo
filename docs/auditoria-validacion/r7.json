@@ -1,0 +1,59 @@
+{
+  "jueces 1920": {
+    "ancho": 1916,
+    "sueltos": 9,
+    "recortados": 0,
+    "holgura": 213,
+    "solapes": [],
+    "contraObst": [],
+    "mal": [],
+    "fontSize": "10px"
+  },
+  "jueces 1440": {
+    "ancho": 1436,
+    "sueltos": 9,
+    "recortados": 0,
+    "holgura": 160,
+    "solapes": [],
+    "contraObst": [],
+    "mal": [],
+    "fontSize": "10px"
+  },
+  "jueces 390": {
+    "ancho": 720,
+    "sueltos": 9,
+    "recortados": 0,
+    "holgura": 80,
+    "solapes": [],
+    "contraObst": [],
+    "mal": [],
+    "fontSize": "12px"
+  },
+  "reyes 1920": {
+    "ancho": 1916,
+    "sueltos": 3,
+    "recortados": 1,
+    "holgura": 639,
+    "solapes": [],
+    "contraObst": [],
+    "mal": [],
+    "fontSize": "10px"
+  },
+  "jue 1440 f2": {
+    "ancho": 1436,
+    "sueltos": 9,
+    "recortados": 0,
+    "holgura": 160,
+    "solapes": [],
+    "contraObst": [],
+    "mal": [],
+    "fontSize": "20px"
+  },
+  "masLargo": {
+    "texto": "Se completa conquista general de la tierra; fin de los \"unos 450 años\" de Hechos 13:17-20",
+    "chars": 89,
+    "ancho": 416,
+    "cortado": false,
+    "lineas": "1"
+  }
+}

@@ -538,12 +538,27 @@ html[data-theme="dark"] .focus-marquee{background:rgba(106,159,173,.18)}
   box-shadow:0 0 0 2px var(--bg),0 0 0 5px var(--mk-color,var(--acc)),0 6px 18px var(--shadow);
   outline:none;
 }
+/* El ancho lo asigna looseCaptionBox() según el hueco real hasta el vecino del
+   mismo nivel (--cap-w), y --cap-lines permite una segunda línea cuando el
+   nivel tiene alto para ella: recortar es el último recurso, no el primero. */
 .loose-evt-zone__title{
   position:absolute;left:50%;
-  max-width:108px;padding:1px 0;
-  font:600 10px/1.2 var(--font-sans);color:var(--txt);
-  text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  width:var(--cap-w, 108px);padding:1px 0;
+  font:600 calc(10px * var(--tl-font-scale))/1.2 var(--font-sans);color:var(--txt);
+  text-align:center;overflow-wrap:break-word;
+  display:-webkit-box;-webkit-box-orient:vertical;
+  -webkit-line-clamp:var(--cap-lines, 1);line-clamp:var(--cap-lines, 1);
+  overflow:hidden;
   pointer-events:none;z-index:3;
+}
+/* Último recurso cuando el título sigue pisando un nombre de época: apoyarlo
+   sobre el fondo y ponerlo delante, para que se lean los dos textos. */
+.loose-evt-zone__title--sobre-etiqueta{
+  background:color-mix(in srgb, var(--bg) 88%, transparent);
+  border-radius:4px;padding:1px 3px;z-index:6;
+  /* content-box: --cap-w es el ancho que necesita el texto, y con border-box
+     el relleno del fondo se lo comería y volvería a recortarlo. */
+  box-sizing:content-box;
 }
 .loose-evt-zone__title.is-above{
   bottom:calc(100% + 4px);
@@ -1720,6 +1735,6 @@ header {
 <script src="timeline-selectors.js?v=20260907q"></script>
 <script src="timeline-list.js?v=20260907q"></script>
 <script src="timeline-density.js?v=20260907v"></script>
-<script src="linea-paralela.js?v=20260907y"></script>
+<script src="linea-paralela.js?v=20260907z"></script>
 </body>
 </html>

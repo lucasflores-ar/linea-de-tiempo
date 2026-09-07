@@ -81,13 +81,15 @@ vm.runInContext([
   'this.layoutLooseExpanded = layoutLooseExpanded;',
   'this.SLOT_H = LOOSE_EVT_SLOT_H;',
   'this.GAP_PX = LOOSE_EVT_GAP_PX;',
-  'this.looseCaptionShift = looseCaptionShift;',
-  'this.CAP_MAX_W = LOOSE_CAP_MAX_W;',
+  'this.looseCaptionTramos = looseCaptionTramos;',
+  'this.looseCaptionBox = looseCaptionBox;',
+  'this.CAP_MIN_GAP = LOOSE_CAP_MIN_GAP;',
+  'this.CAP_EDGE_PAD = LOOSE_CAP_EDGE_PAD;',
 ].join('\n'), ctx);
 
 const { looseFanHeight, looseMaxAbsForBudget, looseSlotsForBudget,
   looseComponents, layoutLooseExpanded, SLOT_H, GAP_PX,
-  looseCaptionShift, CAP_MAX_W } = ctx;
+  looseCaptionTramos, looseCaptionBox, CAP_MIN_GAP, CAP_EDGE_PAD } = ctx;
 const LOOSE_EVT_SLOT_H = SLOT_H;
 
 ok(looseMaxAbsForBudget(0) === 0, 'sin alto libre no se despliega');
@@ -210,28 +212,82 @@ const ARGS = [-1450, -1120, 900];
     'sucesos separados no necesitan filas extra');
 }
 
-/* ---------- 3. Títulos que no se cortan contra los bordes ---------- */
+/* ---------- 3. Anchos de título por hueco real, no por tope fijo (R7) ------ */
+
+/* Caja pintada de un título: [izq, der] tras aplicar su corrimiento. */
+const caja = (x, box)=> ({
+  izq: x - box.w / 2 + box.shift,
+  der: x + box.w / 2 + box.shift,
+});
 
 {
   const W = 900;
-  ok(looseCaptionShift(450, 90, W) === 0,
-    'un título en el medio no se corre');
+  const solo = { x: 450, level: 0 };
+  const tramos = looseCaptionTramos([solo], W);
+  const t = tramos.get(solo);
+  ok(t.izq === CAP_EDGE_PAD && t.der === W - CAP_EDGE_PAD,
+    'sin vecinos, un título puede usar todo el ancho del gráfico');
 
-  /* Pegado al borde izquierdo: el nombre arrancaba en x negativo y se veía
-     cortado. Tras el corrimiento tiene que empezar dentro del gráfico. */
-  const izq = looseCaptionShift(10, 90, W);
-  ok(izq > 0, 'un título pegado a la izquierda se empuja hacia adentro (' + izq + ')');
-  ok(10 + izq - 45 >= 0, 'y su borde izquierdo ya no queda fuera del gráfico');
-  ok(izq <= 45, 'sin despegarse más de media caja de su marcador');
+  /* Antes el tope era 108px sin importar el lugar: un título de 300px se
+     recortaba aunque tuviera media pantalla libre al lado. */
+  const ancho = looseCaptionBox(450, t, 300, 2);
+  ok(ancho.w >= 300, 'con lugar de sobra el título usa su ancho real (' + ancho.w + ')');
+  ok(ancho.lineas === 1, 'y no necesita una segunda línea');
 
-  const der = looseCaptionShift(W - 10, 90, W);
-  ok(der < 0, 'un título pegado a la derecha se empuja hacia adentro (' + der + ')');
-  ok(W - 10 + der + 45 <= W, 'y su borde derecho ya no se sale');
+  /* Pegado al borde: el nombre arrancaba en x negativo y se veía cortado. */
+  const izq = looseCaptionBox(10, t, 90, 1);
+  const cIzq = caja(10, izq);
+  ok(izq.shift > 0, 'un título pegado a la izquierda se empuja hacia adentro');
+  ok(cIzq.izq >= CAP_EDGE_PAD - 1, 'y su borde izquierdo ya no queda fuera: ' + cIzq.izq);
+  ok(izq.shift <= izq.w / 2, 'sin despegarse más de media caja de su marcador');
 
-  ok(looseCaptionShift(10, 12, W) === 0,
-    'un título corto pegado al borde no necesita corrimiento');
-  ok(Math.abs(looseCaptionShift(0, 400, W)) <= CAP_MAX_W / 2,
-    'el corrimiento nunca supera media caja, aun con un título larguísimo');
+  const der = looseCaptionBox(W - 10, t, 90, 1);
+  const cDer = caja(W - 10, der);
+  ok(der.shift < 0, 'un título pegado a la derecha se empuja hacia adentro');
+  ok(cDer.der <= W - CAP_EDGE_PAD + 1, 'y su borde derecho ya no se sale: ' + cDer.der);
+
+  ok(looseCaptionBox(450, t, 12, 1).shift === 0,
+    'un título corto en el medio no necesita corrimiento');
+}
+
+{
+  /* Dos vecinos del mismo nivel: cada uno recibe su tramo y las cajas
+     pintadas no se pisan. Antes dos cajas de 108px con centros a 92px se
+     solapaban 16px. */
+  const W = 900;
+  const a = { x: 400, level: 0 };
+  const b = { x: 492, level: 0 };
+  const tramos = looseCaptionTramos([a, b], W);
+  const ta = tramos.get(a), tb = tramos.get(b);
+  ok(ta.der <= tb.izq, 'los tramos de dos vecinos del mismo nivel no se pisan');
+  ok(tb.izq - ta.der >= CAP_MIN_GAP - 0.01,
+    'y quedan separados por la holgura mínima: ' + (tb.izq - ta.der));
+
+  const ca = caja(400, looseCaptionBox(400, ta, 300, 2));
+  const cb = caja(492, looseCaptionBox(492, tb, 300, 2));
+  ok(ca.der <= cb.izq + 0.01,
+    'las cajas pintadas tampoco se pisan: ' + ca.der + ' vs ' + cb.izq);
+
+  /* En cambio, dos títulos de niveles distintos pueden usar todo su ancho:
+     no comparten banda vertical. */
+  const c = { x: 400, level: 0 };
+  const d = { x: 420, level: 1 };
+  const t2 = looseCaptionTramos([c, d], W);
+  ok(t2.get(c).der === W - CAP_EDGE_PAD && t2.get(d).der === W - CAP_EDGE_PAD,
+    'niveles distintos no se reparten el ancho entre sí');
+}
+
+{
+  /* Hueco chico: se usa la segunda línea antes de recortar. */
+  const tramo = { izq: 0, der: 100 };
+  const dos = looseCaptionBox(50, tramo, 180, 2);
+  ok(dos.lineas === 2, 'si no entra en una línea se usa la segunda');
+  ok(dos.w <= 100, 'sin pasarse del hueco disponible: ' + dos.w);
+
+  /* Con una sola línea permitida (200% de fuente) se recorta, no se desborda. */
+  const una = looseCaptionBox(50, tramo, 180, 1);
+  ok(una.lineas === 1 && una.w <= 100,
+    'con una sola línea permitida el título se acota al hueco');
 }
 
 /* ---------- 4. Cableado en el render ---------- */
@@ -250,16 +306,27 @@ ok(/layoutLooseEventLanes\(looseEvents, yMin, yMax, chartW, freeBelow\)/.test(JS
   'el alto libre se pasa al layout de sucesos sueltos');
 ok(/sucesos desplegados/.test(JS),
   'la nota de QA distingue el modo desplegado');
-ok(/--cap-shift:'\+capShift\+'px/.test(JS),
-  'cada marcador emite su corrimiento de título');
+ok(/--cap-w:'\+box\.w\+'px;--cap-lines:'\+box\.lineas\+';--cap-shift:'\+box\.shift\+'px/.test(JS),
+  'cada marcador emite su ancho, sus líneas y su corrimiento de título');
+ok(/looseCaptionTramos\(layout\.items, chartW\)/.test(JS),
+  'el render reparte el ancho entre los títulos antes de dibujarlos');
+ok(!/truncateCaption\(ev\.n, LOOSE_EVT_TITLE_CHARS\)/.test(JS),
+  'el título ya no se recorta por cantidad de caracteres antes de medir el hueco');
 
 const HTML = fs.readFileSync(path.join(REPO, 'linea-paralela.html'), 'utf8');
 ok(/translateX\(calc\(-50% \+ var\(--cap-shift, 0px\)\)\)/.test(HTML),
   'el CSS del título aplica --cap-shift');
 ok((HTML.match(/var\(--cap-shift, 0px\)/g) || []).length >= 2,
   'lo aplica tanto arriba como abajo del riel');
-ok(/max-width:108px/.test(HTML),
-  'el max-width del CSS sigue siendo el que asume LOOSE_CAP_MAX_W');
+const cssTitulo = (HTML.match(/\.loose-evt-zone__title\{[^}]*\}/) || [''])[0];
+ok(/width:var\(--cap-w/.test(cssTitulo),
+  'el ancho del título viene de --cap-w, no de un tope fijo');
+ok(!/max-width:108px/.test(cssTitulo),
+  'no debería quedar el tope fijo de 108px');
+ok(/line-clamp:var\(--cap-lines/.test(cssTitulo),
+  'la cantidad de líneas la decide --cap-lines');
+ok(/calc\(10px \* var\(--tl-font-scale\)\)/.test(cssTitulo),
+  'la fuente del título debería seguir el control de escala');
 
 if(fails){
   console.log('\n' + fails + ' fallo(s)');

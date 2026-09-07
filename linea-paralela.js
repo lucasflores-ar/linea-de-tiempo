@@ -2548,33 +2548,91 @@ function looseComponents(puntos, gap){
   return comps;
 }
 
-/* Espejo de .loose-evt-zone__title en el CSS: max-width y fuente. */
-const LOOSE_CAP_MAX_W = 108;
+/* Espejo de .loose-evt-zone__title en el CSS. LOOSE_CAP_BASE_PX es el tamaño
+   sin escalar; el ancho ya no es un tope fijo sino el hueco real (R7). */
+const LOOSE_CAP_BASE_PX = 10;
 const LOOSE_CAP_EDGE_PAD = 4;
+/* Separación mínima entre dos títulos vecinos del mismo nivel. */
+const LOOSE_CAP_MIN_GAP = 8;
+/* Ancho mínimo utilizable: por debajo de esto no vale la pena ni intentar. */
+const LOOSE_CAP_MIN_W = 24;
 
 function looseCaptionFont(){
+  const px = LOOSE_CAP_BASE_PX * fontScale;
   return vizStyle === 'waterfall'
-    ? '600 10px Inter, "Segoe UI", sans-serif'
-    : '600 10px Karla, "Segoe UI", sans-serif';
+    ? `600 ${px}px Inter, "Segoe UI", sans-serif`
+    : `600 ${px}px Karla, "Segoe UI", sans-serif`;
 }
 
 /**
- * Corrimiento horizontal del título para que no se salga del gráfico.
+ * Cuántas líneas caben en el hueco vertical de un nivel a la escala vigente.
  *
- * El título va centrado en su marcador, así que uno pegado al borde queda
- * cortado a la mitad («…amblea de Siquem»). Se empuja hacia adentro, pero
- * nunca más de media caja: pasado eso el nombre dejaría de leerse como
- * perteneciente a ese punto.
+ * A escala 1 entran dos líneas de 12px en los 38px del slot; a 200% una línea
+ * ya mide 24px y la segunda se comería el nivel siguiente.
  */
-function looseCaptionShift(x, capW, chartW){
-  const half = Math.min(capW, LOOSE_CAP_MAX_W) / 2;
-  const izq = x - half;
-  const der = x + half;
-  if(izq < LOOSE_CAP_EDGE_PAD) return Math.min(LOOSE_CAP_EDGE_PAD - izq, half);
-  if(der > chartW - LOOSE_CAP_EDGE_PAD){
-    return Math.max((chartW - LOOSE_CAP_EDGE_PAD) - der, -half);
+function looseCaptionMaxLines(){
+  const alto = LOOSE_CAP_BASE_PX * fontScale * CAP_LINE_H;
+  return Math.max(1, Math.min(2, Math.floor((LOOSE_EVT_SLOT_H - 8) / alto)));
+}
+
+/**
+ * Reparte el ancho horizontal entre los títulos de un mismo nivel.
+ *
+ * Antes cada título tenía un tope fijo de 108px sin importar el lugar
+ * disponible: en 1920px quedaban títulos cortados con huecos enormes al lado,
+ * y dos cajas de 108px con centros a 92px se pisaban 16px si compartían nivel.
+ * Ahora cada uno recibe el tramo que llega hasta el punto medio con su vecino
+ * del mismo nivel, menos la separación mínima, acotado por los bordes del
+ * gráfico. Por construcción dos tramos del mismo nivel no se solapan.
+ */
+function looseCaptionTramos(items, chartW){
+  const porNivel = new Map();
+  for(const it of items){
+    const lv = it.level || 0;
+    if(!porNivel.has(lv)) porNivel.set(lv, []);
+    porNivel.get(lv).push(it);
   }
-  return 0;
+  const tramos = new Map();
+  const bordeIzq = LOOSE_CAP_EDGE_PAD;
+  const bordeDer = chartW - LOOSE_CAP_EDGE_PAD;
+  for(const lista of porNivel.values()){
+    const orden = [...lista].sort((a, b)=> a.x - b.x);
+    orden.forEach((it, i)=> {
+      const prev = orden[i - 1];
+      const next = orden[i + 1];
+      const izq = prev ? (prev.x + it.x) / 2 + LOOSE_CAP_MIN_GAP / 2 : bordeIzq;
+      const der = next ? (it.x + next.x) / 2 - LOOSE_CAP_MIN_GAP / 2 : bordeDer;
+      tramos.set(it, { izq: Math.max(izq, bordeIzq), der: Math.min(der, bordeDer) });
+    });
+  }
+  return tramos;
+}
+
+/**
+ * Ancho, líneas y corrimiento de un título dentro de su tramo.
+ *
+ * El título va centrado en su marcador, así que uno pegado al borde de su
+ * tramo queda cortado a la mitad («…amblea de Siquem»). Se empuja hacia
+ * adentro, pero nunca más de media caja: pasado eso el nombre dejaría de
+ * leerse como perteneciente a ese punto.
+ */
+function looseCaptionBox(x, tramo, textoW, maxLines){
+  const disponible = Math.max(LOOSE_CAP_MIN_W, tramo.der - tramo.izq);
+  /* Si entra en una línea, la caja se ajusta al texto y no al tramo: una caja
+     más ancha que su contenido inventaría solapes al medir el área pintada. */
+  let w = Math.min(Math.ceil(textoW), disponible);
+  let lineas = 1;
+  if(textoW > disponible && maxLines > 1){
+    /* No entra en una línea: se usa todo el tramo y una segunda línea, que es
+       lo que maximiza la chance de mostrarlo completo. */
+    lineas = 2;
+    w = disponible;
+  }
+  const mitad = w / 2;
+  let shift = 0;
+  if(x - mitad < tramo.izq) shift = Math.min(tramo.izq - (x - mitad), mitad);
+  else if(x + mitad > tramo.der) shift = Math.max(tramo.der - (x + mitad), -mitad);
+  return { w: Math.round(w), lineas, shift: Math.round(shift) };
 }
 
 function themesInChipScope(){
@@ -2916,8 +2974,14 @@ function renderLooseEventFan(layout, chartW, height, opts = {}){
   html += withBands;
   html += '<div class="loose-evt-zone__rail" style="top:'+baseY+'px" aria-hidden="true"></div>';
   html += '<span class="loose-evt-zone__label" style="top:'+Math.max(4, baseY - 16)+'px">Sucesos</span>';
+  /* El ancho de cada título sale del hueco real hasta su vecino del mismo
+     nivel, no de un tope fijo: así se aprovecha el espacio antes de recortar. */
+  const tramos = looseCaptionTramos(layout.items, chartW);
+  const maxLines = looseCaptionMaxLines();
+  const capFont = looseCaptionFont();
   for(const it of layout.items){
     const titleCls = it.level > 0 ? 'is-below' : 'is-above';
+    const tramo = tramos.get(it) || { izq: LOOSE_CAP_EDGE_PAD, der: chartW - LOOSE_CAP_EDGE_PAD };
     if(it.level !== 0){
       const stemTop = Math.min(it.top, baseY);
       const stemH = Math.abs(it.top - baseY);
@@ -2926,8 +2990,9 @@ function renderLooseEventFan(layout, chartW, height, opts = {}){
     if(it.isAggregate){
       const ids = (it.events || []).map(e=> e.id).join(',');
       const label = (it.events || []).length + ' sucesos próximos';
-      const aggShift = looseCaptionShift(it.x, 14, chartW);
-      html += '<button type="button" class="evt-marker evt-marker--loose evt-marker--zone evt-marker--agg evt-marker--in-row" style="left:'+it.x+'px;top:'+it.top+'px;--mk-color:var(--acc);--cap-shift:'+aggShift+'px" data-agg-ids="'+esc(ids)+'" aria-label="'+esc(label)+'">';
+      /* El agregado solo muestra su número: pide muy poco ancho. */
+      const aggBox = looseCaptionBox(it.x, tramo, 14, 1);
+      html += '<button type="button" class="evt-marker evt-marker--loose evt-marker--zone evt-marker--agg evt-marker--in-row" style="left:'+it.x+'px;top:'+it.top+'px;--mk-color:var(--acc);--cap-w:'+aggBox.w+'px;--cap-lines:1;--cap-shift:'+aggBox.shift+'px" data-agg-ids="'+esc(ids)+'" aria-label="'+esc(label)+'">';
       html += '<span class="loose-evt-zone__title '+titleCls+'">'+esc(String((it.events||[]).length))+'</span>';
       html += '<span class="evt-marker__agg-badge">'+(it.events||[]).length+'</span>';
       html += '</button>';
@@ -2936,11 +3001,13 @@ function renderLooseEventFan(layout, chartW, height, opts = {}){
     const ev = it.ev;
     if(!ev) continue;
     const mkColor = markerColorFor(ev);
-    const cap = truncateCaption(ev.n, LOOSE_EVT_TITLE_CHARS);
-    const capShift = looseCaptionShift(
-      it.x, textWidth(cap.text, looseCaptionFont()), chartW);
-    html += '<button type="button" class="evt-marker evt-marker--loose evt-marker--zone evt-marker--in-row" style="left:'+it.x+'px;top:'+it.top+'px;--mk-color:'+mkColor+';--cap-shift:'+capShift+'px" data-ev="'+ev.id+'" aria-label="'+esc(ev.n)+'"'+(cap.truncated ? ' title="'+esc(ev.n)+'"' : '')+'>';
-    html += '<span class="loose-evt-zone__title '+titleCls+'">'+esc(cap.text)+'</span>';
+    /* Se manda el título completo: recortar es tarea del CSS, y solo si el
+       hueco no alcanza ni con dos líneas. El nombre entero sigue disponible en
+       aria-label y en el tip flotante. */
+    const nombre = String(ev.n || '');
+    const box = looseCaptionBox(it.x, tramo, textWidth(nombre, capFont), maxLines);
+    html += '<button type="button" class="evt-marker evt-marker--loose evt-marker--zone evt-marker--in-row" style="left:'+it.x+'px;top:'+it.top+'px;--mk-color:'+mkColor+';--cap-w:'+box.w+'px;--cap-lines:'+box.lineas+';--cap-shift:'+box.shift+'px" data-ev="'+ev.id+'" aria-label="'+esc(nombre)+'">';
+    html += '<span class="loose-evt-zone__title '+titleCls+'">'+esc(nombre)+'</span>';
     html += '</button>';
   }
   return html + '</div>';
@@ -4532,6 +4599,97 @@ function adjustCaptionOverflow(){
      Los captions ahora se desplazan naturalmente con su barra. */
 }
 
+/**
+ * Resuelve los choques de los títulos sueltos contra los obstáculos fijos de
+ * su zona: la etiqueta «Sucesos» y los nombres de las bandas de época.
+ *
+ * looseCaptionTramos() reparte el ancho entre vecinos, pero estos obstáculos
+ * son texto ya renderizado cuyo tamaño depende de la fuente y del ancho, así
+ * que solo se pueden medir después. Se encoge el título, nunca el obstáculo:
+ * los nombres de época son la referencia que ubica al lector.
+ */
+function ajustarTitulosSueltos(){
+  const zona = chartCanvas && chartCanvas.querySelector
+    ? chartCanvas.querySelector('.loose-evt-zone') : null;
+  if(!zona || typeof zona.querySelectorAll !== 'function') return;
+  /* El DOM simulado de los tests devuelve objetos sin length: se pide una
+     lista de verdad o nada. */
+  const buscar = (sel)=> {
+    const l = zona.querySelectorAll(sel);
+    return l && typeof l.length === 'number' ? Array.from(l) : [];
+  };
+  const titulos = buscar('.loose-evt-zone__title');
+  if(!titulos.length || typeof getComputedStyle !== 'function') return;
+  const pisa = (a, b)=>
+    Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top) > 1 &&
+    Math.min(a.right, b.right) - Math.max(a.left, b.left) > 1;
+
+  /* La etiqueta «Sucesos» está clavada en el borde izquierdo de la zona, así
+     que cualquier título de esa esquina la pisa. Es una leyenda decorativa y
+     el título es contenido: cuando compiten, cede la leyenda. Encoger el
+     título para esquivarla lo dejaría ilegible por una decoración. */
+  const leyenda = zona.querySelector('.loose-evt-zone__label');
+  if(leyenda){
+    leyenda.style.visibility = '';
+    const lr = leyenda.getBoundingClientRect();
+    const estorba = lr.width > 0 && titulos.some(t=> {
+      const r = t.getBoundingClientRect();
+      return r.width > 0 && pisa(r, lr);
+    });
+    if(estorba) leyenda.style.visibility = 'hidden';
+  }
+
+  /* Obstáculos: nombres de banda y la leyenda de la tira de potencias. Se
+     miden en coordenadas de viewport, así que da igual que la tira viva fuera
+     de la zona; pisa() descarta lo que no comparte banda vertical. */
+  const fuera = chartCanvas.querySelectorAll
+    ? chartCanvas.querySelectorAll('.pot-strip__label') : null;
+  const obst = [...buscar('.band-label'),
+                ...(fuera && typeof fuera.length === 'number' ? Array.from(fuera) : [])]
+    .map(el=> el.getBoundingClientRect())
+    .filter(r=> r.width > 0 && r.height > 0);
+  if(!obst.length) return;
+
+  for(const t of titulos){
+    const r = t.getBoundingClientRect();
+    if(!r.width) continue;
+    /* Solo compiten los que comparten banda vertical. */
+    const choca = obst.filter(o=> pisa(r, o));
+    if(!choca.length) continue;
+
+    let izq = r.left, der = r.right;
+    for(const o of choca){
+      /* Se cede por el lado donde el obstáculo pisa menos. */
+      if(o.right - r.left < r.right - o.left) izq = Math.max(izq, o.right + LOOSE_CAP_MIN_GAP);
+      else der = Math.min(der, o.left - LOOSE_CAP_MIN_GAP);
+    }
+    const btn = t.closest('.evt-marker');
+    if(!btn) continue;
+    const w = der - izq;
+    /* Encoger solo sale gratis si el texto sigue entrando entero. Recortarlo
+       para esquivar una etiqueta es peor que solaparse: «Muere Josué» quedaba
+       en «Mu…». Si no entra, se deja la caja y se resuelve con fondo propio. */
+    const necesita = Math.max(t.scrollWidth, LOOSE_CAP_MIN_W);
+    if(w >= necesita){
+      const mr = btn.getBoundingClientRect();
+      const mx = mr.left + mr.width / 2;
+      /* Sin despegarse más de media caja del marcador, o dejaría de leerse
+         como perteneciente a ese punto. */
+      const mitad = w / 2;
+      const shift = Math.max(-mitad, Math.min(mitad, (izq + der) / 2 - mx));
+      t.style.setProperty('--cap-w', Math.round(w) + 'px');
+      t.style.setProperty('--cap-shift', Math.round(shift) + 'px');
+    }
+
+    /* Si todavía queda pisando, ceder más despegaría el título de su marcador.
+       Se le pone fondo y prioridad de capa: los dos textos siguen ahí y el del
+       suceso se lee, en vez de borrar el nombre de la época. */
+    const fin = t.getBoundingClientRect();
+    t.classList.toggle('loose-evt-zone__title--sobre-etiqueta',
+                       obst.some(o=> pisa(fin, o)));
+  }
+}
+
 function renderPeriodBar(block, pe, x, w, dataAttr, ini, fin, layoutOpts){
   const laneColor = BAR_COLORS[block.meta.key] || block.meta.color || 'var(--acc)';
   let html = renderCompactNarrowBar(block, pe, x, w, dataAttr, ini, fin, laneColor, layoutOpts);
@@ -5076,7 +5234,10 @@ function render(){
   const scheduleCaptionOverflow = typeof requestAnimationFrame === 'function'
     ? requestAnimationFrame
     : (fn)=> fn();
-  scheduleCaptionOverflow(adjustCaptionOverflow);
+  scheduleCaptionOverflow(()=>{
+    adjustCaptionOverflow();
+    ajustarTitulosSueltos();
+  });
   drawMinimap();
   refreshExplorePanel();
   /* Cada render reescribe el gráfico: quien necesite el layout definitivo
