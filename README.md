@@ -1,12 +1,16 @@
 # Línea de tiempo bíblica — Guía de desarrollo
 
-App web interactiva (de un solo archivo) que visualiza la cronología bíblica según
-las líneas de tiempo de **JW.org**, alimentada por una base de datos de preguntas
-trivia y sucesos. Incluye mapa de sucesos, histograma, filtros por tema/era/tipo/
-potencia mundial, búsqueda y reproducción animada.
+App web interactiva que visualiza la cronología bíblica según las líneas de tiempo
+de **JW.org**, con sucesos, personajes, preguntas de estudio y fichas curadas.
 
-Esta guía documenta el stack, los datos, el pipeline de generación y todo lo
-necesario para que otro desarrollador retome el proyecto.
+**Entrada actual (2026):** [`linea-paralela.html`](linea-paralela.html) — cronología
+en filas paralelas (Explorar / Comparar), drawer, URL compartible y detalle diferido.
+Acompañada de [`fichas.html`](fichas.html) (233 fichas de personajes).
+
+> `index.html` (vis-timeline) y menciones a `linea-horizontal.html` describen el
+> legado; no son la superficie auditada en `docs/AUDITORIA-UI-UX-Y-PLAN.md`.
+
+Esta guía documenta el stack, los datos, el pipeline y cómo validar cambios.
 
 ---
 
@@ -14,73 +18,88 @@ necesario para que otro desarrollador retome el proyecto.
 
 | Capa | Tecnología | Detalle |
 |---|---|---|
-| Frontend | **HTML + CSS + JavaScript vanilla** (sin frameworks, sin build step) | `index.html` es la app completa: CSS en `<style>`, JS inline al final |
-| Eje interactivo | **vis-timeline 7.7.2** (local, sin CDN) | `vendor/vis-timeline-graph2d.min.js` + `.min.css` |
-| Datos | **JSON** (`linea-tiempo-datos.js`) expuesto como `window.LT_DATA` | Generado por script Python |
-| Pipeline de datos | **Python 3** (stdlib + `openpyxl` para los xlsx de fichas) | `scripts/` + `gen_fichas.py`; rutas vía `scripts/paths.py` |
-| Servidor de desarrollo | **Python `http.server`** | `python -m http.server 8000` |
-| Validación | **Node.js** (solo `node --check` y mocks DOM) | Sin dependencias npm |
+| Frontend | **HTML + CSS + JavaScript vanilla** (sin frameworks, sin build) | `linea-paralela.html` + módulos `timeline-*.js` + `linea-paralela.js` |
+| Datos | **JSON** en JS (`window.LT_DATA`) + detalle diferido | `linea-tiempo-datos.js` + `linea-tiempo-detalle.json` |
+| Fichas | `window.LT_FICHAS` | `fichas-personajes.js` (~233 fichas) |
+| Pipeline | **Python 3** (+ `openpyxl` para xlsx de fichas) | `scripts/` + `gen_fichas.py` |
+| Servidor local | **Python `http.server`** | `python -m http.server 8000 --bind 127.0.0.1` |
+| Validación | **Node.js** (stdlib + mocks DOM) | `node scripts/run_tests.js` — **sin npm obligatorio** |
 
-**Razones de la elección:** el proyecto vive en una máquina sin conexión a CDNs y
-sin gestor de paquetes; por eso toda dependencia (vis-timeline) y todo dato están
-descargados localmente. No hay `package.json`, no hay instalación, no hay build.
+### Fuentes tipográficas
+
+La cronología pide **Libre Baskerville**, **Karla** e **Inter** a Google Fonts de
+forma no bloqueante. **No es una dependencia dura:** si no hay red, el CSS usa
+Georgia / Segoe UI / system-ui. El README anterior afirmaba “sin CDN”; eso aplica
+a la lógica y a `vendor/` del legado vis-timeline, no a estas tipografías opcionales.
+
+### Por qué vanilla
+
+El proyecto debe abrirse con un servidor estático mínimo, sin instaladores. Los
+módulos puros (`timeline-state`, `selectors`, `list`, `density`, `dates`) se cargan
+con `<script>` clásicos y se prueban en `vm` de Node.
 
 ---
 
-## 2. Estructura de archivos
+## 2. Estructura de archivos (superficie actual)
 
 ```
 linea-de-tiempo/
-├── index.html               # APP COMPLETA (HTML+CSS+JS inline, ~950 líneas)
-├── linea-horizontal.html    # Vista horizontal por épocas (3 modos, drawer, tema claro/oscuro)
-├── fichas.html              # Visor de fichas de personajes (window.LT_FICHAS)
-├── linea-tiempo-datos.js    # DATOS GENERADOS: window.LT_DATA (2.7 MB, 159 sucesos…)
-├── fichas-personajes.js     # DATOS GENERADOS: window.LT_FICHAS (151 fichas)
-├── fichas_personajes.csv    # Hoja de curación manual de las fichas (campos vacíos)
-├── gen_fichas.py            # Generador de fichas (CSV + JS + fusión curación)
+├── linea-paralela.html      # CRONOLOGÍA PRINCIPAL (Explorar / Comparar)
+├── linea-paralela.js
+├── timeline-state.js        # URL / estado compartible
+├── timeline-selectors.js    # índices + selectEvents
+├── timeline-list.js         # explorador de lista + pila Volver
+├── timeline-density.js      # agregados por densidad visual
+├── timeline-dates.js        # formato a.E.C./E.C., sin año 0 al lector
+├── linea-tiempo-datos.js    # slim (~433 sucesos, _detailDeferred)
+├── linea-tiempo-detalle.json# descripciones + ~12 675 preguntas
+├── fichas.html              # fichas de personajes
+├── fichas-personajes.js
 ├── scripts/
-│   ├── paths.py             # Rutas compartidas (DATABASE_DIR, REPO_ROOT)
-│   ├── run_pipeline.py      # enrich → gen_timeline → gen_fichas
-│   ├── periods.py             # Periodos bíblicos (importado por enrich.py)
-│   ├── enrich.py              # Enriquece preguntas_unificadas.csv
-│   ├── gen_timeline.py        # Genera linea-tiempo-datos.js
-│   ├── gen_personajes.py      # Regenera personajes_biblicos.csv
-│   └── tests/
-│       ├── test_vis.js        # Mock DOM para index.html
-│       ├── test_hor.js        # Mock DOM para linea-horizontal.html
-│       └── test_fichas.js     # Mock DOM para fichas.html
-├── curacion/
-│   └── manual.json          # Campos narrativos curados a mano (se fusionan al regenerar)
+│   ├── run_tests.js         # batería Node
+│   ├── bench_timeline_perf.js
+│   ├── split_timeline_bundle.mjs  # PELIGRO si ya está diferido — ver abajo
+│   ├── gen_timeline.py
+│   └── tests/test_paso1.js … test_paso7.js, test_par.js, test_fichas.js
 ├── docs/
-│   └── CURACION-FICHAS.md   # Guía de curación manual
-├── README.md                # este archivo
-└── vendor/
-    ├── vis-timeline-graph2d.min.js   # librería local (556 KB)
-    └── vis-timeline-graph2d.min.css  # estilos de la librería (19 KB)
+│   ├── AUDITORIA-UI-UX-Y-PLAN.md
+│   ├── LEGIBILIDAD-TIMELINE.md
+│   └── mejora-exploracion/  # baseline + perf + entrega Paso 7
+├── index.html               # legado vis-timeline
+└── vendor/                  # vis-timeline local (legado)
 ```
 
-La base de datos vive en otra carpeta (fuera del repo web):
+Conteos orientativos (sep 2026): **433** sucesos, **99** personajes temporales,
+**233** fichas, detalle diferido activo.
+
+### `split_timeline_bundle.mjs` — no reejecutar a ciegas
+
+Si `linea-tiempo-datos.js` ya tiene `_detailDeferred: true`, el script **aborta**
+(exit 2). Volver a dividir vaciaría preguntas del slim. Solo usar tras regenerar
+un paquete *completo* con el pipeline, o `--force` (no recomendado).
+
+---
+
+## 2b. Estructura legada (referencia)
+
+El árbol histórico con `index.html` como “app completa”, `linea-horizontal.html` y
+conteos de 159 sucesos / 151 fichas queda obsoleto para la UX actual; se conserva
+abajo en secciones posteriores solo como contexto del pipeline y de vis-timeline.
+
+La base de datos vive fuera del repo web (override con `LT_DATABASE_DIR`):
 
 ```
 J:\AI\PROJECTOS\JW GAME\DATABASE_preguntas\
-├── hechos_biblicos.csv                      # 159 sucesos
-├── preguntas_unificadas.csv                 # 12,499 preguntas en bruto
-├── preguntas_unificadas_enriquecidas.csv    # preguntas + columnas de suceso
-├── personajes_biblicos.csv                  # 54 personajes (vidas para vis-timeline)
-├── lugares_biblicos.csv                     # geografía (origen del mapa)
-└── fichas/ OTRAS/ listas-en-progreso/      # material de origen (textos JW)
+├── hechos_biblicos.csv
+├── preguntas_unificadas.csv
+├── preguntas_unificadas_enriquecidas.csv
+├── personajes_biblicos.csv
+└── …
 ```
 
-> **Rutas:** los scripts usan `scripts/paths.py`. Por defecto apuntan a
-> `J:\AI\PROJECTOS\JW GAME\DATABASE_preguntas\`. Override con env
-> `LT_DATABASE_DIR` si la base vive en otra carpeta.
-
 ```powershell
-# Regenerar todos los datos
 cd J:\AI\WEB-opencode\hospedaje\linea-de-tiempo
 python scripts/run_pipeline.py
-
-# Solo fichas (fusiona curacion/manual.json)
 python gen_fichas.py
 ```
 
@@ -98,11 +117,12 @@ La cronología sigue las **líneas de tiempo de JW.org** (publicación *Seamos v
 | `jw_tl3.html` | S3 | Del Mesías a los cristianos del primer siglo |
 
 Convenciones de fecha:
-- Años **negativos = a. E. C.** (antes de nuestra era), positivos = E. C.
+- Años **negativos = a.E.C.**, positivos = **E.C.** (formateo central en `timeline-dates.js`).
+- El valor interno `0` no se muestra al lector (no hay año cero histórico).
 - El Diluvio se fija en el **-2370**, la creación de Adán en el **-4026**.
-- Potencias mundiales (periodos de dominio): Egipto **1600 a. E. C.**, Asiria
+- Potencias mundiales (periodos de dominio): Egipto **1600 a.E.C.**, Asiria
   **después de 874**, Babilonia **625**, Medopersia **539**, Grecia **332**, Roma
-  **63-30 a. E. C.**
+  **63-30 a.E.C.**
 
 La cronología se verificó contra la base: **10/11 fechas clave coinciden**
 (Diluvio, pacto con Abrahán, Saúl, Pentecostés, Éxodo, división del reino,
@@ -326,56 +346,45 @@ Replica (con CSS propio, sin Tailwind/CDN) la presentación del diseño de muest
   (contraste AA sobre blanco) en modo claro.
 
 ### `fichas.html` — visor de fichas de personajes
-Consume `window.LT_FICHAS` (151 personajes). Grilla responsive con tarjetas
-(nombre, profesión, vida, era, nº preguntas/sucesos/lugares) y badge
-"⚠ por completar". Filtros: búsqueda, época, sección (S1-S3), profesión, checkboxes
-(con vida/sucesos/preguntas) y orden (cronológico/alfabético/más preguntas).
-Drawer con datos, lugares, sucesos, relacionados y la sección **✍️ Curación manual
-(pendiente)** mostrando "— por completar" en los campos vacíos. Mismo toggle de tema.
+Consume `window.LT_FICHAS` (**233** personajes). Grilla responsive con tarjetas
+(nombre, profesión, vida, era, nº preguntas/sucesos/lugares). Los conteos de la
+barra son de **fichas**, no de sucesos de la cronología. Drawer con foco/Escape,
+estados vacíos y enlaces a `linea-paralela.html`. Filtros: búsqueda, época,
+sección, profesión y orden.
 
 ---
 
 ## 8. Cómo ejecutar
 
 ```powershell
-# 1) Servir la app (desde la carpeta del proyecto)
 cd J:\AI\WEB-opencode\hospedaje\linea-de-tiempo
-python -m http.server 8000
-
-# 2) Abrir en el navegador
-#    http://localhost:8000
+python -m http.server 8000 --bind 127.0.0.1
+# Cronología: http://127.0.0.1:8000/linea-paralela.html
+# Fichas:     http://127.0.0.1:8000/fichas.html
 ```
 
-No requiere instalación ni npm. `linea-tiempo-datos.js` y `vendor/` ya existen.
+No requiere npm. Los datos (`linea-tiempo-datos.js`, detalle JSON, fichas) ya
+deben estar en el repo. **No ejecutes** `split_timeline_bundle.mjs` sobre el
+paquete actual diferido.
 
 ---
 
 ## 9. Cómo validar cambios
 
 ```powershell
-# a) Sintaxis del JS inline de index.html (extraer y comprobar con Node)
-#    (leer con [System.IO.File]::ReadAllText en UTF-8; Get-Content corrompe acentos)
-$c = [System.IO.File]::ReadAllText('index.html', [System.Text.Encoding]::UTF8)
-$start = $c.LastIndexOf('<script>'); $end = $c.LastIndexOf('</script>')
-$js = $c.Substring($start+8, $end-$start-8)
-[System.IO.File]::WriteAllText("$env:TEMP\idx_check.js", $js, (New-Object System.Text.UTF8Encoding($false))
-node --check "$env:TEMP\idx_check.js"
+# Batería completa (Pasos 1–7 + par + fichas + vis legado)
+node scripts/run_tests.js
 
-# b) Test funcional con mocks DOM (sin navegador)
-node scripts/tests/test_vis.js
-#   Verifica: RUN OK, 54 items range (solo personajes), 0 items box, 8 grupos, 0 rangos invertidos,
-#   filtro de tema (Jueces → 0) y filtro de potencia (solo ASIRIA → 0 fuera de solape)
+# Solo cronología paralela / fichas
+node scripts/tests/test_par.js
+node scripts/tests/test_fichas.js
 
-# c) Revisar que el servidor sirve el HTML actualizado
-(Invoke-WebRequest -Uri http://localhost:8000/index.html -UseBasicParsing).Content.Contains('potFilters')
+# Microbenchmark 1×/5×/10× (escribe docs/mejora-exploracion/PASO7-PERF.json)
+node scripts/bench_timeline_perf.js
 ```
 
-`test_vis.js` monta un mock de `document`/`canvas`/`vis.Timeline` y ejecuta el JS
-inline real de `index.html` en un contexto `vm` de Node. **Es la única forma de
-validar sin navegador.** Para las páginas nuevas hay mocks análogos en
-`scripts/tests/`: `test_hor.js` (linea-horizontal: 9 columnas, selects, drawer,
-potencia, nav-filter, modos, tema) y `test_fichas.js` (fichas: 151 tarjetas,
-filtros, drawer, tema).
+Los tests montan mocks DOM en `vm` de Node (sin navegador). La entrega del plan
+de exploración está en `docs/mejora-exploracion/PASO7-ENTREGA.md`.
 
 ---
 

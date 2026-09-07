@@ -28,6 +28,16 @@ function rebuildDataIndexes(){
     }
     dataIndexes = { byEventId, questionsByHid };
   }
+  /* Caché de texto normalizado para búsqueda (Paso 7). */
+  for(const ev of (D.eventos || [])){
+    if(!ev) continue;
+    ev._n = norm(ev.n);
+    ev._nref = norm(ev.ref || '');
+  }
+  for(const pe of (D.personajes || [])){
+    if(!pe) continue;
+    pe._n = norm(pe.n);
+  }
 }
 rebuildDataIndexes();
 function eventById(id){
@@ -1334,7 +1344,7 @@ function enrichLaneData(laneData, q, chartLayout){
   return laneData.map(block=>{
     let active = block.people.filter(pe=>{
       if(!compact && !isPeSelected(pe)) return false;
-      return !nq || norm(pe.n).includes(nq) || (pe.isDensityAggregate && (pe.groupEvents||[]).some(ev=> norm(ev.n).includes(nq)));
+      return !nq || (pe._n || norm(pe.n)).includes(nq) || (pe.isDensityAggregate && (pe.groupEvents||[]).some(ev=> (ev._n || norm(ev.n)).includes(nq)));
     });
     if(chartLayout && block.meta?.key === 'sem'){
       active = densifyPointPeople(active, chartLayout, block.meta.key);
@@ -1357,7 +1367,7 @@ function collectHiddenInView(laneData, q){
   for(const block of laneData){
     for(const pe of block.people){
       if(isPeSelected(pe)) continue;
-      if(nq && !norm(pe.n).includes(nq)) continue;
+      if(nq && !(pe._n || norm(pe.n)).includes(nq)) continue;
       out.push({ pe, meta: block.meta });
     }
   }
@@ -1450,7 +1460,7 @@ function selectCanonicalEvents(opts){
     if(seen.has(ev.id)) continue;
     if(typeof merged.inChipScope === 'function' && !merged.inChipScope(ev)) continue;
     if(qn){
-      const hay = norm(ev.n).includes(qn) || norm(ev.ref || '').includes(qn) || norm(ev.d || '').includes(qn);
+      const hay = (ev._n || norm(ev.n)).includes(qn) || (ev._nref || norm(ev.ref || '')).includes(qn) || norm(ev.d || '').includes(qn);
       if(!hay) continue;
     }
     seen.add(ev.id);
@@ -2199,7 +2209,7 @@ function activePersonajesForDedup(query){
     for(const p of D.personajes){
       if(p.grupo !== f.grupo || p.inicio == null || p.fin == null) continue;
       if(!compact && !isPeSelected(p)) continue;
-      if(nq && !norm(p.n).includes(nq)) continue;
+      if(nq && !(p._n || norm(p.n)).includes(nq)) continue;
       out.push(p);
     }
   }
@@ -2370,7 +2380,7 @@ function collectLooseEvents(activePeople, yMin, yMax, query){
     if(!eventInChipScope(ev)) return false;
     const y = chartYear(ev) ?? ev.fa;
     if(y == null || y < yMin || y > yMax) return false;
-    if(nq && !norm(ev.n).includes(nq) && !norm(ev.ref || '').includes(nq)) return false;
+    if(nq && !(ev._n || norm(ev.n)).includes(nq) && !(ev._nref || norm(ev.ref || '')).includes(nq)) return false;
     if(people.some(pe=> eventMatchesPerson(ev, pe))) return false;
     return true;
   }).sort((a, b)=> (chartYear(a) - chartYear(b)) || a.n.localeCompare(b.n, 'es'));
@@ -2869,6 +2879,122 @@ function bindHoverTip(el, showFn){
     if(isCoarsePointer()) return;
     hideTip();
   });
+}
+
+/** Delegación única para marcadores/eje (Paso 7): evita N listeners por render. */
+let chartInteractionsBound = false;
+function markerUsesCssTip(m){
+  return !!(m && m.querySelector && m.querySelector('.evt-marker__tip') && !m.classList.contains('evt-marker--zone'));
+}
+function openAggregateFromEl(m){
+  const ids = String(m.dataset.aggIds || '').split(',').map(x=> Number(x)).filter(Number.isFinite);
+  const events = ids.map(id=> eventById(id)).filter(Boolean);
+  const label = events.length + ' sucesos próximos';
+  openDensityAggregate(events, label);
+}
+function ensureChartInteractionDelegation(){
+  if(chartInteractionsBound) return;
+  chartInteractionsBound = true;
+  if(chartCanvas){
+    chartCanvas.addEventListener('click', e=>{
+      const agg = e.target.closest && e.target.closest('.evt-marker[data-agg-ids]');
+      if(agg && chartCanvas.contains(agg)){
+        const ids = String(agg.dataset.aggIds || '').split(',').map(x=> Number(x)).filter(Number.isFinite);
+        const events = ids.map(id=> eventById(id)).filter(Boolean);
+        const label = events.length + ' sucesos próximos';
+        activateWithTouchTip('agg'+ids.join('-'), e, agg,
+          ()=> showTipHtml(`<div class="t-name">${esc(label)}</div>`, e, agg),
+          ()=> openDensityAggregate(events, label));
+        return;
+      }
+      const m = e.target.closest && e.target.closest('.evt-marker:not([data-agg-ids]), .bar-event-pin');
+      if(!m || !chartCanvas.contains(m)) return;
+      const ev = eventById(m.dataset.ev);
+      if(!ev) return;
+      activateWithTouchTip('e'+ev.id, e, m, ()=> showEvTip(e, ev, m), ()=> openDrawerFromClick(ev, e));
+    });
+    chartCanvas.addEventListener('keydown', e=>{
+      if(e.key !== 'Enter' && e.key !== ' ') return;
+      const agg = e.target.closest && e.target.closest('.evt-marker[data-agg-ids]');
+      if(agg && chartCanvas.contains(agg)){
+        e.preventDefault();
+        openAggregateFromEl(agg);
+        return;
+      }
+      const m = e.target.closest && e.target.closest('.evt-marker:not([data-agg-ids]), .bar-event-pin');
+      if(!m || !chartCanvas.contains(m)) return;
+      const ev = eventById(m.dataset.ev);
+      if(!ev) return;
+      e.preventDefault();
+      openDrawerFromClick(ev, e);
+    });
+    chartCanvas.addEventListener('mouseover', e=>{
+      if(isCoarsePointer()) return;
+      const agg = e.target.closest && e.target.closest('.evt-marker[data-agg-ids]');
+      if(agg && chartCanvas.contains(agg) && (!e.relatedTarget || !agg.contains(e.relatedTarget))){
+        const n = String(agg.dataset.aggIds || '').split(',').filter(Boolean).length;
+        showTipHtml(
+          `<div class="t-name">${esc(n + ' sucesos próximos')}</div><div class="t-dates">Tocá para ver la lista completa</div>`,
+          e, agg);
+        return;
+      }
+      const m = e.target.closest && e.target.closest('.evt-marker:not([data-agg-ids]), .bar-event-pin');
+      if(!m || !chartCanvas.contains(m)) return;
+      if(markerUsesCssTip(m)) return;
+      if(e.relatedTarget && m.contains(e.relatedTarget)) return;
+      const ev = eventById(m.dataset.ev);
+      if(ev) showEvTip(e, ev, m);
+    });
+    chartCanvas.addEventListener('mousemove', e=>{
+      if(isCoarsePointer()) return;
+      if(e.target.closest && e.target.closest('.evt-marker, .bar-event-pin')) moveTip(e);
+    });
+    chartCanvas.addEventListener('mouseout', e=>{
+      if(isCoarsePointer()) return;
+      const m = e.target.closest && e.target.closest('.evt-marker, .bar-event-pin');
+      if(!m) return;
+      if(e.relatedTarget && m.contains(e.relatedTarget)) return;
+      hideTip();
+    });
+  }
+  if(axisArea){
+    axisArea.addEventListener('click', e=>{
+      const m = e.target.closest && e.target.closest('.axis-important');
+      if(!m || !axisArea.contains(m)) return;
+      e.preventDefault();
+      e.stopPropagation();
+      const ev = eventById(m.dataset.ev);
+      if(!ev) return;
+      activateWithTouchTip('e'+ev.id, e, m, ()=> showEvTip(e, ev, m), ()=> openDrawerFromClick(ev, e));
+    });
+    axisArea.addEventListener('keydown', e=>{
+      if(e.key !== 'Enter' && e.key !== ' ') return;
+      const m = e.target.closest && e.target.closest('.axis-important');
+      if(!m || !axisArea.contains(m)) return;
+      e.preventDefault();
+      const ev = eventById(m.dataset.ev);
+      if(ev) openDrawerFromClick(ev, e);
+    });
+    axisArea.addEventListener('mouseover', e=>{
+      if(isCoarsePointer()) return;
+      const m = e.target.closest && e.target.closest('.axis-important');
+      if(!m || !axisArea.contains(m)) return;
+      if(e.relatedTarget && m.contains(e.relatedTarget)) return;
+      const ev = eventById(m.dataset.ev);
+      if(ev) showEvTip(e, ev, m);
+    });
+    axisArea.addEventListener('mousemove', e=>{
+      if(isCoarsePointer()) return;
+      if(e.target.closest && e.target.closest('.axis-important')) moveTip(e);
+    });
+    axisArea.addEventListener('mouseout', e=>{
+      if(isCoarsePointer()) return;
+      const m = e.target.closest && e.target.closest('.axis-important');
+      if(!m) return;
+      if(e.relatedTarget && m.contains(e.relatedTarget)) return;
+      hideTip();
+    });
+  }
 }
 let ptrGesture = null;
 const PAN_CANCEL_PX = 10;
@@ -3525,7 +3651,8 @@ function openPersonFromClick(pe, e){
 function bindDrawerTargets(root){
   root.querySelectorAll('.bar').forEach(bar=>{
     if(bar.dataset.ev){
-      const ev = D.eventos.find(e=>String(e.id)===bar.dataset.ev);
+      const ev = eventById(bar.dataset.ev);
+      if(!ev) return;
       bindHoverTip(bar, e=> showEvTip(e, ev));
       bar.addEventListener('click', e=> activateWithTouchTip('e'+ev.id, e, bar, ()=> showEvTip(e, ev, bar), ()=> openDrawerFromClick(ev, e)));
       bar.addEventListener('keydown', e=>{
@@ -3559,7 +3686,7 @@ function bindDrawerTargets(root){
     bindPersonBar(bar, pe);
   });
   root.querySelectorAll('.row-label__entry[data-ev]').forEach(el=>{
-    const ev = D.eventos.find(e=>String(e.id)===el.dataset.ev);
+    const ev = eventById(el.dataset.ev);
     if(!ev) return;
     el.addEventListener('click', e=>{
       if(e.target.closest('.row-label__pick')) return;
@@ -4236,7 +4363,7 @@ function render(){
   chartCanvas.querySelectorAll('.evt-marker, .bar-event-pin').forEach(m=>{
     if(m.dataset.aggIds) return;
     const row = m.closest('.row');
-    const ev = D.eventos.find(e=>String(e.id)===m.dataset.ev);
+    const ev = eventById(m.dataset.ev);
     let y = parseFloat(m.style.top);
     if(row && m.classList.contains('evt-marker--in-row')){
       y = row.offsetTop + 6 + 7;
@@ -4269,48 +4396,7 @@ function render(){
     (markerCount ? ' · ' + markerCount + ' marcadores' : '')
   );
 
-  chartCanvas.querySelectorAll('.evt-marker[data-agg-ids]').forEach(m=>{
-    const ids = String(m.dataset.aggIds || '').split(',').map(x=> Number(x)).filter(Number.isFinite);
-    const events = ids.map(id=> eventById(id)).filter(Boolean);
-    const label = events.length + ' sucesos próximos';
-    bindHoverTip(m, e=> showTipHtml(
-      `<div class="t-name">${esc(label)}</div><div class="t-dates">Tocá para ver la lista completa</div>`, e, m));
-    m.addEventListener('click', e=> activateWithTouchTip('agg'+ids.join('-'), e, m, ()=> showTipHtml(
-      `<div class="t-name">${esc(label)}</div>`, e, m), ()=> openDensityAggregate(events, label)));
-    m.addEventListener('keydown', e=>{
-      if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); openDensityAggregate(events, label); }
-    });
-  });
-
-  chartCanvas.querySelectorAll('.evt-marker:not([data-agg-ids]), .bar-event-pin').forEach(m=>{
-    const ev = D.eventos.find(e=>String(e.id)===m.dataset.ev);
-    if(!ev) return;
-    /* Tip CSS solo en compact; en fan / filas normales usamos #tooltip fijo. */
-    const useCssTip = m.querySelector('.evt-marker__tip') && !m.classList.contains('evt-marker--zone');
-    if(!useCssTip){
-      bindHoverTip(m, e=> showEvTip(e, ev));
-    }
-    m.addEventListener('click', e=> activateWithTouchTip('e'+ev.id, e, m, ()=> showEvTip(e, ev, m), ()=> openDrawerFromClick(ev, e)));
-    m.addEventListener('keydown', e=>{
-      if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); openDrawerFromClick(ev, e); }
-    });
-  });
-
-  axisArea.querySelectorAll('.axis-important').forEach(m=>{
-    const ev = D.eventos.find(e=>String(e.id)===m.dataset.ev);
-    if(!ev) return;
-    m.addEventListener('mouseenter', e=>{ if(!isCoarsePointer()) showEvTip(e, ev); });
-    m.addEventListener('mousemove', e=>{ if(!isCoarsePointer()) moveTip(e); });
-    m.addEventListener('mouseleave', ()=>{ if(!isCoarsePointer()) hideTip(); });
-    m.addEventListener('click', e=>{
-      e.preventDefault();
-      e.stopPropagation();
-      activateWithTouchTip('e'+ev.id, e, m, ()=> showEvTip(e, ev, m), ()=> openDrawerFromClick(ev, e));
-    });
-    m.addEventListener('keydown', e=>{
-      if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); openDrawerFromClick(ev, e); }
-    });
-  });
+  ensureChartInteractionDelegation();
 
   bindPePickers();
   bindRowHover();

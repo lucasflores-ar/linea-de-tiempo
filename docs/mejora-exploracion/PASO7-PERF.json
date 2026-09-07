@@ -1,0 +1,132 @@
+{
+  "when": "2026-09-07T15:52:50.546Z",
+  "env": {
+    "node": "v24.14.0",
+    "platform": "win32",
+    "arch": "x64",
+    "cpus": 64,
+    "model": "AMD Ryzen Threadripper 3970X 32-Core Processor ",
+    "totalMemMB": 262017
+  },
+  "counts": {
+    "eventosBase": 433,
+    "personajes": 99,
+    "detailDeferred": true
+  },
+  "runs": [
+    {
+      "factor": "1×",
+      "nEventos": 433,
+      "nMinisterio": 132,
+      "indexBuild": {
+        "label": "buildIndexes",
+        "medMs": 0.122,
+        "minMs": 0.101,
+        "maxMs": 0.976
+      },
+      "selectRange": {
+        "label": "selectEvents 29–34",
+        "medMs": 0.72,
+        "minMs": 0.635,
+        "maxMs": 12.641
+      },
+      "densify": {
+        "label": "densify ministerio",
+        "medMs": 0.507,
+        "minMs": 0.416,
+        "maxMs": 2.408
+      },
+      "searchDavid": {
+        "label": "search \"david\"",
+        "medMs": 0.113,
+        "minMs": 0.096,
+        "maxMs": 0.184
+      },
+      "fmtYear": {
+        "label": "fmtYear×n",
+        "medMs": 0.493,
+        "minMs": 0.334,
+        "maxMs": 0.597
+      },
+      "densityCoverageOk": true,
+      "densityNodes": 6,
+      "indexSize": 433
+    },
+    {
+      "factor": "5×",
+      "nEventos": 2165,
+      "nMinisterio": 652,
+      "indexBuild": {
+        "label": "buildIndexes",
+        "medMs": 0.503,
+        "minMs": 0.487,
+        "maxMs": 0.885
+      },
+      "selectRange": {
+        "label": "selectEvents 29–34",
+        "medMs": 3.392,
+        "minMs": 3.137,
+        "maxMs": 3.856
+      },
+      "densify": {
+        "label": "densify ministerio",
+        "medMs": 2.433,
+        "minMs": 1.974,
+        "maxMs": 3.198
+      },
+      "searchDavid": {
+        "label": "search \"david\"",
+        "medMs": 0.226,
+        "minMs": 0.21,
+        "maxMs": 0.248
+      },
+      "fmtYear": {
+        "label": "fmtYear×n",
+        "medMs": 1.594,
+        "minMs": 1.585,
+        "maxMs": 1.826
+      },
+      "densityCoverageOk": true,
+      "densityNodes": 17,
+      "indexSize": 2165
+    },
+    {
+      "factor": "10×",
+      "nEventos": 4330,
+      "nMinisterio": 1302,
+      "indexBuild": {
+        "label": "buildIndexes",
+        "medMs": 0.819,
+        "minMs": 0.798,
+        "maxMs": 1.803
+      },
+      "selectRange": {
+        "label": "selectEvents 29–34",
+        "medMs": 6.609,
+        "minMs": 6.362,
+        "maxMs": 7.62
+      },
+      "densify": {
+        "label": "densify ministerio",
+        "medMs": 10.931,
+        "minMs": 10.819,
+        "maxMs": 12.222
+      },
+      "searchDavid": {
+        "label": "search \"david\"",
+        "medMs": 0.424,
+        "minMs": 0.413,
+        "maxMs": 0.615
+      },
+      "fmtYear": {
+        "label": "fmtYear×n",
+        "medMs": 3.171,
+        "minMs": 2.925,
+        "maxMs": 3.243
+      },
+      "densityCoverageOk": true,
+      "densityNodes": 27,
+      "indexSize": 4330
+    }
+  ]
+}

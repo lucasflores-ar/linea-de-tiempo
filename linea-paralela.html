@@ -13,9 +13,13 @@
 <meta name="twitter:card" content="summary_large_image" />
 <title>Línea de tiempo bíblica</title>
 <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+<!-- Fuentes: Google Fonts es opcional (online). Offline usa Georgia / Segoe UI. Ver README §Fuentes. -->
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Karla:wght@400;600&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Karla:wght@400;600&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" media="print" onload="this.media='all'" />
+<noscript>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Karla:wght@400;600&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" />
+</noscript>
 <style>
 :root{
   --bg:#f5f2e8; --panel:#faf8f3; --line:#d8d2c6;
@@ -40,7 +44,7 @@
   --mk-juicio:#9a7a1c; --mk-muerte:#63615a; --mk-reforma:#3d7d4c;
   --mk-destruccion:#a85a20; --mk-otro:#35606f;
   --font-serif:"Libre Baskerville",Georgia,"Times New Roman",serif;
-  --font-sans:"Karla","Segoe UI",system-ui,sans-serif;
+  --font-sans:"Karla","Segoe UI",system-ui,-apple-system,sans-serif;
   --tl-font-scale:1;
   --label-w:228px; --row-h:48px; --lane-gap:14px; --axis-h:40px; --pot-strip:28px; --phase-h:0px;
 }
@@ -60,7 +64,7 @@ html[data-viz="waterfall"]{
   --mk-juicio:#b8860b; --mk-muerte:#5a6472; --mk-reforma:#2fa864;
   --mk-destruccion:#e07030; --mk-otro:#c93333;
   --label-w:108px; --row-h:44px; --lane-gap:12px; --axis-h:36px; --phase-h:36px;
-  --font-sans:"Inter","Segoe UI",system-ui,sans-serif;
+  --font-sans:"Inter","Segoe UI",system-ui,-apple-system,sans-serif;
 }
 html[data-theme="dark"]{
   --bg:#1a1814; --panel:#242018; --line:#3d3830;
@@ -1683,11 +1687,11 @@ header {
 </aside>
 
 <script src="linea-tiempo-datos.js?v=14"></script>
-<script src="timeline-dates.js?v=20260907g"></script>
-<script src="timeline-state.js?v=20260907g"></script>
-<script src="timeline-selectors.js?v=20260907g"></script>
-<script src="timeline-list.js?v=20260907g"></script>
-<script src="timeline-density.js?v=20260907g"></script>
-<script src="linea-paralela.js?v=20260907g"></script>
+<script src="timeline-dates.js?v=20260907h"></script>
+<script src="timeline-state.js?v=20260907h"></script>
+<script src="timeline-selectors.js?v=20260907h"></script>
+<script src="timeline-list.js?v=20260907h"></script>
+<script src="timeline-density.js?v=20260907h"></script>
+<script src="linea-paralela.js?v=20260907h"></script>
 </body>
 </html>

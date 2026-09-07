@@ -218,7 +218,21 @@ extremo (zoom a 2–3 años de rango) se maneja por la combinación de
 
 ---
 
-## 7. Historial de decisiones
+## 8. Densidad visual y Explorar (Pasos 3–5)
+
+Cuando muchos sucesos coinciden en X (p. ej. 32 E.C. o la última semana),
+`timeline-density.js` forma **agregados** en Comparar: un marcador resume N
+sucesos y abre el explorador de lista con cobertura de IDs verificable.
+Las barras de duración de personajes no se agregan.
+
+La vista **Explorar** (`data-vista="explorar"`) muestra la lista a ancho
+completo; Comparar conserva el eje 2D. Ambos usan el mismo selector
+(`LTSelectors.selectEvents`) y el mismo formateo de fechas (`LTDates`),
+sin año cero al lector.
+
+---
+
+## 9. Historial de decisiones
 
 | Fecha | Cambio | Razón |
 |---|---|---|
@@ -227,4 +241,6 @@ extremo (zoom a 2–3 años de rango) se maneja por la combinación de
 | 2026-09-03 | Limitar `markerNameInset` a 200px | Insets gigantes en zoom extremo |
 | 2026-09-03 | `overflow:hidden` en `.lane-block` | Texto residual de barras off-screen |
 | 2026-09-03 | `bandLabelShown` Set | Etiquetas de banda repetidas en cada bloque |
+| 2026-09-07 | Agregados por densidad + Explorar | Acceso completo sin adivinar gestos |
+| 2026-09-07 | `LTDates` sin año 0 en eje | Consistencia cronológica histórica |
 | 2026-09-03 | Eliminar banda `exi` | Duplicaba la banda de época `ep-bab` |
