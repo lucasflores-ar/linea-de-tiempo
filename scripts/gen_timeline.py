@@ -149,8 +149,12 @@ def temas_de(h):
         t.add('JUECES')
     if li_at in ('1 SAMUEL', '2 SAMUEL', '1 REYES', '2 REYES', '1 CRÓNICAS', '2 CRÓNICAS') or er.startswith('MONARQUÍA') or er.startswith('REINO DIVIDIDO'):
         t.add('REYES')
+    # 'NAHÚM' va con tilde: la columna `libro` del CSV escribe «NAHÚM», así que
+    # con 'NAHUM' este `in` no acertaba nunca y Nahúm (187) se quedaba solo con
+    # el tema REYES, fuera del carril de Profetas. El mismo typo estaba en
+    # curacion/escritura_categorias.json.
     if li_at in ('ISAÍAS', 'JEREMÍAS', 'EZEQUIEL', 'DANIEL', 'OSEAS', 'JOEL', 'AMÓS', 'ABDÍAS',
-                 'JONÁS', 'MIQUEAS', 'NAHUM', 'HABACUC', 'SOFONÍAS', 'HAGEO', 'ZACARÍAS', 'MALAQUÍAS', 'LAMENTACIONES'):
+                 'JONÁS', 'MIQUEAS', 'NAHÚM', 'HABACUC', 'SOFONÍAS', 'HAGEO', 'ZACARÍAS', 'MALAQUÍAS', 'LAMENTACIONES'):
         t.add('PROFETAS')
     if not ec and menciona_persona(per, 'ELÍAS', 'ELIAS', 'ELISEO', 'SAMUEL', 'NATÁN', 'NATAN'):
         t.add('PROFETAS')

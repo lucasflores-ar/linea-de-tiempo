@@ -39,7 +39,7 @@
       "testamento": "AT",
       "label": "Profetas menores",
       "descripcion": "Doce profetas con escritos más breves",
-      "libros": ["OSEAS", "JOEL", "AMÓS", "ABDÍAS", "JONÁS", "MIQUEAS", "NAHUM", "HABACUC", "SOFONÍAS", "HAGEO", "ZACARÍAS", "MALAQUÍAS"],
+      "libros": ["OSEAS", "JOEL", "AMÓS", "ABDÍAS", "JONÁS", "MIQUEAS", "NAHÚM", "HABACUC", "SOFONÍAS", "HAGEO", "ZACARÍAS", "MALAQUÍAS"],
       "timeline": false
     },
     {

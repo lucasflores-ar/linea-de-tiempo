@@ -35,7 +35,8 @@
       "era": "EXODO / LEY",
       "referencia": "Éxo. 40:38",
       "tipo_suceso": "redacción",
-      "match_id": "399",
+      "match_id": "",
+      "comparte_fila": "340",
       "match_etiqueta": "moises_completa_exodo"
     },
     {
@@ -53,7 +54,7 @@
       "era": "EXODO / LEY",
       "referencia": "Lev. 27:34",
       "tipo_suceso": "redacción",
-      "match_id": "342",
+      "match_id": "340",
       "match_etiqueta": "moises_completa_levitico"
     },
     {
@@ -197,7 +198,8 @@
       "era": "EXILIO",
       "referencia": "2 Rey. 25:27",
       "tipo_suceso": "redacción",
-      "match_id": "365",
+      "match_id": "",
+      "comparte_fila": "364",
       "match_etiqueta": "libros_reyes_completados"
     },
     {
@@ -233,7 +235,8 @@
       "era": "RESTAURACIÓN",
       "referencia": "Esd. 10:44",
       "tipo_suceso": "redacción",
-      "match_id": "395",
+      "match_id": "",
+      "comparte_fila": "370",
       "match_etiqueta": "esdras_libro_completado"
     },
     {
@@ -305,7 +308,8 @@
       "era": "RESTAURACIÓN",
       "referencia": "Sal. 72:20",
       "tipo_suceso": "redacción",
-      "match_id": "400",
+      "match_id": "",
+      "comparte_fila": "370",
       "match_etiqueta": "salmos_compilacion_final"
     },
     {
@@ -396,7 +400,7 @@
       "era": "EXILIO",
       "referencia": "Jer. 52:34",
       "tipo_suceso": "redacción",
-      "match_id": "363",
+      "match_id": "364",
       "match_etiqueta": "jeremias_libro_completado"
     },
     {
@@ -654,7 +658,7 @@
     {
       "clave": "malaquias",
       "libro": "MALAQUÍAS",
-      "nombre": "Malaquías completado",
+      "nombre": "Malaquías completa el libro de Malaquías",
       "escritor": "Malaquías",
       "lugar": "Jerusalén",
       "lugar_incerto": false,
@@ -666,7 +670,7 @@
       "era": "RESTAURACIÓN",
       "referencia": "Mal. 4:6",
       "tipo_suceso": "redacción",
-      "match_id": "372",
+      "match_id": "",
       "match_etiqueta": "malaquias_completa_libro"
     },
     {
@@ -738,7 +742,7 @@
       "era": "E.C.",
       "referencia": "Juan 21:25",
       "tipo_suceso": "redacción/evangelio",
-      "match_id": "437",
+      "match_id": "380",
       "match_etiqueta": "juan_escribe_evangelio",
       "exclude_libros": [
         "1 JUAN",

@@ -14,11 +14,20 @@ LIBROS = [
     dict(clave="exodo", libro="ÉXODO", nombre="Éxodo completado", escritor="Moisés",
          lugar="Desierto", lugar_incerto=False, prefijo="", anio=-1512, prefijo_fin="", anio_fin=-1657,
          tiempo_abarca="1657–1512 a.E.C.", era="EXODO / LEY", referencia="Éxo. 40:38",
-         tipo_suceso="redacción", match_id="399", match_etiqueta="moises_completa_exodo"),
+         # El CSV no tiene un suceso propio para Éxodo: la fila 340 («Moisés
+         # completa Éxodo y Levítico») cubre los dos, y una fila solo puede ser
+         # reclamada por un libro. Se la queda Levítico, cuya referencia
+         # coincide con la de esa fila. El match_id viejo (399) apuntaba a
+         # «Sana a un paralítico».
+         tipo_suceso="redacción", match_id="", comparte_fila="340",
+         match_etiqueta="moises_completa_exodo"),
     dict(clave="levitico", libro="LEVÍTICO", nombre="Levítico completado", escritor="Moisés",
          lugar="Desierto", lugar_incerto=False, prefijo="", anio=-1512, prefijo_fin="", anio_fin=None,
          tiempo_abarca="1 mes (1512 a.E.C.)", era="EXODO / LEY", referencia="Lev. 27:34",
-         tipo_suceso="redacción", match_id="342", match_etiqueta="moises_completa_levitico"),
+         # 340 es «Moisés completa Éxodo y Levítico» y su referencia es
+         # «Lev. 27:34; Núm. 1:1», la misma de acá. El match_id viejo (342) era
+         # la redacción de Números.
+         tipo_suceso="redacción", match_id="340", match_etiqueta="moises_completa_levitico"),
     dict(clave="numeros", libro="NÚMEROS", nombre="Números completado", escritor="Moisés",
          lugar="Desierto / Llanuras de Moab", lugar_incerto=False, prefijo="", anio=-1473, prefijo_fin="", anio_fin=-1512,
          tiempo_abarca="1512–1473 a.E.C.", era="DESIERTO", referencia="Núm. 36:13",
@@ -50,7 +59,12 @@ LIBROS = [
     dict(clave="reyes", libro="1 REYES", nombre="1 y 2 Reyes completados", escritor="Jeremías",
          lugar="Judá / Egipto", lugar_incerto=False, prefijo="", anio=-580, prefijo_fin="", anio_fin=-1040,
          tiempo_abarca="c. 1040–580 a.E.C.", era="EXILIO", referencia="2 Rey. 25:27",
-         tipo_suceso="redacción", match_id="365", match_etiqueta="libros_reyes_completados"),
+         # La fila 364 («Se completan los libros de 1 y 2 Reyes y Jeremías»)
+         # cubre los dos; se la queda Jeremías, que coincide con su columna
+         # `libro`. El match_id viejo (365) era «Zorobabel coloca el fundamento
+         # del templo».
+         tipo_suceso="redacción", match_id="", comparte_fila="364",
+         match_etiqueta="libros_reyes_completados"),
     dict(clave="cronicas", libro="1 CRÓNICAS", nombre="1 y 2 Crónicas completados", escritor="Esdras",
          lugar="Jerusalén", lugar_incerto=True, prefijo="c", anio=-460, prefijo_fin="", anio_fin=-1077,
          tiempo_abarca="Después de 1 Cró. 9:44, 1077–537 a.E.C.", era="RESTAURACIÓN", referencia="2 Cró. 36:23",
@@ -58,7 +72,12 @@ LIBROS = [
     dict(clave="esdras", libro="ESDRAS", nombre="Esdras completado", escritor="Esdras",
          lugar="Jerusalén", lugar_incerto=False, prefijo="c", anio=-460, prefijo_fin="", anio_fin=-537,
          tiempo_abarca="537–c. 467 a.E.C.", era="RESTAURACIÓN", referencia="Esd. 10:44",
-         tipo_suceso="redacción", match_id="395", match_etiqueta="esdras_libro_completado"),
+         # La fila 370 («Esdras completa los libros de 1 y 2 Crónicas y Esdras;
+         # compilación final de los Salmos») cubre tres libros y ya la reclama
+         # Crónicas. El match_id viejo (395) era «Llama a Simón, Andrés,
+         # Santiago y Juan».
+         tipo_suceso="redacción", match_id="", comparte_fila="370",
+         match_etiqueta="esdras_libro_completado"),
     dict(clave="nehemias", libro="NEHEMÍAS", nombre="Nehemías completado", escritor="Nehemías",
          lugar="Jerusalén", lugar_incerto=False, prefijo="d", anio=-443, prefijo_fin="", anio_fin=-456,
          tiempo_abarca="456–d. 443 a.E.C.", era="RESTAURACIÓN", referencia="Neh. 13:31",
@@ -74,7 +93,10 @@ LIBROS = [
     dict(clave="salmos", libro="SALMOS", nombre="Salmos — compilación final", escritor="David y otros",
          lugar="", lugar_incerto=False, prefijo="c", anio=-460, prefijo_fin="", anio_fin=None,
          tiempo_abarca="", era="RESTAURACIÓN", referencia="Sal. 72:20",
-         tipo_suceso="redacción", match_id="400", match_etiqueta="salmos_compilacion_final"),
+         # Misma fila 370, que menciona la compilación final de los Salmos. El
+         # match_id viejo (400) era «Llama a Mateo; banquete con recaudadores».
+         tipo_suceso="redacción", match_id="", comparte_fila="370",
+         match_etiqueta="salmos_compilacion_final"),
     dict(clave="proverbios", libro="PROVERBIOS", nombre="Proverbios completado", escritor="Salomón; Agur; Lemuel",
          lugar="Jerusalén", lugar_incerto=False, prefijo="c", anio=-717, prefijo_fin="", anio_fin=None,
          tiempo_abarca="", era="REINO DIVIDIDO", referencia="Pro. 31:1",
@@ -95,7 +117,10 @@ LIBROS = [
     dict(clave="jeremias", libro="JEREMÍAS", nombre="Jeremías completado", escritor="Jeremías",
          lugar="Judá / Egipto", lugar_incerto=False, prefijo="", anio=-580, prefijo_fin="", anio_fin=-647,
          tiempo_abarca="647–580 a.E.C.", era="EXILIO", referencia="Jer. 52:34",
-         tipo_suceso="redacción", match_id="363", match_etiqueta="jeremias_libro_completado"),
+         # 364 es «Se completan los libros de 1 y 2 Reyes y Jeremías», con
+         # `libro=JEREMÍAS`. El match_id viejo (363) era «Séptimo mes, los
+         # judíos abandonan a Judá».
+         tipo_suceso="redacción", match_id="364", match_etiqueta="jeremias_libro_completado"),
     dict(clave="lamentaciones", libro="LAMENTACIONES", nombre="Lamentaciones completado", escritor="Jeremías",
          lugar="Cerca de Jerusalén", lugar_incerto=False, prefijo="", anio=-607, prefijo_fin="", anio_fin=None,
          tiempo_abarca="", era="EXILIO", referencia="Lam. 5:22",
@@ -152,10 +177,18 @@ LIBROS = [
          lugar="Jerusalén", lugar_incerto=False, prefijo="", anio=-518, prefijo_fin="", anio_fin=-520,
          tiempo_abarca="520–518 a.E.C.", era="RESTAURACIÓN", referencia="Zac. 14:21",
          tipo_suceso="redacción", match_id="369", match_etiqueta="zacarias_completa_libro"),
-    dict(clave="malaquias", libro="MALAQUÍAS", nombre="Malaquías completado", escritor="Malaquías",
+    # `nombre` sigue el estilo del CSV, no el de la tabla («Malaquías
+    # completado»): sus once hermanos son «X completa el libro de X». Importa
+    # porque esta fila se creó desde acá.
+    dict(clave="malaquias", libro="MALAQUÍAS", nombre="Malaquías completa el libro de Malaquías", escritor="Malaquías",
          lugar="Jerusalén", lugar_incerto=False, prefijo="d", anio=-443, prefijo_fin="", anio_fin=None,
          tiempo_abarca="", era="RESTAURACIÓN", referencia="Mal. 4:6",
-         tipo_suceso="redacción", match_id="372", match_etiqueta="malaquias_completa_libro"),
+         # Único libro profético sin suceso de redacción en el CSV: solo estaba
+         # la 185, «Profecía de Malaquías» (tipo=profecía). Se decidió crearle
+         # el suyo, como tienen los otros once. Sin match_id, el merge lo
+         # reporta como faltante y lo crea con --crear-faltantes. El viejo (372)
+         # era «Grecia, quinta potencia mundial, gobierna a Judea».
+         tipo_suceso="redacción", match_id="", match_etiqueta="malaquias_completa_libro"),
     # --- Escrituras griegas ---
     dict(clave="mateo", libro="MATEO", nombre="Evangelio según Mateo completado", escritor="Mateo",
          lugar="Palestina", lugar_incerto=False, prefijo="c", anio=41, prefijo_fin="", anio_fin=-2,
@@ -172,7 +205,12 @@ LIBROS = [
     dict(clave="juan_evangelio", libro="JUAN", nombre="Evangelio según Juan completado", escritor="El apóstol Juan",
          lugar="Éfeso, o cerca", lugar_incerto=False, prefijo="c", anio=98, prefijo_fin="", anio_fin=29,
          tiempo_abarca="Después del prólogo, 29–33 E.C.", era="E.C.", referencia="Juan 21:25",
-         tipo_suceso="redacción/evangelio", match_id="437", match_etiqueta="juan_escribe_evangelio",
+         # 380 es «Juan escribe el Evangelio llamado 'Juan' y sus cartas 1, 2 y
+         # 3 Juan», que sigue el patrón de los otros tres evangelios
+         # (Mateo→377, Marcos→379, Lucas→194) y hoy nadie la reclama: las tres
+         # cartas van a las filas 161/166/170 de la otra serie. El match_id
+         # viejo (437) era «Otros aparecimientos de Jesucristo».
+         tipo_suceso="redacción/evangelio", match_id="380", match_etiqueta="juan_escribe_evangelio",
          exclude_libros=["1 JUAN", "2 JUAN", "3 JUAN"]),
     dict(clave="hechos", libro="HECHOS", nombre="Hechos de los Apóstoles completado", escritor="Lucas",
          lugar="Roma", lugar_incerto=False, prefijo="c", anio=61, prefijo_fin="", anio_fin=33,

@@ -403,6 +403,71 @@ perdido ni agregado, ninguna celda vaciada.
 ellas que el `--check` siga dando 0 y que no vuelva a proponer pisar «Nace
 Jesús en Belén».
 
+### Los 8 libros sin destino, resueltos
+
+Quedaban 8 libros que el guard rechazaba. Al buscarles candidatos reales en el
+CSV resultó que no eran 8 ids corridos, sino un **desajuste estructural**:
+cuatro filas del CSV son compuestas —un suceso cubre varios libros— y el
+catálogo tiene una entrada por libro, así que una fila no puede ser reclamada
+por dos.
+
+| Fila | Cubre |
+|---|---|
+| 340 | «Moisés completa Éxodo y Levítico» → Éxodo + Levítico |
+| 364 | «Se completan los libros de 1 y 2 Reyes y Jeremías» → Reyes + Jeremías |
+| 370 | «Esdras completa 1 y 2 Crónicas y Esdras; compilación final de los Salmos» → Crónicas + Esdras + Salmos |
+| 380 | «Juan escribe el Evangelio llamado 'Juan' y sus cartas 1, 2 y 3 Juan» → Juan + 1/2/3 Juan |
+
+Lo mismo pasa en las cartas: la 160 es «Pablo escribe 1 Corintios desde Éfeso,
+y 2 Corintios…» con `libro=2 CORINTIOS`, y la 175 «Desde Roma Pablo escribe:
+Efesios, Filipenses, Colosenses…» con `libro=COLOSENSES`. La columna `libro`
+solo nombra uno, y por eso «1 CORINTIOS» y «EFESIOS» no figuran como valor en
+ninguna fila. No es un problema: los sucesos quedan igual etiquetados.
+
+**Se mapeó un libro por fila compuesta** —Levítico→340 (su referencia,
+`Lev. 27:34`, es la de esa fila), Jeremías→364 (coincide con su columna `libro`)
+y Juan→380 (mismo patrón que Mateo→377, Marcos→379 y Lucas→194)—. Eso llenó los
+dos `lugar_antiguo` que faltaban: «Desierto» en la 340 y «Judá / Egipto» en la
+364.
+
+Los cuatro que no se quedan con la fila se declaran con un campo nuevo,
+`comparte_fila`, en vez de dejarles un `match_id` falso. Importa porque el
+mensaje de rechazo mentía: decía «no es un suceso de redacción (tipo=milagro)»
+cuando la verdad es «Éxodo comparte la fila 340 con Levítico». Un libro con
+`comparte_fila` no se fusiona ni se crea: ya está representado.
+
+**Malaquías era el único libro profético sin suceso de redacción.** Los otros
+once tienen exactamente uno; Malaquías solo tenía la 185, «Profecía de
+Malaquías» (`tipo=profecía`), que el guard rechaza con razón. Se le creó el
+suyo, la fila **439**, con los mismos temas que Ageo y Zacarías
+(`AT-PROF-MENORES`, `PROFETAS`, `RESTAURACION`).
+
+Nació con el nombre de la tabla («Malaquías completado») y una descripción
+generada, así que `scripts/fix_csv_malaquias.py` lo alineó al estilo de sus
+hermanos: «Malaquías completa el libro de Malaquías», con la descripción
+tomada textual de la 185 para no inventar contenido. El `nombre` del catálogo
+se cambió también, para que una creación futura ya salga bien.
+
+Estado: `--check` reporta **0 en los cinco contadores**, incluidos «sin destino
+válido» y «sin fila», que antes eran 8 y 1.
+
+### Nahúm fuera del carril de Profetas por una tilde
+
+Verificando lo anterior apareció que Nahúm (187) tenía solo el tema `REYES`,
+mientras sus once hermanos tienen `AT-PROF-MENORES`, `PROFETAS` y su época. En
+el CSV la fila es indistinguible de la de Sofonías: misma era, mismo
+`tipo_suceso`, fecha análoga.
+
+La causa era una tilde. La columna `libro` del CSV escribe **«NAHÚM»**, pero la
+lista de profetas estaba escrita **«NAHUM»** en dos lugares —
+`curacion/escritura_categorias.json` y la condición de `PROFETAS` en
+`scripts/gen_timeline.py`—, así que el `in` no acertaba nunca. Corregidos los
+dos, Nahúm quedó igual que sus hermanos y el suceso 356 («Nínive cae ante los
+caldeos»), cuyo `libro` también es NAHÚM, ganó `PROFETAS`, que es coherente con
+cómo se comporta la regla para el resto de los libros proféticos.
+
+Los cuatro auditores de `audit_event_themes.js` siguen en 0 hallazgos.
+
 ## Sello de caché de los datos generados
 
 `DETAIL_URL` estaba clavado en `linea-tiempo-detalle.json?v=1` desde siempre y

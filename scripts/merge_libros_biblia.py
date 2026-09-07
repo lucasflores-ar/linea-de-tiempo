@@ -399,9 +399,19 @@ def main():
     cambios = []
     rechazados = []
     faltantes = []
+    compartidas = []
 
     for book in LIBROS:
         clave = book['clave']
+        # Cuatro filas del CSV son compuestas: un suceso cubre varios libros
+        # («Moisés completa Éxodo y Levítico», «Esdras completa 1 y 2 Crónicas
+        # y Esdras; compilación final de los Salmos»). Como una fila solo puede
+        # ser reclamada por un libro, los demás se declaran acá. No hay que
+        # fusionarlos ni crearlos: ya están representados.
+        if (book.get('comparte_fila') or '').strip():
+            compartidas.append((clave, book['comparte_fila']))
+            print(f"  comparte {clave} -> fila {book['comparte_fila']}")
+            continue
         rechazos = []
         primary, how = find_primary(rows, book, by_id, claimed, rechazos)
         if not primary and rechazos:
@@ -469,6 +479,11 @@ def main():
             for clave, motivos in rechazados:
                 for _, hid, motivo in motivos:
                     print(f'  {clave:<16} id {hid}: {motivo}')
+        if compartidas:
+            print(f'\n[check] {len(compartidas)} libro(s) que comparten fila con'
+                  ' otro y ya están representados:')
+            for clave, fila in compartidas:
+                print(f'  {clave:<16} -> fila {fila}')
         if faltantes:
             print('\n[check] sin suceso de redacción que fusionar'
                   ' (con --crear-faltantes se crearían):')
