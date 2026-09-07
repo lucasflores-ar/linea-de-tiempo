@@ -125,8 +125,11 @@ def temas_de(h):
     # Hechos cita a Enoc y Abrahán; Daniel profetiza sobre el año 36 E.C.: en esos
     # casos el libro de la referencia no debe decidir la época.
     ec = es_era_ec(h)
-    li_at = '' if ec else li          # libro solo aporta temas del AT si la era es del AT
-    li_nt = li if ec else ''          # ...y temas del NT si la era es del siglo I
+    # Los marcadores de potencias mundiales se dibujan en su propia tira, y el
+    # libro que los menciona (Daniel, Apocalipsis, Hechos) no marca su época.
+    contexto = tipo == 'contexto'
+    li_at = '' if (ec or contexto) else li   # libro aporta temas del AT solo si la era es del AT
+    li_nt = li if (ec and not contexto) else ''  # ...y del NT solo si es del siglo I
 
     # capa de ESCRITURA: hechos de redacción de libros canónicos (AT y NT por categoría)
     if tipo.startswith('redacc'):
@@ -176,7 +179,7 @@ def temas_de(h):
         # Un suceso del siglo I sin libro reconocible sigue siendo del siglo I;
         # dejarlo en OTROS lo volvía invisible en todos los carriles. Las
         # potencias mundiales son marcadores de contexto y se dibujan aparte.
-        t.add('SIGLO-PRIMERO' if (ec and tipo != 'contexto') else 'OTROS')
+        t.add('SIGLO-PRIMERO' if (ec and not contexto) else 'OTROS')
     return sorted(t)
 
 # ---------------- preguntas por hecho ----------------

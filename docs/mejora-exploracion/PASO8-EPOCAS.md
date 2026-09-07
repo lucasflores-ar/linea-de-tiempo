@@ -2,12 +2,16 @@
 
 ## Síntoma
 
-En el carril **Profetas** aparecían dos sucesos del siglo I:
+En el carril **Profetas** aparecían sucesos que no son proféticos. Los dos
+primeros son los que motivaron la revisión; el resto salió de la auditoría:
 
 | id | Año | Suceso | Dónde corresponde |
 |---|---|---|---|
 | 209 | 29 E.C. | Primeros discípulos de Jesús | Ministerio de Jesús |
-| 140 | 36 E.C. | Fin de las 70 semanas de años; Pedro visita a Cornelio | Siglo primero |
+| 140 | 36 E.C. | Fin de las 70 semanas; Pedro visita a Cornelio | Siglo primero |
+| 51 | 1063 a.E.C. | Amistad de David y Jonatán | Un solo reino |
+| 53 | 1077 a.E.C. | Muerte de Saúl | Un solo reino |
+| 372 | 332 a.E.C. | Grecia, quinta potencia mundial, gobierna a Judea | tira de potencias |
 
 ## Causa
 
@@ -16,12 +20,17 @@ señales que no dicen *cuándo* ocurrió el suceso:
 
 1. **El libro de la referencia bíblica.** Es el libro que *narra o profetiza* el
    suceso, no el de su época. Daniel profetiza sobre el año 36 E.C., así que el
-   suceso de Cornelio heredaba `EXILIO` y `PROFETAS`. En sentido inverso, Hechos
-   cita a Enoc, Abrahán y Samuel, así que esos sucesos del AT heredaban `HECHOS`.
+   suceso de Cornelio heredaba `EXILIO` y `PROFETAS`, y el de Grecia heredaba lo
+   mismo. En sentido inverso, Hechos cita a Enoc, Abrahán y Samuel, así que esos
+   sucesos del AT heredaban `HECHOS`. Un caso más raro: la regla que manda los
+   libros poéticos a `REYES` si la era es MONARQUÍA y a `GENESIS` si no, le puso
+   `GENESIS` al suceso 357 (Babilonia como tercera potencia) porque su
+   referencia está en Proverbios.
 
 2. **Coincidencia por subcadena en los personajes.** La regla que marca como
-   profeta a quien menciona a `NATÁN` se activaba con **Nata**nael, uno de los
-   primeros discípulos de Jesús.
+   profeta a quien menciona a `NATÁN` se activaba con dos nombres que la
+   contienen: **Nata**nael (uno de los primeros discípulos de Jesús) y
+   Jo**natán** (de ahí «Amistad de David y Jonatán» y «Muerte de Saúl»).
 
 Además, ningún suceso recibía tema por el solo hecho de ser de era E.C.: las
 reglas del NT dependían del libro. Un suceso del siglo I sin libro reconocible
@@ -39,11 +48,13 @@ El tema de época se deriva de la era del suceso:
 
 - `li_at` (libro que aporta temas del AT) queda vacío si la era es E.C.
 - `li_nt` (libro que aporta temas del NT) queda vacío si la era es del AT.
-- `menciona_persona()` compara por palabra completa, así `Natanael` ya no activa
-  `Natán`.
+- En los `tipo: contexto` (marcadores de potencias mundiales, que se dibujan en
+  su propia tira) el libro no aporta ningún tema, ni del AT ni del NT: Daniel,
+  Apocalipsis y Hechos los mencionan sin marcar su época.
+- `menciona_persona()` compara por palabra completa, así `Natanael` y `Jonatán`
+  ya no activan `Natán`.
 - Sin ningún tema, un suceso de era E.C. cae en `SIGLO-PRIMERO` en vez de
-  `OTROS` (salvo los `tipo: contexto`, que son marcadores de potencias
-  mundiales y se dibujan aparte).
+  `OTROS`, salvo los de contexto.
 
 La era del CSV es la autoridad, no el signo del año: los sucesos de la natividad
 están fechados en 3–1 a. E. C. pero su era es `E.C.` y pertenecen al siglo I.
@@ -51,7 +62,7 @@ están fechados en 3–1 a. E. C. pero su era es `E.C.` y pertenecen al siglo I.
 **2. Datos (`scripts/fix_event_themes.js`).**
 La base ya generada se corrigió con un parche quirúrgico e idempotente, porque
 regenerar `linea-tiempo-datos.js` requiere los CSV de la base externa. Reescribe
-solo el array `t` de 10 sucesos, conservando el formato del archivo, y verifica
+solo el array `t` de 14 sucesos, conservando el formato del archivo, y verifica
 que el resultado parsee y mantenga el orden y la cantidad de sucesos.
 
 ```
@@ -62,6 +73,8 @@ node scripts/fix_event_themes.js
 | Sucesos | Cambio | Efecto |
 |---|---|---|
 | 140, 209 | temas del AT → `SIGLO-PRIMERO` | salen de Profetas, entran en Siglo primero / Ministerio |
+| 51, 53 | se quita `PROFETAS` | salen de Profetas, quedan en Un solo reino |
+| 372, 357 | temas heredados del libro → `OTROS` / `REYES` | marcadores de potencias fuera de Profetas y Génesis |
 | 377, 379 | `OTROS` → `NT-ESCRITURA`, `NT-EVANGELIOS` | dejan de ser invisibles; entran en Evangelios |
 | 4, 7, 47, 383 | se quita `HECHOS` | sucesos del AT sin tema del NT |
 | 159, 375 | se quita `HECHOS` → `OTROS` | contexto de potencias mundiales |
@@ -86,6 +99,22 @@ que el test no se desincronice del código, y verifica que:
 
 `scripts/audit_event_themes.js` es el informe legible de las mismas reglas y la
 fuente que usa el test.
+
+La verificación más fuerte es `scripts/verify_temas_generador.py`: extrae de
+`gen_timeline.py` solo las funciones de temas (sin disparar el pipeline, que
+reescribiría los datos del repo), las corre sobre el CSV de origen y compara
+suceso por suceso con `linea-tiempo-datos.js`. Si da **OK**, el generador y el
+CSV ya producen los datos parcheados, así que una regeneración no reintroduce
+los errores y `fix_event_themes.js` quedó redundante. El test la ejecuta y la
+omite si no hay Python o no se alcanza la base externa.
+
+```
+python scripts/verify_temas_generador.py
+```
+
+Esta verificación fue la que encontró los sucesos 51, 53, 357 y 372: el parche
+inicial cubría solo los cruces entre eras, y estos son errores dentro del mismo
+lado de la cronología.
 
 Verificación en navegador: con `#filas=pro` el carril Profetas solo muestra
 sucesos a. E. C.; con `#filas=sig,jes` aparecen los sucesos 140, 209 y 377.
@@ -121,11 +150,33 @@ node scripts/fix_mateo_perfil.js
 El `lugar` de 194 quedó vacío en vez de «Cesarea» para no inventar contenido: el
 dato ya está en el suceso 196.
 
-**Pendiente en el origen.** El error viene de `hechos_biblicos.csv` de la base
-externa (fila 194: `descripcion` y `lugar_antiguo` son de Mateo; fila 377 los
-tiene vacíos). Mientras no se corrija ahí, una regeneración deshace el parche.
-En la misma fuente, las filas 377 y 379 tienen `libro` vacío, que es lo que las
-dejaba sin categoría de escritura.
+### Corregido también en el origen
+
+`scripts/fix_csv_evangelios.py` aplica el mismo arreglo en
+`hechos_biblicos.csv` de la base externa, para que una regeneración no lo
+deshaga. Seis celdas:
+
+- fila **377**: hereda `descripcion` y `lugar_antiguo` («Palestina») de la 194, y
+  se le completa `libro = MATEO`.
+- fila **194**: `descripcion` pasa a repetir su título y `lugar_antiguo` queda
+  vacío.
+- fila **379**: se le completa `libro = MARCOS`.
+
+Las columnas `libro` vacías de 377 y 379 eran justamente lo que las dejaba sin
+categoría de escritura y las volvía invisibles en todos los carriles; al
+completarlas, el generador produce `NT-ESCRITURA` + `NT-EVANGELIOS` por sí solo.
+
+El script reescribe el CSV completo con el módulo `csv` de Python, pero solo
+después de comprobar que ese ida y vuelta reproduce el original **byte a byte**
+(`scripts/check_csv_roundtrip.py` lo verifica por separado: CRLF con
+`QUOTE_MINIMAL` y BOM UTF-8). Hace copia de seguridad con marca de tiempo junto
+al archivo y aborta si detecta cualquier cambio fuera de las celdas previstas.
+
+```
+python scripts/check_csv_roundtrip.py
+python scripts/fix_csv_evangelios.py --check
+python scripts/fix_csv_evangelios.py
+```
 
 ## Duplicados de Evangelios — sin fusionar, por decisión
 

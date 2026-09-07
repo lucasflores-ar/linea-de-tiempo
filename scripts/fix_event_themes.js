@@ -29,6 +29,12 @@ const FIXES = [
   { id: 140, temas: ['SIGLO-PRIMERO'], porque: '36 E.C.; EXILIO/PROFETAS venían del libro Daniel (profecía de las 70 semanas), no de su época' },
   { id: 209, temas: ['SIGLO-PRIMERO'], porque: '29 E.C.; PROFETAS venía de "Natanael" activando la regla de "Natán"' },
 
+  // --- Fugas visibles: sucesos del AT que no son proféticos, en el carril Profetas ---
+  { id: 51, temas: ['REYES'], porque: 'amistad de David y Jonatán (1063 a.E.C.); PROFETAS venía de "Jonatán" activando la regla de "Natán"' },
+  { id: 53, temas: ['REYES'], porque: 'muerte de Saúl (1077 a.E.C.); PROFETAS venía de "Jonatán" activando la regla de "Natán"' },
+  { id: 372, temas: ['OTROS'], porque: 'contexto de potencia mundial (Grecia, 332 a.E.C.); PROFETAS/EXILIO venían del libro Daniel que lo profetiza' },
+  { id: 357, temas: ['REYES'], porque: 'contexto de potencia mundial (Babilonia); GENESIS venía de la regla que manda a Proverbios al Génesis si la era no es MONARQUÍA' },
+
   // --- Huérfanos: sucesos del siglo I sin tema, invisibles en todo carril ---
   { id: 377, temas: ['NT-ESCRITURA', 'NT-EVANGELIOS'], porque: 'redacción de Evangelio (41 E.C.) quedó en OTROS' },
   { id: 379, temas: ['NT-ESCRITURA', 'NT-EVANGELIOS'], porque: 'redacción de Evangelio (62 E.C.) quedó en OTROS' },

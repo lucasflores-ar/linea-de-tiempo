@@ -68,10 +68,21 @@ ok(proFuera.length === 0,
 const gen = fs.readFileSync(path.join(REPO, 'scripts/gen_timeline.py'), 'utf8');
 ok(/def menciona_persona/.test(gen),
   'gen_timeline.py compara nombres de profetas por palabra completa (evita Natanael→Natán)');
-ok(/li_at = '' if ec else li/.test(gen),
+ok(/li_at = ''\s+if\s+\(?ec\b/.test(gen),
   'gen_timeline.py no deriva temas del AT del libro cuando la era es del siglo I');
-ok(/li_nt = li if ec else ''/.test(gen),
+ok(/li_nt = li\s+if\s+\(?ec\b/.test(gen),
   'gen_timeline.py no deriva temas del NT del libro cuando la era es del AT');
+ok(/\bcontexto = tipo == 'contexto'/.test(gen),
+  'gen_timeline.py no deriva la época del libro en los marcadores de potencias mundiales');
+
+ok(!/PROFETAS/.test(temas(51)) && !/PROFETAS/.test(temas(53)),
+  '"Amistad de David y Jonatán" y "Muerte de Saúl" no están en Profetas (Jonatán activaba la regla de Natán)');
+
+const contexto = data.eventos.filter(e => e.tipo === 'contexto');
+const contextoEnCarril = contexto.filter(e => audit.lanesFor(e, scopes).includes('pro'));
+ok(contextoEnCarril.length === 0,
+  'ningún marcador de potencia mundial cae en el carril Profetas' +
+  (contextoEnCarril.length ? ' (ids: ' + contextoEnCarril.map(e => e.id).join(', ') + ')' : ''));
 
 /* --- El parche de datos es idempotente --- */
 const { spawnSync } = require('child_process');
@@ -80,6 +91,20 @@ const r = spawnSync(process.execPath, [path.join(REPO, 'scripts/fix_event_themes
 });
 ok(r.status === 0 && /Sin cambios/.test(r.stdout || ''),
   'fix_event_themes.js --check no reporta correcciones pendientes');
+
+/* --- El generador debe reproducir los datos ya parcheados --- */
+/* Necesita Python y el CSV de la base externa; si no están, se omite. */
+const v = spawnSync('python', ['-X', 'utf8', path.join(REPO, 'scripts/verify_temas_generador.py')], {
+  cwd: REPO, encoding: 'utf8',
+});
+const salida = (v.stdout || '') + (v.stderr || '');
+if (v.error || /No such file|no existe|FileNotFoundError/i.test(salida)) {
+  console.log('ok   (omitido) verificación contra el generador: falta Python o el CSV de origen');
+} else {
+  ok(v.status === 0 && /OK: el generador reproduce/.test(salida),
+    'gen_timeline.py con el CSV de origen reproduce los temas de linea-tiempo-datos.js' +
+    (v.status === 0 ? '' : '\n' + salida.trim().split('\n').slice(-8).join('\n')));
+}
 
 console.log(fails ? '\n' + fails + ' fallo(s)' : '\nTodo OK');
 process.exit(fails ? 1 : 0);
