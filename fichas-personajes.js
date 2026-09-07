@@ -163,7 +163,7 @@ window.LT_FICHAS = [
     id:17, nombre:'Noemí, Rut, Débora, Barac, Jael, Gedeón, Jefté y su hija, y Sansón', alt:'barac; debora; gedeon; jael; jefte y su hija; noemi; rut; y sanson', genero:'', tribu:'',
     profesion:'Juez', profesion_sub:'Ficha de Personaje: Jueces', profesion_2:'',
     nac:'-1450', fal:'-1120', edad:'330', era:'jue', seccion:'S1', potencia:'Egipto',
-    lugares:['Monte Tabor / Cedrón', 'Manantial de Harod', 'Belén'], hitos:['Débora y Barac (c. 1200 a. E. C.) [Jueces 4:1-5:31]', 'Gedeón y los 300 (c. 1180 a. E. C.) [Jueces 6:1-8:35]', 'Rut y Booz (c. 1100 a. E. C.) [Rut 1:1-4:22]'], rel:['Sísara (3)', 'Booz (2)'],
+    lugares:['Monte Tabor / Cedrón', 'Manantial de Harod', 'Belén'], hitos:['Débora y Barac (c. 1200 a. E. C.) [Jueces 4:1-5:31]', 'Gedeón y los 300 (c. 1180 a. E. C.) [Jueces 6:1-8:35]', 'Rut y Boaz (c. 1100 a. E. C.) [Rut 1:1-4:22]'], rel:['Sísara (3)', 'Boaz (2)'],
     primera:'-1200', ultima:'-1100',
     versiculo:'', opinion_jehova:'', opinion_ref:'', opinion_cita:'',
     cualidades:'', cualidades_refs:'', defectos:'', defectos_refs:'', leccion:'',
@@ -1331,14 +1331,14 @@ window.LT_FICHAS = [
     nq:0, nh:0, fuente:'curacion_manual'
   },
   {
-    id:135, nombre:'Booz', alt:'', genero:'M', tribu:'',
+    id:135, nombre:'Boaz', alt:'', genero:'M', tribu:'',
     profesion:'Propietario de tierras', profesion_sub:'', profesion_2:'',
     nac:'', fal:'', edad:'', era:'jue', seccion:'S1', potencia:'Egipto',
-    lugares:['Belén'], hitos:['Rut y Booz (c. 1100 a. E. C.) [Rut 1:1-4:22]'], rel:['Noemí, Rut, Débora, Barac, Jael, Gedeón, Jefté y su hija, y Sansón (2)'],
+    lugares:['Belén'], hitos:['Rut y Boaz (c. 1100 a. E. C.) [Rut 1:1-4:22]'], rel:['Noemí, Rut, Débora, Barac, Jael, Gedeón, Jefté y su hija, y Sansón (2)'],
     primera:'-1100', ultima:'-1100',
     versiculo:'Rut 2:12', opinion_jehova:'Redentor de Rut; antepasado del linaje del Mesías', opinion_ref:'Rut 4:13-22; Mateo 1:5', opinion_cita:'',
     cualidades:'Generosidad; justicia; bondad; cumplimiento de la ley del redentor', cualidades_refs:'Rut 2; Rut 4', defectos:'', defectos_refs:'', leccion:'La bondad y la lealtad a la Ley de Jehová enriquecen generaciones futuras',
-    nq:0, nh:1, fuente:'hechos_biblicos,curacion_manual'
+    nq:12, nh:1, fuente:'hechos_biblicos,preguntas,curacion_manual'
   },
   {
     id:136, nombre:'Ana', alt:'', genero:'F', tribu:'Efraín',

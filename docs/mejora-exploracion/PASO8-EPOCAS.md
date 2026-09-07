@@ -343,6 +343,51 @@ Hacerlo así y no como constante escrita en `linea-paralela.js` es lo que cierra
 el problema: ese archivo tiene su propio `?v=`, y mientras el navegador corra su
 copia cacheada seguirá pidiendo el detalle viejo por más que se regenere.
 
+## «Booz» donde el resto del proyecto dice «Boaz»
+
+`Booz` es la grafía de Reina-Valera; la Traducción del Nuevo Mundo, que es la
+que sigue el proyecto, escribe `Boaz`. El banco de preguntas ya usaba `Boaz` en
+42 celdas y la única fila que había quedado con la grafía vieja era la 44 de
+`hechos_biblicos.csv`, en `nombre` y `personajes`. De ahí salían el título del
+suceso, la ficha del personaje 135 (Boaz no está en `personajes_biblicos.csv`:
+la ficha se crea a partir de esa columna) y los hitos y relaciones de la
+ficha 17.
+
+No era solo cosmético. El enriquecido enlaza preguntas a sucesos comparando
+`norm(pregunta.personaje)` contra `norm(hecho.personajes)`, y `norm()` saca
+tildes pero no cambia letras: `boaz` nunca coincidía con `booz`. Había 12
+preguntas con `personaje='Boaz'` sin enlazar, y por eso la ficha mostraba
+0 preguntas teniéndolas.
+
+Corregido con `scripts/fix_csv_boaz.py` (idempotente, con `--check`, backup y
+verificación celda por celda) más la clave `"Booz"` de `curacion/manual.json`,
+que es la clave de join por nombre de ficha: si se renombra una sin la otra,
+`apply_curacion()` avisa «sin ficha para» y la ficha pierde sus ocho campos
+curados.
+
+Ojo con el reemplazo global: la pregunta 10144 responde «Jakín y Boaz», las
+columnas del templo. Ese `Boaz` ya estaba bien y no es esta persona, así que
+tanto este script como `fix_fichas_boaz.py` tocan celdas puntuales y abortan si
+la cadena aparece donde no se la espera.
+
+### Por qué las fichas se parchearon en vez de regenerarse
+
+`gen_fichas.py` ya produce «Boaz», pero correrlo completo arrastra cambios
+ajenos: la base externa se movió desde la última regeneración y aparecen 6
+fichas nuevas más varias fusiones y desambiguaciones («Abigaíl y Natán»,
+«María (la madre de Jesús)»). Eso corre todos los `id` hasta 6 lugares, y
+`fichas.html?id=N` es un punto de entrada compartible, así que un enlace viejo
+abriría a otra persona. Se usó `scripts/fix_fichas_boaz.py`, que renombra con
+los `id` intactos y corrige el `num_preguntas` de la ficha. **La regeneración
+completa de fichas sigue pendiente como decisión aparte.**
+
+### Sello de caché de las fichas
+
+`fichas-personajes.js` no llevaba ningún `?v=`, así que esta corrección no
+llegaba a quien ya había visitado el sitio: se verificó en vivo, el navegador
+seguía sirviendo su copia con «Booz». `gen_fichas.py` ahora estampa un sello
+sha1 del contenido en `fichas.html`, igual que `gen_timeline.py`.
+
 ## Validación
 
 `scripts/tests/test_escritura.js` (en `run_tests.js`) verifica que el perfil de

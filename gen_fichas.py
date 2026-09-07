@@ -16,7 +16,7 @@ Campos narrativos SIN dato se dejan vacíos (versiculo_clave, opinion_jehova,
 opinion_ref, opinion_cita, cualidades, cualidades_refs, defectos, defectos_refs,
 leccion, genero, tribu, profesion_2) para completarse manualmente.
 """
-import csv, os, re, unicodedata, sys
+import csv, hashlib, os, re, unicodedata, sys
 from collections import Counter
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'scripts'))
@@ -416,8 +416,35 @@ for r in rows:
     js.append('    nq:%s, nh:%s, fuente:%r\n' % (r['num_preguntas'], r['num_hitos'], r['fuente']))
     js.append('  },\n')
 js.append('];\n')
+texto_js = ''.join(js)
 with open(OUT_JS, 'w', encoding='utf-8', newline='') as f:
-    f.writelines(js)
+    f.write(texto_js)
+
+# ------------------------------------------------------- sello de caché
+# fichas-personajes.js no llevaba ningún ?v=, así que una corrección de datos
+# no llegaba a quien ya había visitado el sitio: el navegador seguía sirviendo
+# su copia. Pasó al renombrar Booz -> Boaz. Mismo mecanismo que gen_timeline.py:
+# el sello sale del contenido, así que no hay que bumpear nada a mano.
+sello = hashlib.sha1(texto_js.encode('utf-8')).hexdigest()[:8]
+SELLOS = [
+    (repo('fichas.html'),
+     r'(fichas-personajes\.js\?v=)[^"\']*', r'\g<1>' + sello),
+]
+for ruta, patron, reemplazo in SELLOS:
+    if not os.path.exists(ruta):
+        print('[warn] no encuentro para sellar:', ruta)
+        continue
+    # newline='' en lectura y escritura: si no, los CRLF del archivo se
+    # traducirían a LF y el diff serían todas las líneas en vez de una.
+    with open(ruta, encoding='utf-8', newline='') as f:
+        txt = f.read()
+    nuevo, n = re.subn(patron, reemplazo, txt, count=1)
+    if not n:
+        print('[warn] no pude sellar la version en', os.path.basename(ruta))
+    elif nuevo != txt:
+        with open(ruta, 'w', encoding='utf-8', newline='') as f:
+            f.write(nuevo)
+        print('sello de cache -> %s (%s)' % (sello, os.path.basename(ruta)))
 
 # ------------------------------------------------------------------ resumen
 con_vida = sum(1 for r in rows if r['nacimiento'] and r['fallecimiento'])
