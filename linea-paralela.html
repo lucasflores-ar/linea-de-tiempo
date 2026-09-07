@@ -907,14 +907,43 @@ html[data-viz="waterfall"] #tooltip .t-name{font-family:var(--font-sans)}
 #d-copy-link{position:absolute;right:50px;top:14px;background:var(--field);border:1px solid var(--line);
   color:var(--mut);width:30px;height:30px;border-radius:8px;cursor:pointer;font-family:inherit;
   display:inline-flex;align-items:center;justify-content:center}
-#d-copy-link:hover,#d-close:hover{color:var(--txt)}
-#d-copy-link[hidden]{display:none}
+#d-back{position:absolute;left:14px;top:14px;background:var(--field);border:1px solid var(--line);
+  color:var(--mut);height:30px;padding:0 10px;border-radius:8px;cursor:pointer;font:600 12px/1 var(--font-sans);
+  display:none;align-items:center;gap:4px;z-index:2}
+#d-back:not([hidden]){display:inline-flex}
+#d-back:hover,#d-copy-link:hover,#d-close:hover{color:var(--txt)}
+#d-copy-link[hidden],#d-back[hidden]{display:none}
 .zoom-hint{font-size:10px;color:var(--mut);opacity:.85;white-space:nowrap}
 #d-badge{display:inline-block;padding:3px 10px;font-size:10px;font-weight:700;text-transform:uppercase;
   letter-spacing:1px;border-radius:999px;color:#fff;margin-bottom:8px}
+#drawer[data-mode="list"] .d-hdr{padding-top:48px}
+#drawer[data-mode="list"] #d-title{padding-right:40px}
+#drawer[data-mode="detail"] #d-back:not([hidden]) ~ #d-badge{margin-left:0}
 #d-title{font:700 18px/1.3 var(--font-serif);padding-right:72px}
 html[data-viz="waterfall"] #d-title{font-family:var(--font-sans)}
 #d-date{font-size:12px;color:var(--mut);margin-top:4px}
+#d-explorer{display:none}
+#drawer[data-mode="list"] #d-explorer{display:block}
+#drawer[data-mode="list"] #d-detail-body{display:none}
+.tl-list__toolbar{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.tl-list__q{width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid var(--line);border-radius:8px;
+  background:var(--field);color:var(--txt);font:400 14px/1.3 var(--font-sans)}
+.tl-list__count{font-size:12px;color:var(--mut);margin:0}
+.tl-list__ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.tl-list__item{display:flex;gap:6px;align-items:stretch;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
+.tl-list__main{flex:1;min-width:0}
+.tl-list__open{width:100%;text-align:left;border:0;background:transparent;color:inherit;cursor:pointer;
+  padding:10px 12px;font:inherit;display:flex;flex-direction:column;gap:3px;border-radius:10px}
+.tl-list__open:hover,.tl-list__open:focus-visible{background:var(--hover);outline:none}
+.tl-list__year{font-size:11px;font-weight:700;color:var(--acc)}
+.tl-list__name{font-size:13px;font-weight:600;color:var(--txt);line-height:1.35;word-break:break-word}
+.tl-list__ref{font-size:11px;color:var(--mut);line-height:1.35}
+.tl-list__actions{display:flex;align-items:center;padding:6px 8px 6px 0}
+.tl-list__chart{border:1px solid var(--line);background:var(--field);color:var(--mut);border-radius:8px;
+  padding:6px 8px;font:600 11px/1 var(--font-sans);cursor:pointer;white-space:nowrap}
+.tl-list__chart:hover,.tl-list__chart:focus-visible{color:var(--txt);outline:none}
+.tl-list__empty{font-size:13px;color:var(--mut);line-height:1.5;margin:8px 0 0}
+.tl-list__clear-q{margin-left:6px;border:0;background:transparent;color:var(--acc);font:600 12px/1.3 var(--font-sans);cursor:pointer;text-decoration:underline}
 .d-body{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:20px;display:flex;flex-direction:column;gap:16px;font-size:13px;-webkit-overflow-scrolling:touch}
 .d-body::-webkit-scrollbar{width:5px}
 .d-body::-webkit-scrollbar-thumb{background:var(--thumb);border-radius:4px}
@@ -1437,8 +1466,9 @@ header {
     <label class="onboard-pop__dont"><input type="checkbox" id="onboard-dont" /> No volver a mostrar</label>
   </div>
 </div>
-<aside id="drawer" role="dialog" aria-modal="true" aria-labelledby="d-title" aria-label="Detalle">
+<aside id="drawer" role="dialog" aria-modal="true" aria-labelledby="d-title" aria-label="Detalle" data-mode="detail">
   <div class="d-hdr">
+    <button id="d-back" type="button" hidden aria-label="Volver">← Volver</button>
     <button id="d-close" type="button" aria-label="Cerrar panel">✕</button>
     <button id="d-copy-link" type="button" aria-label="Copiar enlace a este suceso" title="Copiar enlace">
       <svg class="ui-ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="10" height="10" rx="2"/><path d="M7 15V7a2 2 0 0 1 2-2h8"/></svg>
@@ -1447,7 +1477,8 @@ header {
     <h2 id="d-title">Título</h2>
     <p id="d-date"></p>
   </div>
-  <div class="d-body">
+  <div class="d-body" id="d-explorer" hidden></div>
+  <div class="d-body" id="d-detail-body">
     <div class="refbox">
       <h3>📖 Referencia bíblica</h3>
       <div id="d-ref"></div>
@@ -1485,8 +1516,9 @@ header {
 </aside>
 
 <script src="linea-tiempo-datos.js?v=14"></script>
-<script src="timeline-state.js?v=20260907b"></script>
-<script src="timeline-selectors.js?v=20260907b"></script>
-<script src="linea-paralela.js?v=20260907b"></script>
+<script src="timeline-state.js?v=20260907c"></script>
+<script src="timeline-selectors.js?v=20260907c"></script>
+<script src="timeline-list.js?v=20260907c"></script>
+<script src="linea-paralela.js?v=20260907c"></script>
 </body>
 </html>

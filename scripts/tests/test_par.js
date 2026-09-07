@@ -8,11 +8,13 @@ const DATA = JSON.parse(fs.readFileSync(path.join(REPO, 'linea-tiempo-datos.js')
 const JS = fs.readFileSync(path.join(REPO, 'linea-paralela.js'), 'utf-8');
 const STATE_JS = fs.readFileSync(path.join(REPO, 'timeline-state.js'), 'utf-8');
 const SEL_JS = fs.readFileSync(path.join(REPO, 'timeline-selectors.js'), 'utf-8');
+const LIST_JS = fs.readFileSync(path.join(REPO, 'timeline-list.js'), 'utf-8');
 
 function loadParalela(ctx){
   vm.runInContext('window.LT_DATA='+JSON.stringify(DATA)+';', ctx);
   vm.runInContext(STATE_JS, ctx);
   vm.runInContext(SEL_JS, ctx);
+  vm.runInContext(LIST_JS, ctx);
   vm.runInContext(fs.readFileSync(path.join(REPO, 'fichas-personajes.js'), 'utf-8'), ctx);
   vm.runInContext(JS, ctx, {timeout:8000});
 }
