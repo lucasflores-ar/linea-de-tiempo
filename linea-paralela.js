@@ -593,13 +593,16 @@ function markerNameInset(pe, barX, yMin, yMax, chartW){
     ? '600 11px Inter, "Segoe UI", sans-serif'
     : '600 11px "Libre Baskerville", Georgia, serif';
   const nameW = textWidth(pe.n, nameFont);
-  const half = 9;
   const gap = 5;
   const maxInset = CAPTION_MAX_PX;
   let inset = 0;
-  for(const ev of eventsForPerson(pe, yMin, yMax)){
-    const mx = yearToX(chartYear(ev) ?? ev.fa, yMin, yMax, chartW);
-    const rel = mx - barX;
+  /* Se recorre la misma agrupación que dibuja los marcadores, no los sucesos
+     en crudo: un agregado va en la x media de sus miembros y es más ancho que
+     un marcador suelto, así que medirlo como si fuera de 15px dejaba su
+     insignia encima del nombre del personaje. */
+  for(const g of groupRowMarkers(eventsForPerson(pe, yMin, yMax), yMin, yMax, chartW)){
+    const half = (g.miembros.length > 1 ? MARKER_AGG_PX : MARKER_HIT_PX) / 2 + 2;
+    const rel = g.x - barX;
     if(rel > maxInset) continue;
     const mLeft = rel - half;
     const mRight = rel + half;
@@ -611,15 +614,75 @@ function markerNameInset(pe, barX, yMin, yMax, chartW){
   return Math.min(inset, maxInset);
 }
 
+/* Espejo del CSS: .evt-marker--in-row mide 15px, y en punteros gruesos un
+   ::before con inset -18px le suma 18px por lado, o sea 51px de zona táctil.
+   Dos marcadores más cerca que eso pelean por el mismo gesto. */
+const MARKER_HIT_PX = 15;
+const MARKER_TOUCH_INSET = 18;
+const MARKER_MIN_GAP_PX = 3;
+/* Un agregado lleva su insignia con el número de miembros, así que es más
+   ancho que un marcador suelto. Medido en el navegador: 28px. */
+const MARKER_AGG_PX = 28;
+
+function markerHitWidth(){
+  const grueso = typeof isCoarsePointer === 'function' && isCoarsePointer();
+  return MARKER_HIT_PX + (grueso ? MARKER_TOUCH_INSET * 2 : 0);
+}
+
+/**
+ * Agrupa los marcadores de una barra que se pisarían entre sí.
+ *
+ * Los marcadores se proyectaban directo sobre la barra sin mirar si el lugar
+ * ya estaba ocupado. Como miden 15px y van centrados en su fecha, dos sucesos
+ * de años cercanos quedaban uno encima del otro y el clic se lo llevaba el que
+ * el navegador dejó arriba: en Reyes a 1920px, apuntar a «Ezequías y
+ * Senaquerib» (id 75) abría «Senaquerib invade a Judá» (id 354).
+ *
+ * No se mueve ninguna fecha X: los que comparten lugar pasan a ser un solo
+ * control agregado que abre la lista de sus miembros, así que cada suceso
+ * mostrado individualmente tiene una zona exclusiva.
+ */
+function groupRowMarkers(evs, yMin, yMax, chartW){
+  const puntos = (evs || [])
+    .map(ev=> ({ ev, x: yearToX(chartYear(ev) ?? ev.fa, yMin, yMax, chartW) }))
+    .filter(p=> Number.isFinite(p.x))
+    .sort((a, b)=> a.x - b.x);
+  const minSep = markerHitWidth() + MARKER_MIN_GAP_PX;
+  const grupos = [];
+  for(const p of puntos){
+    const ult = grupos[grupos.length - 1];
+    /* Se compara contra el último miembro, no contra el centro del grupo: así
+       una hilera de sucesos escalonados se encadena en un solo agregado en vez
+       de dejar pares que se siguen pisando. */
+    if(ult && p.x - ult.ultimoX < minSep){
+      ult.miembros.push(p.ev);
+      ult.ultimoX = p.x;
+    } else {
+      grupos.push({ miembros: [p.ev], ultimoX: p.x, primeroX: p.x });
+    }
+  }
+  for(const g of grupos) g.x = (g.primeroX + g.ultimoX) / 2;
+  return grupos;
+}
+
 function renderRowEventMarkers(pe, yMin, yMax, chartW, q){
   if(!showMarkers || pe.isEvent) return '';
   if(q && !norm(pe.n).includes(q)) return '';
   let html = '';
-  for(const ev of eventsForPerson(pe, yMin, yMax)){
-    const mx = yearToX(chartYear(ev) ?? ev.fa, yMin, yMax, chartW);
-    const mkColor = markerColorFor(ev);
-    html += `<div class="evt-marker evt-marker--in-row" style="left:${mx}px;--mk-color:${mkColor}" data-ev="${ev.id}" tabindex="0" role="button" aria-label="${esc(ev.n)}">`+
-      `<span class="evt-marker__tip">${esc(ev.n)}</span></div>`;
+  for(const g of groupRowMarkers(eventsForPerson(pe, yMin, yMax), yMin, yMax, chartW)){
+    if(g.miembros.length === 1){
+      const ev = g.miembros[0];
+      const mkColor = markerColorFor(ev);
+      html += `<div class="evt-marker evt-marker--in-row" style="left:${g.x}px;--mk-color:${mkColor}" data-ev="${ev.id}" tabindex="0" role="button" aria-label="${esc(ev.n)}">`+
+        `<span class="evt-marker__tip">${esc(ev.n)}</span></div>`;
+      continue;
+    }
+    /* Comparten lugar: un único control, identificado como agregado. */
+    const ids = g.miembros.map(e=> e.id).join(',');
+    const label = g.miembros.length + ' sucesos próximos';
+    html += `<div class="evt-marker evt-marker--in-row evt-marker--agg" style="left:${g.x}px;--mk-color:var(--acc)" data-agg-ids="${esc(ids)}" tabindex="0" role="button" aria-label="${esc(label)}">`+
+      `<span class="evt-marker__agg-badge">${g.miembros.length}</span>`+
+      `<span class="evt-marker__tip">${esc(label)}</span></div>`;
   }
   return html;
 }
