@@ -948,14 +948,23 @@ html[data-viz="waterfall"] #d-title{font-family:var(--font-sans)}
 .dmeta{display:grid;grid-template-columns:auto 1fr;gap:5px 12px;font-size:12px}
 .dmeta .k{color:var(--mut)}
 .rel-edge{display:flex;gap:8px;align-items:flex-start;padding:7px 9px;border:1px solid var(--line);
-  border-radius:9px;background:var(--field);cursor:pointer;margin-bottom:6px;transition:border-color .12s}
+  border-radius:9px;background:var(--field);cursor:pointer;margin-bottom:6px;transition:border-color .12s;
+  text-align:left;width:100%;font:inherit;color:inherit}
+button.rel-edge{appearance:none;-webkit-appearance:none;margin:0}
 .rel-edge:hover{border-color:var(--acc)}
+.rel-edge:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
 .rel-edge .rt{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;
   border-radius:6px;padding:2px 6px;flex-shrink:0;margin-top:1px}
 .rel-edge.rt-causa .rt{background:rgba(168,132,58,.15);color:var(--c-egi)}
 .rel-edge.rt-paralelo .rt{background:rgba(74,122,85,.15);color:var(--c-pat)}
 .rel-edge .rn{font-weight:700;color:var(--txt)}
 .rel-edge .rnota{font-size:11px;color:var(--mut);margin-top:2px;line-height:1.4}
+.d-retry{
+  margin-top:8px;border:1px solid var(--line);background:var(--field);color:var(--txt);
+  border-radius:8px;padding:8px 12px;font:600 12px/1.2 var(--font-sans);cursor:pointer;
+}
+.d-retry:hover{border-color:var(--acc)}
+.d-retry:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
 .qa{border-top:1px solid var(--line);padding-top:12px}
 .qa .q{font-size:12px;margin:6px 0;padding:9px 10px;background:var(--field);border-radius:8px}
 .qa .q small{display:block;color:var(--acc);margin-top:5px;font-size:12px;line-height:1.45;font-weight:500}
@@ -1476,6 +1485,6 @@ header {
 </aside>
 
 <script src="linea-tiempo-datos.js?v=14"></script>
-<script src="linea-paralela.js?v=20260903ai"></script>
+<script src="linea-paralela.js?v=20260907a"></script>
 </body>
 </html>

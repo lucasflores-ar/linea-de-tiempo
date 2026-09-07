@@ -2,53 +2,90 @@
 'use strict';
 const D = window.LT_DATA;
 D.preguntas = D.preguntas || [];
-let detailLoaded = !D._detailDeferred;
+let detailStatus = D._detailDeferred ? 'idle' : 'ready'; /* idle|loading|ready|error */
+let detailError = null;
 let detailPromise = null;
+let detailRequestId = 0;
+let drawerSelectId = 0;
 const DETAIL_URL = 'linea-tiempo-detalle.json?v=1';
 
 function ensureDetailLoaded(){
-  if(detailLoaded) return Promise.resolve();
-  if(!detailPromise){
-    detailPromise = fetch(DETAIL_URL)
-      .then(r=>{
-        if(!r.ok) throw new Error('detalle HTTP ' + r.status);
-        return r.json();
-      })
-      .then(det=>{
-        if(det.preguntas?.length) D.preguntas = det.preguntas;
-        for(const ed of det.eventosDetail || []){
-          const ev = D.eventos.find(e=>e.id === ed.id);
-          if(ev) Object.assign(ev, ed);
-        }
-        detailLoaded = true;
-      })
-      .catch(err=>{
-        console.warn('[linea-paralela] No se pudo cargar detalle:', err);
-        detailLoaded = true;
-      });
-  }
+  if(detailStatus === 'ready') return Promise.resolve({ ok: true });
+  if(detailStatus === 'loading' && detailPromise) return detailPromise;
+  detailStatus = 'loading';
+  detailError = null;
+  const reqId = ++detailRequestId;
+  detailPromise = fetch(DETAIL_URL)
+    .then(r=>{
+      if(!r.ok) throw new Error('detalle HTTP ' + r.status);
+      return r.json();
+    })
+    .then(det=>{
+      if(reqId !== detailRequestId) return { ok: false, stale: true };
+      if(det.preguntas?.length) D.preguntas = det.preguntas;
+      for(const ed of det.eventosDetail || []){
+        const ev = D.eventos.find(e=>e.id === ed.id);
+        if(ev) Object.assign(ev, ed);
+      }
+      detailStatus = 'ready';
+      detailError = null;
+      return { ok: true };
+    })
+    .catch(err=>{
+      if(reqId !== detailRequestId) return { ok: false, stale: true };
+      console.warn('[linea-paralela] No se pudo cargar detalle:', err);
+      detailStatus = 'error';
+      detailError = err;
+      detailPromise = null;
+      return { ok: false, error: err };
+    });
   return detailPromise;
 }
 
+function resetDetailLoad(){
+  detailStatus = 'idle';
+  detailError = null;
+  detailPromise = null;
+  detailRequestId++;
+}
+
+let fichasStatus = 'idle'; /* idle|loading|ready|error */
 let fichasPromise = null;
 function ensureFichasLoaded(){
   if(typeof window !== 'undefined' && window.LT_FICHAS && window.LT_FICHAS.length){
-    return Promise.resolve();
+    fichasStatus = 'ready';
+    return Promise.resolve({ ok: true });
   }
-  if(fichasPromise) return fichasPromise;
+  if(fichasStatus === 'ready') return Promise.resolve({ ok: true });
+  if(fichasStatus === 'loading' && fichasPromise) return fichasPromise;
+  fichasStatus = 'loading';
   fichasPromise = new Promise(resolve=>{
-    if(typeof document === 'undefined' || !document.createElement){ resolve(); return; }
+    if(typeof document === 'undefined' || !document.createElement){
+      fichasStatus = 'ready';
+      resolve({ ok: true });
+      return;
+    }
     const s = document.createElement('script');
     s.src = 'fichas-personajes.js';
     s.async = true;
-    s.onload = ()=> resolve();
+    s.onload = ()=>{
+      fichasStatus = (window.LT_FICHAS && window.LT_FICHAS.length) ? 'ready' : 'error';
+      if(fichasStatus === 'error') fichasPromise = null;
+      resolve({ ok: fichasStatus === 'ready' });
+    };
     s.onerror = ()=>{
       console.warn('[linea-paralela] No se pudieron cargar las fichas de personajes');
-      resolve();
+      fichasStatus = 'error';
+      fichasPromise = null;
+      resolve({ ok: false, error: new Error('fichas') });
     };
     (document.head || document.body || document.documentElement).appendChild(s);
   });
   return fichasPromise;
+}
+function resetFichasLoad(){
+  fichasStatus = 'idle';
+  fichasPromise = null;
 }
 let pxPerYear = parseFloat(localStorage.getItem('lt-par-zoom')) || 2.4;
 const PREFS_INIT_KEY = 'lt-par-init-v';
@@ -587,7 +624,10 @@ function computeChartWidth(span, span2){
 }
 
 function updateZoomUi(span2, chartW){
-  const effective = span2 > 0 ? span2 / chartW : pxPerYear;
+  /* yearsPerPixel = span/chartW; pixelsPerYear = chartW/span. Los umbrales
+     existentes en layout usan yearsPerPixel (valores bajos = más zoom). */
+  const yearsPerPixel = span2 > 0 ? span2 / chartW : (pxPerYear > 0 ? 1 / pxPerYear : 1);
+  const pixelsPerYear = yearsPerPixel > 0 ? 1 / yearsPerPixel : pxPerYear;
   const fitsViewport = chartW <= viewportChartWidth() + 2;
   fitBtn.classList.toggle('on', autoFit);
   fitBtn.setAttribute('aria-pressed', autoFit ? 'true' : 'false');
@@ -596,14 +636,14 @@ function updateZoomUi(span2, chartW){
   zoomEl.disabled = false;
   chartScroll.classList.toggle('fit-width', autoFit && fitsViewport);
   if(autoFit){
-    zoomVal.textContent = effective.toFixed(2) + ' px/año · auto' + (fitsViewport ? '' : ' · desplaza →');
-    const clamped = Math.min(8, Math.max(0.8, effective));
+    zoomVal.textContent = pixelsPerYear.toFixed(2) + ' px/año · auto' + (fitsViewport ? '' : ' · desplaza →');
+    const clamped = Math.min(8, Math.max(0.8, pixelsPerYear));
     zoomEl.value = clamped;
   } else {
     zoomEl.value = pxPerYear;
     zoomVal.textContent = pxPerYear.toFixed(1) + ' px/año';
   }
-  return effective;
+  return yearsPerPixel;
 }
 
 function isFullFocusRange(min, max, dataMin, dataMax){
@@ -2254,17 +2294,38 @@ function bindHoverTip(el, showFn){
     hideTip();
   });
 }
+let ptrGesture = null;
+const PAN_CANCEL_PX = 10;
+function trackPtrGestureStart(e){
+  if(e.pointerType === 'mouse' && e.button !== 0) return;
+  ptrGesture = { x: e.clientX, y: e.clientY, moved: false, id: e.pointerId };
+}
+function trackPtrGestureMove(e){
+  if(!ptrGesture || (ptrGesture.id != null && e.pointerId !== ptrGesture.id)) return;
+  if(Math.hypot(e.clientX - ptrGesture.x, e.clientY - ptrGesture.y) > PAN_CANCEL_PX){
+    ptrGesture.moved = true;
+  }
+}
+function trackPtrGestureEnd(){
+  /* Se limpia en el siguiente down; moved se consulta en el click. */
+}
+function pointerWasPan(){
+  return !!(ptrGesture && ptrGesture.moved);
+}
+if(typeof window !== 'undefined'){
+  window.addEventListener('pointerdown', trackPtrGestureStart, true);
+  window.addEventListener('pointermove', trackPtrGestureMove, true);
+  window.addEventListener('pointerup', trackPtrGestureEnd, true);
+  window.addEventListener('pointercancel', trackPtrGestureEnd, true);
+}
+
 function activateWithTouchTip(key, e, el, showTipFn, openFn){
   if(isCoarsePointer()){
     if(e){ e.preventDefault(); e.stopPropagation(); }
-    if(touchTipKey === key){
-      hideTip();
-      openFn();
-      return;
-    }
-    touchTipKey = key;
-    showTipFn();
-    if(el) anchorTipTo(el);
+    /* Un toque abre; si hubo arrastre, no activar. */
+    if(pointerWasPan()) return;
+    hideTip();
+    openFn();
     return;
   }
   openFn();
@@ -2392,16 +2453,77 @@ function formatPersonRef(ref){
   }).join('');
 }
 
-function openDrawer(ev){
-  if(!ev || !drawer) return;
-  hideTip();
-  openDrawerFill(ev);
-  ensureDetailLoaded().then(()=>{
-    if(openDrawerId === 'e' + ev.id) openDrawerFill(ev);
+function bindRelEdgeControls(container, onJump){
+  if(!container) return;
+  container.querySelectorAll('.rel-edge').forEach(el=>{
+    const activate = ()=>{
+      const id = parseInt(el.dataset.jump, 10);
+      if(!Number.isFinite(id)) return;
+      onJump(id);
+    };
+    el.addEventListener('click', e=>{
+      e.preventDefault();
+      activate();
+    });
+    el.addEventListener('keydown', e=>{
+      if(e.key === 'Enter' || e.key === ' '){
+        e.preventDefault();
+        activate();
+      }
+    });
   });
 }
 
-function openDrawerFill(ev){
+function relEdgeButtonHtml(opts){
+  const tipo = opts.tipo || 'paralelo';
+  const jump = opts.jump;
+  const rt = opts.rtLabel || '';
+  const name = opts.name || '';
+  const nota = opts.nota ? '<div class="rnota">'+esc(opts.nota)+'</div>' : '';
+  return `<button type="button" class="rel-edge rt-${tipo}" data-jump="${jump}" aria-label="${esc(opts.aria || name)}">`+
+    `<span class="rt">${esc(rt)}</span>`+
+    `<div><span class="rn">${esc(name)}</span>${nota}</div>`+
+    `</button>`;
+}
+
+function detailStatusHtml(kind, retryId){
+  if(kind === 'loading'){
+    return '<p class="ph" role="status">Cargando detalle…</p>';
+  }
+  if(kind === 'error'){
+    return '<p class="ph" role="alert">No se pudo cargar el detalle ampliado.</p>'+
+      '<p><button type="button" class="d-retry" id="'+retryId+'">Reintentar</button></p>';
+  }
+  return '';
+}
+
+function bindDetailRetry(btnId, retryFn){
+  const btn = document.getElementById(btnId);
+  if(!btn) return;
+  btn.addEventListener('click', e=>{
+    e.preventDefault();
+    retryFn();
+  });
+}
+
+function openDrawer(ev){
+  if(!ev || !drawer) return;
+  hideTip();
+  const selectId = ++drawerSelectId;
+  openDrawerFill(ev, { loadState: detailStatus === 'ready' ? 'ready' : 'loading' });
+  ensureDetailLoaded().then(res=>{
+    if(selectId !== drawerSelectId) return;
+    if(openDrawerId !== 'e' + ev.id) return;
+    if(res && res.ok === false && !res.stale){
+      openDrawerFill(ev, { loadState: 'error' });
+      return;
+    }
+    openDrawerFill(ev, { loadState: 'ready' });
+  });
+}
+
+function openDrawerFill(ev, opts = {}){
+  const loadState = opts.loadState || (detailStatus === 'ready' ? 'ready' : detailStatus === 'error' ? 'error' : 'loading');
   const col = drawerColOf(ev);
   document.getElementById('d-badge').textContent = drawerEraKey(ev.era);
   document.getElementById('d-badge').style.background = col.color;
@@ -2415,11 +2537,21 @@ function openDrawerFill(ev){
   refEl.textContent = ev.ref ? ('“' + ev.ref + '”') : 'Sin referencia registrada.';
   refEl.className = '';
   const descEl = document.getElementById('d-desc');
-  const desc = ev.d || 'Sin descripción.';
-  if(desc.includes('\n\n')){
-    descEl.innerHTML = desc.split('\n\n').map(p=>'<p>'+esc(p.trim())+'</p>').join('');
+  if(loadState === 'loading' && !ev.d){
+    descEl.innerHTML = detailStatusHtml('loading');
+  } else if(loadState === 'error' && !ev.d){
+    descEl.innerHTML = detailStatusHtml('error', 'd-retry-detail');
+    bindDetailRetry('d-retry-detail', ()=>{
+      resetDetailLoad();
+      openDrawer(ev);
+    });
   } else {
-    descEl.textContent = desc;
+    const desc = ev.d || 'Sin descripción.';
+    if(desc.includes('\n\n')){
+      descEl.innerHTML = desc.split('\n\n').map(p=>'<p>'+esc(p.trim())+'</p>').join('');
+    } else {
+      descEl.textContent = desc;
+    }
   }
   document.getElementById('d-char').innerHTML = (ev.per || '—').split(/[,/]/).filter(Boolean)
     .map(c=>'<span class="chip">'+esc(c.trim())+'</span>').join('');
@@ -2443,16 +2575,17 @@ function openDrawerFill(ev){
   relSec.querySelector('h3').textContent = 'Relaciones con otros sucesos';
   if(allRels.length){
     relSec.style.display = 'block';
-    relEl.innerHTML = allRels.map(r=>`
-      <div class="rel-edge rt-${r.tipo}" data-jump="${r.otro}">
-        <span class="rt">${DRAWER_REL_LABEL[r.tipo]||r.tipo} ${r.dir}</span>
-        <div><span class="rn">${esc(drawerRelNombre(r.otro))}</span>${r.nota?'<div class="rnota">'+esc(r.nota)+'</div>':''}</div>
-      </div>`.replace(/\s+/g,' ')).join('');
-    relEl.querySelectorAll('.rel-edge').forEach(el=>{
-      el.onclick = ()=>{
-        const ev2 = D.eventos.find(x=>x.id === parseInt(el.dataset.jump, 10));
-        if(ev2) openDrawer(ev2);
-      };
+    relEl.innerHTML = allRels.map(r=> relEdgeButtonHtml({
+      tipo: r.tipo,
+      jump: r.otro,
+      rtLabel: (DRAWER_REL_LABEL[r.tipo]||r.tipo) + ' ' + r.dir,
+      name: drawerRelNombre(r.otro),
+      nota: r.nota,
+      aria: 'Abrir ' + drawerRelNombre(r.otro),
+    })).join('');
+    bindRelEdgeControls(relEl, id=>{
+      const ev2 = D.eventos.find(x=>x.id === id);
+      if(ev2) openDrawer(ev2);
     });
   } else {
     relSec.style.display = 'none';
@@ -2465,14 +2598,28 @@ function openDrawerFill(ev){
   const qs = (D.preguntas || []).filter(p=>p.hid === ev.id);
   const listEl = document.getElementById('d-qlist');
   const moreEl = document.getElementById('d-more');
-  document.getElementById('d-qcount').textContent = 'Preguntas vinculadas: ' + qs.length;
-  listEl.innerHTML = renderQuestionList(qs, 8) ||
-    '<p class="ph">Sin preguntas vinculadas aún — la curación sigue en proceso.</p>';
-  moreEl.style.display = qs.length > 8 ? 'block' : 'none';
-  moreEl.onclick = ()=>{
-    listEl.innerHTML = renderQuestionList(qs);
+  if(loadState === 'loading' && detailStatus !== 'ready'){
+    document.getElementById('d-qcount').textContent = 'Preguntas vinculadas: …';
+    listEl.innerHTML = detailStatusHtml('loading');
     moreEl.style.display = 'none';
-  };
+  } else if(loadState === 'error' && detailStatus === 'error'){
+    document.getElementById('d-qcount').textContent = 'Preguntas vinculadas: —';
+    listEl.innerHTML = detailStatusHtml('error', 'd-retry-detail-q');
+    moreEl.style.display = 'none';
+    bindDetailRetry('d-retry-detail-q', ()=>{
+      resetDetailLoad();
+      openDrawer(ev);
+    });
+  } else {
+    document.getElementById('d-qcount').textContent = 'Preguntas vinculadas: ' + qs.length;
+    listEl.innerHTML = renderQuestionList(qs, 8) ||
+      '<p class="ph">Sin preguntas vinculadas aún — la curación sigue en proceso.</p>';
+    moreEl.style.display = qs.length > 8 ? 'block' : 'none';
+    moreEl.onclick = ()=>{
+      listEl.innerHTML = renderQuestionList(qs);
+      moreEl.style.display = 'none';
+    };
+  }
   const linkApp = document.getElementById('link-app');
   if(linkApp) linkApp.style.display = 'none';
   const wasOpen = drawer.classList.contains('on');
@@ -2488,20 +2635,28 @@ function openDrawerFill(ev){
 function openEventGroupDrawer(pe){
   if(!pe?.isEventGroup || !drawer) return;
   hideTip();
-  openEventGroupDrawerFill(pe);
-  ensureDetailLoaded().then(()=>{
-    if(openDrawerId === 'g' + pe.id) openEventGroupDrawerFill(pe);
+  const selectId = ++drawerSelectId;
+  openEventGroupDrawerFill(pe, { loadState: detailStatus === 'ready' ? 'ready' : 'loading' });
+  ensureDetailLoaded().then(res=>{
+    if(selectId !== drawerSelectId) return;
+    if(openDrawerId !== 'g' + pe.id) return;
+    if(res && res.ok === false && !res.stale){
+      openEventGroupDrawerFill(pe, { loadState: 'error' });
+      return;
+    }
+    openEventGroupDrawerFill(pe, { loadState: 'ready' });
   });
 }
 
-function openEventGroupDrawerFill(pe){
+function openEventGroupDrawerFill(pe, opts = {}){
+  const loadState = opts.loadState || (detailStatus === 'ready' ? 'ready' : detailStatus === 'error' ? 'error' : 'loading');
   const events = pe.groupEvents || [];
   const laneLabel = pe.barKey === 'sem' ? 'Última semana' : 'Ministerio de Jesús';
   document.getElementById('d-badge').textContent = laneLabel;
   document.getElementById('d-badge').style.background = BAR_COLORS[pe.barKey] || 'var(--acc)';
   document.getElementById('d-title').textContent = pe.n;
   document.getElementById('d-date').textContent = fmtRange(pe.inicio, pe.fin) + ` · ${events.length} sucesos`;
-  document.getElementById('d-ref').textContent = 'Hacé clic en un suceso para ver el detalle completo.';
+  document.getElementById('d-ref').textContent = 'Elegí un suceso para ver el detalle completo.';
   document.getElementById('d-ref').className = '';
   document.getElementById('d-desc').textContent = pe.nota || `${events.length} sucesos agrupados.`;
   document.getElementById('d-char').innerHTML = '<span class="ph">—</span>';
@@ -2514,16 +2669,17 @@ function openEventGroupDrawerFill(pe){
   const relEl = document.getElementById('d-rel');
   relSec.querySelector('h3').textContent = 'Sucesos en orden';
   relSec.style.display = 'block';
-  relEl.innerHTML = events.map(ev=>`
-    <div class="rel-edge rt-paralelo" data-jump="${ev.id}">
-      <span class="rt">${fmtYear(chartYear(ev) ?? ev.fa)}</span>
-      <div><span class="rn">${esc(ev.n)}</span>${ev.d?'<div class="rnota">'+esc(ev.d)+'</div>':''}</div>
-    </div>`.replace(/\s+/g,' ')).join('');
-  relEl.querySelectorAll('.rel-edge').forEach(el=>{
-    el.onclick = ()=>{
-      const ev2 = D.eventos.find(x=>x.id === parseInt(el.dataset.jump, 10));
-      if(ev2) openDrawer(ev2);
-    };
+  relEl.innerHTML = events.map(ev=> relEdgeButtonHtml({
+    tipo: 'paralelo',
+    jump: ev.id,
+    rtLabel: fmtYear(chartYear(ev) ?? ev.fa),
+    name: ev.n,
+    nota: '',
+    aria: 'Abrir suceso: ' + ev.n,
+  })).join('');
+  bindRelEdgeControls(relEl, id=>{
+    const ev2 = D.eventos.find(x=>x.id === id);
+    if(ev2) openDrawer(ev2);
   });
   const pot = drawerPotenciaOf(pe.inicio);
   document.getElementById('d-par').innerHTML = pot
@@ -2538,14 +2694,28 @@ function openEventGroupDrawerFill(pe){
   }
   const listEl = document.getElementById('d-qlist');
   const moreEl = document.getElementById('d-more');
-  document.getElementById('d-qcount').textContent = 'Preguntas vinculadas: ' + qs.length;
-  listEl.innerHTML = renderQuestionList(qs, 8) ||
-    '<p class="ph">Sin preguntas vinculadas aún — la curación sigue en proceso.</p>';
-  moreEl.style.display = qs.length > 8 ? 'block' : 'none';
-  moreEl.onclick = ()=>{
-    listEl.innerHTML = renderQuestionList(qs);
+  if(loadState === 'loading' && detailStatus !== 'ready'){
+    document.getElementById('d-qcount').textContent = 'Preguntas vinculadas: …';
+    listEl.innerHTML = detailStatusHtml('loading');
     moreEl.style.display = 'none';
-  };
+  } else if(loadState === 'error'){
+    document.getElementById('d-qcount').textContent = 'Preguntas vinculadas: —';
+    listEl.innerHTML = detailStatusHtml('error', 'd-retry-group');
+    moreEl.style.display = 'none';
+    bindDetailRetry('d-retry-group', ()=>{
+      resetDetailLoad();
+      openEventGroupDrawer(pe);
+    });
+  } else {
+    document.getElementById('d-qcount').textContent = 'Preguntas vinculadas: ' + qs.length;
+    listEl.innerHTML = renderQuestionList(qs, 8) ||
+      '<p class="ph">Sin preguntas vinculadas aún — la curación sigue en proceso.</p>';
+    moreEl.style.display = qs.length > 8 ? 'block' : 'none';
+    moreEl.onclick = ()=>{
+      listEl.innerHTML = renderQuestionList(qs);
+      moreEl.style.display = 'none';
+    };
+  }
   const wasOpen = drawer.classList.contains('on');
   drawer.classList.add('on');
   overlay.classList.add('on');
@@ -2558,13 +2728,21 @@ function openEventGroupDrawerFill(pe){
 function openPersonDrawer(pe){
   if(!pe || pe.isEvent || !drawer) return;
   hideTip();
-  openPersonDrawerFill(pe);
-  Promise.all([ensureDetailLoaded(), ensureFichasLoaded()]).then(()=>{
-    if(openDrawerId === 'p' + pe.id) openPersonDrawerFill(pe);
+  const selectId = ++drawerSelectId;
+  openPersonDrawerFill(pe, { loadState: detailStatus === 'ready' ? 'ready' : 'loading' });
+  Promise.all([ensureDetailLoaded(), ensureFichasLoaded()]).then(results=>{
+    if(selectId !== drawerSelectId) return;
+    if(openDrawerId !== 'p' + pe.id) return;
+    const detailRes = results[0];
+    const fichasRes = results[1];
+    const failed = (detailRes && detailRes.ok === false && !detailRes.stale)
+      || (fichasRes && fichasRes.ok === false);
+    openPersonDrawerFill(pe, { loadState: failed ? 'error' : 'ready' });
   });
 }
 
-function openPersonDrawerFill(pe){
+function openPersonDrawerFill(pe, opts = {}){
+  const loadState = opts.loadState || (detailStatus === 'ready' ? 'ready' : detailStatus === 'error' ? 'error' : 'loading');
   const est = (pe.ie||pe.fe) ? ' · fechas estimadas (lámina JW)' : '';
   document.getElementById('d-badge').textContent = pe.grupo || pe.seccion || 'Personaje';
   document.getElementById('d-badge').style.background = 'var(--acc)';
@@ -2579,7 +2757,19 @@ function openPersonDrawerFill(pe){
     refEl.className = '';
   }
   document.getElementById('d-desc').textContent = pe.nota || 'Personaje en la línea de tiempo bíblica.';
-  document.getElementById('d-char').innerHTML = renderFichaChips(fichasForPeriod(pe));
+  const fichasHtml = renderFichaChips(fichasForPeriod(pe));
+  document.getElementById('d-char').innerHTML = fichasHtml || (
+    loadState === 'error'
+      ? detailStatusHtml('error', 'd-retry-fichas')
+      : (loadState === 'loading' ? detailStatusHtml('loading') : '<span class="ph">—</span>')
+  );
+  if(loadState === 'error' && !fichasHtml){
+    bindDetailRetry('d-retry-fichas', ()=>{
+      resetDetailLoad();
+      resetFichasLoad();
+      openPersonDrawer(pe);
+    });
+  }
   document.getElementById('d-meta').innerHTML =
     '<span class="k">Inicio</span><span>'+fmtYear(pe.inicio)+'</span>'+
     '<span class="k">Fin</span><span>'+fmtYear(pe.fin)+'</span>'+
@@ -2592,16 +2782,17 @@ function openPersonDrawerFill(pe){
   relSec.querySelector('h3').textContent = 'Sucesos vinculados';
   if(evs.length){
     relSec.style.display = 'block';
-    relEl.innerHTML = evs.map(ev=>`
-      <div class="rel-edge rt-paralelo" data-jump="${ev.id}">
-        <span class="rt">${fmtYear(chartYear(ev) ?? ev.fa)}</span>
-        <div><span class="rn">${esc(ev.n)}</span>${ev.d?'<div class="rnota">'+esc(ev.d)+'</div>':''}</div>
-      </div>`.replace(/\s+/g,' ')).join('');
-    relEl.querySelectorAll('.rel-edge').forEach(el=>{
-      el.onclick = ()=>{
-        const ev2 = D.eventos.find(x=>x.id === parseInt(el.dataset.jump, 10));
-        if(ev2) openDrawer(ev2);
-      };
+    relEl.innerHTML = evs.map(ev=> relEdgeButtonHtml({
+      tipo: 'paralelo',
+      jump: ev.id,
+      rtLabel: fmtYear(chartYear(ev) ?? ev.fa),
+      name: ev.n,
+      nota: '',
+      aria: 'Abrir suceso: ' + ev.n,
+    })).join('');
+    bindRelEdgeControls(relEl, id=>{
+      const ev2 = D.eventos.find(x=>x.id === id);
+      if(ev2) openDrawer(ev2);
     });
   } else {
     relSec.style.display = 'block';
@@ -2614,14 +2805,29 @@ function openPersonDrawerFill(pe){
   const qs = questionsForPerson(pe, evs);
   const listEl = document.getElementById('d-qlist');
   const moreEl = document.getElementById('d-more');
-  document.getElementById('d-qcount').textContent = 'Preguntas vinculadas: ' + qs.length;
-  listEl.innerHTML = renderQuestionList(qs, 8) ||
-    '<p class="ph">Sin preguntas vinculadas aún — la curación sigue en proceso.</p>';
-  moreEl.style.display = qs.length > 8 ? 'block' : 'none';
-  moreEl.onclick = ()=>{
-    listEl.innerHTML = renderQuestionList(qs);
+  if(loadState === 'loading' && detailStatus !== 'ready'){
+    document.getElementById('d-qcount').textContent = 'Preguntas vinculadas: …';
+    listEl.innerHTML = detailStatusHtml('loading');
     moreEl.style.display = 'none';
-  };
+  } else if(loadState === 'error' && detailStatus === 'error'){
+    document.getElementById('d-qcount').textContent = 'Preguntas vinculadas: —';
+    listEl.innerHTML = detailStatusHtml('error', 'd-retry-person');
+    moreEl.style.display = 'none';
+    bindDetailRetry('d-retry-person', ()=>{
+      resetDetailLoad();
+      resetFichasLoad();
+      openPersonDrawer(pe);
+    });
+  } else {
+    document.getElementById('d-qcount').textContent = 'Preguntas vinculadas: ' + qs.length;
+    listEl.innerHTML = renderQuestionList(qs, 8) ||
+      '<p class="ph">Sin preguntas vinculadas aún — la curación sigue en proceso.</p>';
+    moreEl.style.display = qs.length > 8 ? 'block' : 'none';
+    moreEl.onclick = ()=>{
+      listEl.innerHTML = renderQuestionList(qs);
+      moreEl.style.display = 'none';
+    };
+  }
   const wasOpen = drawer.classList.contains('on');
   drawer.classList.add('on');
   overlay.classList.add('on');
@@ -2736,11 +2942,16 @@ if(drawer){
   if(copyBtn){
     copyBtn.addEventListener('click', ()=>{
       const url = location.origin + location.pathname + location.search + location.hash;
-      const done = ()=>{ copyBtn.title = 'Enlace copiado'; setTimeout(()=>{ copyBtn.title = 'Copiar enlace'; }, 1600); };
+      const ok = ()=>{ copyBtn.title = 'Enlace copiado'; setTimeout(()=>{ copyBtn.title = 'Copiar enlace'; }, 1600); };
+      const fail = ()=>{
+        copyBtn.title = 'No se pudo copiar';
+        setTimeout(()=>{ copyBtn.title = 'Copiar enlace'; }, 2000);
+        try{ window.prompt('Copiá el enlace:', url); }catch(err){}
+      };
       if(navigator.clipboard && navigator.clipboard.writeText){
-        navigator.clipboard.writeText(url).then(done).catch(done);
+        navigator.clipboard.writeText(url).then(ok).catch(fail);
       } else {
-        done();
+        fail();
       }
     });
   }
@@ -3052,13 +3263,18 @@ function render(){
 
   if(!hasPeople && !hiddenList.length && !hasScopedEvents){
     labelsCol.innerHTML = '';
-    const emptyMsg = !selLanes.size
-      ? 'Ninguna fila activa. Marcá una o más filas arriba para ver la cronología.'
-      : 'Marca al menos una fila para ver la comparación.';
+    let emptyMsg;
+    if(q){
+      emptyMsg = 'Ningún resultado para la búsqueda. Probá «Limpiar» o cambiá los filtros de fila.';
+    } else if(!selLanes.size){
+      emptyMsg = 'Ninguna fila activa. Marcá una o más filas arriba para ver la cronología.';
+    } else {
+      emptyMsg = 'No hay personajes ni sucesos visibles con los filtros actuales.';
+    }
     chartCanvas.innerHTML = '<div class="empty-msg" style="padding:24px;color:var(--mut)">'+emptyMsg+'</div>';
     axisArea.innerHTML = '';
     renderHiddenDock([]);
-    setResultCount('0 personajes');
+    setResultCount(q ? '0 resultados' : '0 elementos');
     hideMinimap();
     return;
   }
@@ -3119,13 +3335,18 @@ function render(){
     : [];
   if(!laneData.some(b=>b.tracks.length) && !hiddenList.length && !looseEvents.length){
     labelsCol.innerHTML = '';
-    const emptyMsg = !selLanes.size
-      ? 'Ninguna fila activa. Marcá una o más filas arriba para ver la cronología.'
-      : 'Marca al menos una fila para ver la comparación.';
+    let emptyMsg;
+    if(q){
+      emptyMsg = 'Ningún resultado para la búsqueda. Probá «Limpiar» o cambiá los filtros de fila.';
+    } else if(!selLanes.size){
+      emptyMsg = 'Ninguna fila activa. Marcá una o más filas arriba para ver la cronología.';
+    } else {
+      emptyMsg = 'No hay personajes ni sucesos visibles con los filtros actuales.';
+    }
     chartCanvas.innerHTML = '<div class="empty-msg" style="padding:24px;color:var(--mut)">'+emptyMsg+'</div>';
     axisArea.innerHTML = '';
     renderHiddenDock([]);
-    setResultCount('0 personajes');
+    setResultCount(q ? '0 resultados' : '0 elementos');
     hideMinimap();
     return;
   }
@@ -3153,7 +3374,7 @@ function render(){
     ? `<div class="lane-hdr" style="height:${L.potStrip}px;opacity:.7"><span class="dot" style="background:var(--acc)"></span>Imperios</div>`
     : '';
   if(L.phaseH) labelsHtml += `<div class="lane-hdr" style="height:${L.phaseH}px;opacity:0;border:none"></div>`;
-  let totalRows = 0, visibleRows = 0, selectedRows = 0, totalTracks = 0;
+  let totalRows = 0, visibleRows = 0, personCount = 0, groupCount = 0, eventRowCount = 0, totalTracks = 0;
 
   let peopleHEstimate = topOffset;
   for(const block of laneData){
@@ -3163,7 +3384,9 @@ function render(){
       for(const pe of track.people){
         totalRows++;
         visibleRows++;
-        selectedRows++;
+        if(pe.isEventGroup) groupCount++;
+        else if(pe.isEvent) eventRowCount++;
+        else personCount++;
       }
       if(rowLayout !== 'compact'){
         labelsHtml += labelTrackHtml(track, block, q, yMin, yMax, chartW, layoutOpts, L);
@@ -3345,9 +3568,18 @@ function render(){
 
   const hiddenNote = hiddenList.length ? ` · ${hiddenList.length} ocultos` : '';
   const trackNote = rowLayout === 'compact' ? ` · ${totalTracks} pistas` : '';
-  setResultCount(q
-    ? `${selectedRows} visibles${trackNote}${hiddenNote}${markerCount ? ' · '+markerCount+' marcadores' : ''}`
-    : `${selectedRows} personajes${trackNote}${hiddenNote}${markerCount ? ' · '+markerCount+' marcadores' : ''}`);
+  const looseNote = looseEvents.length ? ` · ${looseEvents.length} sucesos sueltos` : '';
+  const parts = [];
+  if(personCount) parts.push(personCount + (personCount === 1 ? ' personaje' : ' personajes'));
+  if(groupCount) parts.push(groupCount + (groupCount === 1 ? ' grupo' : ' grupos'));
+  if(eventRowCount) parts.push(eventRowCount + (eventRowCount === 1 ? ' suceso' : ' sucesos'));
+  const head = parts.length
+    ? parts.join(' · ')
+    : (q ? '0 resultados' : '0 elementos');
+  setResultCount(
+    (q ? head + ' visibles' : head) + trackNote + hiddenNote + looseNote +
+    (markerCount ? ' · ' + markerCount + ' marcadores' : '')
+  );
 
   chartCanvas.querySelectorAll('.evt-marker, .bar-event-pin').forEach(m=>{
     const ev = D.eventos.find(e=>String(e.id)===m.dataset.ev);
@@ -3566,7 +3798,8 @@ function exportPng(){
   let svg = `<?xml version="1.0" encoding="UTF-8"?><svg xmlns="http://www.w3.org/2000/svg" width="${L.chartW}" height="${L.totalH + headH + 8}" viewBox="0 0 ${L.chartW} ${L.totalH + headH + 8}">`;
   svg += `<rect width="100%" height="100%" fill="${bg}"/>`;
   svg += `<text x="12" y="16" fill="${txt}" font-family="${wf?'Inter,Segoe UI,sans-serif':'Libre Baskerville,Georgia,serif'}" font-size="13" font-weight="700">${esc(L.viewLabel)}</text>`;
-  svg += `<text x="12" y="30" fill="${mut}" font-family="Karla,Segoe UI,sans-serif" font-size="10">${fmtYear(L.yMin)} – ${fmtYear(L.yMax)} · ${L.effectivePx.toFixed(2)} px/año</text>`;
+  const pxPerYearExport = L.effectivePx > 0 ? (1 / L.effectivePx) : 0;
+  svg += `<text x="12" y="30" fill="${mut}" font-family="Karla,Segoe UI,sans-serif" font-size="10">${fmtYear(L.yMin)} – ${fmtYear(L.yMax)} · ${pxPerYearExport.toFixed(2)} px/año</text>`;
   if(!wf) svg += `<defs><radialGradient id="orbGrad" cx="32%" cy="28%"><stop offset="0%" stop-color="${orbCore}"/><stop offset="88%" stop-color="${orbEdge}"/></radialGradient></defs>`;
   svg += `<g transform="translate(0,${headH})">`;
 
@@ -4207,6 +4440,10 @@ function setSheet(on) {
   sheet?.classList.toggle('on', on);
   sheetBackdrop?.classList.toggle('on', on);
   sheetBtn?.setAttribute('aria-expanded', String(on));
+  if(sheet){
+    if(on) sheet.removeAttribute('inert');
+    else sheet.setAttribute('inert', '');
+  }
   if (on) {
     sheetOpener = document.activeElement;
     positionSheet();
@@ -4216,6 +4453,7 @@ function setSheet(on) {
   }
 }
 
+sheet?.setAttribute('inert', '');
 sheetBtn?.setAttribute('aria-expanded', 'false');
 sheetBtn?.addEventListener('click', () => setSheet(!sheet.classList.contains('on')));
 sheetBackdrop?.addEventListener('click', () => setSheet(false));
