@@ -543,11 +543,11 @@ html[data-theme="dark"] .focus-marquee{background:rgba(106,159,173,.18)}
 }
 .loose-evt-zone__title.is-above{
   bottom:calc(100% + 4px);
-  transform:translateX(-50%);
+  transform:translateX(calc(-50% + var(--cap-shift, 0px)));
 }
 .loose-evt-zone__title.is-below{
   top:calc(100% + 4px);
-  transform:translateX(-50%);
+  transform:translateX(calc(-50% + var(--cap-shift, 0px)));
 }
 .pot-strip__label{
   position:absolute;left:8px;top:50%;transform:translateY(-50%);
@@ -1697,7 +1697,7 @@ header {
 <script src="timeline-state.js?v=20260907q"></script>
 <script src="timeline-selectors.js?v=20260907q"></script>
 <script src="timeline-list.js?v=20260907q"></script>
-<script src="timeline-density.js?v=20260907q"></script>
-<script src="linea-paralela.js?v=20260907r"></script>
+<script src="timeline-density.js?v=20260907t"></script>
+<script src="linea-paralela.js?v=20260907t"></script>
 </body>
 </html>

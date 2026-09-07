@@ -49,7 +49,7 @@ linea-de-tiempo/
 ├── timeline-state.js        # URL / estado compartible
 ├── timeline-selectors.js    # índices + selectEvents
 ├── timeline-list.js         # explorador de lista + pila Volver
-├── timeline-density.js      # agregados por densidad visual
+├── timeline-density.js      # agregados por densidad visual + reparto en filas
 ├── timeline-dates.js        # formato a.E.C./E.C., sin año 0 al lector
 ├── linea-tiempo-datos.js    # slim (~433 sucesos, _detailDeferred)
 ├── linea-tiempo-detalle.json# descripciones + ~12 675 preguntas
@@ -63,7 +63,7 @@ linea-de-tiempo/
 │   └── tests/test_paso1.js … test_paso7.js, test_par.js, test_fichas.js
 ├── docs/
 │   ├── AUDITORIA-UI-UX-Y-PLAN.md
-│   ├── LEGIBILIDAD-TIMELINE.md
+│   ├── LEGIBILIDAD-TIMELINE.md  # bitácora UI/UX: cada decisión visual y su razón
 │   └── mejora-exploracion/  # baseline + perf + entrega Paso 7
 ├── index.html               # legado vis-timeline
 └── vendor/                  # vis-timeline local (legado)

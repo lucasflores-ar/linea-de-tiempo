@@ -286,6 +286,10 @@ pasar superposiciones (§2.9). El caso más extremo (zoom a 2–3 años de rango
 se maneja por la combinación de `markerNameInset` limitado +
 `overflow:hidden` en `.lane-block`.
 
+Estas ocho capas son todas **horizontales**. La banda de sucesos sueltos tiene
+además dos propias, que trabajan sobre el eje vertical y sobre los bordes del
+gráfico: el presupuesto de filas y `looseCaptionShift` (§10).
+
 ---
 
 ## 8. Densidad visual y Explorar (Pasos 3–5)
@@ -294,6 +298,10 @@ Cuando muchos sucesos coinciden en X (p. ej. 32 E.C. o la última semana),
 `timeline-density.js` forma **agregados** en Comparar: un marcador resume N
 sucesos y abre el explorador de lista con cobertura de IDs verificable.
 Las barras de duración de personajes no se agregan.
+
+La proximidad en X es condición necesaria pero **no suficiente**: desde el
+presupuesto vertical (§10), los sucesos sueltos se agrupan solo si además no
+quedan filas libres donde separarlos.
 
 La vista **Explorar** (`data-vista="explorar"`) muestra la lista a ancho
 completo; Comparar conserva el eje 2D. Ambos usan el mismo selector
@@ -336,7 +344,95 @@ recortados. Cubierto por `scripts/tests/test_tooltips.js`.
 
 ---
 
-## 10. Historial de decisiones
+## 10. Agrupar solo cuando no queda alto: presupuesto vertical
+
+Hasta acá todas las capas cuidaban el eje **horizontal**. Esta es la primera
+que razona sobre el **vertical**, y cambia cuándo aparece un agregado.
+
+### El síntoma
+
+Con un solo chip de época activo — «Jueces», por ejemplo — los personajes
+ocupan **una** fila y abajo quedan cientos de píxeles vacíos. Aun así los
+sucesos sueltos se mostraban como «7 sucesos próximos» y «2 sucesos
+próximos»: dos globos que hay que abrir para saber qué contienen, con media
+pantalla libre al lado. El agregado se justificaba por proximidad en X sin
+mirar si había filas donde separarlos en Y.
+
+### La regla
+
+> Agrupar cuesta un clic por título. Solo vale la pena cuando no hay lugar.
+
+`layoutLooseEventLanes` ahora intenta **primero** el despliegue y recién agrega
+si no entra:
+
+1. `render()` ya calculaba `freeBelow` = alto visible − alto de los personajes
+   − eje. Antes solo servía para estirar la banda; ahora es el presupuesto.
+2. `looseMaxAbsForBudget(availH)` traduce ese presupuesto a **cuántos niveles**
+   entran a cada lado del riel (`LOOSE_EVT_SLOT_H` = 38 px por fila).
+3. `LTDensity.fanLevels(xs, {gapPx, maxAbs})` reparte los sucesos en 0, 1, −1,
+   2, −2… y devuelve `ok:false` si a alguno no le quedó nivel libre.
+4. Si `ok` y el alto pedido entra en el presupuesto → `mode: 'expandido'`, un
+   suceso por fila con su nombre a la vista. Si no → `mode: 'agrupado'`, el
+   camino de densidad de siempre.
+
+`maxAbs` puede dar 0 y aun así desplegarse: si los sucesos están separados en
+el eje entran todos en el riel y no hacen falta filas extra. Quien decide es
+`fan.ok`, no el presupuesto.
+
+### Es todo o nada, a propósito
+
+Se evaluó desplegar los que entran y agrupar el resto. Se descartó: deja dos
+lenguajes visuales en la misma banda sin que el lector pueda deducir por qué
+unos muestran su nombre y otros un número. Prefiere fallar entero y ser
+predecible.
+
+### Por qué no hace falta histéresis
+
+El resto de los cambios de modo del proyecto la usan (`minGapPx`/`exitGapPx`).
+Acá no, porque no hay realimentación: `freeBelow` sale del alto de los
+personajes, y el alto del despliegue se topea contra `availH`, así que
+desplegar nunca agranda el contenido ni mueve el umbral. El modo es función
+pura de (sucesos, `chartW`, alto visible). Igual hay `LOOSE_EVT_EXPAND_MARGIN`
+= 8 px para no decidir que entra justo pegado al borde.
+
+Verificado: en el alto del umbral y a ±1 px, ocho re-renders seguidos dan
+siempre el mismo modo — no oscila.
+
+### Títulos que ya no se cortan contra los bordes
+
+Al desplegarse aparecieron nombres que antes vivían dentro de un agregado, y
+se vio un recorte nuevo: el título va centrado en su marcador, así que uno
+pegado al borde izquierdo quedaba cortado a la mitad («…amblea de Siquem»).
+
+`looseCaptionShift(x, capW, chartW)` lo empuja hacia adentro y el CSS lo suma
+dentro del `translateX(-50%)` vía `--cap-shift`, el mismo patrón que
+`--tip-shift` (§9). El corrimiento se topea en **media caja**: pasado eso el
+nombre dejaría de leerse como perteneciente a ese punto.
+
+### Comportamiento en cada tamaño
+
+No hay breakpoints: la regla sale de medir `chartScroll.clientHeight`, así que
+funciona igual en las tres. Medido con «Jueces» (1 personaje, 9 sucesos
+sueltos) y «Siglo primero» (16 personajes, 14 pistas):
+
+| Viewport | Jueces | Siglo primero |
+|---|---|---|
+| 1440×900 (escritorio) | desplegado, 9 filas, 0 agregados | agrupado, 2 agregados |
+| 834×1112 (tablet) | desplegado, 9 filas, 0 agregados | agrupado, 2 agregados |
+| 390×844 (teléfono) | desplegado, 9 filas, 0 agregados | agrupado, 2 agregados |
+
+En los tres: 0 títulos fuera del gráfico y 0 superposiciones entre títulos.
+El teléfono despliega porque la banda es alta aunque angosta; lo que dispara
+el agrupado no es el ancho de pantalla sino que los personajes se coman el
+alto. Cubierto por `scripts/tests/test_despliegue.js`.
+
+---
+
+## 11. Historial de decisiones
+
+Este es el registro corrido de lo que se atacó en UI/UX y por qué. Toda
+decisión visual nueva suma una fila acá, y si necesita explicación larga, una
+sección propia arriba.
 
 | Fecha | Cambio | Razón |
 |---|---|---|
@@ -352,3 +448,5 @@ recortados. Cubierto por `scripts/tests/test_tooltips.js`.
 | 2026-09-07 | `gapToNext` → `nextLeft` + `captionMaxPx` | Medir contra el año de inicio del vecino daba topes 34–49 px demasiado grandes |
 | 2026-09-07 | Memorias en `visualBarBounds` y `textWidth` | Mantener el costo del render tras usar la geometría real en el bucle O(n²) |
 | 2026-09-03 | Eliminar banda `exi` | Duplicaba la banda de época `ep-bab` |
+| 2026-09-07 | Presupuesto vertical: desplegar antes de agrupar | Con una sola fila de personajes sobraba media pantalla y los sucesos igual se mostraban como «7 sucesos próximos» |
+| 2026-09-07 | `looseCaptionShift` + `--cap-shift` | Al desplegarse, los títulos pegados a los bordes quedaban cortados a la mitad |

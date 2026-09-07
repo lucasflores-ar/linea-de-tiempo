@@ -244,6 +244,46 @@ function membersEvents(node){
   return (node && node.members || []).map(m=> m.ev).filter(Boolean);
 }
 
+/**
+ * Reparte puntos ya ordenados por x en niveles alrededor de un riel horizontal,
+ * probando 0, 1, −1, 2, −2… hasta `maxAbs`. Un punto entra en el primer nivel
+ * cuyo último ocupante quede a `gapPx` o más.
+ *
+ * `ok:false` significa que a algún punto no le quedó nivel libre y se lo apiló
+ * igual en el 0. Ese es el dato que permite decidir entre desplegar y agregar:
+ * si no hay filas suficientes para mostrarlos separados, conviene agruparlos en
+ * vez de superponerlos.
+ *
+ * xs: number[] ordenado. Devuelve { levels, ok, maxDown, maxUp, rows }.
+ */
+function fanLevels(xs, opts){
+  const gap = Math.max(1, Number(opts && opts.gapPx) || 1);
+  const maxAbs = Math.max(0, Math.floor(Number(opts && opts.maxAbs) || 0));
+  const orden = [0];
+  for(let i = 1; i <= maxAbs; i++) orden.push(i, -i);
+
+  const ultimoX = new Map();
+  const levels = [];
+  let ok = true;
+  for(const x of xs || []){
+    let elegido = null;
+    for(const lv of orden){
+      const last = ultimoX.has(lv) ? ultimoX.get(lv) : -Infinity;
+      if(x - last >= gap){ elegido = lv; break; }
+    }
+    if(elegido == null){ elegido = 0; ok = false; }
+    ultimoX.set(elegido, x);
+    levels.push(elegido);
+  }
+
+  let maxDown = 0, maxUp = 0;
+  for(const lv of levels){
+    if(lv > maxDown) maxDown = lv;
+    if(-lv > maxUp) maxUp = -lv;
+  }
+  return { levels, ok, maxDown, maxUp, rows: maxDown + maxUp + 1 };
+}
+
 global.LTDensity = {
   DEFAULTS,
   projectPoints,
@@ -255,5 +295,6 @@ global.LTDensity = {
   clusterToNode,
   enforceTrackBudget,
   clampOpts,
+  fanLevels,
 };
 })(typeof window !== 'undefined' ? window : globalThis);

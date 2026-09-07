@@ -2369,6 +2369,53 @@ const LOOSE_EVT_SLOT_H = 38;
 const LOOSE_EVT_BASE_PAD = 22;
 const LOOSE_EVT_TOP_PAD = 20;
 const LOOSE_EVT_MIN_H = 72;
+/* Colchón para no decidir que el despliegue entra justo pegado al borde. */
+const LOOSE_EVT_EXPAND_MARGIN = 8;
+
+/** Alto del abanico con esa cantidad de niveles hacia abajo y hacia arriba. */
+function looseFanHeight(maxDown, maxUp){
+  return LOOSE_EVT_TOP_PAD + LOOSE_EVT_BASE_PAD
+    + (maxDown + maxUp) * LOOSE_EVT_SLOT_H + 12;
+}
+
+/**
+ * Cuántos niveles a cada lado del riel entran en el alto que dejaron libre los
+ * personajes. Cero significa que no hay lugar para desplegar y hay que agregar.
+ */
+function looseMaxAbsForBudget(availH){
+  const libre = (availH || 0) - looseFanHeight(0, 0) - LOOSE_EVT_EXPAND_MARGIN;
+  if(!(libre > 0)) return 0;
+  return Math.floor(libre / (LOOSE_EVT_SLOT_H * 2));
+}
+
+/* Espejo de .loose-evt-zone__title en el CSS: max-width y fuente. */
+const LOOSE_CAP_MAX_W = 108;
+const LOOSE_CAP_EDGE_PAD = 4;
+
+function looseCaptionFont(){
+  return vizStyle === 'waterfall'
+    ? '600 10px Inter, "Segoe UI", sans-serif'
+    : '600 10px Karla, "Segoe UI", sans-serif';
+}
+
+/**
+ * Corrimiento horizontal del título para que no se salga del gráfico.
+ *
+ * El título va centrado en su marcador, así que uno pegado al borde queda
+ * cortado a la mitad («…amblea de Siquem»). Se empuja hacia adentro, pero
+ * nunca más de media caja: pasado eso el nombre dejaría de leerse como
+ * perteneciente a ese punto.
+ */
+function looseCaptionShift(x, capW, chartW){
+  const half = Math.min(capW, LOOSE_CAP_MAX_W) / 2;
+  const izq = x - half;
+  const der = x + half;
+  if(izq < LOOSE_CAP_EDGE_PAD) return Math.min(LOOSE_CAP_EDGE_PAD - izq, half);
+  if(der > chartW - LOOSE_CAP_EDGE_PAD){
+    return Math.max((chartW - LOOSE_CAP_EDGE_PAD) - der, -half);
+  }
+  return 0;
+}
 
 function themesInChipScope(){
   const temas = new Set();
@@ -2454,11 +2501,71 @@ function collectLooseEvents(activePeople, yMin, yMax, query){
 }
 
 /**
+ * Un suceso por fila, sin agregados, aprovechando el alto libre.
+ *
+ * Devuelve null cuando no entran todos separados; ahí el llamador agrega, que
+ * es preferible a superponerlos. Es todo o nada a propósito: desplegar una
+ * parte y agrupar el resto deja dos lenguajes visuales mezclados en la misma
+ * banda y no se entiende por qué unos sí y otros no.
+ */
+function layoutLooseExpanded(sorted, yMin, yMax, chartW, availH){
+  if(!(window.LTDensity && typeof LTDensity.fanLevels === 'function')) return null;
+  if(!(availH > 0)) return null;
+  /* Puede dar 0 y aun así servir: si los sucesos están separados en el eje
+     entran todos en el riel y no hacen falta filas extra. Quien decide es
+     `fan.ok`, no el presupuesto. */
+  const maxAbs = looseMaxAbsForBudget(availH);
+
+  const puntos = sorted.map(ev=>{
+    const y = chartYear(ev) ?? ev.fa;
+    return { ev, y, x: yearToX(y, yMin, yMax, chartW) };
+  });
+  /* Si alguno no proyecta, que lo resuelva la densidad: sabe ubicar los que no
+     tienen fecha y acá se perderían. */
+  if(!puntos.length || puntos.some(p=> !Number.isFinite(p.x))) return null;
+
+  const fan = LTDensity.fanLevels(puntos.map(p=> p.x), {
+    gapPx: LOOSE_EVT_GAP_PX,
+    maxAbs,
+  });
+  if(!fan.ok) return null;
+
+  const needH = looseFanHeight(fan.maxDown, fan.maxUp);
+  if(needH > availH) return null;
+
+  const items = puntos.map((p, i)=> ({
+    ev: p.ev,
+    x: p.x,
+    y: p.y,
+    level: fan.levels[i],
+    isAggregate: false,
+    events: [p.ev],
+  }));
+  const height = Math.max(LOOSE_EVT_MIN_H, needH, availH || 0);
+  const baseY = height - LOOSE_EVT_BASE_PAD - fan.maxDown * LOOSE_EVT_SLOT_H;
+  for(const it of items){
+    it.baseY = baseY;
+    it.top = baseY + it.level * LOOSE_EVT_SLOT_H;
+  }
+  return { items, height, baseY, needH, density: null, mode: 'expandido' };
+}
+
+/**
  * Sucesos sueltos debajo de personajes, anclados a una base cerca del eje de años.
  * Misma idea que los puntos de antes: si se amontonan en X, escalonan en Y
  * (primero hacia abajo, luego arriba, etc.) usando el espacio libre.
+ *
+ * Primero intenta mostrarlos uno por fila. Agrupar en «N sucesos próximos» es
+ * el plan B: cuesta un clic extra para leer cada título, así que solo se aplica
+ * cuando los personajes ya ocuparon el alto y no quedan filas donde separarlos.
  */
 function layoutLooseEventLanes(events, yMin, yMax, chartW, availH){
+  const ordenados = [...events].sort((a, b)=>
+    (chartYear(a) - chartYear(b)) || a.n.localeCompare(b.n, 'es'));
+
+  const expandido = layoutLooseExpanded(ordenados, yMin, yMax, chartW, availH);
+  if(expandido) return expandido;
+
   if(window.LTDensity && typeof LTDensity.densifyEvents === 'function'){
     const items = events.map(ev=>({
       id: ev.id,
@@ -2504,18 +2611,16 @@ function layoutLooseEventLanes(events, yMin, yMax, chartW, availH){
     }
     const maxDown = layoutItems.length ? Math.max(0, ...layoutItems.map(i=> i.level)) : 0;
     const maxUp = layoutItems.length ? Math.max(0, ...layoutItems.map(i=> -i.level)) : 0;
-    const needH = LOOSE_EVT_TOP_PAD + LOOSE_EVT_BASE_PAD
-      + (maxDown + maxUp) * LOOSE_EVT_SLOT_H + 12;
+    const needH = looseFanHeight(maxDown, maxUp);
     const height = Math.max(LOOSE_EVT_MIN_H, needH, availH || 0);
     const baseY = height - LOOSE_EVT_BASE_PAD - maxDown * LOOSE_EVT_SLOT_H;
     for(const it of layoutItems){
       it.baseY = baseY;
       it.top = baseY + it.level * LOOSE_EVT_SLOT_H;
     }
-    return { items: layoutItems, height, baseY, needH, density: dens };
+    return { items: layoutItems, height, baseY, needH, density: dens, mode: 'agrupado' };
   }
 
-  const sorted = [...events].sort((a, b)=> (chartYear(a) - chartYear(b)) || a.n.localeCompare(b.n, 'es'));
   const levelLastX = new Map();
   const items = [];
   function levelPrefs(maxAbs){
@@ -2523,7 +2628,7 @@ function layoutLooseEventLanes(events, yMin, yMax, chartW, availH){
     for(let i = 1; i <= maxAbs; i++) order.push(i, -i);
     return order;
   }
-  for(const ev of sorted){
+  for(const ev of ordenados){
     const y = chartYear(ev) ?? ev.fa;
     const x = yearToX(y, yMin, yMax, chartW);
     let chosen = null;
@@ -2543,15 +2648,14 @@ function layoutLooseEventLanes(events, yMin, yMax, chartW, availH){
   }
   const maxDown = items.length ? Math.max(0, ...items.map(i=> i.level)) : 0;
   const maxUp = items.length ? Math.max(0, ...items.map(i=> -i.level)) : 0;
-  const needH = LOOSE_EVT_TOP_PAD + LOOSE_EVT_BASE_PAD
-    + (maxDown + maxUp) * LOOSE_EVT_SLOT_H + 12;
+  const needH = looseFanHeight(maxDown, maxUp);
   const height = Math.max(LOOSE_EVT_MIN_H, needH, availH || 0);
   const baseY = height - LOOSE_EVT_BASE_PAD - maxDown * LOOSE_EVT_SLOT_H;
   for(const it of items){
     it.baseY = baseY;
     it.top = baseY + it.level * LOOSE_EVT_SLOT_H;
   }
-  return { items, height, baseY, needH, density: null };
+  return { items, height, baseY, needH, density: null, mode: 'expandido' };
 }
 
 function openDensityAggregate(events, title, subtitle){
@@ -2597,7 +2701,8 @@ function renderLooseEventFan(layout, chartW, height, opts = {}){
     if(it.isAggregate){
       const ids = (it.events || []).map(e=> e.id).join(',');
       const label = (it.events || []).length + ' sucesos próximos';
-      html += '<button type="button" class="evt-marker evt-marker--loose evt-marker--zone evt-marker--agg evt-marker--in-row" style="left:'+it.x+'px;top:'+it.top+'px;--mk-color:var(--acc)" data-agg-ids="'+esc(ids)+'" aria-label="'+esc(label)+'">';
+      const aggShift = looseCaptionShift(it.x, 14, chartW);
+      html += '<button type="button" class="evt-marker evt-marker--loose evt-marker--zone evt-marker--agg evt-marker--in-row" style="left:'+it.x+'px;top:'+it.top+'px;--mk-color:var(--acc);--cap-shift:'+aggShift+'px" data-agg-ids="'+esc(ids)+'" aria-label="'+esc(label)+'">';
       html += '<span class="loose-evt-zone__title '+titleCls+'">'+esc(String((it.events||[]).length))+'</span>';
       html += '<span class="evt-marker__agg-badge">'+(it.events||[]).length+'</span>';
       html += '</button>';
@@ -2607,7 +2712,9 @@ function renderLooseEventFan(layout, chartW, height, opts = {}){
     if(!ev) continue;
     const mkColor = markerColorFor(ev);
     const cap = truncateCaption(ev.n, LOOSE_EVT_TITLE_CHARS);
-    html += '<button type="button" class="evt-marker evt-marker--loose evt-marker--zone evt-marker--in-row" style="left:'+it.x+'px;top:'+it.top+'px;--mk-color:'+mkColor+'" data-ev="'+ev.id+'" aria-label="'+esc(ev.n)+'"'+(cap.truncated ? ' title="'+esc(ev.n)+'"' : '')+'>';
+    const capShift = looseCaptionShift(
+      it.x, textWidth(cap.text, looseCaptionFont()), chartW);
+    html += '<button type="button" class="evt-marker evt-marker--loose evt-marker--zone evt-marker--in-row" style="left:'+it.x+'px;top:'+it.top+'px;--mk-color:'+mkColor+';--cap-shift:'+capShift+'px" data-ev="'+ev.id+'" aria-label="'+esc(ev.n)+'"'+(cap.truncated ? ' title="'+esc(ev.n)+'"' : '')+'>';
     html += '<span class="loose-evt-zone__title '+titleCls+'">'+esc(cap.text)+'</span>';
     html += '</button>';
   }
@@ -4497,7 +4604,7 @@ function render(){
   axisArea.innerHTML = axisLabels;
   labelsCol.style.paddingBottom = L.axisH + 'px';
 
-  lastLayout = { viewLabel: viewLabel(), laneData, dataMin, dataMax, yMin, yMax, chartW, totalH, potOffset: topOffset, rowMap, markerCount, markers: [], effectivePx: span2 / chartW, metrics: L, vizStyle, rowLayout, densitySummary: !!(looseLayout && looseLayout.density && looseLayout.density.summary), densityCoverage: looseLayout && looseLayout.density ? [...looseLayout.density.coverage] : null, looseEligible: looseEvents.map(e=> e.id) };
+  lastLayout = { viewLabel: viewLabel(), laneData, dataMin, dataMax, yMin, yMax, chartW, totalH, potOffset: topOffset, rowMap, markerCount, markers: [], effectivePx: span2 / chartW, metrics: L, vizStyle, rowLayout, densitySummary: !!(looseLayout && looseLayout.density && looseLayout.density.summary), densityCoverage: looseLayout && looseLayout.density ? [...looseLayout.density.coverage] : null, looseEligible: looseEvents.map(e=> e.id), looseMode: looseLayout ? looseLayout.mode : null, freeBelow };
   chartCanvas.querySelectorAll('.evt-marker, .bar-event-pin').forEach(m=>{
     if(m.dataset.aggIds) return;
     const row = m.closest('.row');
@@ -4521,7 +4628,9 @@ function render(){
   const looseNote = looseEvents.length ? ` · ${looseEvents.length} sucesos sueltos` : '';
   const densNote = (looseLayout && looseLayout.density && looseLayout.density.summary)
     ? ' · vista resumida'
-    : '';
+    : (looseLayout && looseLayout.mode === 'expandido' && looseEvents.length > 1)
+      ? ' · sucesos desplegados'
+      : '';
   const parts = [];
   if(personCount) parts.push(personCount + (personCount === 1 ? ' personaje' : ' personajes'));
   if(groupCount) parts.push(groupCount + (groupCount === 1 ? ' grupo' : ' grupos'));
