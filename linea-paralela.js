@@ -1253,14 +1253,86 @@ function laneDataForBounds(rawLaneData){
   }));
 }
 
+function densifyPointPeople(people, chartLayout, barKey){
+  if(!window.LTDensity || !chartLayout || !people || people.length < 2) return people;
+  const fixed = [];
+  const densifiable = [];
+  for(const pe of people){
+    if(pe.isEventGroup && !pe.isDensityAggregate){
+      fixed.push(pe);
+      continue;
+    }
+    if(pe.isDensityAggregate && pe.groupEvents){
+      for(const ev of pe.groupEvents){
+        densifiable.push(evToRow(ev, barKey || pe.barKey || 'sem'));
+      }
+      continue;
+    }
+    if(pe.isEvent && pe.ev && pe.inicio != null && pe.fin != null && pe.inicio === pe.fin){
+      densifiable.push(pe);
+      continue;
+    }
+    fixed.push(pe);
+  }
+  if(densifiable.length < 2) return people;
+  const items = densifiable.map(pe=>({
+    id: pe.ev.id,
+    year: chartYear(pe.ev) ?? pe.inicio,
+    ev: pe.ev,
+  }));
+  const dens = LTDensity.densifyEvents(items, {
+    yMin: chartLayout.yMin,
+    yMax: chartLayout.yMax,
+    chartW: chartLayout.chartW,
+    yearToX,
+  }, {
+    minGapPx: (typeof isCoarsePointer === 'function' && isCoarsePointer()) ? 44 : 28,
+    exitGapPx: 24,
+    maxTracks: 3,
+    maxSpanPx: 110,
+  });
+  const out = fixed.slice();
+  for(const node of dens.nodes){
+    if(node.undated) continue;
+    if(node.type === 'single'){
+      const pe = densifiable.find(p=> p.ev && Number(p.ev.id) === Number(node.id));
+      if(pe) out.push({ ...pe, inicio: node.year, fin: node.year, completion: node.year });
+      continue;
+    }
+    const events = node.members.map(m=> m.ev).filter(Boolean);
+    if(!events.length) continue;
+    out.push({
+      id: node.id,
+      n: node.label,
+      inicio: node.yearMin,
+      fin: node.yearMax,
+      completion: node.year,
+      hasLibroRange: false,
+      nota: node.count + ' en proximidad visual',
+      ie: false, fe: false,
+      isEvent: true,
+      isEventGroup: true,
+      isDensityAggregate: true,
+      groupEvents: events,
+      barKey: barKey || 'sem',
+      ev: events[0],
+    });
+  }
+  out.sort((a, b)=> (a.inicio ?? 0) - (b.inicio ?? 0) || String(a.n).localeCompare(String(b.n), 'es'));
+  return out;
+}
+
 function enrichLaneData(laneData, q, chartLayout){
   const compact = rowLayout === 'compact';
   const nq = norm(q || '');
   return laneData.map(block=>{
-    const active = block.people.filter(pe=>{
+    let active = block.people.filter(pe=>{
       if(!compact && !isPeSelected(pe)) return false;
-      return !nq || norm(pe.n).includes(nq);
+      return !nq || norm(pe.n).includes(nq) || (pe.isDensityAggregate && (pe.groupEvents||[]).some(ev=> norm(ev.n).includes(nq)));
     });
+    if(chartLayout && block.meta?.key === 'sem'){
+      active = densifyPointPeople(active, chartLayout, block.meta.key);
+    }
     return {
       ...block,
       tracks: layoutBlockTracks(
@@ -1323,8 +1395,11 @@ function renderHiddenDock(hiddenList){
   });
 }
 
+let peByKeyCache = new Map();
+
 function findPeByKey(key){
   if(!key) return null;
+  if(peByKeyCache.has(key)) return peByKeyCache.get(key);
   const p = D.personajes.find(x=>peKey(x)===key);
   if(p) return p;
   for(const block of buildAllLaneData()){
@@ -1808,7 +1883,8 @@ function calendarYearOfEvent(ev){
   return ev?.fa != null ? ev.fa : null;
 }
 
-/** Reparte filas en el eje X; getPos devuelve la coordenada cronológica (años fraccionarios). */
+/** Reparte filas en el eje X; getPos devuelve la coordenada cronológica (años fraccionarios).
+ * Misma fecha exacta → agregado visual (sin desplazar fechas reales). */
 function spreadEventsOnAxis(rows, getPos){
   if(!rows.length) return rows;
   const posOf = getPos || (pe=> calendarYearOfEvent(pe.ev) ?? Math.floor(pe.inicio));
@@ -1822,10 +1898,24 @@ function spreadEventsOnAxis(rows, getPos){
     if(group.length === 1){
       out.push({...group[0], inicio: pos, fin: pos, completion: pos});
     } else {
-      const span = pos >= 32 && pos <= 34 ? 0.012 : 0.88;
-      group.forEach((pe, k)=>{
-        const slot = pos + ((k + 1) / (group.length + 1) - 0.5) * span;
-        out.push({...pe, inicio: slot, fin: slot, completion: slot});
+      const events = group.map(pe=> pe.ev).filter(Boolean);
+      const barKey = group[0].barKey || 'sem';
+      const idKey = String(pos) + ':' + events.map(e=> e.id).sort((a,b)=>a-b).join('-');
+      out.push({
+        id: stableGroupRowId('densidad', idKey, barKey),
+        n: events.length + ' sucesos próximos',
+        inicio: pos,
+        fin: pos,
+        completion: pos,
+        hasLibroRange: false,
+        nota: events.length + ' sucesos en la misma fecha',
+        ie: false, fe: false,
+        isEvent: true,
+        isEventGroup: true,
+        isDensityAggregate: true,
+        groupEvents: events,
+        barKey,
+        ev: events[0],
       });
     }
     i = j;
@@ -2286,18 +2376,70 @@ function collectLooseEvents(activePeople, yMin, yMax, query){
  * (primero hacia abajo, luego arriba, etc.) usando el espacio libre.
  */
 function layoutLooseEventLanes(events, yMin, yMax, chartW, availH){
+  if(window.LTDensity && typeof LTDensity.densifyEvents === 'function'){
+    const items = events.map(ev=>({
+      id: ev.id,
+      year: chartYear(ev) ?? ev.fa,
+      ev,
+      labelW: Math.min(LOOSE_EVT_TITLE_CHARS, String(ev.n || '').length) * 6.5,
+    }));
+    const dens = LTDensity.densifyEvents(items, { yMin, yMax, chartW, yearToX }, {
+      minGapPx: Math.max(36, LOOSE_EVT_GAP_PX * 0.45),
+      exitGapPx: 28,
+      maxTracks: 3,
+      maxSpanPx: 130,
+    });
+    const levelLastX = new Map();
+    const layoutItems = [];
+    function levelPrefs(maxAbs){
+      const order = [0];
+      for(let i = 1; i <= maxAbs; i++) order.push(i, -i);
+      return order;
+    }
+    const nodes = dens.nodes.filter(n=> n.x != null && Number.isFinite(n.x));
+    for(const node of nodes){
+      const x = node.x;
+      let chosen = null;
+      for(const lv of levelPrefs(3)){
+        const last = levelLastX.has(lv) ? levelLastX.get(lv) : -1e9;
+        if(x - last >= LOOSE_EVT_GAP_PX * 0.85){
+          chosen = lv;
+          break;
+        }
+      }
+      if(chosen == null) chosen = 0;
+      levelLastX.set(chosen, x);
+      layoutItems.push({
+        node,
+        ev: node.type === 'single' ? (node.members[0] && node.members[0].ev) : null,
+        x,
+        y: node.year,
+        level: chosen,
+        isAggregate: node.type === 'aggregate',
+        events: node.members.map(m=> m.ev).filter(Boolean),
+      });
+    }
+    const maxDown = layoutItems.length ? Math.max(0, ...layoutItems.map(i=> i.level)) : 0;
+    const maxUp = layoutItems.length ? Math.max(0, ...layoutItems.map(i=> -i.level)) : 0;
+    const needH = LOOSE_EVT_TOP_PAD + LOOSE_EVT_BASE_PAD
+      + (maxDown + maxUp) * LOOSE_EVT_SLOT_H + 12;
+    const height = Math.max(LOOSE_EVT_MIN_H, needH, availH || 0);
+    const baseY = height - LOOSE_EVT_BASE_PAD - maxDown * LOOSE_EVT_SLOT_H;
+    for(const it of layoutItems){
+      it.baseY = baseY;
+      it.top = baseY + it.level * LOOSE_EVT_SLOT_H;
+    }
+    return { items: layoutItems, height, baseY, needH, density: dens };
+  }
+
   const sorted = [...events].sort((a, b)=> (chartYear(a) - chartYear(b)) || a.n.localeCompare(b.n, 'es'));
   const levelLastX = new Map();
   const items = [];
-
   function levelPrefs(maxAbs){
     const order = [0];
-    for(let i = 1; i <= maxAbs; i++){
-      order.push(i, -i); /* + = abajo (hacia el eje), - = arriba (espacio libre) */
-    }
+    for(let i = 1; i <= maxAbs; i++) order.push(i, -i);
     return order;
   }
-
   for(const ev of sorted){
     const y = chartYear(ev) ?? ev.fa;
     const x = yearToX(y, yMin, yMax, chartW);
@@ -2314,22 +2456,43 @@ function layoutLooseEventLanes(events, yMin, yMax, chartW, availH){
       chosen = levelLastX.has(abs) ? -abs : abs;
     }
     levelLastX.set(chosen, x);
-    items.push({ ev, x, y, level: chosen });
+    items.push({ ev, x, y, level: chosen, isAggregate: false, events: [ev] });
   }
-
   const maxDown = items.length ? Math.max(0, ...items.map(i=> i.level)) : 0;
   const maxUp = items.length ? Math.max(0, ...items.map(i=> -i.level)) : 0;
   const needH = LOOSE_EVT_TOP_PAD + LOOSE_EVT_BASE_PAD
     + (maxDown + maxUp) * LOOSE_EVT_SLOT_H + 12;
   const height = Math.max(LOOSE_EVT_MIN_H, needH, availH || 0);
-  /* Base cerca del borde inferior (eje de años); deja sitio para niveles + abajo. */
   const baseY = height - LOOSE_EVT_BASE_PAD - maxDown * LOOSE_EVT_SLOT_H;
-
   for(const it of items){
     it.baseY = baseY;
     it.top = baseY + it.level * LOOSE_EVT_SLOT_H;
   }
-  return { items, height, baseY, needH };
+  return { items, height, baseY, needH, density: null };
+}
+
+function openDensityAggregate(events, title, subtitle){
+  const list = (window.LTList && LTList.dedupeById)
+    ? LTList.dedupeById(events || [])
+    : (events || []);
+  if(!list.length) return;
+  if(list.length === 1){
+    openDrawer(list[0]);
+    return;
+  }
+  clearDrawerNav();
+  explorerListQuery = '';
+  explorerListScroll = 0;
+  openExplorerList({
+    kind: 'interval',
+    id: 'densidad',
+    openId: 'g' + (title || 'densidad'),
+    title: title || (list.length + ' sucesos próximos'),
+    subtitle: subtitle || (list.length + ' sucesos'),
+    badge: 'Agregado',
+    color: 'var(--acc)',
+    events: list,
+  });
 }
 
 function renderLooseEventFan(layout, chartW, height, opts = {}){
@@ -2337,28 +2500,37 @@ function renderLooseEventFan(layout, chartW, height, opts = {}){
   const h = Math.max(height || 0, layout.height);
   const baseY = layout.baseY ?? (h - LOOSE_EVT_BASE_PAD);
   const withBands = opts.bandsHtml || '';
-  let html = `<div class="loose-evt-zone" style="width:${chartW}px;height:${h}px" aria-label="Sucesos sin personaje en vista">`;
+  let html = '<div class="loose-evt-zone" style="width:'+chartW+'px;height:'+h+'px" aria-label="Sucesos sin personaje en vista">';
   html += withBands;
-  html += `<div class="loose-evt-zone__rail" style="top:${baseY}px" aria-hidden="true"></div>`;
-  html += `<span class="loose-evt-zone__label" style="top:${Math.max(4, baseY - 16)}px">Sucesos</span>`;
+  html += '<div class="loose-evt-zone__rail" style="top:'+baseY+'px" aria-hidden="true"></div>';
+  html += '<span class="loose-evt-zone__label" style="top:'+Math.max(4, baseY - 16)+'px">Sucesos</span>';
   for(const it of layout.items){
-    const mkColor = markerColorFor(it.ev);
-    const cap = truncateCaption(it.ev.n, LOOSE_EVT_TITLE_CHARS);
     const titleCls = it.level > 0 ? 'is-below' : 'is-above';
     if(it.level !== 0){
       const stemTop = Math.min(it.top, baseY);
       const stemH = Math.abs(it.top - baseY);
-      html += `<span class="loose-evt-zone__stem" style="left:${it.x}px;top:${stemTop}px;height:${stemH}px" aria-hidden="true"></span>`;
+      html += '<span class="loose-evt-zone__stem" style="left:'+it.x+'px;top:'+stemTop+'px;height:'+stemH+'px" aria-hidden="true"></span>';
     }
-    /* Mismo tamaño/estilo que los puntos sobre la barra del personaje (compact). */
-    html += `<button type="button" class="evt-marker evt-marker--loose evt-marker--zone evt-marker--in-row" style="left:${it.x}px;top:${it.top}px;--mk-color:${mkColor}" data-ev="${it.ev.id}" aria-label="${esc(it.ev.n)}"${cap.truncated ? ` title="${esc(it.ev.n)}"` : ''}>`;
-    html += `<span class="loose-evt-zone__title ${titleCls}">${esc(cap.text)}</span>`;
-    html += `</button>`;
+    if(it.isAggregate){
+      const ids = (it.events || []).map(e=> e.id).join(',');
+      const label = (it.events || []).length + ' sucesos próximos';
+      html += '<button type="button" class="evt-marker evt-marker--loose evt-marker--zone evt-marker--agg evt-marker--in-row" style="left:'+it.x+'px;top:'+it.top+'px;--mk-color:var(--acc)" data-agg-ids="'+esc(ids)+'" aria-label="'+esc(label)+'">';
+      html += '<span class="loose-evt-zone__title '+titleCls+'">'+esc(String((it.events||[]).length))+'</span>';
+      html += '<span class="evt-marker__agg-badge">'+(it.events||[]).length+'</span>';
+      html += '</button>';
+      continue;
+    }
+    const ev = it.ev;
+    if(!ev) continue;
+    const mkColor = markerColorFor(ev);
+    const cap = truncateCaption(ev.n, LOOSE_EVT_TITLE_CHARS);
+    html += '<button type="button" class="evt-marker evt-marker--loose evt-marker--zone evt-marker--in-row" style="left:'+it.x+'px;top:'+it.top+'px;--mk-color:'+mkColor+'" data-ev="'+ev.id+'" aria-label="'+esc(ev.n)+'"'+(cap.truncated ? ' title="'+esc(ev.n)+'"' : '')+'>';
+    html += '<span class="loose-evt-zone__title '+titleCls+'">'+esc(cap.text)+'</span>';
+    html += '</button>';
   }
-  return html + `</div>`;
+  return html + '</div>';
 }
 
-/** Omitir de filas NT/libros: solo nacimientos/muertes ya cubiertos por la barra. */
 function shouldOmitLooseEventRow(ev, activePeople){
   return activePeople.some(pe=> eventBelongsOnPersonBar(ev, pe));
 }
@@ -3169,14 +3341,15 @@ function openEventGroupDrawer(pe){
   explorerListQuery = '';
   explorerListScroll = 0;
   const events = pe.groupEvents || [];
+  const isDens = !!pe.isDensityAggregate;
   openExplorerList({
-    kind: 'group',
+    kind: isDens ? 'interval' : 'group',
     id: pe.id,
     openId: 'g' + pe.id,
     title: pe.n,
     subtitle: fmtRange(pe.inicio, pe.fin) + ` · ${events.length} sucesos`,
-    badge: pe.barKey === 'sem' ? 'Última semana' : 'Ministerio de Jesús',
-    color: BAR_COLORS[pe.barKey] || 'var(--acc)',
+    badge: isDens ? 'Agregado' : (pe.barKey === 'sem' ? 'Última semana' : 'Ministerio de Jesús'),
+    color: isDens ? 'var(--acc)' : (BAR_COLORS[pe.barKey] || 'var(--acc)'),
     events,
     pe,
   });
@@ -3802,6 +3975,14 @@ function render(){
   updateFocusUi(dataMin, dataMax);
   const chartLayout = { yMin, yMax, chartW };
   const laneData = enrichLaneData(rawLaneData, query, chartLayout);
+  peByKeyCache = new Map();
+  for(const block of laneData){
+    for(const track of block.tracks){
+      for(const pe of track.people){
+        peByKeyCache.set(peKey(pe), pe);
+      }
+    }
+  }
   const activePeople = [];
   for(const block of laneData){
     for(const track of block.tracks){
@@ -4028,8 +4209,9 @@ function render(){
   axisArea.innerHTML = axisLabels;
   labelsCol.style.paddingBottom = L.axisH + 'px';
 
-  lastLayout = { viewLabel: viewLabel(), laneData, dataMin, dataMax, yMin, yMax, chartW, totalH, potOffset: topOffset, rowMap, markerCount, markers: [], effectivePx: span2 / chartW, metrics: L, vizStyle, rowLayout };
+  lastLayout = { viewLabel: viewLabel(), laneData, dataMin, dataMax, yMin, yMax, chartW, totalH, potOffset: topOffset, rowMap, markerCount, markers: [], effectivePx: span2 / chartW, metrics: L, vizStyle, rowLayout, densitySummary: !!(looseLayout && looseLayout.density && looseLayout.density.summary), densityCoverage: looseLayout && looseLayout.density ? [...looseLayout.density.coverage] : null, looseEligible: looseEvents.map(e=> e.id) };
   chartCanvas.querySelectorAll('.evt-marker, .bar-event-pin').forEach(m=>{
+    if(m.dataset.aggIds) return;
     const row = m.closest('.row');
     const ev = D.eventos.find(e=>String(e.id)===m.dataset.ev);
     let y = parseFloat(m.style.top);
@@ -4049,6 +4231,9 @@ function render(){
   const hiddenNote = hiddenList.length ? ` · ${hiddenList.length} ocultos` : '';
   const trackNote = rowLayout === 'compact' ? ` · ${totalTracks} pistas` : '';
   const looseNote = looseEvents.length ? ` · ${looseEvents.length} sucesos sueltos` : '';
+  const densNote = (looseLayout && looseLayout.density && looseLayout.density.summary)
+    ? ' · vista resumida'
+    : '';
   const parts = [];
   if(personCount) parts.push(personCount + (personCount === 1 ? ' personaje' : ' personajes'));
   if(groupCount) parts.push(groupCount + (groupCount === 1 ? ' grupo' : ' grupos'));
@@ -4057,12 +4242,26 @@ function render(){
     ? parts.join(' · ')
     : (q ? '0 resultados' : '0 elementos');
   setResultCount(
-    (q ? head + ' visibles' : head) + trackNote + hiddenNote + looseNote +
+    (q ? head + ' visibles' : head) + trackNote + hiddenNote + looseNote + densNote +
     (markerCount ? ' · ' + markerCount + ' marcadores' : '')
   );
 
-  chartCanvas.querySelectorAll('.evt-marker, .bar-event-pin').forEach(m=>{
+  chartCanvas.querySelectorAll('.evt-marker[data-agg-ids]').forEach(m=>{
+    const ids = String(m.dataset.aggIds || '').split(',').map(x=> Number(x)).filter(Number.isFinite);
+    const events = ids.map(id=> eventById(id)).filter(Boolean);
+    const label = events.length + ' sucesos próximos';
+    bindHoverTip(m, e=> showTipHtml(
+      `<div class="t-name">${esc(label)}</div><div class="t-dates">Tocá para ver la lista completa</div>`, e, m));
+    m.addEventListener('click', e=> activateWithTouchTip('agg'+ids.join('-'), e, m, ()=> showTipHtml(
+      `<div class="t-name">${esc(label)}</div>`, e, m), ()=> openDensityAggregate(events, label)));
+    m.addEventListener('keydown', e=>{
+      if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); openDensityAggregate(events, label); }
+    });
+  });
+
+  chartCanvas.querySelectorAll('.evt-marker:not([data-agg-ids]), .bar-event-pin').forEach(m=>{
     const ev = D.eventos.find(e=>String(e.id)===m.dataset.ev);
+    if(!ev) return;
     /* Tip CSS solo en compact; en fan / filas normales usamos #tooltip fijo. */
     const useCssTip = m.querySelector('.evt-marker__tip') && !m.classList.contains('evt-marker--zone');
     if(!useCssTip){
@@ -4280,7 +4479,10 @@ function exportPng(){
   svg += `<rect width="100%" height="100%" fill="${bg}"/>`;
   svg += `<text x="12" y="16" fill="${txt}" font-family="${wf?'Inter,Segoe UI,sans-serif':'Libre Baskerville,Georgia,serif'}" font-size="13" font-weight="700">${esc(L.viewLabel)}</text>`;
   const pxPerYearExport = L.effectivePx > 0 ? (1 / L.effectivePx) : 0;
-  svg += `<text x="12" y="30" fill="${mut}" font-family="Karla,Segoe UI,sans-serif" font-size="10">${fmtYear(L.yMin)} – ${fmtYear(L.yMax)} · ${pxPerYearExport.toFixed(2)} px/año</text>`;
+  const densLabel = L.densitySummary
+    ? ` · resumen densificado (${(L.looseEligible || []).length} sucesos sueltos)`
+    : '';
+  svg += `<text x="12" y="30" fill="${mut}" font-family="Karla,Segoe UI,sans-serif" font-size="10">${fmtYear(L.yMin)} – ${fmtYear(L.yMax)} · ${pxPerYearExport.toFixed(2)} px/año${densLabel}</text>`;
   if(!wf) svg += `<defs><radialGradient id="orbGrad" cx="32%" cy="28%"><stop offset="0%" stop-color="${orbCore}"/><stop offset="88%" stop-color="${orbEdge}"/></radialGradient></defs>`;
   svg += `<g transform="translate(0,${headH})">`;
 
