@@ -232,24 +232,18 @@ pie; no se fusionó nada.
 Con el CSV corregido ya no hacen falta los parches sobre los archivos
 generados: `python scripts/gen_timeline.py` reproduce el resultado.
 
-### Riesgo pendiente: el pipeline completo puede revertirlo
+La 377 (Mateo) quedó sin `referencia` ni capítulos por decisión: no todas las
+filas necesitan una, y era la única sin gemela de donde copiarla.
 
-`run_pipeline.py` incluye `merge_libros_biblia.py`, cuyo `apply_book()`
-sobrescribe `descripcion`, fechas, lugar y referencia de la fila que matchea por
-`match_etiqueta`. Su tabla de libros está **hardcodeada** en
-`scripts/libros_biblia_data.py` (el `curacion/libros_biblia.json` es una
-exportación, no una entrada) y todavía dice Marcos c. 62 y Lucas c. 57.
-Peor: reconstruye la descripción como «Tiempo que abarca: …», así que
-clobbearía los perfiles aunque se corrigieran los años.
+El riesgo de que el pipeline completo revirtiera esto se cerró blindando
+`merge_libros_biblia.py` — ver «Blindaje del merge de libros» más abajo. La red
+de contención adicional es `scripts/tests/test_escritura.js`, que falla si los
+perfiles desaparecen de los datos generados.
 
-No se rediseñó ese merge acá. La red de contención es
-`scripts/tests/test_escritura.js`, que falla si los perfiles desaparecen de los
-datos generados.
+## Rangos de fechas invertidos en cuatro libros proféticos
 
-## Rangos de fechas invertidos — 4 casos conocidos sin resolver
-
-El test nuevo que detecta `fa_fin < fa` encontró cuatro casos preexistentes y de
-otra naturaleza, todos libros proféticos a.E.C.:
+El test que detecta `fa_fin < fa` encontró cuatro casos preexistentes y de otra
+naturaleza que el cruce de los Evangelios, todos libros proféticos a.E.C.:
 
 | id | suceso | fa | fa_fin |
 |---|---|---|---|
@@ -258,14 +252,75 @@ otra naturaleza, todos libros proféticos a.E.C.:
 | 172 | Amós completa el libro de Amós | −804 | −810 |
 | 187 | Nahúm completa el libro de Nahúm | −632 | −640 |
 
-Acá `fecha_fin` no guarda el fin de la escritura sino **el comienzo del período
-que el libro abarca** (Ezequiel se completa c. 591 a.E.C. pero cubre desde 600).
-Es el mismo patrón que `anio_fin` + `tiempo_abarca` en `libros_biblia_data.py`.
+De cada libro hay **dos fechas distintas**: cuándo se completó y el período que
+abarca. Acá estaban cruzadas, así que la barra se dibujaba como un punto de 4 px
+con las fechas dadas vuelta.
 
-Arreglarlos exige decidir qué representa la barra —el momento de redacción o el
-período cubierto— y eso cambia también el año que encabeza el suceso, así que
-quedan anotados como excepción conocida en `INVERSION_CONOCIDA` para que el test
-siga detectando inversiones **nuevas**.
+El criterio adoptado es que la barra represente el período que abarca y que la
+compleción la cierre. Pero eso solo se puede aplicar donde el período existe: en
+`libros_biblia_data.py` —la fuente de `merge_libros_biblia.py`— **únicamente
+Ezequiel** tiene «Tiempo que abarca: 613–c. 591 a.E.C.». Amós, Abdías y Nahúm
+tienen `anio_fin=None` y `tiempo_abarca=''`: de ellos solo se conoce el año de
+compleción. El año anterior que traía el CSV (810, 610, 640) no viene de esa
+tabla ni coincide con ninguna de las dos fechas conocidas, así que se descartó.
+
+| id | ahora | por qué |
+|---|---|---|
+| 106 | 613 a c. 591 a.E.C. | su tabla da el período que abarca |
+| 171 | c. 607 a.E.C. | puntual: sin período conocido |
+| 172 | c. 804 a.E.C. | puntual: sin período conocido |
+| 187 | a. 632 a.E.C. | puntual: sin período conocido |
+
+Lo aplica `scripts/fix_csv_abarca_profetas.py`, que declara el estado final
+completo en lugar de un intercambio, así converge desde cualquier punto y es
+idempotente. Si aparecen los «tiempo que abarca» de esos tres libros, van
+primero a `libros_biblia_data.py` y después al CSV.
+
+### La causa de raíz, en el merge
+
+`apply_book()` escribía `fecha_fin = anio_fin` crudo. Pero `anio_fin` está mal
+nombrado: no es el fin de nada, es **el otro extremo del período que abarca**,
+que en a.E.C. es el más antiguo. Escribirlo sin ordenar deja el fin antes del
+inicio, y lo hacía en todo libro a.E.C. con período. Ahora los extremos se
+ordenan:
+
+```python
+(ini, pref_ini), (fin, pref_fin) = sorted(
+    [(int(anio_fin), prefijo_fin), (anio, prefijo)])
+```
+
+Para Ezequiel eso reproduce exactamente 613 a c. 591, así que el merge y el CSV
+ya coinciden y el dry-run no propone cambios de fecha en los cuatro.
+
+## Blindaje del merge de libros
+
+`merge_libros_biblia.py` es destructivo: reescribe la base externa y puede
+borrar filas. Se le agregaron tres protecciones y un modo `--check` que muestra
+qué haría sin escribir.
+
+1. **No borra las filas curadas.** El dry-run avisaba `ELIMINARIA la fila 194`:
+   `dedupe_redaccion_rows()` iba a fusionar Lucas contra su gemela 196, que es
+   justo lo que se había decidido no hacer. Ahora `CURADAS` la exceptúa.
+2. **No pisa descripciones curadas.** `apply_book()` reconstruía la descripción
+   como «Escritor: … Lugar de escritura: …», borrando los perfiles editoriales.
+   `es_descripcion_generada()` deja pasar solo las que tienen esa forma.
+3. **No revierte las fechas de los Evangelios.** Estas tablas traen el período
+   que el libro abarca (Marcos 29–33 E.C.); para los Evangelios se eligió el
+   período de redacción (c. 60 a c. 65), así que las filas de `CURADAS` quedan
+   fuera de la escritura de fechas, lugar y referencia.
+
+### Divergencia pendiente: 63 cambios más
+
+Con el blindaje puesto, `python scripts/merge_libros_biblia.py --check` sigue
+reportando **63 cambios y 1 fila nueva** en el resto de los libros: renombraría
+los sucesos al estilo «X completado», reemplazaría referencias (`Amós 1:1` →
+`Amós 9:15`), cambiaría lugares (Nahúm de Nínive a Judá) y vaciaría `fecha_fin`
+en varias cartas. Esa tabla quedó desincronizada de la curación posterior del
+CSV.
+
+**No corras `run_pipeline.py` sin revisar antes ese `--check`.** Reconciliar los
+63 casos es un trabajo aparte: hay que decidir, libro por libro, si manda la
+tabla o la curación del CSV.
 
 ## Sello de caché de los datos generados
 

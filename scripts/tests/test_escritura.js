@@ -55,24 +55,26 @@ for(const [id, huella, quien] of PERFIL_SERIE_A){
     'el suceso ' + id + ' no repite su título como descripción');
 }
 
-/* El rango de fechas no puede estar invertido: la 194 llegó a tener fin 41,
-   que era el año de Mateo.
-
-   Estos cuatro vienen invertidos de antes y por otro motivo: su `fecha_fin` no
-   guarda el fin de la escritura sino el comienzo del período que el libro
-   abarca (Ezequiel se completa c. 591 a.E.C. pero cubre desde 600). Arreglarlos
-   pide decidir qué representa la barra, así que quedan anotados como excepción
-   conocida para que el test siga detectando inversiones nuevas. */
-const INVERSION_CONOCIDA = new Set([106, 171, 172, 187]);
+/* Ningún rango puede estar invertido. Hubo dos causas distintas: la 194 tenía
+   fin 41, que era el año de Mateo; y cuatro libros proféticos guardaban en
+   `fecha_fin` un año anterior al de compleción. Hoy solo Ezequiel conserva
+   rango, porque es el único de los cuatro con «tiempo que abarca» en la tabla
+   de los libros de la Biblia. */
 const invertidos = (datos.eventos || [])
   .filter(e => e.fa != null && e.fa_fin != null && e.fa_fin < e.fa)
-  .map(e => e.id);
-const nuevos = invertidos.filter(id => !INVERSION_CONOCIDA.has(id));
-ok(nuevos.length === 0,
-  'ningún suceso nuevo tiene el rango de fechas invertido'
-  + (nuevos.length ? ' — aparecieron ' + nuevos.length + ': ' + nuevos.join(', ') : ''));
-ok(!invertidos.includes(194),
-  'el suceso de Lucas (194) ya no arranca en 57 para terminar en 41');
+  .map(e => e.id + ' (' + e.fa + '..' + e.fa_fin + ')');
+ok(invertidos.length === 0,
+  'ningún suceso tiene el rango de fechas invertido'
+  + (invertidos.length ? ' — hay ' + invertidos.length + ': ' + invertidos.join(', ') : ''));
+
+const ezequiel = evt(106);
+ok(ezequiel.fa === -613 && ezequiel.fa_fin === -591,
+  'Ezequiel (106) abarca 613 a c. 591 a.E.C. y la compleción cierra la barra'
+  + ' (fa=' + ezequiel.fa + ', fa_fin=' + ezequiel.fa_fin + ')');
+for(const id of [171, 172, 187]){
+  ok(evt(id).fa_fin == null,
+    'el suceso ' + id + ' queda puntual: su libro no tiene período que abarque');
+}
 
 /* El parche debe ser idempotente. */
 const r = spawnSync(process.execPath, [path.join(REPO, 'scripts/fix_mateo_perfil.js'), '--check'], {

@@ -29,6 +29,12 @@ TRACK_FIELDS = [
     'etiqueta_jw', 'fecha_estimada', 'jw_codigo', 'jw_linea',
 ]
 
+# Filas cuyas fechas, lugar y referencia se curaron desde curacion/nt_escritura.json
+# (ver docs/mejora-exploracion/PASO8-EPOCAS.md). Para los Evangelios se eligió el
+# período de redacción —Marcos c. 60 a c. 65— y no el período que el libro abarca
+# —29 a 33 E.C.—, que es lo que traen estas tablas, así que acá no se les toca.
+CURADAS = {'194', '377', '379', '380'}
+
 # filas duplicadas/erróneas de ejecuciones previas
 ORPHAN_IDS = {'341', '349', '197', '342', '401', '402', '195'} | {str(i) for i in range(424, 437)}
 
@@ -55,38 +61,63 @@ def build_descripcion(book):
     return '. '.join(parts) + '.'
 
 
+def es_descripcion_generada(texto):
+    """¿La descripción actual la escribió build_descripcion() o es curada?
+
+    Sin esto el merge pisa los perfiles editoriales de los Evangelios (audiencia,
+    porcentaje de contenido exclusivo) con un «Escritor: … Lugar de escritura: …».
+    """
+    t = (texto or '').strip()
+    if not t:
+        return True
+    return 'Escritor:' in t and 'Lugar de escritura:' in t
+
+
 def apply_book(row, book):
     prefijo = book.get('prefijo') or ''
     anio = int(book['anio'])
     ref = book.get('referencia') or ''
     _, ci, cf = parse_referencia(ref)
+    curada = str(row.get('id', '')).strip() in CURADAS
 
     row['nombre'] = book['nombre']
-    row['descripcion'] = build_descripcion(book)
-    row['fecha_texto'] = fmt_fecha(prefijo, anio)
-    row['fecha_anio'] = str(anio)
+    if es_descripcion_generada(row.get('descripcion')):
+        row['descripcion'] = build_descripcion(book)
     row['era'] = book['era']
     row['tipo_suceso'] = book.get('tipo_suceso') or 'redacción'
     row['personajes'] = book['escritor']
-    lugar = book.get('lugar') or ''
-    if book.get('lugar_incerto') and lugar and '(?)' not in lugar:
-        lugar = f'{lugar} (?)'
-    row['lugar_antiguo'] = lugar
-    if ref:
-        row['referencia'] = ref
+    if not curada:
+        lugar = book.get('lugar') or ''
+        if book.get('lugar_incerto') and lugar and '(?)' not in lugar:
+            lugar = f'{lugar} (?)'
+        row['lugar_antiguo'] = lugar
+        if ref:
+            row['referencia'] = ref
     row['libro'] = book['libro']
-    if ci:
+    if ci and not curada:
         row['capitulo_inicio'] = ci
         row['capitulo_fin'] = cf or ci
 
     anio_fin = book.get('anio_fin')
-    if anio_fin is not None:
-        row['fecha_fin'] = str(anio_fin)
-        pref_fin = book.get('prefijo_fin') or ''
-        row['fecha_fin_texto'] = fmt_fecha(pref_fin, int(anio_fin))
-    else:
+    prefijo_fin = book.get('prefijo_fin') or ''
+    if curada:
+        pass
+    elif anio_fin is None:
+        row['fecha_anio'] = str(anio)
+        row['fecha_texto'] = fmt_fecha(prefijo, anio)
         row['fecha_fin'] = ''
         row['fecha_fin_texto'] = ''
+    else:
+        # `anio` es cuándo se completó el libro y `anio_fin` el otro extremo del
+        # período que abarca, que en a.E.C. es el más antiguo. Hay que ordenarlos:
+        # escribirlos crudos dejaba el fin antes del inicio y la barra se dibujaba
+        # como un punto de 4 px con las fechas dadas vuelta (ids 106, 171, 172, 187).
+        (ini, pref_ini), (fin, pref_fin) = sorted(
+            [(int(anio_fin), prefijo_fin), (anio, prefijo)])
+        row['fecha_anio'] = str(ini)
+        row['fecha_texto'] = fmt_fecha(pref_ini, ini)
+        row['fecha_fin'] = str(fin)
+        row['fecha_fin_texto'] = fmt_fecha(pref_fin, fin)
 
     codigo, linea = ERA_JW.get(book['era'], ('', ''))
     row['jw_codigo'] = codigo or row.get('jw_codigo', '')
@@ -156,8 +187,16 @@ def dedupe_redaccion_rows(rows):
             continue
         keep = pick_canonical_id(group, clave)
         for r in group:
-            if int(r['id']) != keep:
-                remove.add(int(r['id']))
+            rid = int(r['id'])
+            if rid == keep:
+                continue
+            # Las filas curadas no se borran: se decidió conservar las dos series
+            # de los Evangelios porque las preguntas están atadas a ids concretos
+            # y curacion/grupos.json referencia unas y otras.
+            if str(rid) in CURADAS:
+                print(f'  keep  {rid} -> curada, no se deduplica contra {keep}')
+                continue
+            remove.add(rid)
     if remove:
         print(f'[info] eliminados {len(remove)} duplicados de redacción: {sorted(remove)}')
     return [r for r in rows if int(r['id']) not in remove], remove
@@ -273,11 +312,26 @@ def main():
             print(f'  ok    {rid} ({how}) -> {clave}')
 
     rows, eliminados = dedupe_redaccion_rows(rows)
+
+    # --check no escribe: este script reescribe la base externa y además puede
+    # borrar filas duplicadas, así que conviene poder ver qué haría antes.
+    if '--check' in sys.argv:
+        print(f'\n[check] no se escribe nada. {len(cambios)} cambio(s),'
+              f' {len(agregados)} nuevo(s), {len(eliminados)} a eliminar.')
+        for c in cambios:
+            print(f"  fila {c['id']} ({c['clave']}):")
+            for col, antes, ahora in c['diffs']:
+                print(f'      {col}: {antes!r} -> {ahora!r}')
+        for rid in sorted(eliminados):
+            print(f'  ELIMINARIA la fila {rid}')
+        return 1 if (cambios or agregados or eliminados) else 0
+
     save_rows(rows, fieldnames)
     write_report(ya_teniamos, agregados, cambios, eliminados)
     print(f'OK — {len(rows)} sucesos (+{len(agregados)} nuevos, {len(cambios)} cambios, {len(ya_teniamos)} ok, -{len(eliminados)} dup)')
     print(f'Reporte -> {REPORT}')
+    return 0
 
 
 if __name__ == '__main__':
-    main()
+    sys.exit(main() or 0)
