@@ -76,14 +76,19 @@ vm.runInContext([
   slice('function layoutLooseExpanded', 'function layoutLooseEventLanes', 'layoutLooseExpanded'),
   'this.looseFanHeight = looseFanHeight;',
   'this.looseMaxAbsForBudget = looseMaxAbsForBudget;',
+  'this.looseSlotsForBudget = looseSlotsForBudget;',
+  'this.looseComponents = looseComponents;',
   'this.layoutLooseExpanded = layoutLooseExpanded;',
   'this.SLOT_H = LOOSE_EVT_SLOT_H;',
+  'this.GAP_PX = LOOSE_EVT_GAP_PX;',
   'this.looseCaptionShift = looseCaptionShift;',
   'this.CAP_MAX_W = LOOSE_CAP_MAX_W;',
 ].join('\n'), ctx);
 
-const { looseFanHeight, looseMaxAbsForBudget, layoutLooseExpanded, SLOT_H,
+const { looseFanHeight, looseMaxAbsForBudget, looseSlotsForBudget,
+  looseComponents, layoutLooseExpanded, SLOT_H, GAP_PX,
   looseCaptionShift, CAP_MAX_W } = ctx;
+const LOOSE_EVT_SLOT_H = SLOT_H;
 
 ok(looseMaxAbsForBudget(0) === 0, 'sin alto libre no se despliega');
 ok(looseMaxAbsForBudget(undefined) === 0, 'sin dato de alto no se despliega');
@@ -126,8 +131,61 @@ const ARGS = [-1450, -1120, 900];
   /* Personajes ocupando la pantalla: no queda alto y hay que agrupar. */
   ok(layoutLooseExpanded(apinados, ...ARGS, 0) === null,
     'sin alto libre devuelve null para que el llamador agrupe');
-  ok(layoutLooseExpanded(apinados, ...ARGS, looseFanHeight(1, 1)) === null,
-    'con alto para una sola fila tampoco despliega siete');
+
+  /* Con alto para una sola fila, los siete apiñados no entran separados. Antes
+     esto devolvía null y el llamador agrupaba la banda entera; ahora la
+     decisión es por zona, así que agrupa solo el tramo que no cabe y lo
+     declara. Que no devuelva null es la mejora, no un fallo. */
+  const apretado = layoutLooseExpanded(apinados, ...ARGS, looseFanHeight(1, 1));
+  ok(apretado !== null,
+    'con alto para una sola fila resuelve agregando, en vez de rendirse');
+  if(apretado){
+    ok(apretado.mode === 'agrupado',
+      'si ninguna zona cabe, el modo declarado es «agrupado» (' + apretado.mode + ')');
+    ok(apretado.items.every(i=> i.isAggregate),
+      'los siete apiñados quedan dentro de agregados');
+    const ids = new Set(apretado.items.flatMap(i=> i.events.map(e=> e.id)));
+    ok(apinados.every(e=> ids.has(e.id)),
+      'agrupar no pierde ningún id');
+    /* Nunca dos controles en la misma posición: eso es lo que R9 prohíbe. */
+    const pos = apretado.items.map(i=> i.x + ':' + i.level);
+    ok(new Set(pos).size === pos.length,
+      'ningún par de controles comparte posición y nivel');
+  }
+}
+
+{
+  /* Decisión por zona: un tramo imposible no debe arrastrar a los que sí
+     tienen lugar de sobra. Era el defecto de fondo de R3: alcanzaba con que un
+     punto no entrara para agrupar toda la banda. */
+  const mezcla = [
+    ...Array.from({ length: 12 }, (_, i)=> ({ id: 700 + i, n: 'Denso ' + i, fa: 10 })),
+    { id: 800, n: 'Lejano A', fa: 400 },
+    { id: 801, n: 'Lejano B', fa: 800 },
+  ];
+  const r = layoutLooseExpanded(mezcla, ...ARGS, looseFanHeight(1, 1));
+  ok(r !== null, 'la mezcla se resuelve');
+  if(r){
+    ok(r.mode === 'mixto', 'el modo declarado es «mixto» (' + r.mode + ')');
+    const sueltos = r.items.filter(i=> !i.isAggregate).map(i=> i.ev.n);
+    ok(sueltos.includes('Lejano A') && sueltos.includes('Lejano B'),
+      'los sucesos separados se despliegan aunque el racimo denso no quepa');
+    ok(r.items.some(i=> i.isAggregate && i.events.length === 12),
+      'el racimo denso queda en un solo agregado');
+    ok(r.expandidos === 2 && r.agregados === 12,
+      'el layout informa cuántos se desplegaron y cuántos se agruparon');
+  }
+}
+
+{
+  /* Presupuesto impar: con lugar para tres filas hay que usar las tres.
+     looseMaxAbsForBudget contaba pares arriba/abajo, así que descartaba la
+     tercera por no tener pareja. */
+  const tres = looseSlotsForBudget(looseFanHeight(1, 1) + LOOSE_EVT_SLOT_H);
+  ok(tres >= 3, 'un presupuesto con lugar para tres filas devuelve tres (' + tres + ')');
+  const orden = LTDensity.levelOrder({ slots: 3 });
+  ok(orden.length === 3, 'el orden de niveles usa las tres filas (' + orden.join(',') + ')');
+  ok(orden[0] === 0, 'la primera fila es el riel');
 }
 
 {

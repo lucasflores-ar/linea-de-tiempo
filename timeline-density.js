@@ -245,43 +245,75 @@ function membersEvents(node){
 }
 
 /**
- * Reparte puntos ya ordenados por x en niveles alrededor de un riel horizontal,
- * probando 0, 1, −1, 2, −2… hasta `maxAbs`. Un punto entra en el primer nivel
- * cuyo último ocupante quede a `gapPx` o más.
+ * Orden de preferencia de niveles: primero el riel, después abajo, después
+ * arriba, alejándose de a poco.
  *
- * `ok:false` significa que a algún punto no le quedó nivel libre y se lo apiló
- * igual en el 0. Ese es el dato que permite decidir entre desplegar y agregar:
- * si no hay filas suficientes para mostrarlos separados, conviene agruparlos en
- * vez de superponerlos.
- *
- * xs: number[] ordenado. Devuelve { levels, ok, maxDown, maxUp, rows }.
+ * Con `slots` se corta en la cantidad real de filas que caben. Antes solo
+ * existía `maxAbs`, que reserva los niveles de a pares arriba/abajo, así que un
+ * presupuesto impar descartaba su última fila por no tener pareja: con lugar
+ * para tres filas se usaban dos.
  */
-function fanLevels(xs, opts){
-  const gap = Math.max(1, Number(opts && opts.gapPx) || 1);
+function levelOrder(opts){
+  const slots = Number(opts && opts.slots);
+  if(Number.isFinite(slots) && slots > 0){
+    const orden = [0];
+    for(let i = 1; orden.length < slots; i++){
+      orden.push(i);
+      if(orden.length < slots) orden.push(-i);
+    }
+    return orden;
+  }
   const maxAbs = Math.max(0, Math.floor(Number(opts && opts.maxAbs) || 0));
   const orden = [0];
   for(let i = 1; i <= maxAbs; i++) orden.push(i, -i);
+  return orden;
+}
+
+/**
+ * Reparte puntos ya ordenados por x en niveles alrededor de un riel horizontal.
+ * Un punto entra en el primer nivel cuyo último ocupante quede a `gapPx` o más.
+ *
+ * A un punto sin nivel libre se le pone `level:null` y su índice va a
+ * `sinLugar`. Antes se lo apilaba en el 0, que ya estaba ocupado: con 351
+ * sucesos en la misma fecha salían dos controles en la misma posición
+ * compitiendo por el mismo clic. Nunca hay que aceptar una colocación que ya
+ * se sabe que colisiona; quien llama decide si agrega ese punto o pide otra
+ * fila.
+ *
+ * xs: number[] ordenado. Devuelve { levels, ok, sinLugar, maxDown, maxUp, rows }.
+ */
+function fanLevels(xs, opts){
+  const gap = Math.max(1, Number(opts && opts.gapPx) || 1);
+  const orden = levelOrder(opts);
 
   const ultimoX = new Map();
   const levels = [];
-  let ok = true;
-  for(const x of xs || []){
+  const sinLugar = [];
+  const lista = xs || [];
+  for(let i = 0; i < lista.length; i++){
+    const x = lista[i];
     let elegido = null;
     for(const lv of orden){
       const last = ultimoX.has(lv) ? ultimoX.get(lv) : -Infinity;
       if(x - last >= gap){ elegido = lv; break; }
     }
-    if(elegido == null){ elegido = 0; ok = false; }
+    if(elegido == null){
+      sinLugar.push(i);
+      levels.push(null);
+      continue;
+    }
     ultimoX.set(elegido, x);
     levels.push(elegido);
   }
 
   let maxDown = 0, maxUp = 0;
   for(const lv of levels){
+    if(lv == null) continue;
     if(lv > maxDown) maxDown = lv;
     if(-lv > maxUp) maxUp = -lv;
   }
-  return { levels, ok, maxDown, maxUp, rows: maxDown + maxUp + 1 };
+  return { levels, ok: sinLugar.length === 0, sinLugar,
+           maxDown, maxUp, rows: maxDown + maxUp + 1 };
 }
 
 global.LTDensity = {
@@ -296,5 +328,6 @@ global.LTDensity = {
   enforceTrackBudget,
   clampOpts,
   fanLevels,
+  levelOrder,
 };
 })(typeof window !== 'undefined' ? window : globalThis);

@@ -2449,6 +2449,45 @@ function looseMaxAbsForBudget(availH){
   return Math.floor(libre / (LOOSE_EVT_SLOT_H * 2));
 }
 
+/**
+ * Cuántas filas de sucesos entran en el alto libre, contadas de a una.
+ *
+ * looseMaxAbsForBudget cuenta pares arriba/abajo, así que un presupuesto con
+ * lugar para tres filas usaba dos y desperdiciaba la tercera. Acá se cuentan
+ * las filas reales: el riel más las que se puedan sumar, aunque queden
+ * asimétricas (dos abajo y una arriba, por ejemplo).
+ */
+function looseSlotsForBudget(availH){
+  const libre = (availH || 0) - looseFanHeight(0, 0) - LOOSE_EVT_EXPAND_MARGIN;
+  if(!(libre > 0)) return 1;   // solo el riel
+  return 1 + Math.floor(libre / LOOSE_EVT_SLOT_H);
+}
+
+/**
+ * Parte los puntos en componentes de conflicto: tramos que compiten por el
+ * mismo espacio horizontal.
+ *
+ * Dos puntos separados por `gap` o más nunca se pisan, así que un corte ahí
+ * deja tramos independientes. Eso es lo que permite decidir por zona en vez de
+ * todo o nada: un tramo apretado se agrega sin arrastrar a los demás, y como
+ * el corte respeta el gap, colocar cada tramo por separado no puede generar
+ * colisiones entre tramos.
+ */
+function looseComponents(puntos, gap){
+  const comps = [];
+  let actual = null;
+  for(const p of puntos){
+    if(actual && p.x - actual.ultimoX < gap){
+      actual.puntos.push(p);
+      actual.ultimoX = p.x;
+    } else {
+      actual = { puntos: [p], ultimoX: p.x };
+      comps.push(actual);
+    }
+  }
+  return comps;
+}
+
 /* Espejo de .loose-evt-zone__title en el CSS: max-width y fuente. */
 const LOOSE_CAP_MAX_W = 108;
 const LOOSE_CAP_EDGE_PAD = 4;
@@ -2591,20 +2630,22 @@ function collectLooseEvents(activePeople, yMin, yMax, query, yaRepresentados){
 }
 
 /**
- * Un suceso por fila, sin agregados, aprovechando el alto libre.
+ * Sucesos sueltos repartidos en filas, decidiendo zona por zona.
  *
- * Devuelve null cuando no entran todos separados; ahí el llamador agrega, que
- * es preferible a superponerlos. Es todo o nada a propósito: desplegar una
- * parte y agrupar el resto deja dos lenguajes visuales mezclados en la misma
- * banda y no se entiende por qué unos sí y otros no.
+ * Antes era todo o nada: si a un solo punto no le quedaba lugar, se devolvía
+ * null y se agregaba la banda entera. Con eso, una zona apretada dejaba
+ * agrupados sucesos que tenían lugar de sobra a 300 px de distancia. Ahora los
+ * puntos se parten en componentes de conflicto —tramos que compiten por el
+ * mismo espacio horizontal— y cada tramo se resuelve por su cuenta: se
+ * despliega si sus miembros entran, y si no, se agrega solo ese tramo.
+ *
+ * Mezclar tramos desplegados con tramos agrupados es legible siempre que el
+ * agregado se identifique como tal, que es lo que hace su insignia con el
+ * número de miembros.
  */
 function layoutLooseExpanded(sorted, yMin, yMax, chartW, availH){
   if(!(window.LTDensity && typeof LTDensity.fanLevels === 'function')) return null;
   if(!(availH > 0)) return null;
-  /* Puede dar 0 y aun así servir: si los sucesos están separados en el eje
-     entran todos en el riel y no hacen falta filas extra. Quien decide es
-     `fan.ok`, no el presupuesto. */
-  const maxAbs = looseMaxAbsForBudget(availH);
 
   const puntos = sorted.map(ev=>{
     const y = chartYear(ev) ?? ev.fa;
@@ -2614,30 +2655,56 @@ function layoutLooseExpanded(sorted, yMin, yMax, chartW, availH){
      tienen fecha y acá se perderían. */
   if(!puntos.length || puntos.some(p=> !Number.isFinite(p.x))) return null;
 
-  const fan = LTDensity.fanLevels(puntos.map(p=> p.x), {
-    gapPx: LOOSE_EVT_GAP_PX,
-    maxAbs,
-  });
-  if(!fan.ok) return null;
+  const slots = looseSlotsForBudget(availH);
+  const comps = looseComponents(puntos, LOOSE_EVT_GAP_PX);
 
-  const needH = looseFanHeight(fan.maxDown, fan.maxUp);
+  const items = [];
+  let expandidos = 0, agregados = 0;
+  for(const comp of comps){
+    const fan = LTDensity.fanLevels(comp.puntos.map(p=> p.x), {
+      gapPx: LOOSE_EVT_GAP_PX,
+      slots,
+    });
+    /* El tramo entra separado solo si a todos sus miembros les tocó nivel y el
+       abanico que necesitan cabe en el alto libre. */
+    const cabe = fan.ok && looseFanHeight(fan.maxDown, fan.maxUp) <= availH;
+    if(cabe){
+      comp.puntos.forEach((p, i)=> items.push({
+        ev: p.ev, x: p.x, y: p.y, level: fan.levels[i],
+        isAggregate: false, events: [p.ev],
+      }));
+      expandidos += comp.puntos.length;
+      continue;
+    }
+    /* Este tramo no cabe: se agrega solo él, en el riel y en su propia x. */
+    const medio = comp.puntos[Math.floor(comp.puntos.length / 2)];
+    items.push({
+      ev: null, x: medio.x, y: medio.y, level: 0,
+      isAggregate: true, events: comp.puntos.map(p=> p.ev),
+    });
+    agregados += comp.puntos.length;
+  }
+
+  if(!items.length) return null;
+
+  const maxDown = Math.max(0, ...items.map(i=> i.level));
+  const maxUp = Math.max(0, ...items.map(i=> -i.level));
+  const needH = looseFanHeight(maxDown, maxUp);
   if(needH > availH) return null;
 
-  const items = puntos.map((p, i)=> ({
-    ev: p.ev,
-    x: p.x,
-    y: p.y,
-    level: fan.levels[i],
-    isAggregate: false,
-    events: [p.ev],
-  }));
   const height = Math.max(LOOSE_EVT_MIN_H, needH, availH || 0);
-  const baseY = height - LOOSE_EVT_BASE_PAD - fan.maxDown * LOOSE_EVT_SLOT_H;
+  const baseY = height - LOOSE_EVT_BASE_PAD - maxDown * LOOSE_EVT_SLOT_H;
   for(const it of items){
     it.baseY = baseY;
     it.top = baseY + it.level * LOOSE_EVT_SLOT_H;
   }
-  return { items, height, baseY, needH, density: null, mode: 'expandido' };
+  /* El modo se refleja en el contador, así que tiene que distinguir los tres
+     casos: si algo quedó agrupado, el usuario merece saber por qué no ve todos
+     los títulos. */
+  const mode = agregados === 0 ? 'expandido'
+    : (expandidos === 0 ? 'agrupado' : 'mixto');
+  return { items, height, baseY, needH, density: null, mode,
+           expandidos, agregados };
 }
 
 /**
@@ -2687,7 +2754,15 @@ function layoutLooseEventLanes(events, yMin, yMax, chartW, availH){
           break;
         }
       }
-      if(chosen == null) chosen = 0;
+      /* Sin nivel libre se abre uno nuevo. Antes se caía al 0, que ya estaba
+         ocupado: con muchos sucesos en la misma fecha salían dos agregados en
+         la misma posición peleando por el mismo clic, y una prueba de
+         cobertura pasaba igual porque los ids estaban todos. */
+      if(chosen == null){
+        const abs = ([...levelLastX.keys()]
+          .reduce((m, k)=> Math.max(m, Math.abs(k)), 0)) + 1;
+        chosen = levelLastX.has(abs) ? -abs : abs;
+      }
       levelLastX.set(chosen, x);
       layoutItems.push({
         node,
@@ -4718,11 +4793,16 @@ function render(){
   const hiddenNote = hiddenList.length ? ` · ${hiddenList.length} ocultos` : '';
   const trackNote = rowLayout === 'compact' ? ` · ${totalTracks} pistas` : '';
   const looseNote = looseEvents.length ? ` · ${looseEvents.length} sucesos sueltos` : '';
+  /* El modo mixto necesita explicarse: si unas zonas muestran títulos y otras
+     un número, el usuario tiene que saber que lo agrupado fue por falta de
+     lugar y no por capricho. */
   const densNote = (looseLayout && looseLayout.density && looseLayout.density.summary)
     ? ' · vista resumida'
     : (looseLayout && looseLayout.mode === 'expandido' && looseEvents.length > 1)
       ? ' · sucesos desplegados'
-      : '';
+      : (looseLayout && looseLayout.mode === 'mixto')
+        ? ` · ${looseLayout.expandidos} desplegados, ${looseLayout.agregados} agrupados por falta de espacio`
+        : '';
   const parts = [];
   if(personCount) parts.push(personCount + (personCount === 1 ? ' personaje' : ' personajes'));
   if(groupCount) parts.push(groupCount + (groupCount === 1 ? ' grupo' : ' grupos'));
