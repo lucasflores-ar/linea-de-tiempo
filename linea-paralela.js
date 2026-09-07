@@ -2547,12 +2547,41 @@ function eventInChipScope(ev){
   return false;
 }
 
+/**
+ * Registro de cobertura visual: qué ids ya tienen una representación en las
+ * filas, sea como fila de suceso propia o como miembro de un agregado.
+ *
+ * Hacía falta porque la zona de sucesos se construía por descarte —«lo que no
+ * es de ningún personaje visible»— y ese descarte no restaba lo que ya estaba
+ * dibujado más arriba. En la última semana a 1920 px eso repetía 31 ids: los
+ * mismos sucesos dentro de un agregado y otra vez sueltos abajo.
+ */
+function collectRepresentedEventIds(laneData){
+  const ids = new Set();
+  for(const block of laneData || []){
+    for(const track of block.tracks || []){
+      for(const pe of track.people || []){
+        /* Miembros de un agregado o de un grupo curado. */
+        for(const ev of pe.groupEvents || []){
+          if(ev && ev.id != null) ids.add(ev.id);
+        }
+        /* Fila de suceso propia. */
+        if(pe.isEvent && pe.ev && pe.ev.id != null) ids.add(pe.ev.id);
+      }
+    }
+  }
+  return ids;
+}
+
 /** Sucesos del alcance actual que no van en la barra de ningún personaje visible. */
-function collectLooseEvents(activePeople, yMin, yMax, query){
+function collectLooseEvents(activePeople, yMin, yMax, query, yaRepresentados){
   const nq = norm(query || '');
   const people = activePeople || [];
+  const cubiertos = yaRepresentados || null;
   return D.eventos.filter(ev=>{
     if(!eventInChipScope(ev)) return false;
+    /* Si ya tiene representación arriba, no se repite abajo. */
+    if(cubiertos && cubiertos.has(ev.id)) return false;
     const y = chartYear(ev) ?? ev.fa;
     if(y == null || y < yMin || y > yMax) return false;
     if(nq && !(ev._n || norm(ev.n)).includes(nq) && !(ev._nref || norm(ev.ref || '')).includes(nq)) return false;
@@ -4437,8 +4466,10 @@ function render(){
       }
     }
   }
+  /* Lo que ya está dibujado en las filas no se vuelve a dibujar abajo. */
+  const representedEventIds = collectRepresentedEventIds(laneData);
   const looseEvents = showMarkers
-    ? collectLooseEvents(activePeople, yMin, yMax, query)
+    ? collectLooseEvents(activePeople, yMin, yMax, query, representedEventIds)
     : [];
   if(!laneData.some(b=>b.tracks.length) && !hiddenList.length && !looseEvents.length){
     labelsCol.innerHTML = '';
