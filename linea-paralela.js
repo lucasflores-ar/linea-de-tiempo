@@ -9,6 +9,44 @@ let detailRequestId = 0;
 let drawerSelectId = 0;
 const DETAIL_URL = 'linea-tiempo-detalle.json?v=1';
 
+/** Índices canónicos (Paso 2); se reconstruyen al cargar detalle diferido. */
+let dataIndexes = { byEventId: new Map(), questionsByHid: new Map() };
+function rebuildDataIndexes(){
+  if(window.LTSelectors && typeof LTSelectors.buildIndexes === 'function'){
+    dataIndexes = LTSelectors.buildIndexes(D);
+  } else {
+    const byEventId = new Map();
+    const questionsByHid = new Map();
+    for(const ev of (D.eventos || [])){
+      if(ev && ev.id != null) byEventId.set(Number(ev.id), ev);
+    }
+    for(const p of (D.preguntas || [])){
+      if(!p || p.hid == null) continue;
+      const hid = Number(p.hid);
+      if(!questionsByHid.has(hid)) questionsByHid.set(hid, []);
+      questionsByHid.get(hid).push(p);
+    }
+    dataIndexes = { byEventId, questionsByHid };
+  }
+}
+rebuildDataIndexes();
+function eventById(id){
+  const n = Number(id);
+  if(Number.isFinite(n) && dataIndexes.byEventId.has(n)) return dataIndexes.byEventId.get(n);
+  return (D.eventos || []).find(e=> String(e.id) === String(id)) || null;
+}
+function questionsForEvent(id){
+  const n = Number(id);
+  if(Number.isFinite(n) && dataIndexes.questionsByHid.has(n)) return dataIndexes.questionsByHid.get(n);
+  return (D.preguntas || []).filter(p=> p.hid === n || String(p.hid) === String(id));
+}
+
+/** Vista compartible (Paso 4 usará Explorar en UI; aquí solo estado/URL). */
+let appVista = (window.LTState && LTState.VISTA.COMPARAR) || 'comparar';
+let searchScope = (window.LTState && LTState.QSCOPE.INTERVALO) || 'intervalo';
+let suppressHashSync = false;
+let hashNavReady = false;
+
 function ensureDetailLoaded(){
   if(detailStatus === 'ready') return Promise.resolve({ ok: true });
   if(detailStatus === 'loading' && detailPromise) return detailPromise;
@@ -24,9 +62,10 @@ function ensureDetailLoaded(){
       if(reqId !== detailRequestId) return { ok: false, stale: true };
       if(det.preguntas?.length) D.preguntas = det.preguntas;
       for(const ed of det.eventosDetail || []){
-        const ev = D.eventos.find(e=>e.id === ed.id);
+        const ev = eventById(ed.id) || D.eventos.find(e=>e.id === ed.id);
         if(ev) Object.assign(ev, ed);
       }
+      rebuildDataIndexes();
       detailStatus = 'ready';
       detailError = null;
       return { ok: true };
@@ -731,6 +770,7 @@ function endPinch(){
   pinchPendingTouches = null;
   if(pinchRaf){ cancelAnimationFrame(pinchRaf); pinchRaf = 0; }
   chartScroll?.classList.remove('is-pinching');
+  syncHash();
 }
 function movePinch(touches){
   if(!pinchState || !lastLayout) return;
@@ -858,6 +898,7 @@ function applyFocusZoom(newMin, newMax, dataMin, dataMax){
   saveViewWindow();
   render._scrolled = true;
   render();
+  syncHash();
 }
 function zoomFocusAt(year, factor, dataMin, dataMax){
   const { min: vMin, max: vMax } = getLogicalRange(dataMin, dataMax);
@@ -876,6 +917,7 @@ function resetFocusZoom(){
   saveViewWindow();
   render._scrolled = true;
   render();
+  syncHash();
 }
 function updateFocusUi(dataMin, dataMax){
   const focused = viewWindow && !isFullFocusRange(viewWindow.min, viewWindow.max, dataMin, dataMax);
@@ -1068,29 +1110,71 @@ function computeRangeFromLaneData(laneData){
   if(!years.length) return [-997, -580];
   return [Math.min(...years), Math.max(...years)];
 }
-function syncHash(){
+function getShareableState(){
+  const filas = LANE_ORDER.filter(id=> selLanes.has(id));
+  let ev = null;
+  let grupo = null;
+  if(openDrawerId && String(openDrawerId).startsWith('e')){
+    const n = parseInt(String(openDrawerId).slice(1), 10);
+    if(Number.isFinite(n)) ev = n;
+  } else if(openDrawerId && String(openDrawerId).startsWith('g')){
+    grupo = String(openDrawerId).slice(1);
+  }
+  return {
+    vista: appVista,
+    filas,
+    q: query || '',
+    qscope: searchScope,
+    ymin: viewWindow ? viewWindow.min : null,
+    ymax: viewWindow ? viewWindow.max : null,
+    ev,
+    grupo,
+  };
+}
+function syncHash(opts){
+  if(suppressHashSync) return;
+  if(window.LTState && typeof LTState.applyHash === 'function'){
+    LTState.applyHash(getShareableState(), LANE_ORDER, opts || { push: false });
+    return;
+  }
   const ids = LANE_ORDER.filter(id=>selLanes.has(id));
   const parts = ['filas=' + ids.join(',')];
   if(openDrawerId && String(openDrawerId).startsWith('e')){
     parts.push('ev=' + String(openDrawerId).slice(1));
+  } else if(openDrawerId && String(openDrawerId).startsWith('g')){
+    parts.push('grupo=' + encodeURIComponent(String(openDrawerId).slice(1)));
   }
   history.replaceState(null, '', '#' + parts.join('&'));
 }
 function parseHashState(h){
-  const out = { lanes: null, evId: null };
+  const out = { lanes: null, evId: null, grupo: null, q: null, qscope: null, vista: null, ymin: null, ymax: null };
   if(!h) return out;
-  if(/filas=/.test(h) || /(?:^|&)ev=/.test(h)){
+  if(LEGACY_HASH[h]){
+    out.lanes = new Set(LEGACY_HASH[h]);
+    return out;
+  }
+  if(window.LTState && typeof LTState.parseShareable === 'function'){
+    const s = LTState.parseShareable(h, LANE_ORDER);
+    if(Array.isArray(s.filas)) out.lanes = new Set(s.filas);
+    if(s.ev != null) out.evId = s.ev;
+    if(s.grupo) out.grupo = s.grupo;
+    if(s.q) out.q = s.q;
+    if(s.qscope) out.qscope = s.qscope;
+    if(s.vista) out.vista = s.vista;
+    out.ymin = s.ymin;
+    out.ymax = s.ymax;
+    return out;
+  }
+  if(/filas=/.test(h) || /(?:^|&)ev=/.test(h) || /(?:^|&)grupo=/.test(h)){
     const filas = h.match(/filas=([^&]*)/);
     const ev = h.match(/(?:^|&)ev=(\d+)/);
+    const grupo = h.match(/(?:^|&)grupo=([^&]*)/);
     if(filas){
       const ids = filas[1].split(',').filter(id=> id && LANE_ORDER.includes(id));
       out.lanes = new Set(ids);
     }
     if(ev) out.evId = parseInt(ev[1], 10);
-    return out;
-  }
-  if(LEGACY_HASH[h]){
-    out.lanes = new Set(LEGACY_HASH[h]);
+    if(grupo) out.grupo = decodeURIComponent(grupo[1]);
     return out;
   }
   const ids = h.split(',').filter(id=>LANE_ORDER.includes(id));
@@ -1249,6 +1333,125 @@ function findPeByKey(key){
     }
   }
   return null;
+}
+
+/** Grupo curado por ID estable (p. ej. ministerio:32), aunque el carril esté oculto. */
+function findGroupById(id){
+  if(!id) return null;
+  const direct = findPeByKey(id);
+  if(direct && direct.isEventGroup) return direct;
+  for(const block of buildMinisterioBlocks()){
+    for(const pe of block.people){
+      if(String(pe.id) === String(id)) return pe;
+    }
+  }
+  return null;
+}
+
+/** Selector canónico para lista/explorador (Paso 3+); no excluye por personaje oculto. */
+function selectCanonicalEvents(opts){
+  const base = {
+    q: query,
+    qscope: searchScope,
+    ymin: viewWindow ? viewWindow.min : null,
+    ymax: viewWindow ? viewWindow.max : null,
+    inChipScope: typeof eventInChipScope === 'function' ? eventInChipScope : null,
+  };
+  const merged = Object.assign(base, opts || {});
+  if(window.LTSelectors && typeof LTSelectors.selectEvents === 'function'){
+    return LTSelectors.selectEvents(D, merged);
+  }
+  const qn = norm(merged.q || '');
+  const seen = new Set();
+  const out = [];
+  for(const ev of D.eventos || []){
+    if(!ev || ev.id == null || ev.tipo === 'reinado') continue;
+    if(seen.has(ev.id)) continue;
+    if(typeof merged.inChipScope === 'function' && !merged.inChipScope(ev)) continue;
+    if(qn){
+      const hay = norm(ev.n).includes(qn) || norm(ev.ref || '').includes(qn) || norm(ev.d || '').includes(qn);
+      if(!hay) continue;
+    }
+    seen.add(ev.id);
+    out.push(ev);
+  }
+  return out;
+}
+
+function normalizeFocusWindow(min, max){
+  if(min == null || max == null || !Number.isFinite(min) || !Number.isFinite(max)) return null;
+  let a = Math.min(min, max);
+  let b = Math.max(min, max);
+  if(b - a < MIN_FOCUS_SPAN){
+    const c = (a + b) / 2;
+    a = c - MIN_FOCUS_SPAN / 2;
+    b = c + MIN_FOCUS_SPAN / 2;
+  }
+  return { min: a, max: b };
+}
+
+function applyAppVista(v){
+  if(window.LTState && typeof LTState.clampVista === 'function'){
+    appVista = LTState.clampVista(v);
+  } else {
+    appVista = v === 'explorar' ? 'explorar' : 'comparar';
+  }
+  document.documentElement.setAttribute('data-vista', appVista);
+}
+
+function applyShareableState(state, opts){
+  const o = opts || {};
+  suppressHashSync = true;
+  try{
+    if(state.lanes){
+      selLanes = new Set([...state.lanes].filter(id=> LANE_ORDER.includes(id)));
+      normalizeExclusiveLanes();
+      try{ localStorage.setItem('lt-par-lanes', JSON.stringify([...selLanes])); }catch(e){}
+    }
+    if(state.q != null){
+      query = String(state.q || '');
+      syncSearchFields(query);
+    }
+    if(state.qscope){
+      searchScope = (window.LTState && LTState.clampQscope)
+        ? LTState.clampQscope(state.qscope)
+        : (state.qscope === 'todo' ? 'todo' : 'intervalo');
+    }
+    if(state.vista) applyAppVista(state.vista);
+    if(o.fromHistory){
+      const win = normalizeFocusWindow(state.ymin, state.ymax);
+      viewWindow = win;
+      saveViewWindow();
+    } else {
+      const win = normalizeFocusWindow(state.ymin, state.ymax);
+      if(win){
+        viewWindow = win;
+        saveViewWindow();
+      }
+    }
+  } finally {
+    suppressHashSync = false;
+  }
+}
+
+function openFromShareable(state){
+  const prevReady = hashNavReady;
+  hashNavReady = false;
+  try{
+    if(state.evId != null){
+      const deepEv = eventById(state.evId);
+      if(deepEv){ openDrawer(deepEv); return; }
+    }
+    if(state.grupo){
+      const pe = findGroupById(state.grupo);
+      if(pe){ openEventGroupDrawer(pe); return; }
+    }
+    if(openDrawerId && (String(openDrawerId).startsWith('e') || String(openDrawerId).startsWith('g'))){
+      closeDrawer();
+    }
+  } finally {
+    hashNavReady = prevReady;
+  }
 }
 
 function trackRowHeight(L, count){
@@ -1469,13 +1672,22 @@ function ministerioYearTitle(y){
   return `${y} E.C.`;
 }
 
-function evGroupToRow(title, events, barKey){
+function stableGroupRowId(kind, key, barKey){
+  if(window.LTSelectors && typeof LTSelectors.stableGroupId === 'function'){
+    return LTSelectors.stableGroupId(kind, key);
+  }
+  groupRowSeq += 1;
+  return `grp-${barKey || kind}-${key != null ? key : groupRowSeq}`;
+}
+
+function evGroupToRow(title, events, barKey, stableKey){
   const years = events.map(e=> chartYear(e)).filter(y=> y != null);
   const inicio = years.length ? Math.min(...years) : 0;
   const fin = years.length ? Math.max(...years) : inicio;
-  groupRowSeq += 1;
+  const kind = barKey === 'sem' ? 'semana' : 'ministerio';
+  const key = stableKey != null ? stableKey : ('seq-' + (++groupRowSeq));
   return {
-    id: `grp-${barKey}-${groupRowSeq}`,
+    id: stableGroupRowId(kind, key, barKey),
     n: title,
     inicio, fin,
     completion: inicio,
@@ -1502,7 +1714,7 @@ function buildMinisterioBlocks(){
     blocks.push({
       lane: 'ministerio-antes-bautismo',
       meta: { key:'jes', color:'var(--lane-jes)', label: 'Antes de bautizarse' },
-      people: [evGroupToRow('Antes de bautizarse', antesEvents, 'jes')],
+      people: [evGroupToRow('Antes de bautizarse', antesEvents, 'jes', 'antes-bautismo')],
     });
   }
 
@@ -1525,7 +1737,7 @@ function buildMinisterioBlocks(){
   }
   const yearPeople = [29, 30, 31, 32, 33]
     .filter(y=> byYear.has(y))
-    .map(y=> evGroupToRow(ministerioYearTitle(y), byYear.get(y), 'jes'));
+    .map(y=> evGroupToRow(ministerioYearTitle(y), byYear.get(y), 'jes', String(y)));
   if(yearPeople.length){
     blocks.push({
       lane: 'ministerio-post-bautismo',
@@ -2584,7 +2796,7 @@ function openDrawerFill(ev, opts = {}){
       aria: 'Abrir ' + drawerRelNombre(r.otro),
     })).join('');
     bindRelEdgeControls(relEl, id=>{
-      const ev2 = D.eventos.find(x=>x.id === id);
+      const ev2 = eventById(id);
       if(ev2) openDrawer(ev2);
     });
   } else {
@@ -2595,7 +2807,7 @@ function openDrawerFill(ev, opts = {}){
   document.getElementById('d-par').innerHTML = pot
     ? '<span class="pw">Potencia mundial: '+potIconHtml(pot[0])+' '+pot[1]+'</span> <span style="color:var(--mut)">('+fmtFechaDrawer(pot[3])+' a '+fmtFechaDrawer(pot[4])+')</span>'
     : '<span style="color:var(--mut)">Antes de las potencias mundiales de la cronología JW (Egipto desde 1600 a. E. C.).</span>';
-  const qs = (D.preguntas || []).filter(p=>p.hid === ev.id);
+  const qs = questionsForEvent(ev.id);
   const listEl = document.getElementById('d-qlist');
   const moreEl = document.getElementById('d-more');
   if(loadState === 'loading' && detailStatus !== 'ready'){
@@ -2628,7 +2840,7 @@ function openDrawerFill(ev, opts = {}){
   openDrawerId = 'e' + ev.id;
   const copyBtn = document.getElementById('d-copy-link');
   if(copyBtn) copyBtn.hidden = false;
-  syncHash();
+  syncHash({ push: hashNavReady });
   afterDrawerOpen(wasOpen);
 }
 
@@ -2678,7 +2890,7 @@ function openEventGroupDrawerFill(pe, opts = {}){
     aria: 'Abrir suceso: ' + ev.n,
   })).join('');
   bindRelEdgeControls(relEl, id=>{
-    const ev2 = D.eventos.find(x=>x.id === id);
+    const ev2 = eventById(id);
     if(ev2) openDrawer(ev2);
   });
   const pot = drawerPotenciaOf(pe.inicio);
@@ -2688,8 +2900,8 @@ function openEventGroupDrawerFill(pe, opts = {}){
   const seen = new Set();
   const qs = [];
   for(const ev of events){
-    for(const p of (D.preguntas || [])){
-      if(p.hid === ev.id && !seen.has(p.id)){ seen.add(p.id); qs.push(p); }
+    for(const p of questionsForEvent(ev.id)){
+      if(!seen.has(p.id)){ seen.add(p.id); qs.push(p); }
     }
   }
   const listEl = document.getElementById('d-qlist');
@@ -2721,7 +2933,8 @@ function openEventGroupDrawerFill(pe, opts = {}){
   overlay.classList.add('on');
   openDrawerId = 'g' + pe.id;
   const copyBtn = document.getElementById('d-copy-link');
-  if(copyBtn) copyBtn.hidden = true;
+  if(copyBtn) copyBtn.hidden = false;
+  syncHash({ push: hashNavReady });
   afterDrawerOpen(wasOpen);
 }
 
@@ -2791,7 +3004,7 @@ function openPersonDrawerFill(pe, opts = {}){
       aria: 'Abrir suceso: ' + ev.n,
     })).join('');
     bindRelEdgeControls(relEl, id=>{
-      const ev2 = D.eventos.find(x=>x.id === id);
+      const ev2 = eventById(id);
       if(ev2) openDrawer(ev2);
     });
   } else {
@@ -4007,6 +4220,7 @@ function applySearchQuery(val){
   query = (val || '').trim();
   syncSearchFields(query);
   scheduleRender();
+  syncHash();
 }
 function isSearchPopOpen(){
   return !!(searchPop && searchPop.hidden === false);
@@ -4192,12 +4406,27 @@ themeBtn.addEventListener('click', ()=>{
 const fromHashState = parseHashState(location.hash.replace('#',''));
 const fromHash = fromHashState.lanes;
 let pendingHashEvId = fromHashState.evId;
+let pendingHashGrupo = fromHashState.grupo || null;
 if(fromHash){
   selLanes = fromHash;
 }else if(isFirstVisit){
   selLanes = new Set(DEFAULT_LANES);
 }
 normalizeExclusiveLanes();
+if(fromHashState.vista) applyAppVista(fromHashState.vista);
+else applyAppVista(appVista);
+if(fromHashState.qscope){
+  searchScope = (window.LTState && LTState.clampQscope)
+    ? LTState.clampQscope(fromHashState.qscope)
+    : (fromHashState.qscope === 'todo' ? 'todo' : 'intervalo');
+}
+if(fromHashState.ymin != null && fromHashState.ymax != null){
+  const win = normalizeFocusWindow(fromHashState.ymin, fromHashState.ymax);
+  if(win){
+    viewWindow = win;
+    saveViewWindow();
+  }
+}
 if(isFirstVisit){
   autoFit = true;
   try{
@@ -4209,7 +4438,8 @@ if(isFirstVisit){
   fitBtn.setAttribute('aria-pressed', 'true');
 }
 const qs = new URLSearchParams(location.search);
-if(qs.get('q')){ query = qs.get('q'); syncSearchFields(query); }
+if(fromHashState.q){ query = fromHashState.q; syncSearchFields(query); }
+else if(qs.get('q')){ query = qs.get('q'); syncSearchFields(query); }
 const deepEvId = qs.get('ev');
 
 buildLaneFilters();
@@ -4241,9 +4471,21 @@ if(!(D._detailDeferred || (D.preguntas || []).some(p => answerText(p)))){
 safeRender();
 const openEvId = deepEvId || pendingHashEvId;
 if(openEvId){
-  const deepEv = D.eventos.find(e=>String(e.id)===String(openEvId));
+  const deepEv = eventById(openEvId);
   if(deepEv) openDrawer(deepEv);
+} else if(pendingHashGrupo){
+  const pe = findGroupById(pendingHashGrupo);
+  if(pe) openEventGroupDrawer(pe);
 }
+hashNavReady = true;
+window.addEventListener('popstate', ()=>{
+  if(!hashNavReady) return;
+  const st = parseHashState(location.hash.replace('#',''));
+  applyShareableState(st, { fromHistory: true });
+  buildLaneFilters();
+  scheduleRender();
+  openFromShareable(st);
+});
 window.addEventListener('resize', ()=>{ if(autoFit) render._scrolled = false; scheduleRender(); });
 
 // ---------- onboarding tour (MVP) ----------

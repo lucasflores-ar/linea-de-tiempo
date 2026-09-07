@@ -6,6 +6,16 @@ const vm = require('vm');
 const REPO = path.resolve(__dirname, '../..');
 const DATA = JSON.parse(fs.readFileSync(path.join(REPO, 'linea-tiempo-datos.js'), 'utf-8').split('=')[1].trim().replace(/;$/, ''));
 const JS = fs.readFileSync(path.join(REPO, 'linea-paralela.js'), 'utf-8');
+const STATE_JS = fs.readFileSync(path.join(REPO, 'timeline-state.js'), 'utf-8');
+const SEL_JS = fs.readFileSync(path.join(REPO, 'timeline-selectors.js'), 'utf-8');
+
+function loadParalela(ctx){
+  vm.runInContext('window.LT_DATA='+JSON.stringify(DATA)+';', ctx);
+  vm.runInContext(STATE_JS, ctx);
+  vm.runInContext(SEL_JS, ctx);
+  vm.runInContext(fs.readFileSync(path.join(REPO, 'fichas-personajes.js'), 'utf-8'), ctx);
+  vm.runInContext(JS, ctx, {timeout:8000});
+}
 
 function makeEl(tag){
   return {
@@ -67,7 +77,7 @@ const ctx={
     addEventListener(){},
   },
   innerWidth:1200, innerHeight:800, location:{hash:'',search:''},
-  history:{ replaceState(){} },
+  history:{ replaceState(){}, pushState(){} },
   localStorage:{
     getItem(k){
       if(k === 'lt-par-init-v') return '2';
@@ -87,9 +97,7 @@ ctx.window=ctx;
 
 vm.createContext(ctx);
 try{
-  vm.runInContext('window.LT_DATA='+JSON.stringify(DATA)+';', ctx);
-  vm.runInContext(fs.readFileSync(path.join(REPO, 'fichas-personajes.js'), 'utf-8'), ctx);
-  vm.runInContext(JS, ctx, {timeout:8000});
+  loadParalela(ctx);
   console.log('RUN OK');
 }catch(e){
   console.log('ERROR:', e.message);
@@ -159,7 +167,7 @@ const ctxNt={
     addEventListener(){},
   },
   innerWidth:1200, innerHeight:800, location:{hash:'',search:''},
-  history:{ replaceState(){} },
+  history:{ replaceState(){}, pushState(){} },
   localStorage:{
     getItem(k){
       if(k==='lt-par-init-v') return '2';
@@ -176,9 +184,7 @@ const ctxNt={
 };
 ctxNt.window=ctxNt;
 vm.createContext(ctxNt);
-vm.runInContext('window.LT_DATA='+JSON.stringify(DATA)+';', ctxNt);
-vm.runInContext(fs.readFileSync(path.join(REPO, 'fichas-personajes.js'), 'utf-8'), ctxNt);
-vm.runInContext(JS, ctxNt, {timeout:8000});
+loadParalela(ctxNt);
 const ntBars = (byIdNt['chart-canvas'].innerHTML.match(/class="bar /g)||[]).length;
 const ntPeriodBars = (byIdNt['chart-canvas'].innerHTML.match(/bar-compact-narrow/g)||[]).length;
 const ntSections = (byIdNt['lane-filters'].innerHTML.match(/Evangelios|Hechos \(NT\)|Cartas/g)||[]).length;
@@ -228,7 +234,7 @@ const ctxNtCompact={
     addEventListener(){},
   },
   innerWidth:1200, innerHeight:800, location:{hash:'',search:''},
-  history:{ replaceState(){} },
+  history:{ replaceState(){}, pushState(){} },
   localStorage:{
     getItem(k){
       if(k==='lt-par-init-v') return '2';
@@ -246,9 +252,7 @@ const ctxNtCompact={
 };
 ctxNtCompact.window=ctxNtCompact;
 vm.createContext(ctxNtCompact);
-vm.runInContext('window.LT_DATA='+JSON.stringify(DATA)+';', ctxNtCompact);
-vm.runInContext(fs.readFileSync(path.join(REPO, 'fichas-personajes.js'), 'utf-8'), ctxNtCompact);
-vm.runInContext(JS, ctxNtCompact, {timeout:8000});
+loadParalela(ctxNtCompact);
 const ntRows = (byIdNtCompact['chart-canvas'].innerHTML.match(/class="row"/g)||[]).length;
 console.log('nt-car compact pistas:', ntRows, '(esperado > 1)');
 if(ntRows < 2){
@@ -292,7 +296,7 @@ const ctxPre={
     addEventListener(){},
   },
   innerWidth:360, innerHeight:640, location:{hash:'',search:''},
-  history:{ replaceState(){} },
+  history:{ replaceState(){}, pushState(){} },
   localStorage:{ _store:{}, getItem(){ return null; }, setItem(k,v){ this._store[k]=v; } },
   matchMedia(q){ return { matches: q.includes('760'), addEventListener(){} }; },
   URLSearchParams: global.URLSearchParams,
@@ -301,9 +305,7 @@ const ctxPre={
 };
 ctxPre.window=ctxPre;
 vm.createContext(ctxPre);
-vm.runInContext('window.LT_DATA='+JSON.stringify(DATA)+';', ctxPre);
-vm.runInContext(fs.readFileSync(path.join(REPO, 'fichas-personajes.js'), 'utf-8'), ctxPre);
-vm.runInContext(JS, ctxPre, {timeout:8000});
+loadParalela(ctxPre);
 const preBars = (byIdPre['chart-canvas'].innerHTML.match(/class="bar /g)||[]).length;
 const preEmpty = byIdPre['chart-canvas'].innerHTML.includes('empty-msg');
 const preLaneStore = ctxPre.localStorage._store?.['lt-par-lanes'];
