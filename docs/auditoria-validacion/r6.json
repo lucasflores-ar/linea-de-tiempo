@@ -1,0 +1,535 @@
+{
+  "jueces 1440x900": {
+    "hover": {
+      "probados": 12,
+      "mostrados": 12,
+      "problemas": [
+        {
+          "modo": "hover",
+          "et": "Débora y Barac",
+          "mal": [
+            "recortado por lane-block"
+          ]
+        },
+        {
+          "modo": "hover",
+          "et": "Gedeón y los 300",
+          "mal": [
+            "recortado por lane-block"
+          ]
+        },
+        {
+          "modo": "hover",
+          "et": "Muere Josué",
+          "mal": [
+            "encima del eje"
+          ]
+        }
+      ]
+    },
+    "foco": {
+      "probados": 12,
+      "mostrados": 3,
+      "problemas": [
+        {
+          "modo": "foco",
+          "et": "Débora y Barac",
+          "mal": [
+            "recortado por lane-block"
+          ]
+        },
+        {
+          "modo": "foco",
+          "et": "Gedeón y los 300",
+          "mal": [
+            "recortado por lane-block"
+          ]
+        },
+        {
+          "modo": "foco",
+          "et": "3 sucesos próximos",
+          "mal": [
+            "recortado por lane-block"
+          ]
+        },
+        {
+          "modo": "foco",
+          "motivo": "sin tip",
+          "et": "Caída de Jericó"
+        },
+        {
+          "modo": "foco",
+          "motivo": "sin tip",
+          "et": "El sol se detiene"
+        },
+        {
+          "modo": "foco",
+          "motivo": "sin tip",
+          "et": "Israel entra en Canaán bajo Josué"
+        },
+        {
+          "modo": "foco",
+          "motivo": "sin tip",
+          "et": "Pecado de Acán"
+        },
+        {
+          "modo": "foco",
+          "motivo": "sin tip",
+          "et": "Rahab y los espías"
+        },
+        {
+          "modo": "foco",
+          "motivo": "sin tip",
+          "et": "Asamblea de Siquem"
+        },
+        {
+          "modo": "foco",
+          "motivo": "sin tip",
+          "et": "Se completa conquista general de la tierra; fin de los \"unos 450 años\" de Hechos 13:17-20"
+        },
+        {
+          "modo": "foco",
+          "motivo": "sin tip",
+          "et": "Muere Josué"
+        },
+        {
+          "modo": "foco",
+          "motivo": "sin tip",
+          "et": "Se completa el libro de Josué"
+        }
+      ]
+    }
+  },
+  "reyes 1920x1080": {
+    "hover": {
+      "probados": 26,
+      "mostrados": 26,
+      "problemas": [
+        {
+          "modo": "hover",
+          "et": "Sisaq invade a Judá y se lleva tesoros del templo",
+          "mal": [
+            "título con ellipsis"
+          ]
+        },
+        {
+          "modo": "hover",
+          "et": "Nabucodonosor hace rey tributario a Jehoiaquim",
+          "mal": [
+            "título con ellipsis"
+          ]
+        },
+        {
+          "modo": "hover",
+          "et": "Nabucodonosor se lleva a los primeros cautivos judíos a Babilonia; se hace rey de Judá a Sedequías",
+          "mal": [
+            "título con ellipsis"
+          ]
+        },
+        {
+          "modo": "hover",
+          "et": "Viña de Nabot",
+          "mal": [
+            "recortado por lane-block"
+          ]
+        },
+        {
+          "modo": "hover",
+          "et": "Jonás completa el libro de Jonás",
+          "mal": [
+            "recortado por lane-block"
+          ]
+        },
+        {
+          "modo": "hover",
+          "et": "Isaías empieza a profetizar",
+          "mal": [
+            "recortado por lane-block"
+          ]
+        },
+        {
+          "modo": "hover",
+          "et": "Nahúm completa el libro de Nahúm",
+          "mal": [
+            "recortado por lane-block"
+          ]
+        },
+        {
+          "modo": "hover",
+          "et": "Se completan los libros de 1 y 2 Reyes y Jeremías",
+          "mal": [
+            "título con ellipsis"
+          ]
+        },
+        {
+          "modo": "hover",
+          "et": "Se completa el libro de 1 Samuel",
+          "mal": [
+            "encima del eje"
+          ]
+        }
+      ]
+    },
+    "foco": {
+      "probados": 26,
+      "mostrados": 23,
+      "problemas": [
+        {
+          "modo": "foco",
+          "et": "Sisaq invade a Judá y se lleva tesoros del templo",
+          "mal": [
+            "título con ellipsis"
+          ]
+        },
+        {
+          "modo": "foco",
+          "et": "Nabucodonosor hace rey tributario a Jehoiaquim",
+          "mal": [
+            "título con ellipsis"
+          ]
+        },
+        {
+          "modo": "foco",
+          "et": "Nabucodonosor se lleva a los primeros cautivos judíos a Babilonia; se hace rey de Judá a Sedequías",
+          "mal": [
+            "título con ellipsis"
+          ]
+        },
+        {
+          "modo": "foco",
+          "et": "Viña de Nabot",
+          "mal": [
+            "recortado por lane-block"
+          ]
+        },
+        {
+          "modo": "foco",
+          "et": "Jonás completa el libro de Jonás",
+          "mal": [
+            "recortado por lane-block"
+          ]
+        },
+        {
+          "modo": "foco",
+          "et": "Isaías empieza a profetizar",
+          "mal": [
+            "recortado por lane-block"
+          ]
+        },
+        {
+          "modo": "foco",
+          "et": "2 sucesos próximos",
+          "mal": [
+            "recortado por lane-block"
+          ]
+        },
+        {
+          "modo": "foco",
+          "et": "Nahúm completa el libro de Nahúm",
+          "mal": [
+            "recortado por lane-block"
+          ]
+        },
+        {
+          "modo": "foco",
+          "et": "Se completan los libros de 1 y 2 Reyes y Jeremías",
+          "mal": [
+            "título con ellipsis"
+          ]
+        },
+        {
+          "modo": "foco",
+          "motivo": "sin tip",
+          "et": "7 sucesos próximos"
+        },
+        {
+          "modo": "foco",
+          "motivo": "sin tip",
+          "et": "Se completa el libro de 1 Samuel"
+        },
+        {
+          "modo": "foco",
+          "motivo": "sin tip",
+          "et": "3 sucesos próximos"
+        }
+      ]
+    }
+  },
+  "reyes 390x844": {
+    "hover": {
+      "probados": 26,
+      "mostrados": 26,
+      "problemas": [
+        {
+          "modo": "hover",
+          "et": "Sisaq invade a Judá y se lleva tesoros del templo",
+          "mal": [
+            "título con ellipsis"
+          ]
+        },
+        {
+          "modo": "hover",
+          "et": "Nabucodonosor hace rey tributario a Jehoiaquim",
+          "mal": [
+            "título con ellipsis"
+          ]
+        },
+        {
+          "modo": "hover",
+          "et": "Nabucodonosor se lleva a los primeros cautivos judíos a Babilonia; se hace rey de Judá a Sedequías",
+          "mal": [
+            "título con ellipsis"
+          ]
+        },
+        {
+          "modo": "hover",
+          "et": "Oseas completa el libro de Oseas",
+          "mal": [
+            "recortado por lane-block"
+          ]
+        },
+        {
+          "modo": "hover",
+          "et": "Nahúm completa el libro de Nahúm",
+          "mal": [
+            "recortado por lane-block"
+          ]
+        },
+        {
+          "modo": "hover",
+          "et": "Se completan los libros de 1 y 2 Reyes y Jeremías",
+          "mal": [
+            "título con ellipsis"
+          ]
+        },
+        {
+          "modo": "hover",
+          "et": "Isaías empieza a profetizar",
+          "mal": [
+            "recortado por BODY"
+          ]
+        },
+        {
+          "modo": "hover",
+          "et": "11 sucesos próximos",
+          "mal": [
+            "encima del eje"
+          ]
+        },
+        {
+          "modo": "hover",
+          "et": "5 sucesos próximos",
+          "mal": [
+            "encima del eje"
+          ]
+        },
+        {
+          "modo": "hover",
+          "et": "POTENCIA MUNDIAL: Asiria",
+          "mal": [
+            "fuera de pantalla 13px²",
+            "recortado por BODY",
+            "encima del eje"
+          ]
+        },
+        {
+          "modo": "hover",
+          "et": "2 sucesos próximos",
+          "mal": [
+            "encima del eje"
+          ]
+        }
+      ]
+    },
+    "foco": {
+      "probados": 26,
+      "mostrados": 22,
+      "problemas": [
+        {
+          "modo": "foco",
+          "et": "Sisaq invade a Judá y se lleva tesoros del templo",
+          "mal": [
+            "título con ellipsis"
+          ]
+        },
+        {
+          "modo": "foco",
+          "et": "Nabucodonosor hace rey tributario a Jehoiaquim",
+          "mal": [
+            "título con ellipsis"
+          ]
+        },
+        {
+          "modo": "foco",
+          "et": "Nabucodonosor se lleva a los primeros cautivos judíos a Babilonia; se hace rey de Judá a Sedequías",
+          "mal": [
+            "título con ellipsis"
+          ]
+        },
+        {
+          "modo": "foco",
+          "et": "Oseas completa el libro de Oseas",
+          "mal": [
+            "recortado por lane-block"
+          ]
+        },
+        {
+          "modo": "foco",
+          "et": "Nahúm completa el libro de Nahúm",
+          "mal": [
+            "recortado por lane-block"
+          ]
+        },
+        {
+          "modo": "foco",
+          "et": "Se completan los libros de 1 y 2 Reyes y Jeremías",
+          "mal": [
+            "título con ellipsis"
+          ]
+        },
+        {
+          "modo": "foco",
+          "et": "Isaías empieza a profetizar",
+          "mal": [
+            "recortado por BODY"
+          ]
+        },
+        {
+          "modo": "foco",
+          "motivo": "sin tip",
+          "et": "11 sucesos próximos"
+        },
+        {
+          "modo": "foco",
+          "motivo": "sin tip",
+          "et": "5 sucesos próximos"
+        },
+        {
+          "modo": "foco",
+          "motivo": "sin tip",
+          "et": "POTENCIA MUNDIAL: Asiria"
+        },
+        {
+          "modo": "foco",
+          "motivo": "sin tip",
+          "et": "2 sucesos próximos"
+        }
+      ]
+    }
+  },
+  "jueces 1440 f200": {
+    "hover": {
+      "probados": 12,
+      "mostrados": 12,
+      "problemas": [
+        {
+          "modo": "hover",
+          "et": "Débora y Barac",
+          "mal": [
+            "recortado por lane-block"
+          ]
+        },
+        {
+          "modo": "hover",
+          "et": "Gedeón y los 300",
+          "mal": [
+            "recortado por lane-block"
+          ]
+        },
+        {
+          "modo": "hover",
+          "et": "Muere Josué",
+          "mal": [
+            "encima del eje"
+          ]
+        }
+      ]
+    },
+    "foco": {
+      "probados": 12,
+      "mostrados": 3,
+      "problemas": [
+        {
+          "modo": "foco",
+          "et": "Débora y Barac",
+          "mal": [
+            "recortado por lane-block"
+          ]
+        },
+        {
+          "modo": "foco",
+          "et": "Gedeón y los 300",
+          "mal": [
+            "recortado por lane-block"
+          ]
+        },
+        {
+          "modo": "foco",
+          "et": "3 sucesos próximos",
+          "mal": [
+            "recortado por lane-block"
+          ]
+        },
+        {
+          "modo": "foco",
+          "motivo": "sin tip",
+          "et": "Caída de Jericó"
+        },
+        {
+          "modo": "foco",
+          "motivo": "sin tip",
+          "et": "El sol se detiene"
+        },
+        {
+          "modo": "foco",
+          "motivo": "sin tip",
+          "et": "Israel entra en Canaán bajo Josué"
+        },
+        {
+          "modo": "foco",
+          "motivo": "sin tip",
+          "et": "Pecado de Acán"
+        },
+        {
+          "modo": "foco",
+          "motivo": "sin tip",
+          "et": "Rahab y los espías"
+        },
+        {
+          "modo": "foco",
+          "motivo": "sin tip",
+          "et": "Asamblea de Siquem"
+        },
+        {
+          "modo": "foco",
+          "motivo": "sin tip",
+          "et": "Se completa conquista general de la tierra; fin de los \"unos 450 años\" de Hechos 13:17-20"
+        },
+        {
+          "modo": "foco",
+          "motivo": "sin tip",
+          "et": "Muere Josué"
+        },
+        {
+          "modo": "foco",
+          "motivo": "sin tip",
+          "et": "Se completa el libro de Josué"
+        }
+      ]
+    }
+  },
+  "paridad": {
+    "conHover": "Débora y Barac",
+    "conFoco": "Débora y Barac",
+    "igual": true
+  },
+  "scroll": {
+    "antes": {
+      "top": 0
+    },
+    "desp": {
+      "oculto": true
+    },
+    "sigue": true
+  }
+}

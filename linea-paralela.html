@@ -690,12 +690,17 @@ html[data-theme="dark"] .focus-marquee{background:rgba(106,159,173,.18)}
   z-index:12;pointer-events:none;
 }
 
+/* Capa flotante única para todos los tips. Es position:fixed, así que no la
+   recorta el overflow:hidden de .lane-block ni el del scroller; el alto se
+   acota para que un suceso con descripción larga no tape media pantalla. */
 #tooltip{
-  position:fixed;z-index:100;display:none;max-width:280px;
+  position:fixed;z-index:100;display:none;max-width:min(320px, calc(100vw - 16px));
+  max-height:min(46vh, 340px);overflow:hidden;
   background:var(--panel);border:1px solid var(--line);border-radius:10px;
   padding:10px 12px;font-size:12px;box-shadow:0 8px 28px var(--shadow);pointer-events:none;
 }
-#tooltip .t-name{font:700 14px/1.3 var(--font-serif);margin-bottom:4px}
+/* El título se lee completo aunque en la gráfica esté truncado: varias líneas. */
+#tooltip .t-name{font:700 14px/1.3 var(--font-serif);margin-bottom:4px;overflow-wrap:break-word}
 #tooltip .t-dates{color:var(--acc);font-size:11px;margin-bottom:4px}
 #tooltip .t-note{color:var(--mut);font-size:11px;line-height:1.4}
 #tooltip .t-est{font-size:11px;color:var(--mut);margin-top:4px;font-style:italic}
@@ -842,27 +847,6 @@ html[data-row-layout="compact"] .bar-compact-narrow .bar-caption-stack{
 }
 html[data-row-layout="compact"] .bar-compact-narrow .bar-caption-stack--dates{
   z-index:1;
-}
-html[data-row-layout="compact"] .evt-marker__tip{
-  display:none;position:absolute;left:50%;bottom:calc(100% + 5px);
-  /* --tip-shift lo ajusta placeCssTip() cuando el borde del gráfico lo cortaría. */
-  transform:translateX(calc(-50% + var(--tip-shift, 0px)));
-  padding:3px 8px;max-width:200px;
-  background:var(--panel);border:1px solid var(--line);border-radius:6px;
-  font:600 10px/1.25 var(--font-sans);color:var(--txt);
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-  pointer-events:none;box-shadow:0 4px 14px var(--shadow);z-index:25;
-}
-html[data-row-layout="compact"] .evt-marker--in-row:hover .evt-marker__tip,
-html[data-row-layout="compact"] .evt-marker--in-row:focus-visible .evt-marker__tip,
-html[data-row-layout="compact"] .bar-event-pin:hover .evt-marker__tip,
-html[data-row-layout="compact"] .bar-event-pin:focus-visible .evt-marker__tip{
-  display:block;
-}
-/* Sin espacio arriba (primera fila, o la fila que quede al tope tras hacer
-   scroll): el tip pasa debajo del marcador en vez de quedar cortado. */
-html[data-row-layout="compact"] .evt-marker--tip-below .evt-marker__tip{
-  bottom:auto;top:calc(100% + 5px);
 }
 html[data-row-layout="compact"] .row:has(.evt-marker--in-row:hover) .bar-compact-narrow,
 html[data-row-layout="compact"] .row:has(.evt-marker--in-row:focus-visible) .bar-compact-narrow,
@@ -1702,6 +1686,6 @@ header {
 <script src="timeline-selectors.js?v=20260907q"></script>
 <script src="timeline-list.js?v=20260907q"></script>
 <script src="timeline-density.js?v=20260907v"></script>
-<script src="linea-paralela.js?v=20260907w"></script>
+<script src="linea-paralela.js?v=20260907x"></script>
 </body>
 </html>
