@@ -1,0 +1,229 @@
+[
+  {
+    "mode": "cold",
+    "trace": [
+      {
+        "t": 148,
+        "containerH": 824,
+        "containerY": 200,
+        "canvasH": 877,
+        "canvasW": 1436,
+        "scrollX": 0,
+        "scrollY": 0,
+        "fontStatus": "loaded",
+        "fontCount": 0,
+        "fontReady": true,
+        "captionW": 200
+      },
+      {
+        "t": 165,
+        "containerH": 824,
+        "containerY": 200,
+        "canvasH": 877,
+        "canvasW": 1436,
+        "scrollX": 0,
+        "scrollY": 0,
+        "fontStatus": "loading",
+        "fontCount": 31,
+        "fontReady": false,
+        "captionW": 200
+      },
+      {
+        "t": 312,
+        "containerH": 824,
+        "containerY": 200,
+        "canvasH": 877,
+        "canvasW": 1436,
+        "scrollX": 0,
+        "scrollY": 0,
+        "fontStatus": "loaded",
+        "fontCount": 31,
+        "fontReady": true,
+        "captionW": 200
+      },
+      {
+        "t": 335,
+        "containerH": 824,
+        "containerY": 200,
+        "canvasH": 772,
+        "canvasW": 1436,
+        "scrollX": 0,
+        "scrollY": 0,
+        "fontStatus": "loaded",
+        "fontCount": 31,
+        "fontReady": true,
+        "captionW": 200
+      }
+    ],
+    "events": [
+      {
+        "t": 167,
+        "event": "loading"
+      },
+      {
+        "t": 306,
+        "event": "loadingdone"
+      }
+    ],
+    "resources": [
+      {
+        "url": "https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Karla:wght@400;600&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap",
+        "start": 14.900000002235174,
+        "end": 154.90000000223517,
+        "duration": 140,
+        "transferSize": 1244
+      }
+    ]
+  },
+  {
+    "mode": "reload-same-context",
+    "trace": [
+      {
+        "t": 34,
+        "containerH": 824,
+        "containerY": 200,
+        "canvasH": 877,
+        "canvasW": 1436,
+        "scrollX": 0,
+        "scrollY": 0,
+        "fontStatus": "loading",
+        "fontCount": 31,
+        "fontReady": true,
+        "captionW": 200
+      },
+      {
+        "t": 44,
+        "containerH": 824,
+        "containerY": 200,
+        "canvasH": 877,
+        "canvasW": 1436,
+        "scrollX": 0,
+        "scrollY": 0,
+        "fontStatus": "loaded",
+        "fontCount": 31,
+        "fontReady": true,
+        "captionW": 200
+      },
+      {
+        "t": 60,
+        "containerH": 824,
+        "containerY": 200,
+        "canvasH": 772,
+        "canvasW": 1436,
+        "scrollX": 0,
+        "scrollY": 0,
+        "fontStatus": "loaded",
+        "fontCount": 31,
+        "fontReady": true,
+        "captionW": 200
+      }
+    ],
+    "events": [
+      {
+        "t": 42.900000002235174,
+        "event": "loading"
+      },
+      {
+        "t": 43.30000000074506,
+        "event": "loadingdone"
+      }
+    ],
+    "resources": [
+      {
+        "url": "https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Karla:wght@400;600&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap",
+        "start": 11.200000002980232,
+        "end": 11.200000002980232,
+        "duration": 0,
+        "transferSize": 0
+      },
+      {
+        "url": "https://fonts.gstatic.com/s/karla/v33/qkB9XvYC6trAT55ZBi1ueQVIjQTD-JrIH2G7nytkHRyQ8p4wUje6bg.woff2",
+        "start": 34.600000001490116,
+        "end": 34.600000001490116,
+        "duration": 0,
+        "transferSize": 0
+      },
+      {
+        "url": "https://fonts.gstatic.com/s/librebaskerville/v24/kmKWZrc3Hgbbcjq75U4uslyuy4kn0qNccR04_RUJeby2OU36SjNNluc.woff2",
+        "start": 34.70000000298023,
+        "end": 34.70000000298023,
+        "duration": 0,
+        "transferSize": 0
+      },
+      {
+        "url": "https://fonts.gstatic.com/s/librebaskerville/v24/kmKnZrc3Hgbbcjq75U4uslyuy4kn0qNZaxM.woff2",
+        "start": 34.80000000074506,
+        "end": 34.80000000074506,
+        "duration": 0,
+        "transferSize": 0
+      }
+    ]
+  },
+  {
+    "mode": "font-stylesheet-delayed-800ms",
+    "trace": [
+      {
+        "t": 142,
+        "containerH": 824,
+        "containerY": 200,
+        "canvasH": 877,
+        "canvasW": 1436,
+        "scrollX": 0,
+        "scrollY": 0,
+        "fontStatus": "loaded",
+        "fontCount": 0,
+        "fontReady": true,
+        "captionW": 200
+      },
+      {
+        "t": 987,
+        "containerH": 824,
+        "containerY": 200,
+        "canvasH": 877,
+        "canvasW": 1436,
+        "scrollX": 0,
+        "scrollY": 0,
+        "fontStatus": "loading",
+        "fontCount": 31,
+        "fontReady": false,
+        "captionW": 200
+      },
+      {
+        "t": 1136,
+        "containerH": 824,
+        "containerY": 200,
+        "canvasH": 877,
+        "canvasW": 1436,
+        "scrollX": 0,
+        "scrollY": 0,
+        "fontStatus": "loaded",
+        "fontCount": 31,
+        "fontReady": true,
+        "captionW": 200
+      },
+      {
+        "t": 1154,
+        "containerH": 824,
+        "containerY": 200,
+        "canvasH": 772,
+        "canvasW": 1436,
+        "scrollX": 0,
+        "scrollY": 0,
+        "fontStatus": "loaded",
+        "fontCount": 31,
+        "fontReady": true,
+        "captionW": 200
+      }
+    ],
+    "events": [
+      {
+        "t": 980.1999999992549,
+        "event": "loading"
+      },
+      {
+        "t": 1132.3999999985099,
+        "event": "loadingdone"
+      }
+    ]
+  }
+]

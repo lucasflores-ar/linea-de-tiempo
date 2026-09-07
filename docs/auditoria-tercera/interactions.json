@@ -1,0 +1,461 @@
+[
+  {
+    "width": 320,
+    "vista": "comparar",
+    "errors": [],
+    "opener": "32 E.C., 41 sucesos",
+    "openedTitle": "32 E.C.",
+    "expectedEvent": "Alimenta a 5.000",
+    "detailCorrect": true,
+    "backTitle": "32 E.C.",
+    "drawer": {
+      "rect": {
+        "x": 0,
+        "y": 101.28125,
+        "width": 320,
+        "height": 742.71875,
+        "top": 101.28125,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "overflow": false,
+      "focus": ""
+    },
+    "closed": true,
+    "filtersOpen": "true",
+    "filtersClosed": "false"
+  },
+  {
+    "width": 320,
+    "vista": "explorar",
+    "errors": [],
+    "opener": "3 a.E.C.\nNacimiento de Juan predicho a Zacarías",
+    "openedTitle": "Nacimiento de Juan predicho a Zacarías",
+    "drawer": {
+      "rect": {
+        "x": 0,
+        "y": 611.22314453125,
+        "width": 320,
+        "height": 742.71875,
+        "top": 611.22314453125,
+        "right": 320,
+        "bottom": 1353.94189453125,
+        "left": 0
+      },
+      "overflow": false,
+      "focus": "d-close"
+    },
+    "closed": true,
+    "filtersOpen": "true",
+    "filtersClosed": "false"
+  },
+  {
+    "width": 390,
+    "vista": "comparar",
+    "errors": [],
+    "opener": "32 E.C., 41 sucesos",
+    "openedTitle": "32 E.C.",
+    "expectedEvent": "Alimenta a 5.000",
+    "detailCorrect": true,
+    "backTitle": "32 E.C.",
+    "drawer": {
+      "rect": {
+        "x": 0,
+        "y": 101.28125,
+        "width": 390,
+        "height": 742.71875,
+        "top": 101.28125,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      },
+      "overflow": false,
+      "focus": ""
+    },
+    "closed": true,
+    "filtersOpen": "true",
+    "filtersClosed": "false"
+  },
+  {
+    "width": 390,
+    "vista": "explorar",
+    "errors": [],
+    "opener": "3 a.E.C.\nNacimiento de Juan predicho a Zacarías",
+    "openedTitle": "Nacimiento de Juan predicho a Zacarías",
+    "drawer": {
+      "rect": {
+        "x": 0,
+        "y": 611.0394897460938,
+        "width": 390,
+        "height": 742.7188110351562,
+        "top": 611.0394897460938,
+        "right": 390,
+        "bottom": 1353.75830078125,
+        "left": 0
+      },
+      "overflow": false,
+      "focus": "d-close"
+    },
+    "closed": true,
+    "filtersOpen": "true",
+    "filtersClosed": "false"
+  },
+  {
+    "width": 520,
+    "vista": "comparar",
+    "errors": [],
+    "opener": "32 E.C., 41 sucesos",
+    "openedTitle": "32 E.C.",
+    "expectedEvent": "Alimenta a 5.000",
+    "detailCorrect": true,
+    "backTitle": "32 E.C.",
+    "drawer": {
+      "rect": {
+        "x": 0,
+        "y": 101.28125,
+        "width": 520,
+        "height": 742.71875,
+        "top": 101.28125,
+        "right": 520,
+        "bottom": 844,
+        "left": 0
+      },
+      "overflow": false,
+      "focus": ""
+    },
+    "closed": true,
+    "filtersOpen": "true",
+    "filtersClosed": "false"
+  },
+  {
+    "width": 520,
+    "vista": "explorar",
+    "errors": [],
+    "opener": "3 a.E.C.\nNacimiento de Juan predicho a Zacarías",
+    "openedTitle": "Nacimiento de Juan predicho a Zacarías",
+    "drawer": {
+      "rect": {
+        "x": 0,
+        "y": 881.1359252929688,
+        "width": 520,
+        "height": 742.7188110351562,
+        "top": 881.1359252929688,
+        "right": 520,
+        "bottom": 1623.854736328125,
+        "left": 0
+      },
+      "overflow": false,
+      "focus": "d-close"
+    },
+    "closed": true,
+    "filtersOpen": "true",
+    "filtersClosed": "false"
+  },
+  {
+    "width": 521,
+    "vista": "comparar",
+    "errors": [],
+    "opener": "32 E.C., 41 sucesos",
+    "openedTitle": "32 E.C.",
+    "expectedEvent": "Alimenta a 5.000",
+    "detailCorrect": true,
+    "backTitle": "32 E.C.",
+    "drawer": {
+      "rect": {
+        "x": 81,
+        "y": 0,
+        "width": 440,
+        "height": 844,
+        "top": 0,
+        "right": 521,
+        "bottom": 844,
+        "left": 81
+      },
+      "overflow": false,
+      "focus": ""
+    },
+    "closed": true,
+    "filtersOpen": "true",
+    "filtersClosed": "false"
+  },
+  {
+    "width": 521,
+    "vista": "explorar",
+    "errors": [],
+    "opener": "3 a.E.C.\nNacimiento de Juan predicho a Zacarías",
+    "openedTitle": "Nacimiento de Juan predicho a Zacarías",
+    "drawer": {
+      "rect": {
+        "x": 368.8936767578125,
+        "y": 0,
+        "width": 440,
+        "height": 844,
+        "top": 0,
+        "right": 808.8936767578125,
+        "bottom": 844,
+        "left": 368.8936767578125
+      },
+      "overflow": false,
+      "focus": "d-close"
+    },
+    "closed": true,
+    "filtersOpen": "true",
+    "filtersClosed": "false"
+  },
+  {
+    "width": 760,
+    "vista": "comparar",
+    "errors": [],
+    "opener": "32 E.C., 41 sucesos",
+    "openedTitle": "32 E.C.",
+    "expectedEvent": "Alimenta a 5.000",
+    "detailCorrect": true,
+    "backTitle": "32 E.C.",
+    "drawer": {
+      "rect": {
+        "x": 320,
+        "y": 0,
+        "width": 440,
+        "height": 844,
+        "top": 0,
+        "right": 760,
+        "bottom": 844,
+        "left": 320
+      },
+      "overflow": false,
+      "focus": ""
+    },
+    "closed": true,
+    "filtersOpen": "true",
+    "filtersClosed": "false"
+  },
+  {
+    "width": 760,
+    "vista": "explorar",
+    "errors": [],
+    "opener": "3 a.E.C.\nNacimiento de Juan predicho a Zacarías",
+    "openedTitle": "Nacimiento de Juan predicho a Zacarías",
+    "drawer": {
+      "rect": {
+        "x": 607.780029296875,
+        "y": 0,
+        "width": 440,
+        "height": 844,
+        "top": 0,
+        "right": 1047.780029296875,
+        "bottom": 844,
+        "left": 607.780029296875
+      },
+      "overflow": false,
+      "focus": "d-close"
+    },
+    "closed": true,
+    "filtersOpen": "true",
+    "filtersClosed": "false"
+  },
+  {
+    "width": 761,
+    "vista": "comparar",
+    "errors": [],
+    "opener": "32 E.C., 41 sucesos",
+    "openedTitle": "32 E.C.",
+    "expectedEvent": "Alimenta a 5.000",
+    "detailCorrect": true,
+    "backTitle": "32 E.C.",
+    "drawer": {
+      "rect": {
+        "x": 321,
+        "y": 0,
+        "width": 440,
+        "height": 844,
+        "top": 0,
+        "right": 761,
+        "bottom": 844,
+        "left": 321
+      },
+      "overflow": false,
+      "focus": ""
+    },
+    "closed": true,
+    "filtersOpen": "true",
+    "filtersClosed": "false"
+  },
+  {
+    "width": 761,
+    "vista": "explorar",
+    "errors": [],
+    "opener": "3 a.E.C.\nNacimiento de Juan predicho a Zacarías",
+    "openedTitle": "Nacimiento de Juan predicho a Zacarías",
+    "drawer": {
+      "rect": {
+        "x": 608.7532958984375,
+        "y": 0,
+        "width": 440,
+        "height": 844,
+        "top": 0,
+        "right": 1048.7532958984375,
+        "bottom": 844,
+        "left": 608.7532958984375
+      },
+      "overflow": false,
+      "focus": "d-close"
+    },
+    "closed": true,
+    "filtersOpen": "true",
+    "filtersClosed": "false"
+  },
+  {
+    "width": 1024,
+    "vista": "comparar",
+    "errors": [],
+    "opener": "32 E.C., 41 sucesos",
+    "openedTitle": "32 E.C.",
+    "expectedEvent": "Alimenta a 5.000",
+    "detailCorrect": true,
+    "backTitle": "32 E.C.",
+    "drawer": {
+      "rect": {
+        "x": 584,
+        "y": 0,
+        "width": 440,
+        "height": 844,
+        "top": 0,
+        "right": 1024,
+        "bottom": 844,
+        "left": 584
+      },
+      "overflow": false,
+      "focus": ""
+    },
+    "closed": true,
+    "filtersOpen": "true",
+    "filtersClosed": "false"
+  },
+  {
+    "width": 1024,
+    "vista": "explorar",
+    "errors": [],
+    "opener": "3 a.E.C.\nNacimiento de Juan predicho a Zacarías",
+    "openedTitle": "Nacimiento de Juan predicho a Zacarías",
+    "drawer": {
+      "rect": {
+        "x": 871.7867431640625,
+        "y": 0,
+        "width": 440,
+        "height": 844,
+        "top": 0,
+        "right": 1311.7867431640625,
+        "bottom": 844,
+        "left": 871.7867431640625
+      },
+      "overflow": false,
+      "focus": "d-close"
+    },
+    "closed": true,
+    "filtersOpen": "true",
+    "filtersClosed": "false"
+  },
+  {
+    "width": 1440,
+    "vista": "comparar",
+    "errors": [],
+    "opener": "32 E.C., 41 sucesos",
+    "openedTitle": "32 E.C.",
+    "expectedEvent": "Alimenta a 5.000",
+    "detailCorrect": true,
+    "backTitle": "32 E.C.",
+    "drawer": {
+      "rect": {
+        "x": 1000,
+        "y": 0,
+        "width": 440,
+        "height": 844,
+        "top": 0,
+        "right": 1440,
+        "bottom": 844,
+        "left": 1000
+      },
+      "overflow": false,
+      "focus": ""
+    },
+    "closed": true,
+    "filtersOpen": "true",
+    "filtersClosed": "false"
+  },
+  {
+    "width": 1440,
+    "vista": "explorar",
+    "errors": [],
+    "opener": "3 a.E.C.\nNacimiento de Juan predicho a Zacarías",
+    "openedTitle": "Nacimiento de Juan predicho a Zacarías",
+    "drawer": {
+      "rect": {
+        "x": 1287.492431640625,
+        "y": 0,
+        "width": 440,
+        "height": 844,
+        "top": 0,
+        "right": 1727.492431640625,
+        "bottom": 844,
+        "left": 1287.492431640625
+      },
+      "overflow": false,
+      "focus": "d-close"
+    },
+    "closed": true,
+    "filtersOpen": "true",
+    "filtersClosed": "false"
+  },
+  {
+    "width": 1920,
+    "vista": "comparar",
+    "errors": [],
+    "opener": "32 E.C., 41 sucesos",
+    "openedTitle": "32 E.C.",
+    "expectedEvent": "Alimenta a 5.000",
+    "detailCorrect": true,
+    "backTitle": "32 E.C.",
+    "drawer": {
+      "rect": {
+        "x": 1480,
+        "y": 0,
+        "width": 440,
+        "height": 844,
+        "top": 0,
+        "right": 1920,
+        "bottom": 844,
+        "left": 1480
+      },
+      "overflow": false,
+      "focus": ""
+    },
+    "closed": true,
+    "filtersOpen": "true",
+    "filtersClosed": "false"
+  },
+  {
+    "width": 1920,
+    "vista": "explorar",
+    "errors": [],
+    "opener": "3 a.E.C.\nNacimiento de Juan predicho a Zacarías",
+    "openedTitle": "Nacimiento de Juan predicho a Zacarías",
+    "drawer": {
+      "rect": {
+        "x": 1767.482421875,
+        "y": 0,
+        "width": 440,
+        "height": 844,
+        "top": 0,
+        "right": 2207.482421875,
+        "bottom": 844,
+        "left": 1767.482421875
+      },
+      "overflow": false,
+      "focus": "d-close"
+    },
+    "closed": true,
+    "filtersOpen": "true",
+    "filtersClosed": "false"
+  }
+]

@@ -1,0 +1,150 @@
+{
+  "serieAlto": [
+    {
+      "h": 500,
+      "free": 16,
+      "modo": "agrupado",
+      "agregadosDeFila": [
+        3,
+        9,
+        2,
+        13,
+        2
+      ],
+      "zonaAgregados": 2,
+      "zonaSueltos": 4,
+      "contador": "5 grupos · 6 sucesos · 4 pistas · 10 sucesos sueltos · vista resumida · 6 marcadores",
+      "colisiones": 0
+    },
+    {
+      "h": 700,
+      "free": 45,
+      "modo": "agrupado",
+      "agregadosDeFila": [
+        3,
+        9,
+        13,
+        2
+      ],
+      "zonaAgregados": 2,
+      "zonaSueltos": 4,
+      "contador": "4 grupos · 8 sucesos · 7 pistas · 10 sucesos sueltos · vista resumida · 6 marcadores",
+      "colisiones": 0
+    },
+    {
+      "h": 900,
+      "free": 69,
+      "modo": "mixto",
+      "agregadosDeFila": [
+        3,
+        9,
+        13
+      ],
+      "zonaAgregados": 2,
+      "zonaSueltos": 4,
+      "contador": "3 grupos · 10 sucesos · 10 pistas · 10 sucesos sueltos · 4 desplegados, 6 agrupados por falta de espacio · 6 marcadores",
+      "colisiones": 0
+    },
+    {
+      "h": 1200,
+      "free": 207,
+      "modo": "expandido",
+      "agregadosDeFila": [
+        9,
+        13
+      ],
+      "zonaAgregados": 0,
+      "zonaSueltos": 10,
+      "contador": "2 grupos · 13 sucesos · 13 pistas · 10 sucesos sueltos · sucesos desplegados · 10 marcadores",
+      "colisiones": 0
+    },
+    {
+      "h": 1600,
+      "free": 184,
+      "modo": "expandido",
+      "agregadosDeFila": [
+        13
+      ],
+      "zonaAgregados": 0,
+      "zonaSueltos": 10,
+      "contador": "1 grupo · 22 sucesos · 21 pistas · 10 sucesos sueltos · sucesos desplegados · 10 marcadores",
+      "colisiones": 0
+    }
+  ],
+  "mixto": {
+    "modo": "mixto",
+    "sueltos": [
+      "Lejano A",
+      "Lejano B"
+    ],
+    "agregados": [
+      20
+    ]
+  },
+  "estres": [
+    {
+      "n": 1,
+      "nodos": 1,
+      "maxCoincidentes": 1,
+      "cobertura": 1,
+      "niveles": [
+        0
+      ]
+    },
+    {
+      "n": 50,
+      "nodos": 1,
+      "maxCoincidentes": 1,
+      "cobertura": 50,
+      "niveles": [
+        0
+      ]
+    },
+    {
+      "n": 51,
+      "nodos": 2,
+      "maxCoincidentes": 1,
+      "cobertura": 51,
+      "niveles": [
+        0,
+        1
+      ]
+    },
+    {
+      "n": 350,
+      "nodos": 7,
+      "maxCoincidentes": 1,
+      "cobertura": 350,
+      "niveles": [
+        0,
+        1,
+        -1,
+        2,
+        -2,
+        3,
+        -3
+      ]
+    },
+    {
+      "n": 351,
+      "nodos": 8,
+      "maxCoincidentes": 1,
+      "cobertura": 351,
+      "niveles": [
+        0,
+        1,
+        -1,
+        2,
+        -2,
+        3,
+        -3,
+        4
+      ]
+    }
+  ],
+  "variasConcentraciones": {
+    "nodos": 3,
+    "maxCoincidentes": 1,
+    "cobertura": 90
+  }
+}

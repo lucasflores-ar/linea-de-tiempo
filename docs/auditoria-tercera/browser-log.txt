@@ -1,0 +1,362 @@
+[
+  {
+    "width": 320,
+    "lane": "jue",
+    "freeBelow": 429,
+    "looseMode": "expandido",
+    "groups": 0,
+    "collisions": 0,
+    "hitFails": 0,
+    "errors": []
+  },
+  {
+    "width": 320,
+    "lane": "sem",
+    "freeBelow": 281,
+    "looseMode": "expandido",
+    "groups": 6,
+    "collisions": 0,
+    "hitFails": 0,
+    "errors": []
+  },
+  {
+    "width": 320,
+    "lane": "jes",
+    "freeBelow": 131,
+    "looseMode": "agrupado",
+    "groups": 6,
+    "collisions": 0,
+    "hitFails": 0,
+    "errors": []
+  },
+  {
+    "width": 320,
+    "lane": "jud,isr,pro",
+    "freeBelow": 0,
+    "looseMode": "agrupado",
+    "groups": 0,
+    "collisions": 0,
+    "hitFails": 1,
+    "errors": []
+  },
+  {
+    "width": 390,
+    "lane": "jue",
+    "freeBelow": 499,
+    "looseMode": "expandido",
+    "groups": 0,
+    "collisions": 0,
+    "hitFails": 0,
+    "errors": []
+  },
+  {
+    "width": 390,
+    "lane": "sem",
+    "freeBelow": 351,
+    "looseMode": "expandido",
+    "groups": 6,
+    "collisions": 0,
+    "hitFails": 0,
+    "errors": []
+  },
+  {
+    "width": 390,
+    "lane": "jes",
+    "freeBelow": 201,
+    "looseMode": "agrupado",
+    "groups": 6,
+    "collisions": 0,
+    "hitFails": 0,
+    "errors": []
+  },
+  {
+    "width": 390,
+    "lane": "jud,isr,pro",
+    "freeBelow": 0,
+    "looseMode": "agrupado",
+    "groups": 0,
+    "collisions": 2,
+    "hitFails": 1,
+    "errors": []
+  },
+  {
+    "width": 520,
+    "lane": "jue",
+    "freeBelow": 499,
+    "looseMode": "expandido",
+    "groups": 0,
+    "collisions": 0,
+    "hitFails": 0,
+    "errors": []
+  },
+  {
+    "width": 520,
+    "lane": "sem",
+    "freeBelow": 351,
+    "looseMode": "expandido",
+    "groups": 6,
+    "collisions": 0,
+    "hitFails": 0,
+    "errors": []
+  },
+  {
+    "width": 520,
+    "lane": "jes",
+    "freeBelow": 201,
+    "looseMode": "agrupado",
+    "groups": 6,
+    "collisions": 0,
+    "hitFails": 0,
+    "errors": []
+  },
+  {
+    "width": 520,
+    "lane": "jud,isr,pro",
+    "freeBelow": 0,
+    "looseMode": "agrupado",
+    "groups": 0,
+    "collisions": 2,
+    "hitFails": 5,
+    "errors": []
+  },
+  {
+    "width": 521,
+    "lane": "jue",
+    "freeBelow": 499,
+    "looseMode": "expandido",
+    "groups": 0,
+    "collisions": 0,
+    "hitFails": 0,
+    "errors": []
+  },
+  {
+    "width": 521,
+    "lane": "sem",
+    "freeBelow": 351,
+    "looseMode": "expandido",
+    "groups": 6,
+    "collisions": 0,
+    "hitFails": 0,
+    "errors": []
+  },
+  {
+    "width": 521,
+    "lane": "jes",
+    "freeBelow": 201,
+    "looseMode": "agrupado",
+    "groups": 6,
+    "collisions": 0,
+    "hitFails": 0,
+    "errors": []
+  },
+  {
+    "width": 521,
+    "lane": "jud,isr,pro",
+    "freeBelow": 0,
+    "looseMode": "agrupado",
+    "groups": 0,
+    "collisions": 3,
+    "hitFails": 7,
+    "errors": []
+  },
+  {
+    "width": 760,
+    "lane": "jue",
+    "freeBelow": 532,
+    "looseMode": "expandido",
+    "groups": 0,
+    "collisions": 0,
+    "hitFails": 0,
+    "errors": []
+  },
+  {
+    "width": 760,
+    "lane": "sem",
+    "freeBelow": 384,
+    "looseMode": "expandido",
+    "groups": 6,
+    "collisions": 0,
+    "hitFails": 0,
+    "errors": []
+  },
+  {
+    "width": 760,
+    "lane": "jes",
+    "freeBelow": 234,
+    "looseMode": "agrupado",
+    "groups": 6,
+    "collisions": 0,
+    "hitFails": 0,
+    "errors": []
+  },
+  {
+    "width": 760,
+    "lane": "jud,isr,pro",
+    "freeBelow": 0,
+    "looseMode": "agrupado",
+    "groups": 0,
+    "collisions": 6,
+    "hitFails": 8,
+    "errors": []
+  },
+  {
+    "width": 761,
+    "lane": "jue",
+    "freeBelow": 337,
+    "looseMode": "agrupado",
+    "groups": 0,
+    "collisions": 0,
+    "hitFails": 0,
+    "errors": []
+  },
+  {
+    "width": 761,
+    "lane": "sem",
+    "freeBelow": 189,
+    "looseMode": "expandido",
+    "groups": 6,
+    "collisions": 0,
+    "hitFails": 0,
+    "errors": []
+  },
+  {
+    "width": 761,
+    "lane": "jes",
+    "freeBelow": 39,
+    "looseMode": "agrupado",
+    "groups": 6,
+    "collisions": 0,
+    "hitFails": 1,
+    "errors": []
+  },
+  {
+    "width": 761,
+    "lane": "jud,isr,pro",
+    "freeBelow": 0,
+    "looseMode": "agrupado",
+    "groups": 0,
+    "collisions": 1,
+    "hitFails": 4,
+    "errors": []
+  },
+  {
+    "width": 1024,
+    "lane": "jue",
+    "freeBelow": 369,
+    "looseMode": "expandido",
+    "groups": 0,
+    "collisions": 0,
+    "hitFails": 0,
+    "errors": []
+  },
+  {
+    "width": 1024,
+    "lane": "sem",
+    "freeBelow": 227,
+    "looseMode": "expandido",
+    "groups": 6,
+    "collisions": 0,
+    "hitFails": 0,
+    "errors": []
+  },
+  {
+    "width": 1024,
+    "lane": "jes",
+    "freeBelow": 187,
+    "looseMode": "agrupado",
+    "groups": 6,
+    "collisions": 0,
+    "hitFails": 0,
+    "errors": []
+  },
+  {
+    "width": 1024,
+    "lane": "jud,isr,pro",
+    "freeBelow": 0,
+    "looseMode": "agrupado",
+    "groups": 0,
+    "collisions": 5,
+    "hitFails": 8,
+    "errors": []
+  },
+  {
+    "width": 1440,
+    "lane": "jue",
+    "freeBelow": 676,
+    "looseMode": "expandido",
+    "groups": 0,
+    "collisions": 0,
+    "hitFails": 0,
+    "errors": []
+  },
+  {
+    "width": 1440,
+    "lane": "sem",
+    "freeBelow": 604,
+    "looseMode": "expandido",
+    "groups": 6,
+    "collisions": 0,
+    "hitFails": 0,
+    "errors": []
+  },
+  {
+    "width": 1440,
+    "lane": "jes",
+    "freeBelow": 464,
+    "looseMode": "mixto",
+    "groups": 6,
+    "collisions": 0,
+    "hitFails": 0,
+    "errors": []
+  },
+  {
+    "width": 1440,
+    "lane": "jud,isr,pro",
+    "freeBelow": 0,
+    "looseMode": "agrupado",
+    "groups": 0,
+    "collisions": 0,
+    "hitFails": 11,
+    "errors": []
+  },
+  {
+    "width": 1920,
+    "lane": "jue",
+    "freeBelow": 753,
+    "looseMode": "expandido",
+    "groups": 0,
+    "collisions": 0,
+    "hitFails": 0,
+    "errors": []
+  },
+  {
+    "width": 1920,
+    "lane": "sem",
+    "freeBelow": 744,
+    "looseMode": "expandido",
+    "groups": 6,
+    "collisions": 0,
+    "hitFails": 0,
+    "errors": []
+  },
+  {
+    "width": 1920,
+    "lane": "jes",
+    "freeBelow": 604,
+    "looseMode": "expandido",
+    "groups": 6,
+    "collisions": 0,
+    "hitFails": 0,
+    "errors": []
+  },
+  {
+    "width": 1920,
+    "lane": "jud,isr,pro",
+    "freeBelow": 0,
+    "looseMode": "agrupado",
+    "groups": 0,
+    "collisions": 1,
+    "hitFails": 6,
+    "errors": []
+  }
+]

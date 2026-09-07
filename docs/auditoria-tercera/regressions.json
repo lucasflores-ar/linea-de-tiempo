@@ -1,0 +1,38 @@
+[
+  {
+    "f": "run-r2.cjs",
+    "code": 0,
+    "output": "  ok    el id 75 quedó en un agregado identificado: «2 sucesos próximos»\n\n--- zonas exclusivas (elementFromPoint real) ---\n  ok    reyes 1920 raton   marcadores= 22 roban-centro= 0 solapes=  0\n  ok    reyes 1440 raton   marcadores= 21 roban-centro= 0 solapes=  0\n  ok    reyes 390 tactil   marcadores= 14 roban-centro= 0 solapes=  0\n  ok    jueces 1440 raton  marcadores= 11 roban-centro= 0 solapes=  0\n  ok    jueces 390 tactil  marcadores=  9 roban-centro= 0 solapes=  0\n  ok    ministerio 1920    marcadores= 15 roban-centro= 0 solapes=  0\n\ncada suceso individual tiene su zona\n",
+    "err": ""
+  },
+  {
+    "f": "run-r4.cjs",
+    "code": 0,
+    "output": "ok    semana 1920x1080   repetidos=  0  zona= 10 agregados= 31 filaPropia=  4 cobertura=45 modo=expandido\nok    semana 1440x900    repetidos=  0  zona= 10 agregados= 31 filaPropia=  4 cobertura=45 modo=expandido\nok    ministerio 1920    repetidos=  0  zona= 15 agregados=125 filaPropia=  0 cobertura=140 modo=expandido\nok    ministerio 390     repetidos=  0  zona= 15 agregados=125 filaPropia=  0 cobertura=140 modo=agrupado\nok    reyes 1920         repetidos=  0  zona= 41 agregados=  0 filaPropia=  0 cobertura=59 modo=agrupado\n\nsin duplicación en ningún caso\n",
+    "err": ""
+  },
+  {
+    "f": "run-r5.cjs",
+    "code": 0,
+    "output": "ok    jueces 1440x1080       free 676->676  totalH 772->772  tapados=0\nok    ministerio 390x844     free 201->201  totalH 597->597  tapados=0\nok    semana 1920x1080       free 744->744  totalH 849->849  tapados=0\nok    reyes 1024x844         free 0->0  totalH 1430->1430  tapados=0\n\nlayout idempotente y nada tapado por el eje\n",
+    "err": ""
+  },
+  {
+    "f": "run-r6.cjs",
+    "code": 0,
+    "output": "  ok    jueces 1440x900   hover=12/12 foco=12/12 problemas=0\n  ok    reyes 1920x1080   hover=26/26 foco=26/26 problemas=0\n  ok    reyes 390x844     hover=26/26 foco=26/26 problemas=0\n  ok    jueces 1440 f200  hover=12/12 foco=12/12 problemas=0\n  ok    hover y foco muestran lo mismo: «Débora y Barac» / «Débora y Barac»\n  ok    tras el scroll el tip sigue pegado al marcador (5px)\n\nningún tip recortado; hover y foco coinciden\n",
+    "err": ""
+  },
+  {
+    "f": "run-r8.cjs",
+    "code": 0,
+    "output": "  ok    desde un grupo en el panel\n        anuncio: ««Ezequías y Senaquerib» está en un grupo de 2 sucesos próximos, ya enfocado en la línea.»\n        regreso: «← Volver a 2 sucesos próximos»\n  ok    el regreso reabre la lista del grupo\n  ok    desde Explorar\n        anuncio: ««Caída de Jericó» mostrado en la línea.»\n        regreso: «← Volver a Explorar»\n  ok    la acción dejó activa la vista Comparar\n  ok    el id 84 se localiza por agregado\n\n«En línea» revela y enfoca el suceso\n",
+    "err": ""
+  },
+  {
+    "f": "run-alcance.cjs",
+    "code": 0,
+    "output": "  ok    jud,isr,pro 1920  barras= 54 inalcanzables=  0\n  ok    jud,isr,pro 1440  barras= 54 inalcanzables=  0\n  ok    jud,isr,pro 1024  barras= 54 inalcanzables=  0\n  ok    jud,isr,pro 760   barras= 54 inalcanzables=  0\n  ok    jud,isr,pro 390   barras= 54 inalcanzables=  0\n  ok    sem 1440          barras= 10 inalcanzables=  0\n  ok    jes 390           barras=  6 inalcanzables=  0\n\ntodo personaje dibujado se puede abrir con el puntero\n",
+    "err": ""
+  }
+]

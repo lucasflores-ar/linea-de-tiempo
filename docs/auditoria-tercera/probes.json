@@ -1,0 +1,64 @@
+{
+  "noFontManualRender": {
+    "before": {
+      "fontCount": 0,
+      "fontStatus": "loaded",
+      "containerH": 824,
+      "totalH": 772,
+      "free": 676,
+      "captionWidth": 200
+    },
+    "after": {
+      "fontCount": 0,
+      "fontStatus": "loaded",
+      "containerH": 824,
+      "totalH": 772,
+      "free": 676,
+      "captionWidth": 200
+    }
+  },
+  "expandable": [
+    {
+      "group": "9 sucesos próximos",
+      "ids": [
+        255,
+        256,
+        422,
+        423,
+        424,
+        425,
+        426,
+        427,
+        428
+      ],
+      "before": 720,
+      "after": 549,
+      "extraHeight": -171,
+      "available": 87,
+      "remainingLooseMode": "expandido"
+    },
+    {
+      "group": "13 sucesos próximos",
+      "ids": [
+        127,
+        128,
+        129,
+        130,
+        131,
+        259,
+        260,
+        430,
+        431,
+        432,
+        433,
+        434,
+        435
+      ],
+      "before": 720,
+      "after": 711,
+      "extraHeight": -9,
+      "available": 87,
+      "remainingLooseMode": "mixto"
+    }
+  ]
+}

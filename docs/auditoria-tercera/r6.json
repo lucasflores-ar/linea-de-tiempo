@@ -1,0 +1,66 @@
+{
+  "jueces 1440x900": {
+    "hover": {
+      "probados": 12,
+      "mostrados": 12,
+      "problemas": []
+    },
+    "foco": {
+      "probados": 12,
+      "mostrados": 12,
+      "problemas": []
+    }
+  },
+  "reyes 1920x1080": {
+    "hover": {
+      "probados": 26,
+      "mostrados": 26,
+      "problemas": []
+    },
+    "foco": {
+      "probados": 26,
+      "mostrados": 26,
+      "problemas": []
+    }
+  },
+  "reyes 390x844": {
+    "hover": {
+      "probados": 26,
+      "mostrados": 26,
+      "problemas": []
+    },
+    "foco": {
+      "probados": 26,
+      "mostrados": 26,
+      "problemas": []
+    }
+  },
+  "jueces 1440 f200": {
+    "hover": {
+      "probados": 12,
+      "mostrados": 12,
+      "problemas": []
+    },
+    "foco": {
+      "probados": 12,
+      "mostrados": 12,
+      "problemas": []
+    }
+  },
+  "paridad": {
+    "conHover": "Débora y Barac",
+    "conFoco": "Débora y Barac",
+    "igual": true
+  },
+  "scroll": {
+    "antes": {
+      "top": 148
+    },
+    "desp": {
+      "oculto": false,
+      "top": 148,
+      "distancia": 5
+    },
+    "sigue": true
+  }
+}

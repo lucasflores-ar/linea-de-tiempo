@@ -1,0 +1,1878 @@
+[
+  {
+    "width": 320,
+    "height": 844,
+    "lane": "jue",
+    "count": "1 personaje · 1 pistas · 9 sucesos sueltos · sucesos desplegados · 11 marcadores",
+    "viewport": [
+      320,
+      579
+    ],
+    "chart": [
+      720,
+      527
+    ],
+    "freeBelow": 429,
+    "looseMode": "expandido",
+    "looseEligible": 9,
+    "groups": [],
+    "collisions": [],
+    "hitFails": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "width": 320,
+    "height": 844,
+    "lane": "sem",
+    "count": "4 grupos · 8 sucesos · 7 pistas · 10 sucesos sueltos · 4 desplegados, 6 agrupados por falta de espacio · 6 marcadores",
+    "viewport": [
+      320,
+      579
+    ],
+    "chart": [
+      960,
+      542
+    ],
+    "freeBelow": 57,
+    "looseMode": "mixto",
+    "looseEligible": 10,
+    "groups": [
+      {
+        "name": "9 sucesos próximos",
+        "n": 9,
+        "density": true
+      },
+      {
+        "name": "13 sucesos próximos",
+        "n": 13,
+        "density": true
+      },
+      {
+        "name": "2 sucesos próximos",
+        "n": 2,
+        "density": true
+      },
+      {
+        "name": "3 sucesos próximos",
+        "n": 3,
+        "density": true
+      }
+    ],
+    "collisions": [],
+    "hitFails": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "width": 320,
+    "height": 844,
+    "lane": "jes",
+    "count": "6 grupos · 5 pistas · 15 sucesos sueltos · 1 marcadores",
+    "viewport": [
+      320,
+      579
+    ],
+    "chart": [
+      780,
+      527
+    ],
+    "freeBelow": 131,
+    "looseMode": "agrupado",
+    "looseEligible": 15,
+    "groups": [
+      {
+        "name": "Antes de bautizarse",
+        "n": 8,
+        "density": false
+      },
+      {
+        "name": "29 E.C.",
+        "n": 5,
+        "density": false
+      },
+      {
+        "name": "33 E.C.",
+        "n": 35,
+        "density": false
+      },
+      {
+        "name": "30 E.C.",
+        "n": 14,
+        "density": false
+      },
+      {
+        "name": "31 E.C.",
+        "n": 22,
+        "density": false
+      },
+      {
+        "name": "32 E.C.",
+        "n": 41,
+        "density": false
+      }
+    ],
+    "collisions": [],
+    "hitFails": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "width": 320,
+    "height": 844,
+    "lane": "jud,isr,pro",
+    "count": "54 personajes · 28 pistas · 41 sucesos sueltos · vista resumida · 25 marcadores",
+    "viewport": [
+      320,
+      579
+    ],
+    "chart": [
+      720,
+      1710
+    ],
+    "freeBelow": 0,
+    "looseMode": "agrupado",
+    "looseEligible": 41,
+    "groups": [],
+    "collisions": [],
+    "hitFails": [
+      {
+        "text": "Rehoboam, 997 a.E.C. – 980 a.E.C.",
+        "id": "26",
+        "hit": "<div class=\"evt-marker evt-marker--in-row evt-marker--halo-bajo\" style=\"left:134.58617332035055px;--mk-color:var(--mk-otro)\" data-ev=\"352\" tabindex=\"0\" role=\"button\" aria-label=\"Sisaq invade a Judá y se lleva tesoros del",
+        "x": 138.9609375,
+        "y": 265
+      }
+    ],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "width": 390,
+    "height": 844,
+    "lane": "jue",
+    "count": "1 personaje · 1 pistas · 9 sucesos sueltos · sucesos desplegados · 11 marcadores",
+    "viewport": [
+      390,
+      649
+    ],
+    "chart": [
+      720,
+      597
+    ],
+    "freeBelow": 499,
+    "looseMode": "expandido",
+    "looseEligible": 9,
+    "groups": [],
+    "collisions": [],
+    "hitFails": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "width": 390,
+    "height": 844,
+    "lane": "sem",
+    "count": "3 grupos · 10 sucesos · 9 pistas · 10 sucesos sueltos · vista resumida · 6 marcadores",
+    "viewport": [
+      390,
+      649
+    ],
+    "chart": [
+      960,
+      654
+    ],
+    "freeBelow": 15,
+    "looseMode": "agrupado",
+    "looseEligible": 10,
+    "groups": [
+      {
+        "name": "9 sucesos próximos",
+        "n": 9,
+        "density": true
+      },
+      {
+        "name": "13 sucesos próximos",
+        "n": 13,
+        "density": true
+      },
+      {
+        "name": "3 sucesos próximos",
+        "n": 3,
+        "density": true
+      }
+    ],
+    "collisions": [],
+    "hitFails": [
+      {
+        "text": "4 sucesos próximos",
+        "hit": "<div class=\"axis-area\" id=\"axis-area\" style=\"width: 960px;\"><div class=\"grid-label\" style=\"left:36.923076923082476px\">33 E.C.</div><div class=\"grid-label\" style=\"left:221.53846153845546px\">10 de nisán</div><div class=\"gr",
+        "x": 36.921875,
+        "y": 772
+      },
+      {
+        "text": "Cena en casa de Simón el leproso",
+        "id": "253",
+        "hit": "<div class=\"axis-area\" id=\"axis-area\" style=\"width: 960px;\"><div class=\"grid-label\" style=\"left:36.923076923082476px\">33 E.C.</div><div class=\"grid-label\" style=\"left:221.53846153845546px\">10 de nisán</div><div class=\"gr",
+        "x": 129.21875,
+        "y": 772
+      }
+    ],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "width": 390,
+    "height": 844,
+    "lane": "jes",
+    "count": "6 grupos · 5 pistas · 15 sucesos sueltos · 1 marcadores",
+    "viewport": [
+      390,
+      649
+    ],
+    "chart": [
+      780,
+      597
+    ],
+    "freeBelow": 201,
+    "looseMode": "agrupado",
+    "looseEligible": 15,
+    "groups": [
+      {
+        "name": "Antes de bautizarse",
+        "n": 8,
+        "density": false
+      },
+      {
+        "name": "29 E.C.",
+        "n": 5,
+        "density": false
+      },
+      {
+        "name": "33 E.C.",
+        "n": 35,
+        "density": false
+      },
+      {
+        "name": "30 E.C.",
+        "n": 14,
+        "density": false
+      },
+      {
+        "name": "31 E.C.",
+        "n": 22,
+        "density": false
+      },
+      {
+        "name": "32 E.C.",
+        "n": 41,
+        "density": false
+      }
+    ],
+    "collisions": [],
+    "hitFails": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "width": 390,
+    "height": 844,
+    "lane": "jud,isr,pro",
+    "count": "54 personajes · 28 pistas · 41 sucesos sueltos · vista resumida · 25 marcadores",
+    "viewport": [
+      390,
+      649
+    ],
+    "chart": [
+      720,
+      1710
+    ],
+    "freeBelow": 0,
+    "looseMode": "agrupado",
+    "looseEligible": 41,
+    "groups": [],
+    "collisions": [],
+    "hitFails": [
+      {
+        "text": "Rehoboam, 997 a.E.C. – 980 a.E.C.",
+        "id": "26",
+        "hit": "<div class=\"evt-marker evt-marker--in-row evt-marker--halo-bajo\" style=\"left:134.58617332035055px;--mk-color:var(--mk-otro)\" data-ev=\"352\" tabindex=\"0\" role=\"button\" aria-label=\"Sisaq invade a Judá y se lleva tesoros del",
+        "x": 138.9609375,
+        "y": 195
+      },
+      {
+        "text": "Jeroboán I, 997 a.E.C. – 975 a.E.C.",
+        "id": "46",
+        "hit": "<div class=\"axis-area\" id=\"axis-area\" style=\"width: 720px;\"><div class=\"grid-label\" style=\"left:30.399221032132452px\">1100 a.E.C.</div><div class=\"grid-label\" style=\"left:127.77020447906526px\">1000 a.E.C.</div><div class",
+        "x": 141.390625,
+        "y": 769
+      },
+      {
+        "text": "Jehoás (Israel), 859 a.E.C. – 843 a.E.C.",
+        "id": "57",
+        "hit": "<div class=\"axis-area\" id=\"axis-area\" style=\"width: 720px;\"><div class=\"grid-label\" style=\"left:30.399221032132452px\">1100 a.E.C.</div><div class=\"grid-label\" style=\"left:127.77020447906526px\">1000 a.E.C.</div><div class",
+        "x": 272.8515625,
+        "y": 769
+      }
+    ],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "width": 520,
+    "height": 844,
+    "lane": "jue",
+    "count": "1 personaje · 1 pistas · 9 sucesos sueltos · sucesos desplegados · 11 marcadores",
+    "viewport": [
+      520,
+      649
+    ],
+    "chart": [
+      720,
+      597
+    ],
+    "freeBelow": 499,
+    "looseMode": "expandido",
+    "looseEligible": 9,
+    "groups": [],
+    "collisions": [],
+    "hitFails": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "width": 520,
+    "height": 844,
+    "lane": "sem",
+    "count": "3 grupos · 10 sucesos · 9 pistas · 10 sucesos sueltos · vista resumida · 6 marcadores",
+    "viewport": [
+      520,
+      649
+    ],
+    "chart": [
+      960,
+      654
+    ],
+    "freeBelow": 15,
+    "looseMode": "agrupado",
+    "looseEligible": 10,
+    "groups": [
+      {
+        "name": "9 sucesos próximos",
+        "n": 9,
+        "density": true
+      },
+      {
+        "name": "13 sucesos próximos",
+        "n": 13,
+        "density": true
+      },
+      {
+        "name": "3 sucesos próximos",
+        "n": 3,
+        "density": true
+      }
+    ],
+    "collisions": [],
+    "hitFails": [
+      {
+        "text": "4 sucesos próximos",
+        "hit": "<div class=\"axis-area\" id=\"axis-area\" style=\"width: 960px;\"><div class=\"grid-label\" style=\"left:36.923076923082476px\">33 E.C.</div><div class=\"grid-label\" style=\"left:221.53846153845546px\">10 de nisán</div><div class=\"gr",
+        "x": 36.921875,
+        "y": 772
+      },
+      {
+        "text": "Cena en casa de Simón el leproso",
+        "id": "253",
+        "hit": "<div class=\"axis-area\" id=\"axis-area\" style=\"width: 960px;\"><div class=\"grid-label\" style=\"left:36.923076923082476px\">33 E.C.</div><div class=\"grid-label\" style=\"left:221.53846153845546px\">10 de nisán</div><div class=\"gr",
+        "x": 129.21875,
+        "y": 772
+      },
+      {
+        "text": "Preparativos de la Pascua",
+        "id": "261",
+        "hit": "<div class=\"axis-area\" id=\"axis-area\" style=\"width: 960px;\"><div class=\"grid-label\" style=\"left:36.923076923082476px\">33 E.C.</div><div class=\"grid-label\" style=\"left:221.53846153845546px\">10 de nisán</div><div class=\"gr",
+        "x": 498.453125,
+        "y": 772
+      }
+    ],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "width": 520,
+    "height": 844,
+    "lane": "jes",
+    "count": "6 grupos · 5 pistas · 15 sucesos sueltos · 1 marcadores",
+    "viewport": [
+      520,
+      649
+    ],
+    "chart": [
+      780,
+      597
+    ],
+    "freeBelow": 201,
+    "looseMode": "agrupado",
+    "looseEligible": 15,
+    "groups": [
+      {
+        "name": "Antes de bautizarse",
+        "n": 8,
+        "density": false
+      },
+      {
+        "name": "29 E.C.",
+        "n": 5,
+        "density": false
+      },
+      {
+        "name": "33 E.C.",
+        "n": 35,
+        "density": false
+      },
+      {
+        "name": "30 E.C.",
+        "n": 14,
+        "density": false
+      },
+      {
+        "name": "31 E.C.",
+        "n": 22,
+        "density": false
+      },
+      {
+        "name": "32 E.C.",
+        "n": 41,
+        "density": false
+      }
+    ],
+    "collisions": [],
+    "hitFails": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "width": 520,
+    "height": 844,
+    "lane": "jud,isr,pro",
+    "count": "54 personajes · 28 pistas · 41 sucesos sueltos · vista resumida · 25 marcadores",
+    "viewport": [
+      520,
+      649
+    ],
+    "chart": [
+      720,
+      1710
+    ],
+    "freeBelow": 0,
+    "looseMode": "agrupado",
+    "looseEligible": 41,
+    "groups": [],
+    "collisions": [],
+    "hitFails": [
+      {
+        "text": "Rehoboam, 997 a.E.C. – 980 a.E.C.",
+        "id": "26",
+        "hit": "<div class=\"evt-marker evt-marker--in-row evt-marker--halo-bajo\" style=\"left:134.58617332035055px;--mk-color:var(--mk-otro)\" data-ev=\"352\" tabindex=\"0\" role=\"button\" aria-label=\"Sisaq invade a Judá y se lleva tesoros del",
+        "x": 138.9609375,
+        "y": 195
+      },
+      {
+        "text": "Josías, 659 a.E.C. – 628 a.E.C.",
+        "id": "41",
+        "hit": "<div class=\"evt-marker evt-marker--in-row evt-marker--agg evt-marker--halo-bajo\" style=\"left:470.51606621226875px;--mk-color:var(--acc)\" data-agg-ids=\"76,84\" tabindex=\"0\" role=\"button\" aria-label=\"2 sucesos próximos\"><sp",
+        "x": 474.8828125,
+        "y": 195
+      },
+      {
+        "text": "Ezequías, 746 a.E.C. – 716 a.E.C.",
+        "id": "38",
+        "hit": "<div class=\"evt-marker evt-marker--in-row evt-marker--agg evt-marker--halo-bajo\" style=\"left:396.51411879259985px;--mk-color:var(--acc)\" data-agg-ids=\"75,354,83\" tabindex=\"0\" role=\"button\" aria-label=\"3 sucesos próximos\"",
+        "x": 389.6796875,
+        "y": 363
+      },
+      {
+        "text": "Jehoiaquim, 628 a.E.C. – 618 a.E.C.",
+        "id": "43",
+        "hit": "<div class=\"evt-marker evt-marker--in-row evt-marker--halo-bajo\" style=\"left:497.77994157740994px;--mk-color:var(--mk-otro)\" data-ev=\"360\" tabindex=\"0\" role=\"button\" aria-label=\"Nabucodonosor hace rey tributario a Jehoia",
+        "x": 494.84375,
+        "y": 587
+      },
+      {
+        "text": "Sedequías, 617 a.E.C. – 607 a.E.C.",
+        "id": "45",
+        "hit": "<div class=\"evt-marker evt-marker--in-row evt-marker--halo-bajo\" style=\"left:500.7010710808179px;--mk-color:var(--mk-otro)\" data-ev=\"97\" tabindex=\"0\" role=\"button\" aria-label=\"Nabucodonosor se lleva a los primeros cautiv",
+        "x": 505.5625,
+        "y": 699
+      },
+      {
+        "text": "Jeroboán I, 997 a.E.C. – 975 a.E.C.",
+        "id": "46",
+        "hit": "<div class=\"axis-area\" id=\"axis-area\" style=\"width: 720px;\"><div class=\"grid-label\" style=\"left:30.399221032132452px\">1100 a.E.C.</div><div class=\"grid-label\" style=\"left:127.77020447906526px\">1000 a.E.C.</div><div class",
+        "x": 141.390625,
+        "y": 769
+      },
+      {
+        "text": "Jehoás (Israel), 859 a.E.C. – 843 a.E.C.",
+        "id": "57",
+        "hit": "<div class=\"axis-area\" id=\"axis-area\" style=\"width: 720px;\"><div class=\"grid-label\" style=\"left:30.399221032132452px\">1100 a.E.C.</div><div class=\"grid-label\" style=\"left:127.77020447906526px\">1000 a.E.C.</div><div class",
+        "x": 272.8515625,
+        "y": 769
+      }
+    ],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "width": 521,
+    "height": 844,
+    "lane": "jue",
+    "count": "1 personaje · 1 pistas · 9 sucesos sueltos · sucesos desplegados · 11 marcadores",
+    "viewport": [
+      521,
+      649
+    ],
+    "chart": [
+      720,
+      597
+    ],
+    "freeBelow": 499,
+    "looseMode": "expandido",
+    "looseEligible": 9,
+    "groups": [],
+    "collisions": [],
+    "hitFails": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "width": 521,
+    "height": 844,
+    "lane": "sem",
+    "count": "3 grupos · 10 sucesos · 9 pistas · 10 sucesos sueltos · vista resumida · 6 marcadores",
+    "viewport": [
+      521,
+      649
+    ],
+    "chart": [
+      960,
+      654
+    ],
+    "freeBelow": 15,
+    "looseMode": "agrupado",
+    "looseEligible": 10,
+    "groups": [
+      {
+        "name": "9 sucesos próximos",
+        "n": 9,
+        "density": true
+      },
+      {
+        "name": "13 sucesos próximos",
+        "n": 13,
+        "density": true
+      },
+      {
+        "name": "3 sucesos próximos",
+        "n": 3,
+        "density": true
+      }
+    ],
+    "collisions": [],
+    "hitFails": [
+      {
+        "text": "4 sucesos próximos",
+        "hit": "<div class=\"axis-area\" id=\"axis-area\" style=\"width: 960px;\"><div class=\"grid-label\" style=\"left:36.923076923082476px\">33 E.C.</div><div class=\"grid-label\" style=\"left:221.53846153845546px\">10 de nisán</div><div class=\"gr",
+        "x": 36.921875,
+        "y": 772
+      },
+      {
+        "text": "Cena en casa de Simón el leproso",
+        "id": "253",
+        "hit": "<div class=\"axis-area\" id=\"axis-area\" style=\"width: 960px;\"><div class=\"grid-label\" style=\"left:36.923076923082476px\">33 E.C.</div><div class=\"grid-label\" style=\"left:221.53846153845546px\">10 de nisán</div><div class=\"gr",
+        "x": 129.21875,
+        "y": 772
+      },
+      {
+        "text": "Preparativos de la Pascua",
+        "id": "261",
+        "hit": "<div class=\"axis-area\" id=\"axis-area\" style=\"width: 960px;\"><div class=\"grid-label\" style=\"left:36.923076923082476px\">33 E.C.</div><div class=\"grid-label\" style=\"left:221.53846153845546px\">10 de nisán</div><div class=\"gr",
+        "x": 498.453125,
+        "y": 772
+      }
+    ],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "width": 521,
+    "height": 844,
+    "lane": "jes",
+    "count": "6 grupos · 5 pistas · 15 sucesos sueltos · 1 marcadores",
+    "viewport": [
+      521,
+      649
+    ],
+    "chart": [
+      780,
+      597
+    ],
+    "freeBelow": 201,
+    "looseMode": "agrupado",
+    "looseEligible": 15,
+    "groups": [
+      {
+        "name": "Antes de bautizarse",
+        "n": 8,
+        "density": false
+      },
+      {
+        "name": "29 E.C.",
+        "n": 5,
+        "density": false
+      },
+      {
+        "name": "33 E.C.",
+        "n": 35,
+        "density": false
+      },
+      {
+        "name": "30 E.C.",
+        "n": 14,
+        "density": false
+      },
+      {
+        "name": "31 E.C.",
+        "n": 22,
+        "density": false
+      },
+      {
+        "name": "32 E.C.",
+        "n": 41,
+        "density": false
+      }
+    ],
+    "collisions": [],
+    "hitFails": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "width": 521,
+    "height": 844,
+    "lane": "jud,isr,pro",
+    "count": "54 personajes · 28 pistas · 41 sucesos sueltos · vista resumida · 25 marcadores",
+    "viewport": [
+      521,
+      649
+    ],
+    "chart": [
+      720,
+      1710
+    ],
+    "freeBelow": 0,
+    "looseMode": "agrupado",
+    "looseEligible": 41,
+    "groups": [],
+    "collisions": [],
+    "hitFails": [
+      {
+        "text": "Rehoboam, 997 a.E.C. – 980 a.E.C.",
+        "id": "26",
+        "hit": "<div class=\"evt-marker evt-marker--in-row evt-marker--halo-bajo\" style=\"left:134.58617332035055px;--mk-color:var(--mk-otro)\" data-ev=\"352\" tabindex=\"0\" role=\"button\" aria-label=\"Sisaq invade a Judá y se lleva tesoros del",
+        "x": 138.9609375,
+        "y": 195
+      },
+      {
+        "text": "Josías, 659 a.E.C. – 628 a.E.C.",
+        "id": "41",
+        "hit": "<div class=\"evt-marker evt-marker--in-row evt-marker--agg evt-marker--halo-bajo\" style=\"left:470.51606621226875px;--mk-color:var(--acc)\" data-agg-ids=\"76,84\" tabindex=\"0\" role=\"button\" aria-label=\"2 sucesos próximos\"><sp",
+        "x": 474.8828125,
+        "y": 195
+      },
+      {
+        "text": "Ezequías, 746 a.E.C. – 716 a.E.C.",
+        "id": "38",
+        "hit": "<div class=\"evt-marker evt-marker--in-row evt-marker--agg evt-marker--halo-bajo\" style=\"left:396.51411879259985px;--mk-color:var(--acc)\" data-agg-ids=\"75,354,83\" tabindex=\"0\" role=\"button\" aria-label=\"3 sucesos próximos\"",
+        "x": 389.6796875,
+        "y": 363
+      },
+      {
+        "text": "Jehoiaquim, 628 a.E.C. – 618 a.E.C.",
+        "id": "43",
+        "hit": "<div class=\"evt-marker evt-marker--in-row evt-marker--halo-bajo\" style=\"left:497.77994157740994px;--mk-color:var(--mk-otro)\" data-ev=\"360\" tabindex=\"0\" role=\"button\" aria-label=\"Nabucodonosor hace rey tributario a Jehoia",
+        "x": 494.84375,
+        "y": 587
+      },
+      {
+        "text": "Sedequías, 617 a.E.C. – 607 a.E.C.",
+        "id": "45",
+        "hit": "<div class=\"evt-marker evt-marker--in-row evt-marker--halo-bajo\" style=\"left:500.7010710808179px;--mk-color:var(--mk-otro)\" data-ev=\"97\" tabindex=\"0\" role=\"button\" aria-label=\"Nabucodonosor se lleva a los primeros cautiv",
+        "x": 505.5625,
+        "y": 699
+      },
+      {
+        "text": "Jeroboán I, 997 a.E.C. – 975 a.E.C.",
+        "id": "46",
+        "hit": "<div class=\"axis-area\" id=\"axis-area\" style=\"width: 720px;\"><div class=\"grid-label\" style=\"left:30.399221032132452px\">1100 a.E.C.</div><div class=\"grid-label\" style=\"left:127.77020447906526px\">1000 a.E.C.</div><div class",
+        "x": 141.390625,
+        "y": 769
+      },
+      {
+        "text": "Jehoás (Israel), 859 a.E.C. – 843 a.E.C.",
+        "id": "57",
+        "hit": "<div class=\"axis-area\" id=\"axis-area\" style=\"width: 720px;\"><div class=\"grid-label\" style=\"left:30.399221032132452px\">1100 a.E.C.</div><div class=\"grid-label\" style=\"left:127.77020447906526px\">1000 a.E.C.</div><div class",
+        "x": 272.8515625,
+        "y": 769
+      }
+    ],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "width": 760,
+    "height": 844,
+    "lane": "jue",
+    "count": "1 personaje · 1 pistas · 9 sucesos sueltos · sucesos desplegados · 11 marcadores",
+    "viewport": [
+      760,
+      682
+    ],
+    "chart": [
+      756,
+      630
+    ],
+    "freeBelow": 532,
+    "looseMode": "expandido",
+    "looseEligible": 9,
+    "groups": [],
+    "collisions": [],
+    "hitFails": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "width": 760,
+    "height": 844,
+    "lane": "sem",
+    "count": "3 grupos · 10 sucesos · 9 pistas · 10 sucesos sueltos · vista resumida · 6 marcadores",
+    "viewport": [
+      760,
+      682
+    ],
+    "chart": [
+      960,
+      654
+    ],
+    "freeBelow": 48,
+    "looseMode": "agrupado",
+    "looseEligible": 10,
+    "groups": [
+      {
+        "name": "9 sucesos próximos",
+        "n": 9,
+        "density": true
+      },
+      {
+        "name": "13 sucesos próximos",
+        "n": 13,
+        "density": true
+      },
+      {
+        "name": "3 sucesos próximos",
+        "n": 3,
+        "density": true
+      }
+    ],
+    "collisions": [],
+    "hitFails": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "width": 760,
+    "height": 844,
+    "lane": "jes",
+    "count": "6 grupos · 5 pistas · 15 sucesos sueltos · 1 marcadores",
+    "viewport": [
+      760,
+      682
+    ],
+    "chart": [
+      780,
+      630
+    ],
+    "freeBelow": 234,
+    "looseMode": "agrupado",
+    "looseEligible": 15,
+    "groups": [
+      {
+        "name": "Antes de bautizarse",
+        "n": 8,
+        "density": false
+      },
+      {
+        "name": "29 E.C.",
+        "n": 5,
+        "density": false
+      },
+      {
+        "name": "33 E.C.",
+        "n": 35,
+        "density": false
+      },
+      {
+        "name": "30 E.C.",
+        "n": 14,
+        "density": false
+      },
+      {
+        "name": "31 E.C.",
+        "n": 22,
+        "density": false
+      },
+      {
+        "name": "32 E.C.",
+        "n": 41,
+        "density": false
+      }
+    ],
+    "collisions": [],
+    "hitFails": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "width": 760,
+    "height": 844,
+    "lane": "jud,isr,pro",
+    "count": "54 personajes · 27 pistas · 41 sucesos sueltos · vista resumida · 25 marcadores",
+    "viewport": [
+      760,
+      682
+    ],
+    "chart": [
+      756,
+      1654
+    ],
+    "freeBelow": 0,
+    "looseMode": "agrupado",
+    "looseEligible": 41,
+    "groups": [],
+    "collisions": [
+      {
+        "a": "Nadab",
+        "b": "1000 a.E.C.",
+        "w": 60.859375,
+        "h": 10.875
+      },
+      {
+        "a": "Nadab",
+        "b": "900 a.E.C.",
+        "w": 12.453125,
+        "h": 10.875
+      },
+      {
+        "a": "Jehú",
+        "b": "900 a.E.C.",
+        "w": 33.265625,
+        "h": 7.875
+      },
+      {
+        "a": "Jehú",
+        "b": "800 a.E.C.",
+        "w": 41.0390625,
+        "h": 7.875
+      },
+      {
+        "a": "Pécah",
+        "b": "800 a.E.C.",
+        "w": 5.8828125,
+        "h": 7.875
+      },
+      {
+        "a": "Pécah",
+        "b": "700 a.E.C.",
+        "w": 54.859375,
+        "h": 7.875
+      }
+    ],
+    "hitFails": [
+      {
+        "text": "Rehoboam, 997 a.E.C. – 980 a.E.C.",
+        "id": "26",
+        "hit": "<div class=\"evt-marker evt-marker--in-row evt-marker--halo-bajo\" style=\"left:141.3154819863681px;--mk-color:var(--mk-otro)\" data-ev=\"352\" tabindex=\"0\" role=\"button\" aria-label=\"Sisaq invade a Judá y se lleva tesoros del ",
+        "x": 145.90625,
+        "y": 162
+      },
+      {
+        "text": "Josías, 659 a.E.C. – 628 a.E.C.",
+        "id": "41",
+        "hit": "<div class=\"evt-marker evt-marker--in-row evt-marker--agg evt-marker--halo-bajo\" style=\"left:494.04186952288217px;--mk-color:var(--acc)\" data-agg-ids=\"76,84\" tabindex=\"0\" role=\"button\" aria-label=\"2 sucesos próximos\"><sp",
+        "x": 498.625,
+        "y": 162
+      },
+      {
+        "text": "Ezequías, 746 a.E.C. – 716 a.E.C.",
+        "id": "38",
+        "hit": "<div class=\"evt-marker evt-marker--in-row evt-marker--agg evt-marker--halo-bajo\" style=\"left:416.33982473222983px;--mk-color:var(--acc)\" data-agg-ids=\"75,354,83\" tabindex=\"0\" role=\"button\" aria-label=\"3 sucesos próximos\"",
+        "x": 409.171875,
+        "y": 330
+      },
+      {
+        "text": "Jehoiaquim, 628 a.E.C. – 618 a.E.C.",
+        "id": "43",
+        "hit": "<div class=\"evt-marker evt-marker--in-row evt-marker--halo-bajo\" style=\"left:522.6689386562805px;--mk-color:var(--mk-otro)\" data-ev=\"360\" tabindex=\"0\" role=\"button\" aria-label=\"Nabucodonosor hace rey tributario a Jehoiaq",
+        "x": 519.59375,
+        "y": 554
+      },
+      {
+        "text": "Sedequías, 617 a.E.C. – 607 a.E.C.",
+        "id": "45",
+        "hit": "<div class=\"evt-marker evt-marker--in-row evt-marker--halo-bajo\" style=\"left:525.7361246348588px;--mk-color:var(--mk-otro)\" data-ev=\"97\" tabindex=\"0\" role=\"button\" aria-label=\"Nabucodonosor se lleva a los primeros cautiv",
+        "x": 530.84375,
+        "y": 666
+      }
+    ],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "width": 761,
+    "height": 844,
+    "lane": "jue",
+    "count": "1 personaje · 1 pistas · 9 sucesos sueltos · 3 marcadores",
+    "viewport": [
+      761,
+      487
+    ],
+    "chart": [
+      757,
+      435
+    ],
+    "freeBelow": 337,
+    "looseMode": "agrupado",
+    "looseEligible": 9,
+    "groups": [],
+    "collisions": [],
+    "hitFails": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "width": 761,
+    "height": 844,
+    "lane": "sem",
+    "count": "5 grupos · 6 sucesos · 5 pistas · 10 sucesos sueltos · vista resumida · 6 marcadores",
+    "viewport": [
+      761,
+      487
+    ],
+    "chart": [
+      960,
+      430
+    ],
+    "freeBelow": 53,
+    "looseMode": "agrupado",
+    "looseEligible": 10,
+    "groups": [
+      {
+        "name": "9 sucesos próximos",
+        "n": 9,
+        "density": true
+      },
+      {
+        "name": "2 sucesos próximos",
+        "n": 2,
+        "density": true
+      },
+      {
+        "name": "13 sucesos próximos",
+        "n": 13,
+        "density": true
+      },
+      {
+        "name": "2 sucesos próximos",
+        "n": 2,
+        "density": true
+      },
+      {
+        "name": "3 sucesos próximos",
+        "n": 3,
+        "density": true
+      }
+    ],
+    "collisions": [],
+    "hitFails": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "width": 761,
+    "height": 844,
+    "lane": "jes",
+    "count": "6 grupos · 5 pistas · 15 sucesos sueltos · vista resumida · 2 marcadores",
+    "viewport": [
+      761,
+      487
+    ],
+    "chart": [
+      780,
+      488
+    ],
+    "freeBelow": 39,
+    "looseMode": "agrupado",
+    "looseEligible": 15,
+    "groups": [
+      {
+        "name": "Antes de bautizarse",
+        "n": 8,
+        "density": false
+      },
+      {
+        "name": "29 E.C.",
+        "n": 5,
+        "density": false
+      },
+      {
+        "name": "33 E.C.",
+        "n": 35,
+        "density": false
+      },
+      {
+        "name": "30 E.C.",
+        "n": 14,
+        "density": false
+      },
+      {
+        "name": "31 E.C.",
+        "n": 22,
+        "density": false
+      },
+      {
+        "name": "32 E.C.",
+        "n": 41,
+        "density": false
+      }
+    ],
+    "collisions": [],
+    "hitFails": [
+      {
+        "text": "7 sucesos próximos",
+        "hit": "<div class=\"axis-area\" id=\"axis-area\" style=\"width: 780px;\"><div class=\"grid-label\" style=\"left:278.5135135135135px\">10 E.C.</div><div class=\"grid-label\" style=\"left:481.2162162162162px\">20 E.C.</div><div class=\"grid-lab",
+        "x": 755.140625,
+        "y": 767.796875
+      }
+    ],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "width": 761,
+    "height": 844,
+    "lane": "jud,isr,pro",
+    "count": "54 personajes · 27 pistas · 41 sucesos sueltos · vista resumida · 25 marcadores",
+    "viewport": [
+      761,
+      487
+    ],
+    "chart": [
+      757,
+      1654
+    ],
+    "freeBelow": 0,
+    "looseMode": "agrupado",
+    "looseEligible": 41,
+    "groups": [],
+    "collisions": [
+      {
+        "a": "858 a.E.C. – 829 a.E.C.",
+        "b": "800 a.E.C.",
+        "w": 56.765625,
+        "h": 5.859375
+      },
+      {
+        "a": "628 a.E.C. – 618 a.E.C.",
+        "b": "600 a.E.C.",
+        "w": 33.65625,
+        "h": 8.859375
+      },
+      {
+        "a": "628 a.E.C. – 618 a.E.C.",
+        "b": "500 a.E.C.",
+        "w": 40.1328125,
+        "h": 8.859375
+      }
+    ],
+    "hitFails": [
+      {
+        "text": "Rehoboam, 997 a.E.C. – 980 a.E.C.",
+        "id": "26",
+        "hit": "<div class=\"evt-marker evt-marker--in-row evt-marker--halo-bajo\" style=\"left:141.5024072270908px;--mk-color:var(--mk-otro)\" data-ev=\"352\" tabindex=\"0\" role=\"button\" aria-label=\"Sisaq invade a Judá y se lleva tesoros del ",
+        "x": 146.1015625,
+        "y": 356.796875
+      },
+      {
+        "text": "Josías, 659 a.E.C. – 628 a.E.C.",
+        "id": "41",
+        "hit": "<div class=\"evt-marker evt-marker--in-row evt-marker--agg evt-marker--halo-bajo\" style=\"left:494.6953640592881px;--mk-color:var(--acc)\" data-agg-ids=\"76,84\" tabindex=\"0\" role=\"button\" aria-label=\"2 sucesos próximos\"><spa",
+        "x": 499.2890625,
+        "y": 356.796875
+      },
+      {
+        "text": "Ezequías, 746 a.E.C. – 716 a.E.C.",
+        "id": "38",
+        "hit": "<div class=\"evt-marker evt-marker--in-row evt-marker--agg evt-marker--halo-bajo\" style=\"left:416.89053878610844px;--mk-color:var(--acc)\" data-agg-ids=\"75,354,83\" tabindex=\"0\" role=\"button\" aria-label=\"3 sucesos próximos\"",
+        "x": 409.7109375,
+        "y": 524.796875
+      },
+      {
+        "text": "Amasías, 858 a.E.C. – 829 a.E.C.",
+        "id": "34",
+        "hit": "<div class=\"axis-area\" id=\"axis-area\" style=\"width: 757px;\"><div class=\"grid-label\" style=\"left:31.96140322406148px\">1100 a.E.C.</div><div class=\"grid-label\" style=\"left:134.33617332035055px\">1000 a.E.C.</div><div class=",
+        "x": 294.546875,
+        "y": 748.796875
+      },
+      {
+        "text": "Jehoiaquim, 628 a.E.C. – 618 a.E.C.",
+        "id": "43",
+        "hit": "<div class=\"axis-area\" id=\"axis-area\" style=\"width: 757px;\"><div class=\"grid-label\" style=\"left:31.96140322406148px\">1100 a.E.C.</div><div class=\"grid-label\" style=\"left:134.33617332035055px\">1000 a.E.C.</div><div class=",
+        "x": 520.28125,
+        "y": 748.796875
+      },
+      {
+        "text": "Nabucodonosor hace rey tributario a Jehoiaquim",
+        "id": "360",
+        "hit": "<div class=\"axis-area\" id=\"axis-area\" style=\"width: 757px;\"><div class=\"grid-label\" style=\"left:31.96140322406148px\">1100 a.E.C.</div><div class=\"grid-label\" style=\"left:134.33617332035055px\">1000 a.E.C.</div><div class=",
+        "x": 523.359375,
+        "y": 748.796875
+      }
+    ],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "width": 1024,
+    "height": 844,
+    "lane": "jue",
+    "count": "1 personaje · 1 pistas · 9 sucesos sueltos · sucesos desplegados · 12 marcadores",
+    "viewport": [
+      1024,
+      519
+    ],
+    "chart": [
+      1020,
+      467
+    ],
+    "freeBelow": 369,
+    "looseMode": "expandido",
+    "looseEligible": 9,
+    "groups": [],
+    "collisions": [],
+    "hitFails": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "width": 1024,
+    "height": 844,
+    "lane": "sem",
+    "count": "4 grupos · 9 sucesos · 7 pistas · 10 sucesos sueltos · vista resumida · 6 marcadores",
+    "viewport": [
+      1024,
+      519
+    ],
+    "chart": [
+      1020,
+      530
+    ],
+    "freeBelow": 9,
+    "looseMode": "agrupado",
+    "looseEligible": 10,
+    "groups": [
+      {
+        "name": "9 sucesos próximos",
+        "n": 9,
+        "density": true
+      },
+      {
+        "name": "2 sucesos próximos",
+        "n": 2,
+        "density": true
+      },
+      {
+        "name": "13 sucesos próximos",
+        "n": 13,
+        "density": true
+      },
+      {
+        "name": "2 sucesos próximos",
+        "n": 2,
+        "density": true
+      }
+    ],
+    "collisions": [
+      {
+        "a": "Cena en casa de Simón el leproso",
+        "b": "10 de nisán",
+        "w": 67.140625,
+        "h": 4.5
+      },
+      {
+        "a": "Preparativos de la Pascua",
+        "b": "12 de nisán",
+        "w": 34.8984375,
+        "h": 4.5
+      },
+      {
+        "a": "Compra de especias",
+        "b": "16 de nisán",
+        "w": 66.859375,
+        "h": 4.5
+      }
+    ],
+    "hitFails": [
+      {
+        "text": "4 sucesos próximos",
+        "hit": "<div class=\"axis-area\" id=\"axis-area\" style=\"width: 1020px;\"><div class=\"grid-label\" style=\"left:39.23076923077513px\">33 E.C.</div><div class=\"grid-label\" style=\"left:235.38461538460894px\">10 de nisán</div><div class=\"gr",
+        "x": 39.21875,
+        "y": 777.796875
+      },
+      {
+        "text": "Cena en casa de Simón el leproso",
+        "id": "253",
+        "hit": "<div class=\"axis-area\" id=\"axis-area\" style=\"width: 1020px;\"><div class=\"grid-label\" style=\"left:39.23076923077513px\">33 E.C.</div><div class=\"grid-label\" style=\"left:235.38461538460894px\">10 de nisán</div><div class=\"gr",
+        "x": 137.296875,
+        "y": 777.796875
+      },
+      {
+        "text": "Preparativos de la Pascua",
+        "id": "261",
+        "hit": "<div class=\"axis-area\" id=\"axis-area\" style=\"width: 1020px;\"><div class=\"grid-label\" style=\"left:39.23076923077513px\">33 E.C.</div><div class=\"grid-label\" style=\"left:235.38461538460894px\">10 de nisán</div><div class=\"gr",
+        "x": 529.609375,
+        "y": 777.796875
+      },
+      {
+        "text": "2 sucesos próximos",
+        "hit": "<div class=\"axis-area\" id=\"axis-area\" style=\"width: 1020px;\"><div class=\"grid-label\" style=\"left:39.23076923077513px\">33 E.C.</div><div class=\"grid-label\" style=\"left:235.38461538460894px\">10 de nisán</div><div class=\"gr",
+        "x": 627.6875,
+        "y": 777.796875
+      },
+      {
+        "text": "Guardia en la tumba",
+        "id": "264",
+        "hit": "<div class=\"axis-area\" id=\"axis-area\" style=\"width: 1020px;\"><div class=\"grid-label\" style=\"left:39.23076923077513px\">33 E.C.</div><div class=\"grid-label\" style=\"left:235.38461538460894px\">10 de nisán</div><div class=\"gr",
+        "x": 725.765625,
+        "y": 777.796875
+      },
+      {
+        "text": "Compra de especias",
+        "id": "265",
+        "hit": "<div class=\"axis-area\" id=\"axis-area\" style=\"width: 1020px;\"><div class=\"grid-label\" style=\"left:39.23076923077513px\">33 E.C.</div><div class=\"grid-label\" style=\"left:235.38461538460894px\">10 de nisán</div><div class=\"gr",
+        "x": 823.84375,
+        "y": 777.796875
+      }
+    ],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "width": 1024,
+    "height": 844,
+    "lane": "jes",
+    "count": "6 grupos · 4 pistas · 15 sucesos sueltos · 1 marcadores",
+    "viewport": [
+      1024,
+      567
+    ],
+    "chart": [
+      1020,
+      515
+    ],
+    "freeBelow": 187,
+    "looseMode": "agrupado",
+    "looseEligible": 15,
+    "groups": [
+      {
+        "name": "Antes de bautizarse",
+        "n": 8,
+        "density": false
+      },
+      {
+        "name": "29 E.C.",
+        "n": 5,
+        "density": false
+      },
+      {
+        "name": "32 E.C.",
+        "n": 41,
+        "density": false
+      },
+      {
+        "name": "30 E.C.",
+        "n": 14,
+        "density": false
+      },
+      {
+        "name": "33 E.C.",
+        "n": 35,
+        "density": false
+      },
+      {
+        "name": "31 E.C.",
+        "n": 22,
+        "density": false
+      }
+    ],
+    "collisions": [],
+    "hitFails": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "width": 1024,
+    "height": 844,
+    "lane": "jud,isr,pro",
+    "count": "54 personajes · 23 pistas · 41 sucesos sueltos · vista resumida · 28 marcadores",
+    "viewport": [
+      1024,
+      519
+    ],
+    "chart": [
+      1020,
+      1430
+    ],
+    "freeBelow": 0,
+    "looseMode": "agrupado",
+    "looseEligible": 41,
+    "groups": [],
+    "collisions": [
+      {
+        "a": "Jeroboán I",
+        "b": "1000 a.E.C.",
+        "w": 26.2890625,
+        "h": 13.078125
+      },
+      {
+        "a": "Jeroboán I",
+        "b": "900 a.E.C.",
+        "w": 12.359375,
+        "h": 13.078125
+      },
+      {
+        "a": "Jehú",
+        "b": "900 a.E.C.",
+        "w": 35.046875,
+        "h": 13.078125
+      },
+      {
+        "a": "Jehú",
+        "b": "800 a.E.C.",
+        "w": 3.5390625,
+        "h": 13.078125
+      },
+      {
+        "a": "Pécah",
+        "b": "700 a.E.C.",
+        "w": 38.8359375,
+        "h": 13.078125
+      }
+    ],
+    "hitFails": [
+      {
+        "text": "Rehoboam, 997 a.E.C. – 980 a.E.C.",
+        "id": "26",
+        "hit": "<div class=\"evt-marker evt-marker--in-row evt-marker--halo-bajo\" style=\"left:190.6637455371633px;--mk-color:var(--mk-otro)\" data-ev=\"352\" tabindex=\"0\" role=\"button\" aria-label=\"Sisaq invade a Judá y se lleva tesoros del ",
+        "x": 196.859375,
+        "y": 324.796875
+      },
+      {
+        "text": "Josías, 659 a.E.C. – 628 a.E.C.",
+        "id": "41",
+        "hit": "<span class=\"evt-marker__agg-badge\">2</span>",
+        "x": 672.765625,
+        "y": 324.796875
+      },
+      {
+        "text": "Ezequías, 746 a.E.C. – 716 a.E.C.",
+        "id": "38",
+        "hit": "<div class=\"evt-marker evt-marker--in-row evt-marker--agg evt-marker--halo-bajo\" style=\"left:561.7283349561831px;--mk-color:var(--acc)\" data-agg-ids=\"75,354,83\" tabindex=\"0\" role=\"button\" aria-label=\"3 sucesos próximos\">",
+        "x": 552.0625,
+        "y": 492.796875
+      },
+      {
+        "text": "Jehoiaquim, 628 a.E.C. – 618 a.E.C.",
+        "id": "43",
+        "hit": "<div class=\"evt-marker evt-marker--in-row evt-marker--halo-bajo\" style=\"left:705.1882505679974px;--mk-color:var(--mk-otro)\" data-ev=\"360\" tabindex=\"0\" role=\"button\" aria-label=\"Nabucodonosor hace rey tributario a Jehoiaq",
+        "x": 701.046875,
+        "y": 604.796875
+      },
+      {
+        "text": "Sedequías, 617 a.E.C. – 607 a.E.C.",
+        "id": "45",
+        "hit": "<div class=\"evt-marker evt-marker--in-row evt-marker--halo-bajo\" style=\"left:709.326517364492px;--mk-color:var(--mk-otro)\" data-ev=\"97\" tabindex=\"0\" role=\"button\" aria-label=\"Nabucodonosor se lleva a los primeros cautivo",
+        "x": 716.21875,
+        "y": 716.796875
+      },
+      {
+        "text": "Jeroboán I, 997 a.E.C. – 975 a.E.C.",
+        "id": "46",
+        "hit": "<div class=\"axis-area\" id=\"axis-area\" style=\"width: 1020px;\"><div class=\"grid-label\" style=\"left:43.06556312885431px\">1100 a.E.C.</div><div class=\"grid-label\" style=\"left:181.00778967867578px\">1000 a.E.C.</div><div class",
+        "x": 200.3125,
+        "y": 786.796875
+      },
+      {
+        "text": "Jehú, 905 a.E.C. – 877 a.E.C.",
+        "id": "55",
+        "hit": "<div class=\"axis-area\" id=\"axis-area\" style=\"width: 1020px;\"><div class=\"grid-label\" style=\"left:43.06556312885431px\">1100 a.E.C.</div><div class=\"grid-label\" style=\"left:181.00778967867578px\">1000 a.E.C.</div><div class",
+        "x": 331.3515625,
+        "y": 786.796875
+      },
+      {
+        "text": "Pécah, 778 a.E.C. – 758 a.E.C.",
+        "id": "63",
+        "hit": "<div class=\"axis-area\" id=\"axis-area\" style=\"width: 1020px;\"><div class=\"grid-label\" style=\"left:43.06556312885431px\">1100 a.E.C.</div><div class=\"grid-label\" style=\"left:181.00778967867578px\">1000 a.E.C.</div><div class",
+        "x": 501.0234375,
+        "y": 786.796875
+      }
+    ],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "width": 1440,
+    "height": 1080,
+    "lane": "jue",
+    "count": "1 personaje · 1 pistas · 9 sucesos sueltos · sucesos desplegados · 12 marcadores",
+    "viewport": [
+      1440,
+      824
+    ],
+    "chart": [
+      1436,
+      772
+    ],
+    "freeBelow": 676,
+    "looseMode": "expandido",
+    "looseEligible": 9,
+    "groups": [],
+    "collisions": [],
+    "hitFails": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "width": 1440,
+    "height": 1080,
+    "lane": "sem",
+    "count": "2 grupos · 13 sucesos · 13 pistas · 10 sucesos sueltos · vista resumida · 6 marcadores",
+    "viewport": [
+      1440,
+      824
+    ],
+    "chart": [
+      1436,
+      834
+    ],
+    "freeBelow": 10,
+    "looseMode": "agrupado",
+    "looseEligible": 10,
+    "groups": [
+      {
+        "name": "13 sucesos próximos",
+        "n": 13,
+        "density": true
+      },
+      {
+        "name": "9 sucesos próximos",
+        "n": 9,
+        "density": true
+      }
+    ],
+    "collisions": [],
+    "hitFails": [
+      {
+        "text": "4 sucesos próximos",
+        "hit": "<div class=\"axis-area\" id=\"axis-area\" style=\"width: 1436px;\"><div class=\"grid-label\" style=\"left:55.23076923077753px\">33 E.C.</div><div class=\"grid-label\" style=\"left:331.3846153846063px\">10 de nisán</div><div class=\"gri",
+        "x": 55.21875,
+        "y": 1012.578125
+      },
+      {
+        "text": "Cena en casa de Simón el leproso",
+        "id": "253",
+        "hit": "<div class=\"axis-area\" id=\"axis-area\" style=\"width: 1436px;\"><div class=\"grid-label\" style=\"left:55.23076923077753px\">33 E.C.</div><div class=\"grid-label\" style=\"left:331.3846153846063px\">10 de nisán</div><div class=\"gri",
+        "x": 193.296875,
+        "y": 1012.578125
+      },
+      {
+        "text": "Preparativos de la Pascua",
+        "id": "261",
+        "hit": "<div class=\"axis-area\" id=\"axis-area\" style=\"width: 1436px;\"><div class=\"grid-label\" style=\"left:55.23076923077753px\">33 E.C.</div><div class=\"grid-label\" style=\"left:331.3846153846063px\">10 de nisán</div><div class=\"gri",
+        "x": 745.609375,
+        "y": 1012.578125
+      },
+      {
+        "text": "2 sucesos próximos",
+        "hit": "<div class=\"axis-area\" id=\"axis-area\" style=\"width: 1436px;\"><div class=\"grid-label\" style=\"left:55.23076923077753px\">33 E.C.</div><div class=\"grid-label\" style=\"left:331.3846153846063px\">10 de nisán</div><div class=\"gri",
+        "x": 883.6875,
+        "y": 1012.578125
+      },
+      {
+        "text": "Guardia en la tumba",
+        "id": "264",
+        "hit": "<div class=\"axis-area\" id=\"axis-area\" style=\"width: 1436px;\"><div class=\"grid-label\" style=\"left:55.23076923077753px\">33 E.C.</div><div class=\"grid-label\" style=\"left:331.3846153846063px\">10 de nisán</div><div class=\"gri",
+        "x": 1021.765625,
+        "y": 1012.578125
+      },
+      {
+        "text": "Compra de especias",
+        "id": "265",
+        "hit": "<div class=\"axis-area\" id=\"axis-area\" style=\"width: 1436px;\"><div class=\"grid-label\" style=\"left:55.23076923077753px\">33 E.C.</div><div class=\"grid-label\" style=\"left:331.3846153846063px\">10 de nisán</div><div class=\"gri",
+        "x": 1159.84375,
+        "y": 1012.578125
+      }
+    ],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "width": 1440,
+    "height": 1080,
+    "lane": "jes",
+    "count": "6 grupos · 4 pistas · 15 sucesos sueltos · 2 desplegados, 13 agrupados por falta de espacio · 3 marcadores",
+    "viewport": [
+      1440,
+      824
+    ],
+    "chart": [
+      1436,
+      772
+    ],
+    "freeBelow": 464,
+    "looseMode": "mixto",
+    "looseEligible": 15,
+    "groups": [
+      {
+        "name": "Antes de bautizarse",
+        "n": 8,
+        "density": false
+      },
+      {
+        "name": "29 E.C.",
+        "n": 5,
+        "density": false
+      },
+      {
+        "name": "32 E.C.",
+        "n": 41,
+        "density": false
+      },
+      {
+        "name": "30 E.C.",
+        "n": 14,
+        "density": false
+      },
+      {
+        "name": "33 E.C.",
+        "n": 35,
+        "density": false
+      },
+      {
+        "name": "31 E.C.",
+        "n": 22,
+        "density": false
+      }
+    ],
+    "collisions": [],
+    "hitFails": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "width": 1440,
+    "height": 1080,
+    "lane": "jud,isr,pro",
+    "count": "54 personajes · 18 pistas · 41 sucesos sueltos · vista resumida · 33 marcadores",
+    "viewport": [
+      1440,
+      824
+    ],
+    "chart": [
+      1436,
+      1134
+    ],
+    "freeBelow": 0,
+    "looseMode": "agrupado",
+    "looseEligible": 41,
+    "groups": [],
+    "collisions": [
+      {
+        "a": "844 a.E.C.",
+        "b": "800 a.E.C.",
+        "w": 25.21875,
+        "h": 3.796875
+      }
+    ],
+    "hitFails": [
+      {
+        "text": "Ezequías, 746 a.E.C. – 716 a.E.C.",
+        "id": "38",
+        "hit": "<div class=\"evt-marker evt-marker--in-row evt-marker--agg evt-marker--halo-bajo\" style=\"left:775.289300010819px;--mk-color:var(--acc)\" data-agg-ids=\"75,354\" tabindex=\"0\" role=\"button\" aria-label=\"2 sucesos próximos\"><spa",
+        "x": 777.21875,
+        "y": 362.578125
+      },
+      {
+        "text": "Jehoiaquim, 628 a.E.C. – 618 a.E.C.",
+        "id": "43",
+        "hit": "<div class=\"evt-marker evt-marker--in-row evt-marker--halo-bajo\" style=\"left:992.7944390349454px;--mk-color:var(--mk-otro)\" data-ev=\"360\" tabindex=\"0\" role=\"button\" aria-label=\"Nabucodonosor hace rey tributario a Jehoiaq",
+        "x": 986.953125,
+        "y": 362.578125
+      },
+      {
+        "text": "Josías, 659 a.E.C. – 628 a.E.C.",
+        "id": "41",
+        "hit": "<span class=\"evt-marker__agg-badge\">2</span>",
+        "x": 947.140625,
+        "y": 416.578125
+      },
+      {
+        "text": "Jehoiadá, 1005 a.E.C. – 875 a.E.C.",
+        "id": "65",
+        "hit": "<div class=\"axis-area\" id=\"axis-area\" style=\"width: 1436px;\"><div class=\"grid-label\" style=\"left:60.62955750297528px\">1100 a.E.C.</div><div class=\"grid-label\" style=\"left:254.83057448880237px\">1000 a.E.C.</div><div class",
+        "x": 371.3359375,
+        "y": 984.578125
+      },
+      {
+        "text": "Jonás, 844 a.E.C.",
+        "id": "69",
+        "hit": "<div class=\"axis-area\" id=\"axis-area\" style=\"width: 1436px;\"><div class=\"grid-label\" style=\"left:60.62955750297528px\">1100 a.E.C.</div><div class=\"grid-label\" style=\"left:254.83057448880237px\">1000 a.E.C.</div><div class",
+        "x": 558.78125,
+        "y": 984.578125
+      },
+      {
+        "text": "Jonás completa el libro de Jonás",
+        "id": "107",
+        "hit": "<div class=\"axis-area\" id=\"axis-area\" style=\"width: 1436px;\"><div class=\"grid-label\" style=\"left:60.62955750297528px\">1100 a.E.C.</div><div class=\"grid-label\" style=\"left:254.83057448880237px\">1000 a.E.C.</div><div class",
+        "x": 557.78125,
+        "y": 984.578125
+      },
+      {
+        "text": "Isaías, 778 a.E.C. – 732 a.E.C.",
+        "id": "73",
+        "hit": "<div class=\"axis-area\" id=\"axis-area\" style=\"width: 1436px;\"><div class=\"grid-label\" style=\"left:60.62955750297528px\">1100 a.E.C.</div><div class=\"grid-label\" style=\"left:254.83057448880237px\">1000 a.E.C.</div><div class",
+        "x": 730.6171875,
+        "y": 984.578125
+      },
+      {
+        "text": "Isaías empieza a profetizar",
+        "id": "353",
+        "hit": "<div class=\"axis-area\" id=\"axis-area\" style=\"width: 1436px;\"><div class=\"grid-label\" style=\"left:60.62955750297528px\">1100 a.E.C.</div><div class=\"grid-label\" style=\"left:254.83057448880237px\">1000 a.E.C.</div><div class",
+        "x": 685.953125,
+        "y": 984.578125
+      },
+      {
+        "text": "2 sucesos próximos",
+        "hit": "<div class=\"axis-area\" id=\"axis-area\" style=\"width: 1436px;\"><div class=\"grid-label\" style=\"left:60.62955750297528px\">1100 a.E.C.</div><div class=\"grid-label\" style=\"left:254.83057448880237px\">1000 a.E.C.</div><div class",
+        "x": 775.28125,
+        "y": 984.578125
+      },
+      {
+        "text": "Nahúm, 659 a.E.C. – 640 a.E.C.",
+        "id": "75",
+        "hit": "<div class=\"axis-area\" id=\"axis-area\" style=\"width: 1436px;\"><div class=\"grid-label\" style=\"left:60.62955750297528px\">1100 a.E.C.</div><div class=\"grid-label\" style=\"left:254.83057448880237px\">1000 a.E.C.</div><div class",
+        "x": 935.4921875,
+        "y": 984.578125
+      },
+      {
+        "text": "Nahúm completa el libro de Nahúm",
+        "id": "187",
+        "hit": "<div class=\"axis-area\" id=\"axis-area\" style=\"width: 1436px;\"><div class=\"grid-label\" style=\"left:60.62955750297528px\">1100 a.E.C.</div><div class=\"grid-label\" style=\"left:254.83057448880237px\">1000 a.E.C.</div><div class",
+        "x": 969.484375,
+        "y": 984.578125
+      }
+    ],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "width": 1920,
+    "height": 1080,
+    "lane": "jue",
+    "count": "1 personaje · 1 pistas · 9 sucesos sueltos · sucesos desplegados · 12 marcadores",
+    "viewport": [
+      1920,
+      901
+    ],
+    "chart": [
+      1916,
+      849
+    ],
+    "freeBelow": 753,
+    "looseMode": "expandido",
+    "looseEligible": 9,
+    "groups": [],
+    "collisions": [],
+    "hitFails": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "width": 1920,
+    "height": 1080,
+    "lane": "sem",
+    "count": "2 grupos · 13 sucesos · 13 pistas · 10 sucesos sueltos · 4 desplegados, 6 agrupados por falta de espacio · 6 marcadores",
+    "viewport": [
+      1920,
+      901
+    ],
+    "chart": [
+      1916,
+      849
+    ],
+    "freeBelow": 87,
+    "looseMode": "mixto",
+    "looseEligible": 10,
+    "groups": [
+      {
+        "name": "9 sucesos próximos",
+        "n": 9,
+        "density": true
+      },
+      {
+        "name": "13 sucesos próximos",
+        "n": 13,
+        "density": true
+      }
+    ],
+    "collisions": [],
+    "hitFails": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "width": 1920,
+    "height": 1080,
+    "lane": "jes",
+    "count": "6 grupos · 3 pistas · 15 sucesos sueltos · sucesos desplegados · 15 marcadores",
+    "viewport": [
+      1920,
+      901
+    ],
+    "chart": [
+      1916,
+      849
+    ],
+    "freeBelow": 604,
+    "looseMode": "expandido",
+    "looseEligible": 15,
+    "groups": [
+      {
+        "name": "Antes de bautizarse",
+        "n": 8,
+        "density": false
+      },
+      {
+        "name": "29 E.C.",
+        "n": 5,
+        "density": false
+      },
+      {
+        "name": "31 E.C.",
+        "n": 22,
+        "density": false
+      },
+      {
+        "name": "33 E.C.",
+        "n": 35,
+        "density": false
+      },
+      {
+        "name": "30 E.C.",
+        "n": 14,
+        "density": false
+      },
+      {
+        "name": "32 E.C.",
+        "n": 41,
+        "density": false
+      }
+    ],
+    "collisions": [],
+    "hitFails": [],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "width": 1920,
+    "height": 1080,
+    "lane": "jud,isr,pro",
+    "count": "54 personajes · 16 pistas · 41 sucesos sueltos · vista resumida · 35 marcadores",
+    "viewport": [
+      1920,
+      901
+    ],
+    "chart": [
+      1916,
+      1026
+    ],
+    "freeBelow": 0,
+    "looseMode": "agrupado",
+    "looseEligible": 41,
+    "groups": [],
+    "collisions": [
+      {
+        "a": "Abdías",
+        "b": "600 a.E.C.",
+        "w": 37.640625,
+        "h": 4.359375
+      }
+    ],
+    "hitFails": [
+      {
+        "text": "Ezequías, 746 a.E.C. – 716 a.E.C.",
+        "id": "38",
+        "hit": "<div class=\"evt-marker evt-marker--in-row evt-marker--agg\" style=\"left:1034.4389267553825px;--mk-color:var(--acc)\" data-agg-ids=\"75,354\" tabindex=\"0\" role=\"button\" aria-label=\"2 sucesos próximos\"><span class=\"evt-marker_",
+        "x": 1037.0234375,
+        "y": 285.78125
+      },
+      {
+        "text": "Josías, 659 a.E.C. – 628 a.E.C.",
+        "id": "41",
+        "hit": "<span class=\"evt-marker__agg-badge\">2</span>",
+        "x": 1263.734375,
+        "y": 285.78125
+      },
+      {
+        "text": "Jehoiaquim, 628 a.E.C. – 618 a.E.C.",
+        "id": "43",
+        "hit": "<div class=\"evt-marker evt-marker--in-row evt-marker--halo-bajo\" style=\"left:1324.6477334198853px;--mk-color:var(--mk-otro)\" data-ev=\"360\" tabindex=\"0\" role=\"button\" aria-label=\"Nabucodonosor hace rey tributario a Jehoia",
+        "x": 1316.859375,
+        "y": 339.78125
+      },
+      {
+        "text": "Jonás, 844 a.E.C.",
+        "id": "69",
+        "hit": "<div class=\"evt-marker evt-marker--in-row evt-marker--halo-bajo\" style=\"left:744.2301200908796px;--mk-color:var(--mk-otro)\" data-ev=\"107\" tabindex=\"0\" role=\"button\" aria-label=\"Jonás completa el libro de Jonás\"></div>",
+        "x": 745.21875,
+        "y": 799.78125
+      },
+      {
+        "text": "Abdías, 618 a.E.C. – 610 a.E.C.",
+        "id": "79",
+        "hit": "<div class=\"axis-area\" id=\"axis-area\" style=\"width: 1916px;\"><div class=\"grid-label\" style=\"left:80.89570485773025px\">1100 a.E.C.</div><div class=\"grid-label\" style=\"left:340.0107108081792px\">1000 a.E.C.</div><div class=",
+        "x": 1340.1875,
+        "y": 1015.78125
+      },
+      {
+        "text": "Abdías escribe el libro de Abdías",
+        "id": "171",
+        "hit": "<div class=\"axis-area\" id=\"axis-area\" style=\"width: 1916px;\"><div class=\"grid-label\" style=\"left:80.89570485773025px\">1100 a.E.C.</div><div class=\"grid-label\" style=\"left:340.0107108081792px\">1000 a.E.C.</div><div class=",
+        "x": 1358.328125,
+        "y": 1015.78125
+      }
+    ],
+    "overflow": false,
+    "errors": []
+  }
+]

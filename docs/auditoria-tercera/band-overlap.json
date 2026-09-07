@@ -1,0 +1,41 @@
+[
+  {
+    "html": "<div class=\"pot-strip\" style=\"width:1916px\"><span class=\"pot-strip__label\">Potencias mundiales</span><div class=\"band band--rom\" style=\"left:0px;width:1916px;top:0;height:28px\"><span class=\"band-label\" title=\"Roma\"><svg class=\"ui-ico\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M12 4l2 6h6l-5 3.",
+    "rect": {
+      "x": 0,
+      "y": 122.78125,
+      "width": 1916,
+      "height": 0,
+      "top": 122.78125,
+      "right": 1916,
+      "bottom": 122.78125,
+      "left": 0
+    }
+  },
+  {
+    "html": "<div class=\"band band--rom\" style=\"left:0px;width:1916px;top:0;height:28px\"><span class=\"band-label\" title=\"Roma\"><svg class=\"ui-ico\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M12 4l2 6h6l-5 3.5 2 6.5-5-3.5-5 3.5 2-6.5-5-3.5h6z\"></path></svg> Roma</span></div>",
+    "rect": {
+      "x": 0,
+      "y": 122.78125,
+      "width": 1916,
+      "height": 28,
+      "top": 122.78125,
+      "right": 1916,
+      "bottom": 150.78125,
+      "left": 0
+    }
+  },
+  {
+    "html": "<span class=\"band-label\" title=\"Roma\"><svg class=\"ui-ico\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M12 4l2 6h6l-5 3.5 2 6.5-5-3.5-5 3.5 2-6.5-5-3.5h6z\"></path></svg> Roma</span>",
+    "rect": {
+      "x": 932.9140625,
+      "y": 130.78125,
+      "width": 50.171875,
+      "height": 12.640625,
+      "top": 130.78125,
+      "right": 983.0859375,
+      "bottom": 143.421875,
+      "left": 932.9140625
+    }
+  }
+]

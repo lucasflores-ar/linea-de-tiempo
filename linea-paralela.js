@@ -2740,6 +2740,73 @@ function collectRepresentedEventIds(laneData){
   return ids;
 }
 
+function lanePeopleHeight(laneData, L, topOffset){
+  let h = topOffset;
+  for(const block of laneData || []){
+    if(!block.tracks?.length) continue;
+    h += block.tracks.reduce((n, track)=> n + trackRowHeight(L, track.people), 0) + L.laneGap;
+  }
+  return h;
+}
+
+/* Los agregados creados por densifyPointPeople viven en las filas superiores,
+   pero su apertura solo es válida si deja una zona residual colocable. Se
+   prueban sustituciones reales, una por una, en un orden estable: títulos
+   revelados por píxel adicional y luego fecha/ID. */
+function expandDensityAggregates(laneData, L, topOffset, chartLayout, viewH, looseEventsFor){
+  if(!laneData?.length || !(viewH > 0)) return laneData;
+  const baseH = lanePeopleHeight(laneData, L, topOffset);
+  const baseFree = Math.max(0, viewH - baseH - L.axisH - 12);
+  const candidates = [];
+  laneData.forEach((block, bi)=> (block.tracks || []).forEach((track, ti)=>
+    (track.people || []).forEach((pe, pi)=>{
+      if(!pe.isDensityAggregate || !(pe.groupEvents || []).length) return;
+      const members = pe.groupEvents.map(ev=>evToRow(ev, block.meta.key));
+      const replacementTracks = layoutBlockTracks(members, true, chartLayout, true);
+      const before = trackRowHeight(L, track.people);
+      const after = replacementTracks.reduce((n, t)=> n + trackRowHeight(L, t.people), 0);
+      const extra = Math.max(0, after - before);
+      const first = members[0];
+      candidates.push({ bi, ti, pi, pe, members, replacementTracks, extra,
+        score: members.length / Math.max(1, extra),
+        year: first?.inicio ?? 999999,
+        id: Number(pe.id) || 0 });
+    })));
+  candidates.sort((a,b)=> b.score-a.score || a.year-b.year || a.id-b.id);
+
+  let accepted = laneData;
+  let extraTotal = 0;
+  for(const c of candidates){
+    const next = accepted.map((block, bi)=> bi !== c.bi ? block : {
+      ...block,
+      tracks: block.tracks.flatMap((track, ti)=>{
+        if(!track.people.includes(c.pe)) return [track];
+        const people = track.people;
+        const pi = people.indexOf(c.pe);
+        if(pi < 0) return [track];
+        return [
+          ...(people.slice(0, pi).length ? [{ people: people.slice(0, pi) }] : []),
+          ...c.replacementTracks,
+          ...(people.slice(pi + 1).length ? [{ people: people.slice(pi + 1) }] : []),
+        ];
+      }),
+    });
+    const peopleH = lanePeopleHeight(next, L, topOffset);
+    const remaining = Math.max(0, viewH - peopleH - L.axisH - 12);
+    const represented = collectRepresentedEventIds(next);
+    const loose = typeof looseEventsFor === 'function' ? looseEventsFor(represented, next) : [];
+    const residual = loose.length
+      ? layoutLooseEventLanes(loose, chartLayout.yMin, chartLayout.yMax, chartLayout.chartW, remaining)
+      : { mode: 'expandido' };
+    if(peopleH <= viewH - L.axisH - 12 && residual){
+      accepted = next;
+      extraTotal = peopleH - baseH;
+    }
+  }
+  accepted._expandedDensity = { baseFree, extraTotal };
+  return accepted;
+}
+
 /** Sucesos del alcance actual que no van en la barra de ningún personaje visible. */
 function collectLooseEvents(activePeople, yMin, yMax, query, yaRepresentados){
   const nq = norm(query || '');
@@ -4931,7 +4998,22 @@ function render(){
   const effectivePx = updateZoomUi(span2, chartW);
   updateFocusUi(dataMin, dataMax);
   const chartLayout = { yMin, yMax, chartW };
-  const laneData = enrichLaneData(rawLaneData, query, chartLayout);
+  let laneData = enrichLaneData(rawLaneData, query, chartLayout);
+  const viewH = chartScroll.clientHeight || 0;
+  const looseEventsFor = (represented, data = laneData) => {
+    const active = [];
+    for(const block of data){
+      for(const track of block.tracks || []){
+        for(const pe of track.people || []) if(!pe.isEvent) active.push(pe);
+      }
+    }
+    return showMarkers
+      ? collectLooseEvents(active, yMin, yMax, query, represented)
+      : [];
+  };
+  laneData = expandDensityAggregates(
+    laneData, L, topOffset, chartLayout, viewH, looseEventsFor,
+  );
   peByKeyCache = new Map();
   for(const block of laneData){
     for(const track of block.tracks){
@@ -4940,16 +5022,14 @@ function render(){
       }
     }
   }
-  const activePeople = [];
-  for(const block of laneData){
-    for(const track of block.tracks){
-      for(const pe of track.people){
-        if(!pe.isEvent) activePeople.push(pe);
-      }
-    }
-  }
   /* Lo que ya está dibujado en las filas no se vuelve a dibujar abajo. */
   const representedEventIds = collectRepresentedEventIds(laneData);
+  const activePeople = [];
+  for(const block of laneData){
+    for(const track of block.tracks || []){
+      for(const pe of track.people || []) if(!pe.isEvent) activePeople.push(pe);
+    }
+  }
   const looseEvents = showMarkers
     ? collectLooseEvents(activePeople, yMin, yMax, query, representedEventIds)
     : [];
@@ -5015,7 +5095,6 @@ function render(){
     peopleHEstimate += block.tracks.reduce((h, t)=> h + trackRowHeight(L, t.people), 0) + L.laneGap;
   }
 
-  const viewH = chartScroll.clientHeight || 0;
   const freeBelow = Math.max(0, viewH - peopleHEstimate - L.axisH - 12);
   const looseLayout = looseEvents.length
     ? layoutLooseEventLanes(looseEvents, yMin, yMax, chartW, freeBelow)
@@ -5040,7 +5119,7 @@ function render(){
   const potBands = showPotencias ? POTENCIAS.filter(p=>selPots.has(p.id) && p.end >= yMin && p.start <= yMax) : [];
 
   if(showPotencias){
-    canvasHtml += `<div class="pot-strip" style="width:${chartW}px"><span class="pot-strip__label">Potencias mundiales</span>`;
+    canvasHtml += `<div class="pot-strip" style="width:${chartW}px;height:${L.potStrip}px;min-height:${L.potStrip}px"><span class="pot-strip__label">Potencias mundiales</span>`;
     for(const p of potBands){
       const x1 = yearToX(Math.max(p.start, yMin), yMin, yMax, chartW);
       const x2 = yearToX(Math.min(p.end, yMax), yMin, yMax, chartW);
@@ -5178,7 +5257,7 @@ function render(){
   axisArea.innerHTML = axisLabels;
   labelsCol.style.paddingBottom = L.axisH + 'px';
 
-  lastLayout = { viewLabel: viewLabel(), laneData, dataMin, dataMax, yMin, yMax, chartW, totalH, potOffset: topOffset, rowMap, markerCount, markers: [], effectivePx: span2 / chartW, metrics: L, vizStyle, rowLayout, densitySummary: !!(looseLayout && looseLayout.density && looseLayout.density.summary), densityCoverage: looseLayout && looseLayout.density ? [...looseLayout.density.coverage] : null, looseEligible: looseEvents.map(e=> e.id), looseMode: looseLayout ? looseLayout.mode : null, freeBelow };
+  lastLayout = { viewLabel: viewLabel(), laneData, dataMin, dataMax, yMin, yMax, chartW, totalH, potOffset: topOffset, measuredViewportWidth: chartScroll.clientWidth, measuredViewportHeight: chartScroll.clientHeight, rowMap, markerCount, markers: [], effectivePx: span2 / chartW, metrics: L, vizStyle, rowLayout, densitySummary: !!(looseLayout && looseLayout.density && looseLayout.density.summary), densityCoverage: looseLayout && looseLayout.density ? [...looseLayout.density.coverage] : null, looseEligible: looseEvents.map(e=> e.id), looseMode: looseLayout ? looseLayout.mode : null, freeBelow };
   chartCanvas.querySelectorAll('.evt-marker, .bar-event-pin').forEach(m=>{
     if(m.dataset.aggIds) return;
     const row = m.closest('.row');
@@ -5963,6 +6042,30 @@ function observarContenedor(){
     });
   });
   ro.observe(chartScroll);
+  /* El primer render puede haber ocurrido antes de que los controles terminen
+     de ocupar su lugar. Comparar con la medida que realmente consumió ese
+     layout obliga a una convergencia acotada aunque ResizeObserver no emita
+     un segundo cambio después de instalarse. */
+  const w = chartScroll.clientWidth;
+  const h = chartScroll.clientHeight;
+  if(lastLayout && w && h &&
+     (Math.abs((lastLayout.measuredViewportWidth || 0) - w) >= 1 ||
+      Math.abs((lastLayout.measuredViewportHeight || 0) - h) >= 1)){
+    medidaContenedor = { w, h };
+    if(!relayoutFrame){
+      relayoutFrame = requestAnimationFrame(()=>{
+        relayoutFrame = 0;
+        /* Converger es volver a medir, no volver a encuadrar: el render lleva
+           el scroll a 0 cuando AUTO está activo, así que sin guardarlo esta
+           pasada deja fuera de pantalla lo que el encuadre inicial centró. */
+        const sl = chartScroll.scrollLeft;
+        const st = chartScroll.scrollTop;
+        safeRender();
+        if(chartScroll.scrollLeft !== sl) chartScroll.scrollLeft = sl;
+        if(chartScroll.scrollTop !== st) chartScroll.scrollTop = st;
+      });
+    }
+  }
 }
 observarContenedor();
 
