@@ -4974,9 +4974,9 @@ document.getElementById('vista-comparar')?.addEventListener('click', ()=>{
   applyAppVista('comparar', { persist: true, hash: true });
 });
 
-// ---------- onboarding tour (MVP) ----------
+// ---------- onboarding tour + ayuda contextual ----------
 (function initOnboarding(){
-  const STORAGE_KEY = 'lt-onboarding-v1';
+  const STORAGE_KEY = 'lt-onboarding-v2';
   const root = document.getElementById('onboard-root');
   const backdrop = document.getElementById('onboard-backdrop');
   const hole = document.getElementById('onboard-hole');
@@ -4993,37 +4993,49 @@ document.getElementById('vista-comparar')?.addEventListener('click', ()=>{
 
   const STEPS = [
     {
+      target: '.vista-switch',
+      title: 'Explorar o Comparar',
+      body: 'Explorar muestra una lista completa del periodo (ideal en el teléfono): buscá, abrí un suceso y volvé. Comparar es la gráfica en filas paralelas para ver reinados y sucesos a la vez. Podés cambiar cuando quieras; la elección se recuerda.',
+    },
+    {
+      target: '#explore-panel',
+      vista: 'explorar',
+      title: 'Lista y periodos rápidos',
+      body: 'En Explorar ves todos los sucesos del rango activo, con búsqueda local. Los botones de periodo (Ministerio, Destierro…) priorizan el intervalo. «En línea» salta a Comparar centrado en ese suceso.',
+    },
+    {
       target: '.chart-wrap',
+      vista: 'comparar',
       center: true,
-      title: 'Cronología en filas paralelas',
-      body: 'Cada fila agrupa un periodo o tema (reyes, profetas, ministerio de Jesús…). Las barras muestran vidas o reinados; los puntos, sucesos puntuales. Arrastrá con un dedo; pellizcá con dos sobre el gráfico para ampliar. En computadora, la rueda desplaza y Ctrl+rueda acerca. El minimapa de abajo muestra dónde estás en los 4.000 años: clic para saltar, arrastre para elegir un rango.',
+      title: 'Comparar en la línea',
+      body: 'Cada fila es un periodo o tema. Arrastrá para desplazar; pellizcá o Ctrl+rueda para acercar. El minimapa resume ~4.000 años: clic para saltar, arrastre para un rango.',
     },
     {
       target: '#lane-filters',
-      title: 'Filtrar filas',
-      body: 'Activá las épocas que te interesan (Destierro, Reyes, Siglo primero…). Con «Sucesos» en opciones aparecen los hechos de esa época: en la barra del personaje si le pertenecen, o como puntos sueltos si no.',
+      title: 'Filas y agregados',
+      body: 'Activá las épocas que te interesan. Cuando hay muchos sucesos juntos (p. ej. última semana), aparece un agregado «N sucesos próximos»: abrilo para la lista completa sin perder ninguno.',
     },
     {
       target: '#search',
       mobileTarget: '#search-open',
       title: 'Buscar',
-      body: 'En el teléfono, tocá la lupa para buscar un suceso, personaje o libro. En computadora, escribí en la barra. Escape limpia la búsqueda.',
+      body: 'Filtrá por suceso, personaje o libro. En el teléfono usá la lupa. Escape limpia la búsqueda.',
     },
     {
       target: '#filtros-btn',
-      title: 'Capas y opciones',
-      body: 'En ⚙ activá Sucesos, Conexiones e Imperios (bandas en el gráfico). También podés cambiar estilo, zoom, disposición y exportar PNG.',
+      title: 'Opciones',
+      body: 'En ⚙ activá Sucesos, Conexiones e Imperios. También podés ajustar disposición, zoom y exportar PNG (si la vista está densificada, el archivo lo declara).',
     },
     {
-      target: '.chart-wrap',
-      center: true,
-      title: 'Detalle y más',
-      body: 'Hacé clic en una barra o suceso para abrir el panel con referencias y preguntas. En Personajes encontrás fichas ampliadas.',
+      target: '#onboard-help-btn',
+      title: 'Detalle, Volver y esta ayuda',
+      body: 'Al abrir un suceso o un grupo usá «Volver» para recuperar la lista. Pasá el cursor sobre Explorar, Comparar u otros controles para una pista rápida. Este botón ? reabre el tour cuando lo necesites.',
     },
   ];
 
   let stepIdx = 0;
   let active = false;
+  let tourVistaBefore = null;
 
   function isDone(){
     try{ return localStorage.getItem(STORAGE_KEY) === 'done'; }catch(e){ return false; }
@@ -5064,6 +5076,12 @@ document.getElementById('vista-comparar')?.addEventListener('click', ()=>{
     pop.style.top = top + 'px';
     pop.style.left = left + 'px';
   }
+  function applyStepVista(step){
+    if(!step || !step.vista) return;
+    if(typeof applyAppVista === 'function'){
+      applyAppVista(step.vista, { sync: true, persist: false, hash: false });
+    }
+  }
   function showStep(idx){
     stepIdx = idx;
     const step = STEPS[idx];
@@ -5072,10 +5090,12 @@ document.getElementById('vista-comparar')?.addEventListener('click', ()=>{
     bodyEl.textContent = step.body;
     btnPrev.hidden = idx === 0;
     btnNext.textContent = idx === STEPS.length - 1 ? 'Listo' : 'Siguiente';
+    applyStepVista(step);
 
     const sel = (mqMobile?.matches && step.mobileTarget) ? step.mobileTarget : step.target;
     const el = sel ? document.querySelector(sel) : null;
-    if(el && !step.center){
+    const elVisible = el && el.offsetParent !== null && !el.hidden && getComputedStyle(el).display !== 'none';
+    if(elVisible && !step.center){
       if(backdrop) backdrop.style.opacity = '0';
       el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
       requestAnimationFrame(()=>{
@@ -5097,7 +5117,9 @@ document.getElementById('vista-comparar')?.addEventListener('click', ()=>{
   }
   function openTour(fromUser){
     if(active) return;
+    hideCtxHelp();
     active = true;
+    tourVistaBefore = appVista;
     root.hidden = false;
     root.classList.add('is-active');
     root.setAttribute('aria-hidden', 'false');
@@ -5115,6 +5137,10 @@ document.getElementById('vista-comparar')?.addEventListener('click', ()=>{
     root.setAttribute('aria-hidden', 'true');
     pop.hidden = true;
     hole.hidden = true;
+    if(tourVistaBefore && tourVistaBefore !== appVista && typeof applyAppVista === 'function'){
+      applyAppVista(tourVistaBefore, { sync: true, persist: false, hash: false });
+    }
+    tourVistaBefore = null;
   }
   function nextStep(){
     if(stepIdx >= STEPS.length - 1){ closeTour(); return; }
@@ -5134,15 +5160,70 @@ document.getElementById('vista-comparar')?.addEventListener('click', ()=>{
   document.addEventListener('keydown', e=>{
     if(!active) return;
     if(e.key === 'Escape'){ e.preventDefault(); closeTour(); }
-    else if(e.key === 'ArrowRight'){ e.preventDefault(); nextStep(); }
-    else if(e.key === 'ArrowLeft' && stepIdx > 0){ e.preventDefault(); prevStep(); }
+    else if(e.key === 'ArrowRight' || e.key === 'Enter'){ e.preventDefault(); nextStep(); }
+    else if(e.key === 'ArrowLeft'){ e.preventDefault(); prevStep(); }
   });
-  window.addEventListener('resize', ()=>{ if(active) showStep(stepIdx); });
+
+  /* Ayuda contextual (hover / foco con teclado) */
+  const ctxTip = document.getElementById('ctx-help-tip');
+  const ctxTitle = document.getElementById('ctx-help-title');
+  const ctxBody = document.getElementById('ctx-help-body');
+  let ctxAnchor = null;
+  function hideCtxHelp(){
+    ctxAnchor = null;
+    if(!ctxTip) return;
+    ctxTip.classList.remove('on');
+    ctxTip.hidden = true;
+  }
+  function placeCtxHelp(el){
+    if(!ctxTip || !el) return;
+    const r = el.getBoundingClientRect();
+    const tipW = ctxTip.offsetWidth || 260;
+    const tipH = ctxTip.offsetHeight || 80;
+    let top = r.bottom + 8;
+    let left = r.left + r.width / 2 - tipW / 2;
+    if(top + tipH > window.innerHeight - 8) top = r.top - tipH - 8;
+    left = Math.max(8, Math.min(left, window.innerWidth - tipW - 8));
+    top = Math.max(8, top);
+    ctxTip.style.top = top + 'px';
+    ctxTip.style.left = left + 'px';
+  }
+  function showCtxHelp(el){
+    if(active || !ctxTip || !el) return;
+    if(typeof matchMedia === 'function' && matchMedia('(hover: none)').matches) return;
+    const body = el.getAttribute('data-help');
+    if(!body) return;
+    ctxAnchor = el;
+    if(ctxTitle) ctxTitle.textContent = el.getAttribute('data-help-title') || 'Ayuda';
+    if(ctxBody) ctxBody.textContent = body;
+    ctxTip.hidden = false;
+    ctxTip.classList.add('on');
+    placeCtxHelp(el);
+  }
+  function bindCtxHelp(rootEl){
+    const scope = rootEl || document;
+    scope.querySelectorAll('[data-help]').forEach(el=>{
+      if(el.dataset.helpBound) return;
+      el.dataset.helpBound = '1';
+      el.addEventListener('mouseenter', ()=> showCtxHelp(el));
+      el.addEventListener('mouseleave', hideCtxHelp);
+      el.addEventListener('focus', ()=> showCtxHelp(el));
+      el.addEventListener('blur', hideCtxHelp);
+    });
+  }
+  bindCtxHelp(document);
+  window.addEventListener('scroll', ()=>{ if(ctxAnchor) placeCtxHelp(ctxAnchor); }, true);
+  window.addEventListener('resize', ()=>{
+    if(ctxAnchor) placeCtxHelp(ctxAnchor);
+    if(active) showStep(stepIdx);
+  });
 
   const skipAuto = deepEvId || qs.get('q') || qs.get('onboard') === '0';
   if(!isDone() && !skipAuto && typeof setTimeout === 'function'){
     setTimeout(()=> openTour(false), 600);
   }
+
+  window.LTHelp = { openTour: ()=> openTour(true), bindCtxHelp, hideCtxHelp };
 })();
 
 /* ============ Sheet (móvil) / Popover (desktop) de opciones ============ */

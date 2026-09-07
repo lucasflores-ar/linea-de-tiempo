@@ -113,9 +113,26 @@ header{
 .controls{display:flex;align-items:center;gap:8px;margin-left:auto;flex-wrap:wrap}
 .site-nav{display:flex;gap:4px;background:var(--field);border:1px solid var(--line);border-radius:10px;padding:4px}
 .site-nav__link{padding:6px 10px;border-radius:8px;font-size:12px;font-weight:600;color:var(--mut);
-  text-decoration:none;transition:all .15s;white-space:nowrap}
+  text-decoration:none;transition:all .15s;white-space:nowrap;border:0;background:transparent;cursor:pointer;font-family:inherit;line-height:1.2}
 .site-nav__link:hover{color:var(--txt);background:var(--field-2)}
 .site-nav__link--on{background:var(--txt);color:var(--bg)}
+.site-nav__help{
+  width:32px;min-width:32px;padding:6px 0;text-align:center;font-weight:700;font-size:14px;
+  color:var(--acc);
+}
+.site-nav__help:hover,.site-nav__help:focus-visible{color:var(--txt);background:var(--field-2);outline:none}
+.ctx-help-tip{
+  position:fixed;z-index:160;max-width:min(280px, calc(100vw - 24px));padding:10px 12px;
+  background:var(--panel2);color:var(--txt);border:1px solid var(--line);border-radius:10px;
+  box-shadow:0 10px 28px var(--shadow);font:400 12px/1.45 var(--font-sans);
+  pointer-events:none;opacity:0;transform:translateY(4px);transition:opacity .15s ease, transform .15s ease;
+}
+.ctx-help-tip.on{opacity:1;transform:translateY(0)}
+.ctx-help-tip__title{font:700 11px/1.2 var(--font-sans);letter-spacing:.04em;text-transform:uppercase;color:var(--acc);margin:0 0 4px}
+.ctx-help-tip__body{margin:0;color:var(--mut)}
+@media (hover: none){
+  .ctx-help-tip{display:none}
+}
 input[type=search],select{
   background:var(--field);border:1px solid var(--line);color:var(--txt);border-radius:8px;
   padding:7px 10px;font-size:12px;font-family:inherit;outline:none}
@@ -1396,24 +1413,35 @@ header {
   </div>
   <div class="controls">
     <div class="vista-switch" role="group" aria-label="Modo de vista">
-      <button type="button" class="vista-switch__btn" id="vista-explorar" aria-pressed="false">Explorar</button>
-      <button type="button" class="vista-switch__btn" id="vista-comparar" aria-pressed="true">Comparar</button>
+      <button type="button" class="vista-switch__btn" id="vista-explorar" aria-pressed="false"
+        data-help-title="Explorar"
+        data-help="Lista completa del periodo activo: buscá, abrí un suceso y volvé sin pellizcar. Ideal en pantallas chicas.">Explorar</button>
+      <button type="button" class="vista-switch__btn" id="vista-comparar" aria-pressed="true"
+        data-help-title="Comparar"
+        data-help="Gráfica en filas paralelas con eje compartido: compará reinados, profetas y sucesos en el tiempo.">Comparar</button>
     </div>
-    <input type="search" id="search" placeholder="Buscar suceso, personaje o libro…" autocomplete="off" aria-label="Buscar suceso, personaje o libro" />
+    <input type="search" id="search" placeholder="Buscar suceso, personaje o libro…" autocomplete="off" aria-label="Buscar suceso, personaje o libro"
+      data-help-title="Buscar"
+      data-help="Filtrá por nombre, referencia o libro. En Explorar reduce la lista; en Comparar resalta coincidencias en la gráfica." />
     <span class="result-count" id="result-count" aria-live="polite"></span>
     <button class="iconbtn search-open-btn" id="search-open" type="button"
             title="Buscar" aria-label="Buscar suceso o personaje"
-            aria-haspopup="dialog" aria-controls="search-pop" aria-expanded="false">
+            aria-haspopup="dialog" aria-controls="search-pop" aria-expanded="false"
+            data-help-title="Buscar"
+            data-help="Abrí la búsqueda en el teléfono. Escribí un suceso, personaje o libro.">
       <svg class="ui-ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16.2 16.2L21 21"/></svg>
     </button>
     <nav class="site-nav" aria-label="Navegación principal">
       <a class="site-nav__link site-nav__link--on" href="linea-paralela.html" aria-current="page">Cronología</a>
-      <a class="site-nav__link" href="fichas.html">Personajes</a>
+      <a class="site-nav__link" href="fichas.html"
+        data-help-title="Personajes"
+        data-help="Fichas biográficas ampliadas, aparte de la cronología.">Personajes</a>
+      <button type="button" class="site-nav__link site-nav__help" id="onboard-help-btn"
+              title="Ayuda y tour guiado" aria-label="Abrir ayuda y tour guiado">?</button>
     </nav>
-    <button class="iconbtn" id="onboard-help-btn" type="button" title="Tour de la cronología" aria-label="Ver tour de ayuda">
-      <svg class="ui-ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.6 9.2a2.5 2.5 0 1 1 3.5 2.3c-.8.4-1.3.9-1.3 1.8"/><circle cx="12" cy="17" r=".9" fill="currentColor" stroke="none"/></svg>
-    </button>
-    <button class="iconbtn" id="theme-btn" type="button" title="Cambiar tema" aria-label="Cambiar tema">
+    <button class="iconbtn" id="theme-btn" type="button" title="Cambiar tema" aria-label="Cambiar tema"
+      data-help-title="Tema"
+      data-help="Alterná entre tema claro y oscuro.">
       <svg class="ui-ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3v18"/><path d="M12 3a9 9 0 0 0 0 18" fill="currentColor" stroke="none" opacity=".35"/></svg>
     </button>
   </div>
@@ -1422,7 +1450,9 @@ header {
 <div class="toolbar toolbar--quick">
   <span class="toolbar__label toolbarlabel">Filas</span>
   <div class="quick-scroll">
-    <div class="preset" id="lane-filters" role="group" aria-label="Filtrar filas visibles"></div>
+    <div class="preset" id="lane-filters" role="group" aria-label="Filtrar filas visibles"
+      data-help-title="Filas"
+      data-help="Activá periodos o temas (Judá, ministerio, última semana…). En Explorar también alimentan la lista."></div>
   </div>
   <div class="legend" aria-hidden="true">
     <span class="legend__item"><span class="legend__swatch" style="background:var(--lane-jud)"></span>Judá</span>
@@ -1433,7 +1463,9 @@ header {
     <span class="legend__item"><span class="legend__swatch legend__swatch--est"></span>Fecha estimada (fade lateral)</span>
   </div>
   <button type="button" class="iconbtn filtros-btn" id="filtros-btn"
-          title="Más opciones" aria-label="Abrir opciones">⚙</button>
+          title="Más opciones" aria-label="Abrir opciones"
+          data-help-title="Opciones"
+          data-help="Sucesos, conexiones, imperios, zoom, disposición y exportar PNG.">⚙</button>
 </div>
 
 <div class="filtros-backdrop" id="filtros-backdrop"></div>
@@ -1498,10 +1530,14 @@ header {
 </div>
 
 <main>
-  <section id="explore-panel" class="explore-panel" aria-label="Explorador de sucesos" hidden>
+  <section id="explore-panel" class="explore-panel" aria-label="Explorador de sucesos" hidden
+    data-help-title="Lista Explorar"
+    data-help="Todos los sucesos del periodo, sin amontonar. Abrí uno para el detalle; «En línea» salta a Comparar.">
     <div class="explore-panel__summary" id="explore-summary">
       <p class="explore-panel__range" id="explore-range">Periodo activo</p>
-      <div class="explore-panel__periods" id="explore-periods" role="group" aria-label="Periodos rápidos"></div>
+      <div class="explore-panel__periods" id="explore-periods" role="group" aria-label="Periodos rápidos"
+        data-help-title="Periodos rápidos"
+        data-help="Atajos de rango (Ministerio, Destierro…). Priorizan el periodo activo frente a la tira de chips."></div>
     </div>
     <div class="explore-panel__list" id="explore-main-list"></div>
   </section>
@@ -1515,13 +1551,19 @@ header {
       </div>
     </div>
   </div>
-  <div class="minimap" id="minimap" hidden>
+  <div class="minimap" id="minimap" hidden
+    data-help-title="Minimapa"
+    data-help="Resumen de los ~4.000 años. Clic para saltar; arrastrá para elegir un rango.">
     <canvas id="minimap-canvas" width="800" height="56" role="img" aria-label="Vista global de la cronología. Clic para saltar a un periodo, arrastrá para elegir un rango."></canvas>
     <span class="minimap__hint">Vista global</span>
   </div>
   <div class="hidden-dock" id="hidden-dock" hidden aria-label="Personajes ocultos"></div>
 </main>
 <div id="tooltip" role="tooltip"></div>
+<div id="ctx-help-tip" class="ctx-help-tip" role="tooltip" hidden>
+  <p class="ctx-help-tip__title" id="ctx-help-title"></p>
+  <p class="ctx-help-tip__body" id="ctx-help-body"></p>
+</div>
 
 <div id="overlay"></div>
 <div id="search-pop" class="search-pop" hidden>
@@ -1610,6 +1652,6 @@ header {
 <script src="timeline-selectors.js?v=20260907e"></script>
 <script src="timeline-list.js?v=20260907e"></script>
 <script src="timeline-density.js?v=20260907e"></script>
-<script src="linea-paralela.js?v=20260907e"></script>
+<script src="linea-paralela.js?v=20260907f"></script>
 </body>
 </html>
