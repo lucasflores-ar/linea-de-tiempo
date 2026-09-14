@@ -83,6 +83,12 @@ añade solamente los IDs nuevos autorizados. No debe sustituirse por una
 regeneración completa cuando el CSV externo no sea exactamente el mismo
 snapshot que produjo la versión publicada.
 
+Para corregir un suceso existente, la curación debe declararse por ID y clave
+en `curacion/descripciones_sucesos.json` y aplicarse con un script aislado
+como `scripts/update_asa_aislado.py`. Ese script debe comprobar que encontró
+exactamente el registro esperado y limitarse a los campos solicitados; nunca
+debe usar el pipeline completo para una corrección puntual.
+
 Ejemplo de una alta puntual:
 
 ```text

@@ -10,7 +10,7 @@
       "judah": [
         {"clave": "rey_rehoboam", "nombre": "Rehoboam", "inicio": -997, "fin": -980, "anos": 17, "fechas_exactas": true, "referencia": "1 Reyes 12:1; 14:21"},
         {"clave": "rey_abias", "nombre": "Abías (Abiyam)", "inicio": -980, "fin": -977, "anos": 3, "fechas_exactas": true, "referencia": "1 Reyes 15:1-2"},
-        {"clave": "rey_asa", "nombre": "Asá", "inicio": -978, "fin": -937, "anos": 41, "fechas_exactas": true, "referencia": "1 Reyes 15:9-10"},
+        {"clave": "rey_asa", "nombre": "Asá", "inicio": -977, "fin": -937, "anos": 41, "fechas_exactas": true, "referencia": "1 Reyes 15:9-10"},
         {"clave": "rey_jehosafat", "nombre": "Jehosafat", "inicio": -937, "fin": -912, "anos": 25, "fechas_exactas": true, "referencia": "1 Reyes 22:42"},
         {"clave": "rey_jehoram_juda", "nombre": "Jehoram (Judá)", "inicio": -913, "fin": -905, "anos": 8, "fechas_exactas": true, "referencia": "2 Reyes 8:17"},
         {"clave": "rey_ocozias_juda", "nombre": "Ocozías (Judá)", "inicio": -906, "fin": -905, "anos": 1, "fechas_exactas": false, "circa": true, "referencia": "2 Reyes 8:26"},

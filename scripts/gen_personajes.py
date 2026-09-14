@@ -81,7 +81,7 @@ P = [
  # ---- Seccion 2: Reino dividido — reyes de Judá (A6) ----
  dict(nombre='Rehoboam',        inicio=-997,  fin=-980,  seccion='S2', grupo='Reyes de Judá', nota='rey 997-980'),
  dict(nombre='Abías',           inicio=-980,  fin=-977,  seccion='S2', grupo='Reyes de Judá', nota='rey 980-977'),
- dict(nombre='Asá',             inicio=-978,  fin=-937,  seccion='S2', grupo='Reyes de Judá', nota='rey 978-937'),
+ dict(nombre='Asá',             inicio=-977,  fin=-937,  seccion='S2', grupo='Reyes de Judá', nota='rey 977-937'),
  dict(nombre='Jehosafat',       inicio=-937,  fin=-912,  seccion='S2', grupo='Reyes de Judá', nota='rey 937-912'),
  dict(nombre='Jehoram (Judá)',  inicio=-913,  fin=-905,  seccion='S2', grupo='Reyes de Judá', nota='rey 913-905'),
  dict(nombre='Ocozías (Judá)',  inicio=-906,  fin=-905,  seccion='S2', grupo='Reyes de Judá', nota='rey c.906-905'),

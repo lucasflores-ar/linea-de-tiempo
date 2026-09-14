@@ -69,7 +69,7 @@ EVENTOS = [
     ("pacto_moab", "", -1473, "Pacto con Israel en Moab", "Deu. 29:1", "DESIERTO", "pacto", "Moisés, Israel", ""),
     ("moises_escribe_deuteronomio", "", -1473, "Moisés escribe Deuteronomio", "Deu. 1:1, 3", "DESIERTO", "redacción", "Moisés", "31"),
     ("muerte_moises", "", -1473, "Muere Moisés en el monte Nebo en Moab", "Deu. 34:1; Deu. 34:5, 7", "DESIERTO", "muerte", "Moisés", "32"),
-    ("israel_entra_canaan", "", -1473, "Israel entra en Canaán bajo Josué", "Jos. 4:19", "DESIERTO", "conquista", "Josué, Israel", "34"),
+    ("israel_entra_canaan", "", -1473, "Comienza la conquista de la tierra prometida", "Jos. 4:19", "DESIERTO", "conquista", "Josué, Israel", "34"),
     ("conquista_general_canaan", "", -1467, "Se completa conquista general de la tierra; fin de los \"unos 450 años\" de Hechos 13:17-20", "Jos. 11:23; 14:7, 10-15", "JUECES", "conquista", "Josué, Israel", "208"),
     ("libro_josue_completado", "c", -1450, "Se completa el libro de Josué", "Jos. 1:1; Jos 24:26", "JUECES", "redacción", "Josué", "344"),
     ("muerte_josue", "c", -1450, "Muere Josué", "Jos. 24:29", "JUECES", "muerte", "Josué", "278"),
