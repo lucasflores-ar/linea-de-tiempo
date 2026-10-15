@@ -1269,6 +1269,44 @@ function computeRangeFromLaneData(laneData){
   if(!years.length) return [-997, -580];
   return [Math.min(...years), Math.max(...years)];
 }
+function visibleContentRange(laneData, queryText, includedEvents){
+  const years = [];
+  const add = value=>{ if(Number.isFinite(value)) years.push(value); };
+  for(const block of laneData || []){
+    for(const track of block.tracks || []){
+      for(const pe of track.people || []){
+        if(pe.inicio != null) add(pe.inicio);
+        if(pe.fin != null) add(pe.fin);
+      }
+    }
+  }
+  if(showMarkers){
+    const represented = collectRepresentedEventIds(laneData);
+    const nq = norm(queryText || '');
+    for(const ev of includedEvents || []){
+      if(!ev || ev.tipo === 'reinado') continue;
+      const y = chartYear(ev);
+      if(y == null) continue;
+      if(nq && !(ev._n || norm(ev.n)).includes(nq) && !(ev._nref || norm(ev.ref || '')).includes(nq)) continue;
+      if(represented.has(ev.id)) continue;
+      add(y);
+    }
+  }
+  if(!years.length) return null;
+  return [Math.min(...years), Math.max(...years)];
+}
+function expandVisibleRange(range){
+  if(!range) return null;
+  let [min, max] = range;
+  const span = max - min;
+  if(span < MIN_FOCUS_SPAN){
+    const center = (min + max) / 2;
+    min = center - MIN_FOCUS_SPAN / 2;
+    max = center + MIN_FOCUS_SPAN / 2;
+  }
+  const pad = Math.max((max - min) * 0.035, 1.5);
+  return [min - pad, max + pad];
+}
 function getShareableState(){
   const filas = LANE_ORDER.filter(id=> selLanes.has(id));
   let ev = null;
@@ -3225,6 +3263,10 @@ function applyLaneChipChange(id, checked){
     selLanes.delete(id);
     scrollFocusLaneId = LANE_ORDER.find(lid=> selLanes.has(lid)) || null;
   }
+  if(autoFit){
+    viewWindow = null;
+    saveViewWindow();
+  }
   normalizeExclusiveLanes();
   try{ localStorage.setItem('lt-par-lanes', JSON.stringify([...selLanes])); }catch(e){}
   syncHash();
@@ -4933,6 +4975,33 @@ function render(){
   const rawLaneData = buildAllLaneData({ query });
   const hiddenList = collectHiddenInView(rawLaneData, query);
   const q = norm(query);
+  const autoFitContent = autoFit
+    ? enrichLaneData(rawLaneData, query, null).flatMap(block=>
+        (block.tracks || []).flatMap(track=> track.people || []),
+      )
+    : null;
+  const autoFitIncludedEvents = autoFit
+    ? (()=>{
+        const representedPeople = autoFitContent.filter(pe=> !pe.isEvent);
+        const events = [];
+        for(const pe of autoFitContent){
+          if(pe.isEvent){
+            if(pe.ev) events.push(pe.ev);
+            events.push(...(pe.groupEvents || []));
+          } else if(showMarkers){
+            events.push(...eventsForPerson(pe, -Infinity, Infinity));
+          }
+        }
+        if(showMarkers){
+          const selectedPeople = activePersonajesForDedup(query);
+          events.push(...D.eventos.filter(ev=>
+            eventInChipScope(ev) && !representedPeople.some(pe=>eventMatchesPerson(ev, pe)) &&
+            !selectedPeople.some(pe=>eventBelongsOnPersonBar(ev, pe)),
+          ));
+        }
+        return [...new Map(events.filter(Boolean).map(ev=>[ev.id, ev])).values()];
+      })()
+    : null;
   const potOffset = showPotencias ? L.potStrip : 0;
   const topOffset = L.phaseH + potOffset;
   const hasPeople = rawLaneData.some(b=>b.people.length);
@@ -4959,7 +5028,7 @@ function render(){
   let [dataMin, dataMax] = hasPeople
     ? computeRangeFromLaneData(laneDataForBounds(rawLaneData))
     : [Infinity, -Infinity];
-  if(showMarkers){
+  if(!autoFit && showMarkers){
     for(const ev of D.eventos){
       if(!eventInChipScope(ev)) continue;
       const y = chartYear(ev);
@@ -4972,6 +5041,12 @@ function render(){
     dataMin = -607; dataMax = -400;
   }
   if(dataMin > dataMax) [dataMin, dataMax] = [dataMax, dataMin];
+  if(autoFit){
+    const contentRange = expandVisibleRange(visibleContentRange(
+      enrichLaneData(rawLaneData, query, null), query, autoFitIncludedEvents,
+    ));
+    if(contentRange) [dataMin, dataMax] = contentRange;
+  }
   if(viewWindow){
     if(viewWindow.min >= dataMax || viewWindow.max <= dataMin){
       viewWindow = null;
